@@ -1,0 +1,275 @@
+// app/onboarding/OnboardingSignUp.tsx
+import React, { useEffect } from 'react';
+import { View, Text, TouchableOpacity } from 'react-native';
+import { Href, useRouter } from 'expo-router';
+import { FontAwesome6 } from '@expo/vector-icons';
+import {
+  GoogleSignin,
+  statusCodes,
+} from '@react-native-google-signin/google-signin';
+import Toast from 'react-native-toast-message';
+import * as AppleAuthentication from 'expo-apple-authentication';
+import * as Haptics from 'expo-haptics';
+import { usePostHog } from 'posthog-react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { supabase } from '../supabase';
+import { OnboardingProgressBar } from '../../components/onboarding/OnboardingProgressBar';
+import { newOnboardingStyles, onboardingGradient } from './newOnboardingStyles';
+import useUserProfileStore from '../../interfaces/user_profile';
+import { useAppStateStore } from '../../interfaces/app_state';
+import { GOOGLE_SIGN_IN_IOS_CLIENT_ID } from '../../safe_constants';
+import { ONBOARDING_STEPS } from './OnboardingSteps';
+
+const OnboardingSignUp = () => {
+  const router = useRouter();
+  const posthog = usePostHog();
+  const { profile, setProfile, updateProfile, completeOnboarding } =
+    useUserProfileStore();
+  const { setMetadata } = useAppStateStore();
+
+  const currentIndex = ONBOARDING_STEPS.indexOf('/onboarding/OnboardingSignUp');
+
+  GoogleSignin.configure({
+    scopes: ['https://www.googleapis.com/auth/userinfo.email'],
+    iosClientId: GOOGLE_SIGN_IN_IOS_CLIENT_ID,
+  });
+
+  useEffect(() => {
+    if (profile?.id) {
+      nextStep();
+    }
+  }, [profile?.id]);
+
+  const nextStep = () => {
+    if (profile?.id) {
+      posthog?.identify(profile.id, {
+        email: profile.email,
+      });
+      setMetadata('posthogIdentified', true);
+      posthog?.capture('signup_successful', {
+        id: profile.id,
+        email: profile.email,
+      });
+    }
+
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+
+    // Find the next step in the onboarding flow
+    const nextStepIndex = currentIndex + 1;
+    if (nextStepIndex < ONBOARDING_STEPS.length) {
+      router.push(ONBOARDING_STEPS[nextStepIndex]);
+    } else {
+      // Fallback to tabs if we're somehow at the end
+      router.replace('/(tabs)');
+    }
+  };
+
+  const backStep = () => {
+    if (currentIndex > 0) {
+      router.push(ONBOARDING_STEPS[currentIndex - 1]);
+    } else if (router.canGoBack()) {
+      router.back();
+    }
+  };
+
+  const handleAppleSignIn = async () => {
+    try {
+      const credential = await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+      });
+
+      if (credential.identityToken) {
+        const {
+          error,
+          data: { user },
+        } = await supabase.auth.signInWithIdToken({
+          provider: 'apple',
+          token: credential.identityToken,
+        });
+
+        if (!error && user) {
+          const userData = {
+            id: user.id,
+            email: user.email!,
+            displayName: user.email?.split('@')[0] || '', // Default to email username
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          };
+          const { error: InsertError } = await supabase
+            .from('users')
+            .upsert(userData);
+
+          if (InsertError) {
+            Toast.show({
+              type: 'error',
+              text1: 'Error occurred signing in.',
+              text2: 'Please try again.',
+            });
+          } else {
+            setProfile({
+              ...userData,
+              updatedAt: new Date().toISOString(),
+              createdAt: new Date().toISOString(),
+              onboardingComplete: true,
+            });
+            nextStep();
+          }
+        }
+      }
+    } catch (e: any) {
+      if (e.code === 'ERR_REQUEST_CANCELED') {
+        // User canceled sign-in flow
+        return;
+      }
+      Toast.show({
+        type: 'error',
+        text1: 'Error occurred signing in with Apple.',
+        text2: 'Please try again.',
+      });
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const userInfo = await GoogleSignin.signIn();
+
+      if (userInfo.idToken) {
+        const { data, error } = await supabase.auth.signInWithIdToken({
+          provider: 'google',
+          token: userInfo.idToken,
+        });
+
+        if (error) {
+          throw error;
+        }
+
+        if (data.user) {
+          const userData = {
+            id: data.user.id,
+            email: data.user.email!,
+            displayName: data.user.email?.split('@')[0]!, // Default to email username
+            createdAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+          };
+
+          const { error: InsertError } = await supabase
+            .from('users')
+            .upsert(userData);
+
+          if (InsertError) {
+            throw InsertError;
+          }
+
+          setProfile({
+            ...userData,
+            updatedAt: new Date().toISOString(),
+            createdAt: new Date().toISOString(),
+            onboardingComplete: true,
+          });
+          nextStep();
+        }
+      }
+    } catch (error: any) {
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        return; // User cancelled login flow
+      }
+
+      let errorMessage = 'Error occurred signing in with Google.';
+      if (error.code === statusCodes.IN_PROGRESS) {
+        errorMessage = 'Sign In interrupted.';
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        errorMessage = 'Google Play Services not available.';
+      }
+
+      Toast.show({
+        type: 'error',
+        text1: errorMessage,
+        text2: 'Please try again.',
+      });
+    }
+  };
+
+  return (
+    <LinearGradient
+      colors={onboardingGradient}
+      style={newOnboardingStyles.container}
+    >
+      <View style={newOnboardingStyles.progressBarContainer}>
+        <OnboardingProgressBar
+          step={currentIndex + 1}
+          steps={ONBOARDING_STEPS.length}
+        />
+      </View>
+      <View style={newOnboardingStyles.contentContainer}>
+        <Text style={newOnboardingStyles.title}>Sign Up</Text>
+        <Text style={newOnboardingStyles.subtitle}>You're almost done!</Text>
+
+        <TouchableOpacity
+          style={{ ...newOnboardingStyles.button, justifyContent: 'center' }}
+          onPress={() => router.push('/onboarding/OnboardingEmailSignupModal')}
+        >
+          <FontAwesome6
+            name="envelope"
+            size={18}
+            color="black"
+            style={newOnboardingStyles.buttonIcon}
+          />
+          <Text style={newOnboardingStyles.buttonText}>
+            Continue with Email
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={{ ...newOnboardingStyles.button, justifyContent: 'center' }}
+          onPress={handleGoogleSignIn}
+        >
+          <FontAwesome6
+            name="google"
+            size={18}
+            color="black"
+            style={newOnboardingStyles.buttonIcon}
+          />
+          <Text style={newOnboardingStyles.buttonText}>
+            Continue with Google
+          </Text>
+        </TouchableOpacity>
+
+        <AppleAuthentication.AppleAuthenticationButton
+          buttonType={
+            AppleAuthentication.AppleAuthenticationButtonType.CONTINUE
+          }
+          buttonStyle={
+            AppleAuthentication.AppleAuthenticationButtonStyle.WHITE_OUTLINE
+          }
+          cornerRadius={25}
+          style={{ ...newOnboardingStyles.button, height: 55 }}
+          onPress={handleAppleSignIn}
+        />
+
+        <Text style={newOnboardingStyles.termsText}>
+          By continuing, you agree to our{' '}
+          <Text style={newOnboardingStyles.termsLink}>
+            Terms and Conditions
+          </Text>{' '}
+          and confirm you have read our{' '}
+          <Text style={newOnboardingStyles.termsLink}>Privacy Policy</Text>.
+        </Text>
+      </View>
+
+      <View style={newOnboardingStyles.buttonContainer}>
+        <TouchableOpacity
+          onPress={backStep}
+          style={newOnboardingStyles.backButton}
+        >
+          <FontAwesome6 name="chevron-left" size={20} color="#4F46E5" />
+        </TouchableOpacity>
+      </View>
+    </LinearGradient>
+  );
+};
+
+export default OnboardingSignUp;
