@@ -18,10 +18,17 @@ The project is currently in its initial setup phase with the following areas of 
    - User flow design in progress
 
 3. **State Management**
+
    - Zustand stores setup
    - MMKV integration complete
    - Type definitions in progress
    - Offline-first sync pattern established
+
+4. **Documentation**
+   - Core files established
+   - App.md added for app-specific documentation
+   - Memory Bank structure maintained
+   - Sync documentation complete
 
 ## Recent Changes
 
@@ -32,6 +39,7 @@ The project is currently in its initial setup phase with the following areas of 
 5. Implemented habits interface with offline sync
 6. Added sync initialization in app layout
 7. Setup periodic sync in home tab
+8. Added App.md to Memory Bank
 
 ## Active Decisions
 

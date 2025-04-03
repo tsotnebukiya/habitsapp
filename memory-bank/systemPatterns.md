@@ -12,7 +12,15 @@ react-native-starter/
 ├── types/                # TypeScript types
 ├── utils/                # Helper functions
 ├── constants/            # App constants
-└── assets/              # Static assets
+├── assets/              # Static assets
+└── memory-bank/         # Project documentation
+    ├── projectbrief.md  # Core requirements
+    ├── productContext.md # Product context
+    ├── systemPatterns.md # System architecture
+    ├── techContext.md   # Technical setup
+    ├── activeContext.md # Current state
+    ├── progress.md     # Progress tracking
+    └── App.md          # App-specific documentation
 ```
 
 ## Core Design Patterns
