@@ -1,16 +1,14 @@
 import { ExpoConfig, ConfigContext } from 'expo/config';
 
-const DEV_MODE = process.env.APP_VARIANT === 'development';
-
 export default ({ config }: ConfigContext): ExpoConfig => ({
-  name: DEV_MODE ? 'app-dev' : 'app',
-  slug: 'app-name',
+  name: 'HabitsApp',
+  slug: 'habitsapp',
   version: '1.0.0',
   orientation: 'portrait',
   icon: './assets/AppIcons/appstore.png',
-  scheme: 'myapp',
+  scheme: 'habitsapp',
   userInterfaceStyle: 'automatic',
-  owner: 'devstarterpacks',
+  owner: 'viraldevelopmentllc',
   splash: {
     image: './assets/react-native-splash.png',
     resizeMode: 'contain',
@@ -20,13 +18,13 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   ios: {
     supportsTablet: true,
     usesAppleSignIn: true,
-    bundleIdentifier: DEV_MODE
-      ? 'com.devstarterpacks.appdev'
-      : 'com.devstarterpacks.app',
+    bundleIdentifier: 'com.vdl.habitapp',
     infoPlist: {
       CFBundleURLTypes: [
         {
-          CFBundleURLSchemes: ['com.googleusercontent.apps.XXXXX'],
+          CFBundleURLSchemes: [
+            'com.googleusercontent.apps.837545270747-ceogif38qd67fhua53ttp5g0hq45vg8i',
+          ],
         },
       ],
     },
@@ -36,14 +34,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       foregroundImage: './assets/AppIcons/playstore.png',
       backgroundColor: '#000',
     },
-    package: DEV_MODE
-      ? 'com.devstarterpacks.appdev'
-      : 'com.devstarterpacks.app',
-  },
-  web: {
-    bundler: 'metro',
-    output: 'single',
-    favicon: './assets/images/favicon.png',
+    package: 'com.vdl.habitapp',
   },
   plugins: [
     'expo-font',
@@ -75,7 +66,8 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     [
       '@react-native-google-signin/google-signin',
       {
-        iosUrlScheme: 'com.googleusercontent.apps.XXXXX',
+        iosUrlScheme:
+          'com.googleusercontent.apps.837545270747-ceogif38qd67fhua53ttp5g0hq45vg8i',
       },
     ],
     [
@@ -83,7 +75,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       {
         url: 'https://sentry.io/',
         project: 'react-native',
-        organization: '<YOUR_ORGANIZATION_NAME>',
+        organization: 'Viral Development LLC',
       },
     ],
   ],
@@ -95,7 +87,10 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
       origin: false,
     },
     eas: {
-      projectId: '<YOUR_PROJECT_ID>',
+      projectId: '86db4c6b-889c-4d36-80d6-186e18cb031b',
     },
+  },
+  updates: {
+    url: 'https://u.expo.dev/86db4c6b-889c-4d36-80d6-186e18cb031b',
   },
 });

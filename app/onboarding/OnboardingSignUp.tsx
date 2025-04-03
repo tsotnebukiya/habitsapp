@@ -13,10 +13,8 @@ import * as Haptics from 'expo-haptics';
 import { usePostHog } from 'posthog-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { supabase } from '../supabase';
-import { OnboardingProgressBar } from '../../components/onboarding/OnboardingProgressBar';
 import { newOnboardingStyles, onboardingGradient } from './newOnboardingStyles';
-import useUserProfileStore from '../../interfaces/user_profile';
-import { useAppStateStore } from '../../interfaces/app_state';
+import useUserProfileStore from '../../lib/interfaces/user_profile';
 import { GOOGLE_SIGN_IN_IOS_CLIENT_ID } from '../../safe_constants';
 import { ONBOARDING_STEPS } from './OnboardingSteps';
 
@@ -25,7 +23,6 @@ const OnboardingSignUp = () => {
   const posthog = usePostHog();
   const { profile, setProfile, updateProfile, completeOnboarding } =
     useUserProfileStore();
-  const { setMetadata } = useAppStateStore();
 
   const currentIndex = ONBOARDING_STEPS.indexOf('/onboarding/OnboardingSignUp');
 
@@ -45,7 +42,6 @@ const OnboardingSignUp = () => {
       posthog?.identify(profile.id, {
         email: profile.email,
       });
-      setMetadata('posthogIdentified', true);
       posthog?.capture('signup_successful', {
         id: profile.id,
         email: profile.email,
@@ -74,14 +70,17 @@ const OnboardingSignUp = () => {
 
   const handleAppleSignIn = async () => {
     try {
+      console.log('Starting Apple Sign In process');
       const credential = await AppleAuthentication.signInAsync({
         requestedScopes: [
           AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
           AppleAuthentication.AppleAuthenticationScope.EMAIL,
         ],
       });
+      console.log('Apple credential received:', credential);
 
       if (credential.identityToken) {
+        console.log('Attempting to sign in with Supabase using Apple token');
         const {
           error,
           data: { user },
@@ -90,29 +89,37 @@ const OnboardingSignUp = () => {
           token: credential.identityToken,
         });
 
+        console.log('Supabase sign in response:', { error, user });
+
         if (!error && user) {
           const userData = {
             id: user.id,
             email: user.email!,
-            displayName: user.email?.split('@')[0] || '', // Default to email username
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
+            display_name: user.email?.split('@')[0] || '', // Default to email username
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
           };
+          console.log('Attempting to upsert user data:', userData);
+
           const { error: InsertError } = await supabase
             .from('users')
             .upsert(userData);
 
           if (InsertError) {
+            console.error('Error upserting user data:', InsertError);
             Toast.show({
               type: 'error',
               text1: 'Error occurred signing in.',
               text2: 'Please try again.',
             });
           } else {
+            // Convert snake_case to camelCase for the application state
             setProfile({
-              ...userData,
-              updatedAt: new Date().toISOString(),
-              createdAt: new Date().toISOString(),
+              id: userData.id,
+              email: userData.email,
+              displayName: userData.display_name,
+              updatedAt: userData.updated_at,
+              createdAt: userData.created_at,
               onboardingComplete: true,
             });
             nextStep();
@@ -120,6 +127,7 @@ const OnboardingSignUp = () => {
         }
       }
     } catch (e: any) {
+      console.error('Apple Sign In error:', e);
       if (e.code === 'ERR_REQUEST_CANCELED') {
         // User canceled sign-in flow
         return;
@@ -127,7 +135,7 @@ const OnboardingSignUp = () => {
       Toast.show({
         type: 'error',
         text1: 'Error occurred signing in with Apple.',
-        text2: 'Please try again.',
+        text2: e.message || 'Please try again.',
       });
     }
   };
@@ -151,9 +159,9 @@ const OnboardingSignUp = () => {
           const userData = {
             id: data.user.id,
             email: data.user.email!,
-            displayName: data.user.email?.split('@')[0]!, // Default to email username
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
+            display_name: data.user.email?.split('@')[0]!, // Default to email username
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString(),
           };
 
           const { error: InsertError } = await supabase
@@ -164,10 +172,13 @@ const OnboardingSignUp = () => {
             throw InsertError;
           }
 
+          // Convert snake_case to camelCase for the application state
           setProfile({
-            ...userData,
-            updatedAt: new Date().toISOString(),
-            createdAt: new Date().toISOString(),
+            id: userData.id,
+            email: userData.email,
+            displayName: userData.display_name,
+            updatedAt: userData.updated_at,
+            createdAt: userData.created_at,
             onboardingComplete: true,
           });
           nextStep();
@@ -198,12 +209,6 @@ const OnboardingSignUp = () => {
       colors={onboardingGradient}
       style={newOnboardingStyles.container}
     >
-      <View style={newOnboardingStyles.progressBarContainer}>
-        <OnboardingProgressBar
-          step={currentIndex + 1}
-          steps={ONBOARDING_STEPS.length}
-        />
-      </View>
       <View style={newOnboardingStyles.contentContainer}>
         <Text style={newOnboardingStyles.title}>Sign Up</Text>
         <Text style={newOnboardingStyles.subtitle}>You're almost done!</Text>

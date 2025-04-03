@@ -14,11 +14,9 @@ import { LinearGradient } from 'expo-linear-gradient';
 import dayjs from 'dayjs';
 
 import { supabase } from '../supabase';
-import { OnboardingProgressBar } from '../../components/onboarding/OnboardingProgressBar';
 import { newOnboardingStyles, onboardingGradient } from './newOnboardingStyles';
-import Colors from '../../constants/Colors';
-import { useUserProfileStore } from '../../interfaces/user_profile';
-import { useAppStateStore } from '../../interfaces/app_state';
+import Colors from '../../lib/constants/Colors';
+import { useUserProfileStore } from '../../lib/interfaces/user_profile';
 
 const ONBOARDING_STEPS = [
   '/onboarding/OnboardingIntro',
@@ -29,7 +27,6 @@ const ONBOARDING_STEPS = [
 function OnboardingLogin() {
   const router = useRouter();
   const { setProfile, updateProfile } = useUserProfileStore();
-  const { setMetadata } = useAppStateStore();
 
   const currentIndex = ONBOARDING_STEPS.indexOf('/onboarding/OnboardingSignUp');
 
@@ -45,7 +42,6 @@ function OnboardingLogin() {
       createdAt: userData.created_at || dayjs().toISOString(),
       onboardingComplete: true,
     });
-    setMetadata('loginCompleted', true);
     router.replace('/(tabs)');
   };
 
@@ -130,13 +126,6 @@ function OnboardingLogin() {
       colors={onboardingGradient}
       style={newOnboardingStyles.container}
     >
-      <View style={newOnboardingStyles.progressBarContainer}>
-        <OnboardingProgressBar
-          step={currentIndex + 1}
-          steps={ONBOARDING_STEPS.length}
-        />
-      </View>
-
       <View style={newOnboardingStyles.contentContainer}>
         <Text style={newOnboardingStyles.title}>Login</Text>
 

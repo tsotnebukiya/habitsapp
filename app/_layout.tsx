@@ -2,7 +2,12 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { Slot, SplashScreen, Stack, useNavigationContainerRef, } from 'expo-router';
+import {
+  Slot,
+  SplashScreen,
+  Stack,
+  useNavigationContainerRef,
+} from 'expo-router';
 import React from 'react';
 import { useEffect } from 'react';
 import { Dimensions } from 'react-native';
@@ -10,13 +15,13 @@ import Toast from 'react-native-toast-message';
 import 'react-native-get-random-values';
 import 'react-native-reanimated';
 import 'react-native-gesture-handler';
-import { KeyboardProvider } from "react-native-keyboard-controller";
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { PostHogProvider } from 'posthog-react-native';
 import * as Sentry from '@sentry/react-native';
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 import { POSTHOG_API_KEY, SENTRY_DSN } from '../safe_constants';
-import { RevenueCatProvider } from '../contexts/RevenueCatContext';
+// import { RevenueCatProvider } from '../contexts/RevenueCatContext';
 
 const navigationIntegration = Sentry.reactNavigationIntegration({
   enableTimeToInitialDisplay:
@@ -24,7 +29,10 @@ const navigationIntegration = Sentry.reactNavigationIntegration({
 });
 Sentry.init({
   // Only enable in production.
-  dsn: (process?.env?.["NODE_ENV"] ?? "non-development") === "development" ? undefined : SENTRY_DSN,
+  dsn:
+    (process?.env?.['NODE_ENV'] ?? 'non-development') === 'development'
+      ? undefined
+      : SENTRY_DSN,
 
   // uncomment the line below to enable Spotlight (https://spotlightjs.com)
   // enableSpotlight: __DEV__,
@@ -34,7 +42,7 @@ Sentry.init({
     Constants?.executionEnvironment === ExecutionEnvironment?.StoreClient, // Only in native builds, not in Expo Go.
 });
 
-export const fullWidth = Dimensions.get("screen").width;
+export const fullWidth = Dimensions.get('screen').width;
 export const marginSpacing = fullWidth * 0.05;
 export const screen90 = fullWidth * 0.9;
 
@@ -78,33 +86,39 @@ function RootLayout() {
     return <Slot />;
   }
 
-  return (
-    <RootLayoutNav />
-  );
+  return <RootLayoutNav />;
 }
 
 function RootLayoutNav() {
-
   return (
     <>
-      <PostHogProvider apiKey={POSTHOG_API_KEY} options={{
-        disabled: (process?.env?.["NODE_ENV"] ?? "non-development") === "development",
-        host: 'https://us.i.posthog.com',
-      }}>
-        <RevenueCatProvider>
-          <KeyboardProvider>
-            <GestureHandlerRootView style={{
+      <PostHogProvider
+        apiKey={POSTHOG_API_KEY}
+        options={{
+          disabled:
+            (process?.env?.['NODE_ENV'] ?? 'non-development') === 'development',
+          host: 'https://us.i.posthog.com',
+        }}
+      >
+        {/* <RevenueCatProvider> */}
+        <KeyboardProvider>
+          <GestureHandlerRootView
+            style={{
               flex: 1,
               // backgroundColor: theme.background.default
-            }}>
-              <Stack initialRouteName='(app)'>
-                <Stack.Screen name="(app)" options={{ headerShown: false }} />
-                <Stack.Screen name="onboarding" options={{ headerShown: false }} />
-              </Stack>
-            </GestureHandlerRootView>
-            <Toast />
-          </KeyboardProvider>
-        </RevenueCatProvider>
+            }}
+          >
+            <Stack initialRouteName="(app)">
+              <Stack.Screen name="(app)" options={{ headerShown: false }} />
+              <Stack.Screen
+                name="onboarding"
+                options={{ headerShown: false }}
+              />
+            </Stack>
+          </GestureHandlerRootView>
+          <Toast />
+        </KeyboardProvider>
+        {/* </RevenueCatProvider> */}
       </PostHogProvider>
     </>
   );

@@ -10,7 +10,7 @@ import {
   FlatList,
   ViewToken,
   StatusBar,
-  SafeAreaView
+  SafeAreaView,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import Animated, {
@@ -20,7 +20,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { FontAwesome6 } from '@expo/vector-icons';
-import Colors from '../../constants/Colors';
+import Colors from '../../lib/constants/Colors';
 
 const { width, height } = Dimensions.get('window');
 
@@ -35,19 +35,22 @@ const slides: OnboardingItem[] = [
   {
     id: '1',
     title: 'Welcome to [Your App]',
-    description: 'Your all-in-one solution for managing your daily tasks and achieving your goals.',
+    description:
+      'Your all-in-one solution for managing your daily tasks and achieving your goals.',
     icon: 'rocket',
   },
   {
     id: '2',
     title: 'Track Your Progress',
-    description: 'Set goals, track your progress, and celebrate your achievements along the way.',
+    description:
+      'Set goals, track your progress, and celebrate your achievements along the way.',
     icon: 'chart-line',
   },
   {
     id: '3',
     title: "Let's Get Started",
-    description: 'Join our community of achievers and start your journey today.',
+    description:
+      'Join our community of achievers and start your journey today.',
     icon: 'flag-checkered',
   },
 ];
@@ -72,11 +75,21 @@ const OnboardingCarousel = () => {
     { viewabilityConfig, onViewableItemsChanged },
   ]);
 
-  const renderItem = ({ item, index }: { item: OnboardingItem; index: number }) => {
+  const renderItem = ({
+    item,
+    index,
+  }: {
+    item: OnboardingItem;
+    index: number;
+  }) => {
     return (
       <View style={styles.slide}>
         <Animated.View style={[styles.iconContainer]}>
-          <FontAwesome6 name={item.icon as any} size={80} color={Colors.shared.primary[500]} />
+          <FontAwesome6
+            name={item.icon as any}
+            size={80}
+            color={Colors.shared.primary[500]}
+          />
         </Animated.View>
         <Text style={styles.title}>{item.title}</Text>
         <Text style={styles.description}>{item.description}</Text>
@@ -156,12 +169,9 @@ const OnboardingCarousel = () => {
       </View>
 
       <View style={styles.bottomContainer}>
-        <TouchableOpacity
-          style={styles.nextButton}
-          onPress={handleNext}
-        >
+        <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
           <Text style={styles.nextButtonText}>
-            {currentIndex === slides.length - 1 ? "Get Started" : "Next"}
+            {currentIndex === slides.length - 1 ? 'Get Started' : 'Next'}
           </Text>
           <FontAwesome6
             name="arrow-right"
