@@ -22,7 +22,7 @@ interface PendingOperation {
   lastAttempt?: Date;
 }
 
-interface HabitsState {
+export interface HabitsState {
   // Local state
   habits: Map<string, Habit>;
   completions: Map<string, HabitCompletion>;

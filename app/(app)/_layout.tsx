@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import useUserProfileStore from '../../lib/interfaces/user_profile';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { useHabitsStore } from '../../lib/interfaces/habits';
+import { useHabitsStore } from '../../lib/interfaces/habits_store';
 
 function StackLayout() {
   const { profile } = useUserProfileStore();
@@ -39,14 +39,14 @@ function StackLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Stack>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        {/* <Stack.Screen
-          name="add-edit-pushups"
+        <Stack.Screen
+          name="add-habit"
           options={{
             presentation: 'modal',
             headerShown: false,
             animation: 'slide_from_bottom',
           }}
-        /> */}
+        />
       </Stack>
     </GestureHandlerRootView>
   );
