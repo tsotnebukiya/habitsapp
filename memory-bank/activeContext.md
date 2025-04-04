@@ -17,12 +17,13 @@ The project is currently in its initial setup phase with the following areas of 
    - Token management implementation needed
    - User flow design in progress
 
-3. **State Management**
+3. **State Management & Hooks**
 
    - Zustand stores setup
-   - MMKV integration complete
+   - MMKV/AsyncStorage integration complete
    - Type definitions in progress
    - Offline-first sync pattern established
+   - Custom hooks for data selection (e.g., `useHabitsForDate`) established as a pattern.
 
 4. **Documentation**
    - Core files established
@@ -40,6 +41,12 @@ The project is currently in its initial setup phase with the following areas of 
 6. Added sync initialization in app layout
 7. Setup periodic sync in home tab
 8. Added App.md to Memory Bank
+9. Implemented `WeekView` and `HabitList` components.
+10. Added `AddHabit` modal form.
+11. Refactored `HabitList` to use `useHabitsForDate` hook.
+12. Renamed `habits.ts` store to `habits_store.ts`.
+13. Created `lib/hooks/useHabits.ts` with data selection hooks.
+14. Stabilized `useHabitsForDate` dependency using ISO date string.
 
 ## Active Decisions
 
@@ -56,6 +63,7 @@ The project is currently in its initial setup phase with the following areas of 
 - AsyncStorage for larger datasets
 - Offline-first architecture with optimistic updates
 - Sync strategy with pending operations
+- **Pattern:** Use custom hooks (e.g., `useHabitsForDate`) to select and memoize derived data from stores.
 
 ### Navigation
 
@@ -72,6 +80,7 @@ The project is currently in its initial setup phase with the following areas of 
 3. Set up PostHog analytics
 4. Configure Sentry error tracking
 5. Test sync mechanism with poor network conditions
+6. Implement habit completion tracking UI/logic.
 
 ### Upcoming Work
 
@@ -86,6 +95,7 @@ The project is currently in its initial setup phase with the following areas of 
 2. Authentication flow incomplete
 3. Type definitions need refinement
 4. Testing infrastructure not configured
+5. `[RemoteTextInput]` logs appearing (considered benign for now).
 
 ## Current Considerations
 
@@ -113,6 +123,7 @@ The project is currently in its initial setup phase with the following areas of 
 
 1. ✅ Best practices for offline data sync
 2. Authentication flow edge cases
-3. State persistence strategy
+3. ✅ State persistence strategy (MMKV/AsyncStorage)
 4. Performance optimization approach
 5. Sync conflict resolution edge cases
+6. ✅ Optimal pattern for selecting/memoizing derived state from Zustand (using custom hooks with `useMemo`).

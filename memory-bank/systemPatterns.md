@@ -27,34 +27,65 @@ react-native-starter/
 
 ### State Management
 
-1. **Zustand Store Pattern**
+1. **Zustand Store Pattern (`lib/interfaces/*_store.ts`)**
 
    ```typescript
-   interface Store {
-     state: State;
+   interface StoreState {
+     /* Raw state */
+   }
+   export interface Store extends StoreState {
      actions: Actions;
-     syncActions: SyncActions;
+     syncActions?: SyncActions;
+     queryFunctions?: QueryFunctions; // Optional: simple queries can live here
    }
    ```
 
-   - Separate state and actions
-   - Use TypeScript for type safety
-   - Implement persistence with MMKV/AsyncStorage
-   - Support offline-first operations
-   - Sync mechanism with pending operations
+   - Separate state, actions, sync, queries.
+   - Use TypeScript for type safety.
+   - Implement persistence with MMKV/AsyncStorage via `persist` middleware.
+   - Support offline-first operations via actions.
+   - Sync mechanism with pending operations.
 
-2. **Component Patterns**
+2. **Custom Hook Selectors (`lib/hooks/*.ts`)**
 
-   - Functional components with hooks
-   - Props interface definitions
-   - Memoization where needed
-   - Error boundary implementation
+   ```typescript
+   export const useSpecificData = (args) => {
+     const rawData = useStore((state) => state.rawData); // Select minimal raw state
+     return useMemo(() => {
+       // Compute/filter derived data
+     }, [rawData, args]); // Memoize based on raw data & args
+   };
+   ```
 
-3. **Navigation Pattern**
-   - File-based routing with Expo Router
-   - Type-safe navigation
-   - Deep linking support
-   - Modal and stack navigation
+   - Encapsulate logic for selecting and computing derived state.
+   - Subscribe to minimal raw state from the store.
+   - Use `React.useMemo` to memoize calculations, preventing unnecessary re-renders.
+   - Pass stable primitive types (strings, numbers) as arguments to hooks where possible.
+
+3. **Component Data Usage**
+
+   ```typescript
+   function MyComponent(props) {
+     const specificData = useSpecificData(props.stableId);
+     // Render using specificData
+   }
+   ```
+
+   - Components call custom hooks to get the exact memoized data they need.
+
+### Component Patterns
+
+- Functional components with hooks
+- Props interface definitions
+- Memoization via `React.memo` where needed
+- Error boundary implementation
+
+### Navigation Pattern
+
+- File-based routing with Expo Router
+- Type-safe navigation
+- Deep linking support
+- Modal and stack navigation
 
 ## Key Technical Decisions
 
@@ -83,11 +114,15 @@ react-native-starter/
    - Error handling with retry limits
 
 3. **Sync Pattern**
+
    - Initial sync on app launch
    - Periodic sync (hourly)
    - Manual sync trigger support
    - Offline operation support
    - Conflict resolution strategy
+
+4. **State Selection/Derivation**
+   - Prefer custom hooks with `useMemo` for selecting/deriving state over complex selectors within `create`.
 
 ### Performance Optimization
 
@@ -97,6 +132,7 @@ react-native-starter/
    - Virtual lists for large datasets
    - Image optimization
    - Lazy loading
+   - Memoized selectors/hooks to prevent unnecessary calculations.
 
 2. **Network**
    - Request caching
@@ -110,7 +146,10 @@ react-native-starter/
 
 ```mermaid
 graph TD
-    Store[Zustand Store] --> Components[UI Components]
+    Store[Zustand Store
+      (Raw State)] --> Hooks[Custom Hooks
+      (Select + Memoize)]
+    Hooks --> Components[UI Components]
     Components --> Actions[Store Actions]
     Actions --> API[API Layer]
     API --> Storage[Local Storage]
@@ -168,6 +207,7 @@ graph TD
    - Utility function testing
    - Mock implementations
    - Sync mechanism testing
+   - Custom hook testing
 
 2. **Integration Tests**
    - Navigation flows

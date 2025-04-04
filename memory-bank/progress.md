@@ -16,21 +16,25 @@
    - ⚠️ Deep linking (partial)
    - ❌ Navigation type definitions
 
-3. **State Management**
+3. **State Management & Hooks**
 
    - ✅ Zustand setup
-   - ✅ MMKV integration
+   - ✅ MMKV/AsyncStorage integration
    - ⚠️ Store type definitions (in progress)
    - ✅ Offline sync
-   - ✅ Habits interface with sync
+   - ✅ Habits interface with sync (`habits_store.ts`)
    - ✅ Optimistic updates
    - ✅ Pending operations system
+   - ✅ Custom hooks pattern for data selection (`useHabits.ts`)
 
 4. **UI/Components**
    - ✅ Basic component structure
    - ⚠️ Theme system (partial)
    - ❌ Component library
    - ❌ Animation system
+   - ✅ `WeekView` implemented
+   - ✅ `HabitList` implemented (using `useHabitsForDate`)
+   - ✅ `AddHabit` modal implemented
 
 ## What's Left to Build
 
@@ -52,11 +56,20 @@
    - [ ] Error boundaries
 
 3. **Testing**
+
    - [ ] Unit test setup
    - [ ] Integration tests
    - [ ] Component tests
    - [ ] E2E tests
    - [ ] Sync mechanism tests
+   - [ ] Custom hook tests
+
+4. **Habit Features**
+   - [ ] Habit completion UI/logic (buttons/checkboxes in list)
+   - [ ] Completion state management/sync
+   - [ ] Habit editing
+   - [ ] Habit deletion
+   - [ ] Streak calculation display
 
 ### Medium Priority
 
@@ -74,6 +87,7 @@
    - [ ] Setup guide
    - [ ] Contributing guide
    - [ ] Sync implementation guide
+   - [ ] Custom hook usage guide
 
 ### Low Priority
 
@@ -90,16 +104,17 @@
 
 - 🟢 Core Infrastructure
 - 🟡 Authentication
-- 🟢 State Management
+- 🟢 State Management & Hooks
+- 🟡 UI/Components
 - 🔴 Testing
 - 🔴 Documentation
 
 ### Sprint Progress
 
 - Sprint Goal: Initial Setup & Core Features
-- Progress: 50%
+- Progress: 65%
 - Blockers: None
-- Risks: Authentication complexity, Sync edge cases
+- Risks: Authentication complexity, Sync edge cases, Habit feature scope
 
 ## Known Issues
 
@@ -117,6 +132,7 @@
 3. Developer tooling
 4. UI polish needed
 5. Sync monitoring tools missing
+6. `[RemoteTextInput]` logs appearing (benign)
 
 ## Recent Achievements
 
@@ -127,11 +143,15 @@
 5. Habits interface with offline sync
 6. Sync mechanism implementation
 7. Periodic sync setup
+8. Implemented core habit viewing UI (`WeekView`, `HabitList`)
+9. Implemented habit adding (`AddHabit` modal)
+10. Refactored state selection using custom hooks (`useHabits.ts`)
 
 ## Next Milestones
 
 1. Complete authentication system
-2. Implement analytics
-3. Setup testing infrastructure
-4. Expand documentation
-5. Test sync edge cases
+2. Implement basic habit completion tracking
+3. Implement analytics
+4. Setup testing infrastructure
+5. Expand documentation
+6. Test sync edge cases
