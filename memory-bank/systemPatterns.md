@@ -108,10 +108,12 @@ react-native-starter/
 2. **State Updates**
 
    - Optimistic updates for instant feedback
+   - Non-blocking state updates for UI responsiveness
    - Background sync with retry mechanism
    - Conflict resolution based on timestamps
    - Pending operations queue
    - Error handling with retry limits
+   - Key Pattern: Avoid awaiting non-critical async operations that would block UI updates
 
 3. **Sync Pattern**
 
@@ -120,25 +122,28 @@ react-native-starter/
    - Manual sync trigger support
    - Offline operation support
    - Conflict resolution strategy
+   - Async operations run in background to prevent UI blocking
 
 4. **State Selection/Derivation**
-   - Prefer custom hooks with `useMemo` for selecting/deriving state over complex selectors within `create`.
+   - Prefer custom hooks with `useMemo` for selecting/deriving state over complex selectors within `create`
+   - Keep state updates synchronous where possible for immediate UI feedback
+   - Use non-blocking async operations for server sync
 
 ### Performance Optimization
 
-1. **Rendering**
+1. **State Updates**
 
-   - React.memo for expensive components
-   - Virtual lists for large datasets
-   - Image optimization
-   - Lazy loading
-   - Memoized selectors/hooks to prevent unnecessary calculations.
+   - Immediate local state updates for UI responsiveness
+   - Non-blocking async operations for server sync
+   - Avoid awaiting non-critical operations
+   - Measure and log critical operation timings for optimization
+   - Use performance.now() for precise timing measurements
 
-2. **Network**
-   - Request caching
-   - Retry mechanisms
-   - Background data prefetch
-   - Connection status handling
+2. **UI Responsiveness**
+   - Bottom sheet animations configured for optimal speed
+   - Immediate feedback for user actions
+   - Background processing for server operations
+   - Optimistic UI updates
 
 ## Component Relationships
 

@@ -11,6 +11,8 @@ import useUserProfileStore from './user_profile';
 // Types from Supabase schema
 type Habit = Database['public']['Tables']['habits']['Row'];
 type HabitCompletion = Database['public']['Tables']['habit_completions']['Row'];
+type HabitCompletionStatus =
+  Database['public']['Enums']['habit_completion_status'];
 
 interface PendingOperation {
   id: string;
@@ -47,6 +49,12 @@ export interface HabitsState {
     updates: Partial<HabitCompletion>
   ) => Promise<void>;
   deleteCompletion: (id: string) => Promise<void>;
+  toggleHabitStatus: (
+    habitId: string,
+    date: Date,
+    status: HabitCompletionStatus
+  ) => void;
+  getHabitStatus: (habitId: string, date: Date) => HabitCompletionStatus;
 
   // Sync actions
   syncWithServer: () => Promise<void>;
@@ -335,6 +343,57 @@ export const useHabitsStore = create<HabitsState>()(
         }
 
         await get().processPendingOperations();
+      },
+
+      toggleHabitStatus: (
+        habitId: string,
+        date: Date,
+        status: HabitCompletionStatus
+      ) => {
+        const userId = useUserProfileStore.getState().profile?.id;
+        if (!userId) {
+          throw new Error('User not logged in');
+        }
+
+        const normalizedDate = dayjs(date).format('YYYY-MM-DD');
+
+        // Find existing completion for this habit on this date
+        const existingCompletion = Array.from(get().completions.values()).find(
+          (completion) =>
+            completion.habit_id === habitId &&
+            completion.completion_date === normalizedDate
+        );
+        if (existingCompletion) {
+          if (existingCompletion.status === status) {
+            get().deleteCompletion(existingCompletion.id);
+          } else {
+            // Update to new status
+            get().updateCompletion(existingCompletion.id, {
+              status: status,
+            });
+          }
+        } else if (status !== 'not_started') {
+          // Only create new completion if status is not 'not_started'
+          get().addCompletion({
+            habit_id: habitId,
+            user_id: userId,
+            completion_date: normalizedDate,
+            status: status,
+            value: null,
+          });
+        }
+      },
+
+      getHabitStatus: (habitId: string, date: Date): HabitCompletionStatus => {
+        const normalizedDate = dayjs(date).format('YYYY-MM-DD');
+
+        const completion = Array.from(get().completions.values()).find(
+          (completion) =>
+            completion.habit_id === habitId &&
+            completion.completion_date === normalizedDate
+        );
+
+        return completion?.status || 'not_started';
       },
 
       processPendingOperations: async () => {

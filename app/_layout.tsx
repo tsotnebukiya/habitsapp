@@ -21,6 +21,7 @@ import { PostHogProvider } from 'posthog-react-native';
 import * as Sentry from '@sentry/react-native';
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 import { POSTHOG_API_KEY, SENTRY_DSN } from '../safe_constants';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 // import { RevenueCatProvider } from '../contexts/RevenueCatContext';
 
 const navigationIntegration = Sentry.reactNavigationIntegration({
@@ -108,13 +109,15 @@ function RootLayoutNav() {
               // backgroundColor: theme.background.default
             }}
           >
-            <Stack initialRouteName="(app)">
-              <Stack.Screen name="(app)" options={{ headerShown: false }} />
-              <Stack.Screen
-                name="onboarding"
-                options={{ headerShown: false }}
-              />
-            </Stack>
+            <BottomSheetModalProvider>
+              <Stack initialRouteName="(app)">
+                <Stack.Screen name="(app)" options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="onboarding"
+                  options={{ headerShown: false }}
+                />
+              </Stack>
+            </BottomSheetModalProvider>
           </GestureHandlerRootView>
           <Toast />
         </KeyboardProvider>

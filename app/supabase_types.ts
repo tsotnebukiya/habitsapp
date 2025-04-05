@@ -4,272 +4,276 @@ export type Json =
   | boolean
   | null
   | { [key: string]: Json | undefined }
-  | Json[];
+  | Json[]
 
 export type Database = {
   public: {
     Tables: {
       habit_completions: {
         Row: {
-          completion_date: string;
-          created_at: string;
-          habit_id: string;
-          id: string;
-          status: string;
-          user_id: string;
-          value: number | null;
-        };
+          completion_date: string
+          created_at: string
+          habit_id: string
+          id: string
+          status: Database["public"]["Enums"]["habit_completion_status"]
+          user_id: string
+          value: number | null
+        }
         Insert: {
-          completion_date: string;
-          created_at?: string;
-          habit_id: string;
-          id?: string;
-          status: string;
-          user_id: string;
-          value?: number | null;
-        };
+          completion_date: string
+          created_at?: string
+          habit_id: string
+          id?: string
+          status?: Database["public"]["Enums"]["habit_completion_status"]
+          user_id: string
+          value?: number | null
+        }
         Update: {
-          completion_date?: string;
-          created_at?: string;
-          habit_id?: string;
-          id?: string;
-          status?: string;
-          user_id?: string;
-          value?: number | null;
-        };
+          completion_date?: string
+          created_at?: string
+          habit_id?: string
+          id?: string
+          status?: Database["public"]["Enums"]["habit_completion_status"]
+          user_id?: string
+          value?: number | null
+        }
         Relationships: [
           {
-            foreignKeyName: 'habit_completions_habit_id_fkey';
-            columns: ['habit_id'];
-            isOneToOne: false;
-            referencedRelation: 'habits';
-            referencedColumns: ['id'];
+            foreignKeyName: "habit_completions_habit_id_fkey"
+            columns: ["habit_id"]
+            isOneToOne: false
+            referencedRelation: "habits"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'habit_completions_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'users';
-            referencedColumns: ['id'];
-          }
-        ];
-      };
+            foreignKeyName: "habit_completions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       habits: {
         Row: {
-          category_name: string | null;
-          color: string;
-          completions_per_day: number;
-          created_at: string;
-          days_of_week: number[] | null;
-          description: string | null;
-          end_date: string | null;
-          frequency_type: string;
-          gamification_attributes: string | null;
-          goal_unit: string | null;
-          goal_value: number | null;
-          icon: string;
-          id: string;
-          is_active: boolean;
-          name: string;
-          reminder_time: string | null;
-          start_date: string;
-          streak_goal: number | null;
-          updated_at: string;
-          user_id: string;
-        };
+          category_name: string | null
+          color: string
+          completions_per_day: number
+          created_at: string
+          days_of_week: number[] | null
+          description: string | null
+          end_date: string | null
+          frequency_type: string
+          gamification_attributes: string | null
+          goal_unit: string | null
+          goal_value: number | null
+          icon: string
+          id: string
+          is_active: boolean
+          name: string
+          reminder_time: string | null
+          start_date: string
+          streak_goal: number | null
+          updated_at: string
+          user_id: string
+        }
         Insert: {
-          category_name?: string | null;
-          color: string;
-          completions_per_day?: number;
-          created_at?: string;
-          days_of_week?: number[] | null;
-          description?: string | null;
-          end_date?: string | null;
-          frequency_type: string;
-          gamification_attributes?: string | null;
-          goal_unit?: string | null;
-          goal_value?: number | null;
-          icon: string;
-          id?: string;
-          is_active?: boolean;
-          name: string;
-          reminder_time?: string | null;
-          start_date: string;
-          streak_goal?: number | null;
-          updated_at?: string;
-          user_id: string;
-        };
+          category_name?: string | null
+          color: string
+          completions_per_day?: number
+          created_at?: string
+          days_of_week?: number[] | null
+          description?: string | null
+          end_date?: string | null
+          frequency_type: string
+          gamification_attributes?: string | null
+          goal_unit?: string | null
+          goal_value?: number | null
+          icon: string
+          id?: string
+          is_active?: boolean
+          name: string
+          reminder_time?: string | null
+          start_date: string
+          streak_goal?: number | null
+          updated_at?: string
+          user_id: string
+        }
         Update: {
-          category_name?: string | null;
-          color?: string;
-          completions_per_day?: number;
-          created_at?: string;
-          days_of_week?: number[] | null;
-          description?: string | null;
-          end_date?: string | null;
-          frequency_type?: string;
-          gamification_attributes?: string | null;
-          goal_unit?: string | null;
-          goal_value?: number | null;
-          icon?: string;
-          id?: string;
-          is_active?: boolean;
-          name?: string;
-          reminder_time?: string | null;
-          start_date?: string;
-          streak_goal?: number | null;
-          updated_at?: string;
-          user_id?: string;
-        };
+          category_name?: string | null
+          color?: string
+          completions_per_day?: number
+          created_at?: string
+          days_of_week?: number[] | null
+          description?: string | null
+          end_date?: string | null
+          frequency_type?: string
+          gamification_attributes?: string | null
+          goal_unit?: string | null
+          goal_value?: number | null
+          icon?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          reminder_time?: string | null
+          start_date?: string
+          streak_goal?: number | null
+          updated_at?: string
+          user_id?: string
+        }
         Relationships: [
           {
-            foreignKeyName: 'habits_user_id_fkey';
-            columns: ['user_id'];
-            isOneToOne: false;
-            referencedRelation: 'users';
-            referencedColumns: ['id'];
-          }
-        ];
-      };
+            foreignKeyName: "habits_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       users: {
         Row: {
-          created_at: string;
-          date_of_birth: string | null;
-          display_name: string | null;
-          email: string;
-          id: string;
-          onboarding_complete: boolean | null;
-          updated_at: string;
-        };
+          created_at: string
+          date_of_birth: string | null
+          display_name: string | null
+          email: string
+          id: string
+          onboarding_complete: boolean | null
+          updated_at: string
+        }
         Insert: {
-          created_at?: string;
-          date_of_birth?: string | null;
-          display_name?: string | null;
-          email: string;
-          id: string;
-          onboarding_complete?: boolean | null;
-          updated_at?: string;
-        };
+          created_at?: string
+          date_of_birth?: string | null
+          display_name?: string | null
+          email: string
+          id: string
+          onboarding_complete?: boolean | null
+          updated_at?: string
+        }
         Update: {
-          created_at?: string;
-          date_of_birth?: string | null;
-          display_name?: string | null;
-          email?: string;
-          id?: string;
-          onboarding_complete?: boolean | null;
-          updated_at?: string;
-        };
-        Relationships: [];
-      };
-    };
+          created_at?: string
+          date_of_birth?: string | null
+          display_name?: string | null
+          email?: string
+          id?: string
+          onboarding_complete?: boolean | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+    }
     Views: {
-      [_ in never]: never;
-    };
+      [_ in never]: never
+    }
     Functions: {
-      [_ in never]: never;
-    };
+      [_ in never]: never
+    }
     Enums: {
-      [_ in never]: never;
-    };
+      habit_completion_status:
+        | "not_started"
+        | "skipped"
+        | "completed"
+        | "in_progress"
+    }
     CompositeTypes: {
-      [_ in never]: never;
-    };
-  };
-};
+      [_ in never]: never
+    }
+  }
+}
 
-type PublicSchema = Database[Extract<keyof Database, 'public'>];
+type PublicSchema = Database[Extract<keyof Database, "public">]
 
 export type Tables<
   PublicTableNameOrOptions extends
-    | keyof (PublicSchema['Tables'] & PublicSchema['Views'])
+    | keyof (PublicSchema["Tables"] & PublicSchema["Views"])
     | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof (Database[PublicTableNameOrOptions['schema']]['Tables'] &
-        Database[PublicTableNameOrOptions['schema']]['Views'])
-    : never = never
+    ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+        Database[PublicTableNameOrOptions["schema"]]["Views"])
+    : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[PublicTableNameOrOptions['schema']]['Tables'] &
-      Database[PublicTableNameOrOptions['schema']]['Views'])[TableName] extends {
-      Row: infer R;
+  ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+      Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
     }
     ? R
     : never
-  : PublicTableNameOrOptions extends keyof (PublicSchema['Tables'] &
-      PublicSchema['Views'])
-  ? (PublicSchema['Tables'] &
-      PublicSchema['Views'])[PublicTableNameOrOptions] extends {
-      Row: infer R;
-    }
-    ? R
+  : PublicTableNameOrOptions extends keyof (PublicSchema["Tables"] &
+        PublicSchema["Views"])
+    ? (PublicSchema["Tables"] &
+        PublicSchema["Views"])[PublicTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
     : never
-  : never;
 
 export type TablesInsert<
   PublicTableNameOrOptions extends
-    | keyof PublicSchema['Tables']
+    | keyof PublicSchema["Tables"]
     | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicTableNameOrOptions['schema']]['Tables']
-    : never = never
+    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicTableNameOrOptions['schema']]['Tables'][TableName] extends {
-      Insert: infer I;
+  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
     }
     ? I
     : never
-  : PublicTableNameOrOptions extends keyof PublicSchema['Tables']
-  ? PublicSchema['Tables'][PublicTableNameOrOptions] extends {
-      Insert: infer I;
-    }
-    ? I
+  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
+    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
     : never
-  : never;
 
 export type TablesUpdate<
   PublicTableNameOrOptions extends
-    | keyof PublicSchema['Tables']
+    | keyof PublicSchema["Tables"]
     | { schema: keyof Database },
   TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicTableNameOrOptions['schema']]['Tables']
-    : never = never
+    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
 > = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicTableNameOrOptions['schema']]['Tables'][TableName] extends {
-      Update: infer U;
+  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
     }
     ? U
     : never
-  : PublicTableNameOrOptions extends keyof PublicSchema['Tables']
-  ? PublicSchema['Tables'][PublicTableNameOrOptions] extends {
-      Update: infer U;
-    }
-    ? U
+  : PublicTableNameOrOptions extends keyof PublicSchema["Tables"]
+    ? PublicSchema["Tables"][PublicTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
     : never
-  : never;
 
 export type Enums<
   PublicEnumNameOrOptions extends
-    | keyof PublicSchema['Enums']
+    | keyof PublicSchema["Enums"]
     | { schema: keyof Database },
   EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
-    ? keyof Database[PublicEnumNameOrOptions['schema']]['Enums']
-    : never = never
+    ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
 > = PublicEnumNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicEnumNameOrOptions['schema']]['Enums'][EnumName]
-  : PublicEnumNameOrOptions extends keyof PublicSchema['Enums']
-  ? PublicSchema['Enums'][PublicEnumNameOrOptions]
-  : never;
+  ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : PublicEnumNameOrOptions extends keyof PublicSchema["Enums"]
+    ? PublicSchema["Enums"][PublicEnumNameOrOptions]
+    : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    | keyof PublicSchema['CompositeTypes']
+    | keyof PublicSchema["CompositeTypes"]
     | { schema: keyof Database },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
-    schema: keyof Database;
+    schema: keyof Database
   }
-    ? keyof Database[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
-    : never = never
+    ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
 > = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof PublicSchema['CompositeTypes']
-  ? PublicSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
-  : never;
+  ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof PublicSchema["CompositeTypes"]
+    ? PublicSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
