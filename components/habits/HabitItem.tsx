@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Database } from '../../app/supabase_types';
 import Colors from '../../lib/constants/Colors';
@@ -23,7 +23,7 @@ interface HabitItemProps {
   onPress: (habit: Habit) => void;
 }
 
-export default function HabitItem({
+const HabitItem = memo(function HabitItem({
   habit,
   status,
   progress,
@@ -117,7 +117,9 @@ export default function HabitItem({
       </View>
     </Pressable>
   );
-}
+});
+
+export default HabitItem;
 
 const styles = StyleSheet.create({
   habitCard: {

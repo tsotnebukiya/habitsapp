@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, memo } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { Database } from '../../app/supabase_types';
 import { useHabitsForDate } from '../../lib/hooks/useHabits';
@@ -17,7 +17,7 @@ interface HabitListProps {
   selectedDate: Date;
 }
 
-export default function HabitList({ selectedDate }: HabitListProps) {
+const HabitList = memo(function HabitList({ selectedDate }: HabitListProps) {
   const habitsForDate = useHabitsForDate(selectedDate);
   const [selectedHabit, setSelectedHabit] = useState<Habit | null>(null);
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
@@ -93,7 +93,9 @@ export default function HabitList({ selectedDate }: HabitListProps) {
       />
     </>
   );
-}
+});
+
+export default HabitList;
 
 const styles = StyleSheet.create({
   container: {

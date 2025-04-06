@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, memo } from 'react';
 import {
   View,
   ScrollView,
@@ -19,7 +19,7 @@ interface WeekViewProps {
 const DAY_WIDTH = 60;
 const DAYS_TO_SHOW = 14; // Show 2 weeks
 
-export default function WeekView({
+const WeekView = memo(function WeekView({
   selectedDate,
   onDateSelect,
 }: WeekViewProps) {
@@ -123,7 +123,9 @@ export default function WeekView({
       </ScrollView>
     </View>
   );
-}
+});
+
+export default WeekView;
 
 const styles = StyleSheet.create({
   container: {

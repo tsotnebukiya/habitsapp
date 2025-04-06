@@ -5,6 +5,13 @@ import dayjs from 'dayjs';
 
 type Habit = Database['public']['Tables']['habits']['Row'];
 
+// Normalize date for consistent comparisons by setting time to 00:00:00
+const normalizeDate = (date: Date): Date => {
+  const normalized = new Date(date);
+  normalized.setHours(0, 0, 0, 0);
+  return normalized;
+};
+
 /**
  * Hook to get all habits
  * @returns {Habit[]} Array of all habits
@@ -14,7 +21,6 @@ export const useAllHabits = () => {
 
   // Only recompute when the habits Map changes
   return useMemo(() => {
-    console.log('Recalculating all habits');
     return Array.from(habitsMap.values());
   }, [habitsMap]);
 };
@@ -28,18 +34,14 @@ export const useHabitsForDate = (date: Date) => {
   const habitsMap = useHabitsStore((state) => state.habits);
 
   return useMemo(() => {
-    console.log('Recalculating habits for date (hook):', date);
-    const comparisonDate = new Date(date);
-    comparisonDate.setHours(0, 0, 0, 0); // Normalize date for comparison
+    const comparisonDate = normalizeDate(date);
 
     return Array.from(habitsMap.values()).filter((habit: Habit) => {
-      const startDate = new Date(habit.start_date);
-      startDate.setHours(0, 0, 0, 0);
+      const startDate = normalizeDate(new Date(habit.start_date));
 
-      const endDate = habit.end_date ? new Date(habit.end_date) : null;
-      if (endDate) {
-        endDate.setHours(0, 0, 0, 0);
-      }
+      const endDate = habit.end_date
+        ? normalizeDate(new Date(habit.end_date))
+        : null;
 
       return (
         startDate <= comparisonDate &&

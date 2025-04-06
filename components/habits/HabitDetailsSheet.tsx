@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState, useEffect } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -31,13 +31,8 @@ export default function HabitDetailsSheet({
   bottomSheetModalRef,
   onDismiss,
 }: HabitDetailsSheetProps) {
-  const {
-    toggleHabitStatus,
-    deleteHabit,
-    getHabitStatus,
-    getCurrentValue,
-    getCurrentProgress,
-  } = useHabitsStore();
+  const { toggleHabitStatus, deleteHabit, getHabitStatus, getCurrentValue } =
+    useHabitsStore();
 
   // Reduced snap points to make sheet shorter
   const snapPoints = useMemo(() => ['1%', '60%'], []);
@@ -55,7 +50,7 @@ export default function HabitDetailsSheet({
     []
   );
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
     if (!habit) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     deleteHabit(habit.id);
@@ -65,34 +60,25 @@ export default function HabitDetailsSheet({
   const handleEdit = () => {
     if (!habit) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    console.log('Edit habit:', habit.id);
     // Will be expanded with edit functionality later
   };
 
-  // Force refresh after each state change
-  const forceRefresh = () => {
-    // setRefreshKey((prev) => prev + 1);
-  };
-
-  const handleSkipToggle = async () => {
+  const handleSkipToggle = () => {
     if (!habit) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     const currentStatus = getHabitStatus(habit.id, date);
-    console.log('Toggle Skip - Current status:', currentStatus);
 
     if (currentStatus === 'skipped') {
       // If skipped, unskip to not_started state
       toggleHabitStatus(habit.id, date, 'not_started', 0);
-      console.log('Unskipping habit:', habit.id);
     } else {
       // If not skipped, skip it (regardless of completion status)
       toggleHabitStatus(habit.id, date, 'skipped', 0);
-      console.log('Skipping habit:', habit.id);
     }
     bottomSheetModalRef.current?.dismiss();
   };
 
-  const handleCompletion = async () => {
+  const handleCompletion = () => {
     if (!habit) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
 
@@ -105,10 +91,9 @@ export default function HabitDetailsSheet({
       const maxValue = habit.goal_value || habit.completions_per_day || 1;
       toggleHabitStatus(habit.id, date, 'completed', maxValue);
     }
-    forceRefresh();
   };
 
-  const handleProgressChange = async (newValue: number) => {
+  const handleProgressChange = (newValue: number) => {
     if (!habit) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
@@ -122,10 +107,9 @@ export default function HabitDetailsSheet({
         : 'in_progress';
 
     toggleHabitStatus(habit.id, date, status, newValue);
-    forceRefresh();
   };
 
-  // Fresh reads of the current status on each render due to refreshKey
+  // Fresh reads of the current status on each render
   const currentStatus = habit ? getHabitStatus(habit.id, date) : 'not_started';
   const isSkipped = currentStatus === 'skipped';
   const isCompleted = currentStatus === 'completed';
