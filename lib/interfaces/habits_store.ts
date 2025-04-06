@@ -374,8 +374,38 @@ export const useHabitsStore = create<HabitsState>()(
             completion.completion_date === normalizedDate
         );
 
-        // If already completed, don't allow uncompleting
-        if (existingCompletion?.status === 'completed') {
+        // For skipped status, use the provided status directly
+        if (status === 'skipped') {
+          if (existingCompletion) {
+            // Update existing completion
+            get().updateCompletion(existingCompletion.id, {
+              status: 'skipped',
+              value: 0,
+            });
+          } else {
+            // Create new completion
+            get().addCompletion({
+              habit_id: habitId,
+              user_id: userId,
+              completion_date: normalizedDate,
+              status: 'skipped',
+              value: 0,
+            });
+          }
+          return;
+        }
+
+        // For not_started status, set value to 0
+        if (status === 'not_started') {
+          if (existingCompletion) {
+            // Update existing completion
+            get().updateCompletion(existingCompletion.id, {
+              status: 'not_started',
+              value: 0,
+            });
+          } else {
+            // No need to create a completion for not_started if none exists
+          }
           return;
         }
 

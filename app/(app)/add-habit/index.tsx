@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -8,15 +8,19 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Switch,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useHabitsStore } from '@/lib/interfaces/habits_store';
 import { useAddHabitStore } from '@/lib/interfaces/add_habit_store';
 import useUserProfileStore from '@/lib/interfaces/user_profile';
 import { Ionicons, FontAwesome6 } from '@expo/vector-icons';
-import DateTimePicker from '@react-native-community/datetimepicker';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import dayjs from 'dayjs';
+import CategorySelection from './category-selection';
+import TemplateSelection from './template-selection';
 import Colors from '@/lib/constants/Colors';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const COLORS = [
   '#FF6B6B',
@@ -35,17 +39,51 @@ export default function AddHabit() {
   const router = useRouter();
   const { profile } = useUserProfileStore();
   const addHabit = useHabitsStore((state) => state.addHabit);
-  const { formData, setFormField, resetForm, isValid } = useAddHabitStore();
+  const { formData, setFormField, resetForm, isValid, currentStep } =
+    useAddHabitStore();
+  const insets = useSafeAreaInsets();
+  const [isDatePickerVisible, setDatePickerVisible] = useState(false);
+  const [isEndDatePickerVisible, setEndDatePickerVisible] = useState(false);
+  const [isTimePickerVisible, setTimePickerVisible] = useState(false);
+
+  // Helper function for toggling days of week
+  const toggleDayOfWeek = (dayIndex: number) => {
+    const currentDays = [...formData.daysOfWeek];
+
+    if (currentDays.includes(dayIndex)) {
+      // Don't allow removing the last day
+      if (currentDays.length === 1) return;
+
+      // Remove the day
+      setFormField(
+        'daysOfWeek',
+        currentDays.filter((day) => day !== dayIndex)
+      );
+    } else {
+      // Add the day
+      setFormField('daysOfWeek', [...currentDays, dayIndex].sort());
+    }
+  };
 
   // Reset form when component mounts
   useEffect(() => {
     resetForm();
+
+    // Set default reminder time to 9:00 AM
+    const defaultReminderTime = new Date();
+    defaultReminderTime.setHours(9, 0, 0, 0);
+    setFormField('reminderTime', defaultReminderTime);
+
+    // Set default end date to 30 days from now
+    const defaultEndDate = new Date();
+    defaultEndDate.setDate(defaultEndDate.getDate() + 30);
+    setFormField('endDate', defaultEndDate);
   }, []);
 
   const handleSubmit = async () => {
     if (!formData.name.trim() || !profile?.id) return;
 
-    await addHabit({
+    addHabit({
       name: formData.name,
       description: formData.description,
       color: formData.color,
@@ -54,22 +92,42 @@ export default function AddHabit() {
       start_date: formData.startDate.toISOString(),
       user_id: profile.id,
       is_active: true,
-      category_name: null,
+      category_name: formData.category,
+
+      // Updated or new fields
+      days_of_week:
+        formData.frequencyType === 'weekly' ? formData.daysOfWeek : null,
+      end_date:
+        formData.hasEndDate && formData.endDate
+          ? formData.endDate.toISOString()
+          : null,
+      gamification_attributes: null,
+      reminder_time:
+        formData.hasReminder && formData.reminderTime
+          ? formData.reminderTime.toISOString()
+          : null,
+      streak_goal: formData.streakGoal,
+
+      // Existing fields
       completions_per_day:
         formData.goal.unit.id === 'count' ? formData.goal.value : 1,
-      days_of_week: null,
-      end_date: null,
-      gamification_attributes: null,
       goal_unit:
         formData.goal.unit.id === 'count' ? null : formData.goal.unit.shortName,
       goal_value:
         formData.goal.unit.id === 'count' ? null : formData.goal.value,
-      reminder_time: null,
-      streak_goal: null,
     });
 
     router.back();
   };
+
+  // Render different components based on current step
+  if (currentStep === 'category') {
+    return <CategorySelection />;
+  }
+
+  if (currentStep === 'templates') {
+    return <TemplateSelection />;
+  }
 
   return (
     <KeyboardAvoidingView
@@ -90,21 +148,15 @@ export default function AddHabit() {
         </TouchableOpacity>
       </View>
 
-      <ScrollView style={styles.form}>
+      <ScrollView
+        style={styles.form}
+        contentContainerStyle={{ paddingBottom: insets.bottom || 20 }}
+      >
         <TextInput
           style={styles.input}
           placeholder="Habit name"
           value={formData.name}
           onChangeText={(value) => setFormField('name', value)}
-        />
-
-        <TextInput
-          style={[styles.input, styles.textArea]}
-          placeholder="Description (optional)"
-          value={formData.description}
-          onChangeText={(value) => setFormField('description', value)}
-          multiline
-          numberOfLines={3}
         />
 
         <Text style={styles.sectionTitle}>Goal</Text>
@@ -118,11 +170,7 @@ export default function AddHabit() {
             </Text>
             <Text style={styles.goalUnit}>{formData.goal.unit.name}</Text>
           </View>
-          <FontAwesome6
-            name="chevron-right"
-            size={16}
-            color={Colors.light.text.secondary}
-          />
+          <FontAwesome6 name="chevron-right" size={16} color="#8E8E93" />
         </TouchableOpacity>
 
         <Text style={styles.sectionTitle}>Color</Text>
@@ -156,52 +204,240 @@ export default function AddHabit() {
           ))}
         </View>
 
-        <Text style={styles.sectionTitle}>Frequency</Text>
-        <View style={styles.frequencyOptions}>
-          {['daily', 'weekly'].map((type) => (
+        {!formData.showAdvancedSettings && (
+          <TouchableOpacity
+            style={styles.advancedSettingsButton}
+            onPress={() => setFormField('showAdvancedSettings', true)}
+          >
+            <Text style={styles.advancedSettingsText}>
+              Show Advanced Settings
+            </Text>
+            <FontAwesome6 name="chevron-down" size={16} color="#8E8E93" />
+          </TouchableOpacity>
+        )}
+
+        {formData.showAdvancedSettings && (
+          <>
+            <TextInput
+              style={[styles.input, styles.textArea]}
+              placeholder="Description (optional)"
+              value={formData.description}
+              onChangeText={(value) => setFormField('description', value)}
+              multiline
+              numberOfLines={3}
+            />
+
+            <Text style={styles.sectionTitle}>Category</Text>
+            <View style={styles.categoryContainer}>
+              {['physical', 'mental', 'emotional', 'spiritual'].map(
+                (category) => (
+                  <TouchableOpacity
+                    key={category}
+                    style={[
+                      styles.categoryOption,
+                      formData.category === category && styles.selectedOption,
+                    ]}
+                    onPress={() => setFormField('category', category as any)}
+                  >
+                    <Text style={styles.categoryText}>
+                      {category.charAt(0).toUpperCase() + category.slice(1)}
+                    </Text>
+                  </TouchableOpacity>
+                )
+              )}
+            </View>
+
+            <Text style={styles.sectionTitle}>Frequency</Text>
+            <View style={styles.frequencyOptions}>
+              {['daily', 'weekly'].map((type) => (
+                <TouchableOpacity
+                  key={type}
+                  style={[
+                    styles.frequencyOption,
+                    formData.frequencyType === type && styles.selectedFrequency,
+                  ]}
+                  onPress={() =>
+                    setFormField('frequencyType', type as 'daily' | 'weekly')
+                  }
+                >
+                  <Text
+                    style={[
+                      styles.frequencyText,
+                      formData.frequencyType === type &&
+                        styles.selectedFrequencyText,
+                    ]}
+                  >
+                    {type.charAt(0).toUpperCase() + type.slice(1)}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <Text style={styles.sectionTitle}>Start Date</Text>
             <TouchableOpacity
-              key={type}
-              style={[
-                styles.frequencyOption,
-                formData.frequencyType === type && styles.selectedFrequency,
-              ]}
-              onPress={() =>
-                setFormField('frequencyType', type as 'daily' | 'weekly')
-              }
+              style={styles.dateButton}
+              onPress={() => setDatePickerVisible(true)}
             >
-              <Text
-                style={[
-                  styles.frequencyText,
-                  formData.frequencyType === type &&
-                    styles.selectedFrequencyText,
-                ]}
-              >
-                {type.charAt(0).toUpperCase() + type.slice(1)}
-              </Text>
+              <View style={styles.dateButtonContent}>
+                <Text style={styles.dateButtonText}>
+                  {dayjs(formData.startDate).format('MMMM D, YYYY')}
+                </Text>
+                <FontAwesome6 name="calendar" size={16} color="#8E8E93" />
+              </View>
             </TouchableOpacity>
-          ))}
-        </View>
 
-        <Text style={styles.sectionTitle}>Start Date</Text>
-        <TouchableOpacity
-          style={styles.dateButton}
-          onPress={() => setFormField('showDatePicker', true)}
-        >
-          <Text>{dayjs(formData.startDate).format('MMMM D, YYYY')}</Text>
-        </TouchableOpacity>
+            <DateTimePickerModal
+              isVisible={isDatePickerVisible}
+              mode="date"
+              onConfirm={(date) => {
+                setDatePickerVisible(false);
+                setFormField('startDate', date);
+              }}
+              onCancel={() => setDatePickerVisible(false)}
+              date={formData.startDate}
+            />
 
-        {formData.showDatePicker && (
-          <DateTimePicker
-            value={formData.startDate}
-            mode="date"
-            display="default"
-            onChange={(event, selectedDate) => {
-              setFormField('showDatePicker', false);
-              if (selectedDate) {
-                setFormField('startDate', selectedDate);
-              }
-            }}
-          />
+            {formData.frequencyType === 'weekly' && (
+              <>
+                <Text style={styles.sectionTitle}>Days of Week</Text>
+                <View style={styles.daysContainer}>
+                  {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(
+                    (day, index) => (
+                      <TouchableOpacity
+                        key={day}
+                        style={[
+                          styles.dayButton,
+                          formData.daysOfWeek.includes(index) &&
+                            styles.selectedDay,
+                        ]}
+                        onPress={() => toggleDayOfWeek(index)}
+                      >
+                        <Text
+                          style={[
+                            styles.dayText,
+                            formData.daysOfWeek.includes(index) &&
+                              styles.selectedDayText,
+                          ]}
+                        >
+                          {day}
+                        </Text>
+                      </TouchableOpacity>
+                    )
+                  )}
+                </View>
+              </>
+            )}
+
+            {/* End Date */}
+            <View style={styles.settingRow}>
+              <Text style={styles.settingLabel}>End Date</Text>
+              <Switch
+                value={formData.hasEndDate}
+                onValueChange={(value) => {
+                  setFormField('hasEndDate', value);
+                  if (value && !formData.endDate) {
+                    // Set default end date to 30 days from start
+                    const endDate = new Date(formData.startDate);
+                    endDate.setDate(endDate.getDate() + 30);
+                    setFormField('endDate', endDate);
+                  }
+                }}
+              />
+            </View>
+
+            {formData.hasEndDate && (
+              <TouchableOpacity
+                style={styles.dateButton}
+                onPress={() => setEndDatePickerVisible(true)}
+              >
+                <View style={styles.dateButtonContent}>
+                  <Text style={styles.dateButtonText}>
+                    {formData.endDate
+                      ? dayjs(formData.endDate).format('MMMM D, YYYY')
+                      : 'Select End Date'}
+                  </Text>
+                  <FontAwesome6 name="calendar" size={16} color="#8E8E93" />
+                </View>
+              </TouchableOpacity>
+            )}
+
+            <DateTimePickerModal
+              isVisible={isEndDatePickerVisible}
+              mode="date"
+              onConfirm={(date) => {
+                setEndDatePickerVisible(false);
+                setFormField('endDate', date);
+              }}
+              onCancel={() => setEndDatePickerVisible(false)}
+              date={formData.endDate || new Date()}
+              minimumDate={formData.startDate}
+            />
+
+            {/* Reminder Time */}
+            <View style={styles.settingRow}>
+              <Text style={styles.settingLabel}>Daily Reminder</Text>
+              <Switch
+                value={formData.hasReminder}
+                onValueChange={(value) => {
+                  setFormField('hasReminder', value);
+                  if (value && !formData.reminderTime) {
+                    // Set default reminder time to 9 AM
+                    const defaultTime = new Date();
+                    defaultTime.setHours(9, 0, 0, 0);
+                    setFormField('reminderTime', defaultTime);
+                  }
+                }}
+              />
+            </View>
+
+            {formData.hasReminder && (
+              <TouchableOpacity
+                style={styles.dateButton}
+                onPress={() => setTimePickerVisible(true)}
+              >
+                <View style={styles.dateButtonContent}>
+                  <Text style={styles.dateButtonText}>
+                    {formData.reminderTime
+                      ? dayjs(formData.reminderTime).format('h:mm A')
+                      : 'Select Time'}
+                  </Text>
+                  <FontAwesome6 name="clock" size={16} color="#8E8E93" />
+                </View>
+              </TouchableOpacity>
+            )}
+
+            <DateTimePickerModal
+              isVisible={isTimePickerVisible}
+              mode="time"
+              onConfirm={(date) => {
+                setTimePickerVisible(false);
+                setFormField('reminderTime', date);
+              }}
+              onCancel={() => setTimePickerVisible(false)}
+              date={formData.reminderTime || new Date()}
+            />
+
+            {/* Streak Goal */}
+            <Text style={styles.sectionTitle}>Streak Goal</Text>
+            <View style={styles.streakGoalContainer}>
+              <Text style={styles.streakGoalLabel}>
+                Set a target streak to achieve (optional)
+              </Text>
+              <View style={styles.streakInputContainer}>
+                <TextInput
+                  style={styles.streakInput}
+                  keyboardType="number-pad"
+                  value={formData.streakGoal?.toString() || ''}
+                  onChangeText={(value) => {
+                    const num = parseInt(value);
+                    setFormField('streakGoal', isNaN(num) ? null : num);
+                  }}
+                  placeholder="e.g., 21"
+                />
+                <Text style={styles.streakInputLabel}>days</Text>
+              </View>
+            </View>
+          </>
         )}
       </ScrollView>
     </KeyboardAvoidingView>
@@ -252,7 +488,7 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: '600',
     marginBottom: 12,
-    marginTop: 16,
+    marginTop: 8,
   },
   colorGrid: {
     flexDirection: 'row',
@@ -317,6 +553,14 @@ const styles = StyleSheet.create({
     padding: 12,
     marginBottom: 16,
   },
+  dateButtonContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  dateButtonText: {
+    fontSize: 16,
+  },
   goalButton: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -338,5 +582,102 @@ const styles = StyleSheet.create({
   goalUnit: {
     fontSize: 14,
     color: Colors.light.text.secondary,
+  },
+  categoryContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  categoryOption: {
+    borderWidth: 1,
+    borderColor: '#E5E5EA',
+    borderRadius: 8,
+    padding: 12,
+    width: '48%',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  categoryText: {
+    fontSize: 14,
+  },
+  daysContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  dayButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#E5E5EA',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 4,
+  },
+  dayText: {
+    fontSize: 14,
+  },
+  selectedDay: {
+    backgroundColor: '#007AFF',
+    borderColor: '#007AFF',
+  },
+  selectedDayText: {
+    color: '#fff',
+  },
+  advancedSettingsButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
+    marginTop: 24,
+    marginBottom: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#E5E5EA',
+  },
+  advancedSettingsText: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#007AFF',
+  },
+  streakGoalContainer: {
+    marginBottom: 24,
+  },
+  streakGoalLabel: {
+    color: '#000',
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  streakInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  streakInput: {
+    borderWidth: 1,
+    borderColor: '#E5E5EA',
+    borderRadius: 8,
+    padding: 12,
+    width: 120,
+    marginRight: 8,
+    fontSize: 16,
+  },
+  streakInputLabel: {
+    color: '#000',
+    fontSize: 16,
+  },
+  settingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+    marginTop: 8,
+  },
+  settingLabel: {
+    color: '#000',
+    fontSize: 16,
+    fontWeight: '600',
   },
 });

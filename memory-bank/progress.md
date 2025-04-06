@@ -1,5 +1,50 @@
 # Progress Tracking
 
+## Current Development Plan (2-Week Timeline)
+
+### Week 1: Complete Core Habit System
+
+1. **Enhanced Habit Creation** (Days 1-2) ⏳
+
+   - Add predefined habit templates by category
+   - Implement template selection UI
+   - Complete custom habit form fields
+   - Ensure proper matrix category assignment
+
+2. **Habit Interaction System** (Days 3-4) 📅
+
+   - Create unified habit detail modal
+   - Implement uncomplete functionality
+   - Add increment/decrement controls
+   - Add edit and delete options
+
+3. **Matrix Score System** (Days 5-7) 📅
+   - Define matrix categories (physical, mental, emotional, spiritual)
+   - Create habit-to-matrix mapping
+   - Implement score calculations
+   - Design matrix visualization
+
+### Week 2: Analytics & Engagement
+
+1. **Navigation & Structure** (Days 1-2) 📅
+
+   - Implement bottom tab navigation
+   - Create Home and Stats tabs
+   - Ensure proper state management
+
+2. **Achievement System** (Days 3-4) 📅
+
+   - Design core achievement types
+   - Implement unlocking logic
+   - Create achievement notifications
+   - Design achievement display
+
+3. **Statistics View** (Days 5-7) 📅
+   - Implement key charts
+   - Create habit comparison view
+   - Connect to habit data
+   - Add matrix score history
+
 ## What Works
 
 1. **Project Setup**
@@ -54,38 +99,27 @@
 
 ## What's Left to Build
 
-### High Priority
+### High Priority (Current Sprint)
 
-1. **Authentication System**
+1. **Enhanced Habit Creation** ⏳
 
-   - [ ] Apple authentication
-   - [ ] Google authentication
-   - [ ] Token management
-   - [ ] User flow
-   - [ ] Session handling
+   - [ ] Predefined habit templates by category
+   - [ ] Template selection UI
+   - [ ] Custom habit form fields completion
+   - [ ] Matrix category assignment
 
-2. **Analytics & Monitoring**
+2. **Habit Interaction System** 📅
 
-   - [ ] PostHog setup
-   - [ ] Event tracking
-   - [ ] Sentry integration
-   - [ ] Error boundaries
+   - [ ] Unified habit detail modal
+   - [ ] Uncomplete functionality
+   - [ ] Increment/decrement controls
+   - [ ] Edit and delete options
 
-3. **Testing**
-
-   - [ ] Unit test setup
-   - [ ] Integration tests
-   - [ ] Component tests
-   - [ ] E2E tests
-   - [ ] Sync mechanism tests
-   - [ ] Custom hook tests
-
-4. **Habit Features**
-   - [ ] Habit completion UI/logic (buttons/checkboxes in list)
-   - [ ] Completion state management/sync
-   - [ ] Habit editing
-   - [ ] Habit deletion
-   - [ ] Streak calculation display
+3. **Matrix Score System** 📅
+   - [ ] Matrix categories definition
+   - [ ] Habit-to-matrix mapping
+   - [ ] Score calculations
+   - [ ] Matrix visualization
 
 ### Medium Priority
 
@@ -127,10 +161,10 @@
 
 ### Sprint Progress
 
-- Sprint Goal: Initial Setup & Core Features
-- Progress: 65%
+- Sprint Goal: Enhanced Habit Creation
+- Progress: Starting
 - Blockers: None
-- Risks: Authentication complexity, Sync edge cases, Habit feature scope
+- Risks: Timeline for 2-week plan is aggressive
 
 ## Known Issues
 

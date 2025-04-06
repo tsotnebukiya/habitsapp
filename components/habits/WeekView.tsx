@@ -41,7 +41,10 @@ export default function WeekView({
       getHabitStatus(habit.id, date.toDate())
     );
 
-    if (statuses.every((status) => status === 'completed')) {
+    // Count skipped habits as "done" for the purpose of daily completion
+    if (
+      statuses.every((status) => status === 'completed' || status === 'skipped')
+    ) {
       return 'all_completed';
     }
     if (
