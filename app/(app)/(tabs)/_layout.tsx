@@ -1,15 +1,18 @@
 // app/(app)/(tabs)/_layout.tsx
 import { Tabs } from 'expo-router';
 import React from 'react';
-import { FontAwesome6 } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import Colors from '../../../lib/constants/Colors';
 
 /**
  * You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
  */
-function TabBarIcon(props: { name: string; color: string }) {
-  return <FontAwesome6 size={26} style={{ marginBottom: -3 }} {...props} />;
+function TabBarIcon(props: {
+  name: keyof typeof Ionicons.glyphMap;
+  color: string;
+}) {
+  return <Ionicons size={26} style={{ marginBottom: -3 }} {...props} />;
 }
 
 export default function TabLayout() {
@@ -27,8 +30,26 @@ export default function TabLayout() {
           options={{
             title: 'Home',
             headerShown: false,
+            tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
+          }}
+        />
+        <Tabs.Screen
+          name="stats"
+          options={{
+            title: 'Stats',
+            headerShown: false,
             tabBarIcon: ({ color }) => (
-              <TabBarIcon name="house" color={color} />
+              <TabBarIcon name="bar-chart" color={color} />
+            ),
+          }}
+        />
+        <Tabs.Screen
+          name="journal"
+          options={{
+            title: 'Journal',
+            headerShown: false,
+            tabBarIcon: ({ color }) => (
+              <TabBarIcon name="journal" color={color} />
             ),
           }}
         />
@@ -37,7 +58,9 @@ export default function TabLayout() {
           options={{
             title: 'Settings',
             headerShown: false,
-            tabBarIcon: ({ color }) => <TabBarIcon name="user" color={color} />,
+            tabBarIcon: ({ color }) => (
+              <TabBarIcon name="settings" color={color} />
+            ),
           }}
         />
       </Tabs>
