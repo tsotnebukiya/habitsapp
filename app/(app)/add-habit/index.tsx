@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,11 +10,13 @@ import {
   Platform,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useHabitsStore } from '../../lib/interfaces/habits_store';
-import useUserProfileStore from '../../lib/interfaces/user_profile';
-import { Ionicons } from '@expo/vector-icons';
+import { useHabitsStore } from '@/lib/interfaces/habits_store';
+import { useAddHabitStore } from '@/lib/interfaces/add_habit_store';
+import useUserProfileStore from '@/lib/interfaces/user_profile';
+import { Ionicons, FontAwesome6 } from '@expo/vector-icons';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import dayjs from 'dayjs';
+import Colors from '@/lib/constants/Colors';
 
 const COLORS = [
   '#FF6B6B',
@@ -33,34 +35,35 @@ export default function AddHabit() {
   const router = useRouter();
   const { profile } = useUserProfileStore();
   const addHabit = useHabitsStore((state) => state.addHabit);
+  const { formData, setFormField, resetForm, isValid } = useAddHabitStore();
 
-  const [name, setName] = useState('');
-  const [description, setDescription] = useState('');
-  const [selectedColor, setSelectedColor] = useState(COLORS[0]);
-  const [selectedIcon, setSelectedIcon] = useState(ICONS[0]);
-  const [frequencyType, setFrequencyType] = useState('daily');
-  const [startDate, setStartDate] = useState(new Date());
-  const [showDatePicker, setShowDatePicker] = useState(false);
+  // Reset form when component mounts
+  useEffect(() => {
+    resetForm();
+  }, []);
 
   const handleSubmit = async () => {
-    if (!name.trim() || !profile?.id) return;
+    if (!formData.name.trim() || !profile?.id) return;
 
     await addHabit({
-      name,
-      description,
-      color: selectedColor,
-      icon: selectedIcon,
-      frequency_type: frequencyType,
-      start_date: startDate.toISOString(),
+      name: formData.name,
+      description: formData.description,
+      color: formData.color,
+      icon: formData.icon,
+      frequency_type: formData.frequencyType,
+      start_date: formData.startDate.toISOString(),
       user_id: profile.id,
       is_active: true,
       category_name: null,
-      completions_per_day: 1,
+      completions_per_day:
+        formData.goal.unit.id === 'count' ? formData.goal.value : 1,
       days_of_week: null,
       end_date: null,
       gamification_attributes: null,
-      goal_unit: null,
-      goal_value: null,
+      goal_unit:
+        formData.goal.unit.id === 'count' ? null : formData.goal.unit.shortName,
+      goal_value:
+        formData.goal.unit.id === 'count' ? null : formData.goal.value,
       reminder_time: null,
       streak_goal: null,
     });
@@ -79,7 +82,11 @@ export default function AddHabit() {
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Add New Habit</Text>
         <TouchableOpacity onPress={handleSubmit}>
-          <Text style={styles.saveButton}>Save</Text>
+          <Text
+            style={[styles.saveButton, !isValid && styles.saveButtonDisabled]}
+          >
+            Save
+          </Text>
         </TouchableOpacity>
       </View>
 
@@ -87,18 +94,36 @@ export default function AddHabit() {
         <TextInput
           style={styles.input}
           placeholder="Habit name"
-          value={name}
-          onChangeText={setName}
+          value={formData.name}
+          onChangeText={(value) => setFormField('name', value)}
         />
 
         <TextInput
           style={[styles.input, styles.textArea]}
           placeholder="Description (optional)"
-          value={description}
-          onChangeText={setDescription}
+          value={formData.description}
+          onChangeText={(value) => setFormField('description', value)}
           multiline
           numberOfLines={3}
         />
+
+        <Text style={styles.sectionTitle}>Goal</Text>
+        <TouchableOpacity
+          style={styles.goalButton}
+          onPress={() => router.push('/add-habit/goal-choosing')}
+        >
+          <View style={styles.goalInfo}>
+            <Text style={styles.goalValue}>
+              {formData.goal.value} {formData.goal.unit.shortName}
+            </Text>
+            <Text style={styles.goalUnit}>{formData.goal.unit.name}</Text>
+          </View>
+          <FontAwesome6
+            name="chevron-right"
+            size={16}
+            color={Colors.light.text.secondary}
+          />
+        </TouchableOpacity>
 
         <Text style={styles.sectionTitle}>Color</Text>
         <View style={styles.colorGrid}>
@@ -108,9 +133,9 @@ export default function AddHabit() {
               style={[
                 styles.colorOption,
                 { backgroundColor: color },
-                selectedColor === color && styles.selectedOption,
+                formData.color === color && styles.selectedOption,
               ]}
-              onPress={() => setSelectedColor(color)}
+              onPress={() => setFormField('color', color)}
             />
           ))}
         </View>
@@ -122,9 +147,9 @@ export default function AddHabit() {
               key={icon}
               style={[
                 styles.iconOption,
-                selectedIcon === icon && styles.selectedOption,
+                formData.icon === icon && styles.selectedOption,
               ]}
-              onPress={() => setSelectedIcon(icon)}
+              onPress={() => setFormField('icon', icon)}
             >
               <Text style={styles.iconText}>{icon}</Text>
             </TouchableOpacity>
@@ -138,14 +163,17 @@ export default function AddHabit() {
               key={type}
               style={[
                 styles.frequencyOption,
-                frequencyType === type && styles.selectedFrequency,
+                formData.frequencyType === type && styles.selectedFrequency,
               ]}
-              onPress={() => setFrequencyType(type)}
+              onPress={() =>
+                setFormField('frequencyType', type as 'daily' | 'weekly')
+              }
             >
               <Text
                 style={[
                   styles.frequencyText,
-                  frequencyType === type && styles.selectedFrequencyText,
+                  formData.frequencyType === type &&
+                    styles.selectedFrequencyText,
                 ]}
               >
                 {type.charAt(0).toUpperCase() + type.slice(1)}
@@ -157,20 +185,20 @@ export default function AddHabit() {
         <Text style={styles.sectionTitle}>Start Date</Text>
         <TouchableOpacity
           style={styles.dateButton}
-          onPress={() => setShowDatePicker(true)}
+          onPress={() => setFormField('showDatePicker', true)}
         >
-          <Text>{dayjs(startDate).format('MMMM D, YYYY')}</Text>
+          <Text>{dayjs(formData.startDate).format('MMMM D, YYYY')}</Text>
         </TouchableOpacity>
 
-        {showDatePicker && (
+        {formData.showDatePicker && (
           <DateTimePicker
-            value={startDate}
+            value={formData.startDate}
             mode="date"
             display="default"
             onChange={(event, selectedDate) => {
-              setShowDatePicker(false);
+              setFormField('showDatePicker', false);
               if (selectedDate) {
-                setStartDate(selectedDate);
+                setFormField('startDate', selectedDate);
               }
             }}
           />
@@ -201,6 +229,9 @@ const styles = StyleSheet.create({
     color: '#007AFF',
     fontSize: 17,
     fontWeight: '600',
+  },
+  saveButtonDisabled: {
+    opacity: 0.5,
   },
   form: {
     padding: 16,
@@ -285,5 +316,27 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 12,
     marginBottom: 16,
+  },
+  goalButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
+    backgroundColor: Colors.light.background.paper,
+    borderRadius: 12,
+    marginBottom: 24,
+  },
+  goalInfo: {
+    flex: 1,
+  },
+  goalValue: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: Colors.light.text.primary,
+    marginBottom: 4,
+  },
+  goalUnit: {
+    fontSize: 14,
+    color: Colors.light.text.secondary,
   },
 });

@@ -52,9 +52,13 @@ export interface HabitsState {
   toggleHabitStatus: (
     habitId: string,
     date: Date,
-    status: HabitCompletionStatus
+    status: HabitCompletionStatus,
+    value?: number
   ) => void;
   getHabitStatus: (habitId: string, date: Date) => HabitCompletionStatus;
+  getCurrentValue: (habitId: string, date: Date) => number;
+  getCurrentProgress: (habitId: string, date: Date) => number;
+  getProgressText: (habitId: string, date: Date) => string;
 
   // Sync actions
   syncWithServer: () => Promise<void>;
@@ -348,11 +352,17 @@ export const useHabitsStore = create<HabitsState>()(
       toggleHabitStatus: (
         habitId: string,
         date: Date,
-        status: HabitCompletionStatus
+        status: HabitCompletionStatus,
+        value?: number
       ) => {
         const userId = useUserProfileStore.getState().profile?.id;
         if (!userId) {
           throw new Error('User not logged in');
+        }
+
+        const habit = get().habits.get(habitId);
+        if (!habit) {
+          throw new Error('Habit not found');
         }
 
         const normalizedDate = dayjs(date).format('YYYY-MM-DD');
@@ -363,23 +373,55 @@ export const useHabitsStore = create<HabitsState>()(
             completion.habit_id === habitId &&
             completion.completion_date === normalizedDate
         );
+
+        // If already completed, don't allow uncompleting
+        if (existingCompletion?.status === 'completed') {
+          return;
+        }
+
+        // Calculate new value based on habit type
+        let newValue: number;
+        if (value !== undefined) {
+          newValue = value;
+        } else if (habit.goal_value) {
+          // For measured habits, increment by 10% of goal
+          const currentValue = existingCompletion?.value || 0;
+          newValue = currentValue + habit.goal_value * 0.1;
+        } else if (habit.completions_per_day > 1) {
+          // For multiple completions, increment by 1
+          const currentValue = existingCompletion?.value || 0;
+          newValue = currentValue + 1;
+        } else {
+          // For single completion habits, value is 1
+          newValue = 1;
+        }
+
+        // Determine status based on progress
+        let newStatus = status;
+        if (habit.goal_value) {
+          newStatus =
+            newValue >= habit.goal_value ? 'completed' : 'in_progress';
+        } else if (habit.completions_per_day > 1) {
+          newStatus =
+            newValue >= habit.completions_per_day ? 'completed' : 'in_progress';
+        } else {
+          newStatus = 'completed';
+        }
+
         if (existingCompletion) {
-          if (existingCompletion.status === status) {
-            get().deleteCompletion(existingCompletion.id);
-          } else {
-            // Update to new status
-            get().updateCompletion(existingCompletion.id, {
-              status: status,
-            });
-          }
-        } else if (status !== 'not_started') {
-          // Only create new completion if status is not 'not_started'
+          // Update existing completion
+          get().updateCompletion(existingCompletion.id, {
+            status: newStatus,
+            value: newValue,
+          });
+        } else {
+          // Create new completion
           get().addCompletion({
             habit_id: habitId,
             user_id: userId,
             completion_date: normalizedDate,
-            status: status,
-            value: null,
+            status: newStatus,
+            value: newValue,
           });
         }
       },
@@ -394,6 +436,46 @@ export const useHabitsStore = create<HabitsState>()(
         );
 
         return completion?.status || 'not_started';
+      },
+
+      getCurrentValue: (habitId: string, date: Date): number => {
+        const normalizedDate = dayjs(date).format('YYYY-MM-DD');
+        const completion = Array.from(get().completions.values()).find(
+          (completion) =>
+            completion.habit_id === habitId &&
+            completion.completion_date === normalizedDate
+        );
+        return completion?.value || 0;
+      },
+
+      getCurrentProgress: (habitId: string, date: Date): number => {
+        const habit = get().habits.get(habitId);
+        if (!habit) return 0;
+
+        const currentValue = get().getCurrentValue(habitId, date);
+
+        if (habit.goal_value) {
+          return Math.min(currentValue / habit.goal_value, 1);
+        } else if (habit.completions_per_day > 1) {
+          return Math.min(currentValue / habit.completions_per_day, 1);
+        }
+
+        return currentValue > 0 ? 1 : 0;
+      },
+
+      getProgressText: (habitId: string, date: Date): string => {
+        const habit = get().habits.get(habitId);
+        if (!habit) return '0/1';
+
+        const currentValue = get().getCurrentValue(habitId, date);
+
+        if (habit.goal_value && habit.goal_unit) {
+          return `${currentValue}/${habit.goal_value}${habit.goal_unit}`;
+        } else if (habit.completions_per_day > 1) {
+          return `${currentValue}/${habit.completions_per_day}`;
+        }
+
+        return `${currentValue}/1`;
       },
 
       processPendingOperations: async () => {

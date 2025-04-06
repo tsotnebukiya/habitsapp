@@ -36,6 +36,22 @@
    - ✅ `HabitList` implemented (using `useHabitsForDate`)
    - ✅ `AddHabit` modal implemented
 
+## Completed Features
+
+### Calendar Day Visualization ✅
+
+- Implemented clean, focused visualization
+- Clear completion status indicators
+- Proper visual hierarchy
+- Edge case handling:
+  - No habits
+  - Partial completion
+  - Full completion
+  - Today's date
+  - Selected state
+
+### Habit Progress Visualization ✅
+
 ## What's Left to Build
 
 ### High Priority
@@ -155,3 +171,19 @@
 4. Setup testing infrastructure
 5. Expand documentation
 6. Test sync edge cases
+
+## Known Issues
+
+1. Calendar Visualization
+   - Need to test with different date ranges
+   - Verify behavior with rapid selection changes
+   - Check performance with many completed habits
+   - Validate accessibility features
+
+## Next Features
+
+1. Complete calendar visualization
+2. Implement habit progress visualization
+3. Expand testing coverage
+4. Add more detailed analytics
+5. Implement advanced habit editing

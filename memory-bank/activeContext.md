@@ -64,6 +64,25 @@ The project is currently in its initial setup phase with the following areas of 
 - Added visual feedback for skipped state
 - Enhanced status indication
 
+### Calendar Day Visualization
+
+- Simplified calendar day visualization
+- Focused completion status on number only
+- Maintained clean visual hierarchy:
+  1. White container background
+  2. Light blue selected day
+  3. Blue circle indicators for completion
+  4. Blue text for today
+
+### Current Focus
+
+- Ensuring clear visual feedback for:
+  - Day selection
+  - Completion status
+  - Current day
+- Maintaining consistent spacing and alignment
+- Optimizing touch targets
+
 ## Active Decisions
 
 ### Authentication Implementation
@@ -173,3 +192,23 @@ The project is currently in its initial setup phase with the following areas of 
 2. Monitor and optimize other UI interactions
 3. Consider adding loading indicators for longer operations
 4. Document performance measurement results
+
+### Next Steps
+
+1. Test calendar visualization with:
+   - Different completion combinations
+   - Multiple days selected
+   - Edge cases (no habits, all completed)
+2. Consider adding:
+   - Haptic feedback for day selection
+   - Smooth transitions between states
+   - Accessibility improvements
+
+### Active Decisions
+
+1. Calendar Visualization:
+   - Keep container background white
+   - Use light blue for selected day
+   - Focus completion status on number
+   - Use circles for completion indicators
+   - Blue text for today's date

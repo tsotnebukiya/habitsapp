@@ -271,3 +271,115 @@ graph TD
    - First let's check the database schema from Supabase
    - Create proper TypeScript types
    - Implement the store with MMKV persistence
+
+## Calendar Day Visualization Pattern
+
+### WeekView Day States
+
+The calendar day visualization uses a focused approach that concentrates completion status on the number itself:
+
+1. Base Container
+
+```typescript
+const styles = StyleSheet.create({
+  container: {
+    height: 80,
+    backgroundColor: '#fff', // Always white for clean look
+  },
+  dayContainer: {
+    width: DAY_WIDTH,
+    height: 70,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
+```
+
+2. Selected State
+
+```typescript
+selectedDay: {
+  backgroundColor: '#E3F2FF', // Light blue that works with both white and blue
+  borderRadius: 12,
+}
+```
+
+3. Completion States (focused on number)
+
+```typescript
+// Partial completion - circle border
+someCompletedNumber: {
+  borderWidth: 1.5,
+  borderColor: '#007AFF',
+  borderRadius: 16,
+},
+// Full completion - filled circle
+allCompletedNumber: {
+  backgroundColor: '#007AFF',
+  borderRadius: 16,
+}
+```
+
+4. Today State
+
+```typescript
+todayText: {
+  color: '#007AFF', // Blue text for today
+}
+```
+
+### Visual Hierarchy
+
+1. Container always stays white
+2. Selected day has light blue background
+3. Completion status shown on number only:
+   - No completion: Regular number
+   - Partial: Blue circle border
+   - Complete: Blue filled circle
+4. Today indicated by blue text
+
+### Key Implementation Details
+
+- Use nested Views for number container to handle borders and backgrounds separately
+- Keep completion status focused on the number for clarity
+- Use borderRadius equal to half width/height for perfect circles
+- Selected state uses a color that works with both white and blue elements
+
+### Style Structure
+
+```typescript
+<TouchableOpacity
+  style={[styles.dayContainer, isSelected && styles.selectedDay]}
+>
+  <Text style={[styles.dayName, isToday && styles.todayText]}>
+    {date.format('ddd')}
+  </Text>
+  <View
+    style={[
+      styles.numberContainer,
+      completionStatus === 'some_completed' && styles.someCompletedNumber,
+    ]}
+  >
+    <View
+      style={[
+        styles.numberBackground,
+        completionStatus === 'all_completed' && styles.allCompletedNumber,
+      ]}
+    >
+      <Text
+        style={[
+          styles.dayNumber,
+          isToday && styles.todayText,
+          completionStatus === 'all_completed' && styles.allCompletedText,
+        ]}
+      >
+        {date.format('D')}
+      </Text>
+    </View>
+  </View>
+</TouchableOpacity>
+```
+
+## Other System Patterns
+
+[Previous patterns remain unchanged...]

@@ -6,8 +6,12 @@ import HabitItem from './HabitItem';
 import HabitDetailsSheet from './HabitDetailsSheet';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useHabitsStore } from '../../lib/interfaces/habits_store';
+import Toast from 'react-native-toast-message';
+import Colors from '../../lib/constants/Colors';
 
 type Habit = Database['public']['Tables']['habits']['Row'];
+type HabitCompletionStatus =
+  Database['public']['Enums']['habit_completion_status'];
 
 interface HabitListProps {
   selectedDate: Date;
@@ -17,11 +21,39 @@ export default function HabitList({ selectedDate }: HabitListProps) {
   const habitsForDate = useHabitsForDate(selectedDate);
   const [selectedHabit, setSelectedHabit] = useState<Habit | null>(null);
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
-  const getHabitStatus = useHabitsStore((state) => state.getHabitStatus);
+  const {
+    getHabitStatus,
+    getCurrentProgress,
+    getProgressText,
+    toggleHabitStatus,
+  } = useHabitsStore();
 
   const handleHabitLongPress = (habit: Habit) => {
     setSelectedHabit(habit);
     bottomSheetModalRef.current?.present();
+  };
+
+  const handleHabitPress = (habit: Habit) => {
+    const currentStatus = getHabitStatus(habit.id, selectedDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    selectedDate.setHours(0, 0, 0, 0);
+
+    if (selectedDate.getTime() !== today.getTime()) {
+      return; // Only allow interactions with today's habits
+    }
+
+    if (currentStatus === 'completed') {
+      Toast.show({
+        type: 'info',
+        text1: 'Habit already completed',
+        text2: 'This habit has been completed for today',
+        position: 'bottom',
+      });
+      return;
+    }
+
+    toggleHabitStatus(habit.id, selectedDate, 'in_progress');
   };
 
   const handleDismiss = () => {
@@ -44,7 +76,11 @@ export default function HabitList({ selectedDate }: HabitListProps) {
             key={habit.id}
             habit={habit}
             status={getHabitStatus(habit.id, selectedDate)}
+            progress={getCurrentProgress(habit.id, selectedDate)}
+            progressText={getProgressText(habit.id, selectedDate)}
+            selectedDate={selectedDate}
             onLongPress={handleHabitLongPress}
+            onPress={handleHabitPress}
           />
         ))}
       </ScrollView>
@@ -68,10 +104,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingTop: 32,
+    paddingHorizontal: 16,
   },
   emptyText: {
     fontSize: 16,
-    color: '#8E8E93',
+    color: Colors.light.text.secondary,
+    textAlign: 'center',
   },
 });
