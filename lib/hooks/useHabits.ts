@@ -35,19 +35,30 @@ export const useHabitsForDate = (date: Date) => {
 
   return useMemo(() => {
     const comparisonDate = normalizeDate(date);
+    const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, etc.
 
     return Array.from(habitsMap.values()).filter((habit: Habit) => {
+      // First check start/end date ranges
       const startDate = normalizeDate(new Date(habit.start_date));
-
       const endDate = habit.end_date
         ? normalizeDate(new Date(habit.end_date))
         : null;
 
-      return (
+      const isInDateRange =
         startDate <= comparisonDate &&
         (!endDate || comparisonDate <= endDate) &&
-        habit.is_active
-      );
+        habit.is_active;
+
+      if (!isInDateRange) return false;
+
+      // Then check weekly frequency days if applicable
+      if (habit.frequency_type === 'weekly' && habit.days_of_week) {
+        // Check if the current day of week is included in the habit's days_of_week array
+        return habit.days_of_week.includes(dayOfWeek);
+      }
+
+      // Daily habits or habits without days_of_week show on all days
+      return true;
     });
   }, [habitsMap, date]); // Only recalculate if habitsMap or date changes
 };
