@@ -10,8 +10,6 @@ import Toast from 'react-native-toast-message';
 import Colors from '../../lib/constants/Colors';
 
 type Habit = Database['public']['Tables']['habits']['Row'];
-type HabitCompletionStatus =
-  Database['public']['Enums']['habit_completion_status'];
 
 interface HabitListProps {
   selectedDate: Date;

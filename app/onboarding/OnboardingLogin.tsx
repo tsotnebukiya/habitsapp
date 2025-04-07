@@ -173,40 +173,6 @@ function OnboardingLogin() {
           style={[newOnboardingStyles.button, { height: 55 }]}
           onPress={handleAppleSignIn}
         />
-
-        <Text style={newOnboardingStyles.termsText}>
-          By continuing, you agree to our{' '}
-          <Text
-            style={newOnboardingStyles.termsLink}
-            onPress={() =>
-              router.push({
-                pathname: '/onboarding/WebViewScreen',
-                params: {
-                  url: 'https://yourapp.com/terms-of-service',
-                  title: 'Terms and Conditions',
-                },
-              })
-            }
-          >
-            Terms and Conditions
-          </Text>{' '}
-          and confirm you have read our{' '}
-          <Text
-            style={newOnboardingStyles.termsLink}
-            onPress={() =>
-              router.push({
-                pathname: '/onboarding/WebViewScreen',
-                params: {
-                  url: 'https://yourapp.com/privacy-policy',
-                  title: 'Privacy Policy',
-                },
-              })
-            }
-          >
-            Privacy Policy
-          </Text>
-          .
-        </Text>
       </View>
 
       <View style={newOnboardingStyles.buttonContainer}>
