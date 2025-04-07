@@ -1,6 +1,6 @@
 import React, { useRef, useState, memo } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { Database } from '../../app/supabase_types';
+import { Database } from '@/lib/utils/supabase_types';
 import { useHabitsForDate } from '../../lib/hooks/useHabits';
 import HabitItem from './HabitItem';
 import HabitDetailsSheet from './HabitDetailsSheet';

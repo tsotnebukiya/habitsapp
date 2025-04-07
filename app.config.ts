@@ -2,13 +2,13 @@ import { ExpoConfig, ConfigContext } from 'expo/config';
 
 export default ({ config }: ConfigContext): ExpoConfig => ({
   name: 'HabitsApp',
-  slug: 'habitsapp',
+  slug: 'HabitsApp',
   version: '1.0.0',
   orientation: 'portrait',
   icon: './assets/AppIcons/appstore.png',
   scheme: 'habitsapp',
   userInterfaceStyle: 'automatic',
-  owner: 'viraldevelopmentllc',
+  owner: 'tsotnebukiya',
   splash: {
     image: './assets/react-native-splash.png',
     resizeMode: 'contain',

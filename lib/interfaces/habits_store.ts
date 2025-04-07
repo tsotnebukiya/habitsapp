@@ -5,7 +5,7 @@ import { persist } from 'zustand/middleware';
 import { supabase } from '../../app/supabase';
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
-import { Database } from '../../app/supabase_types';
+import { Database } from '@/lib/utils/supabase_types';
 import useUserProfileStore from './user_profile';
 
 // Types from Supabase schema
