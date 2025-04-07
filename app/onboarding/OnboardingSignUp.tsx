@@ -98,6 +98,11 @@ const OnboardingSignUp = () => {
             display_name: user.email?.split('@')[0] || '', // Default to email username
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
+            body_score: 50,
+            mind_score: 50,
+            heart_score: 50,
+            spirit_score: 50,
+            work_score: 50,
           };
           console.log('Attempting to upsert user data:', userData);
 
@@ -121,6 +126,11 @@ const OnboardingSignUp = () => {
               updatedAt: userData.updated_at,
               createdAt: userData.created_at,
               onboardingComplete: true,
+              bodyScore: userData.body_score,
+              mindScore: userData.mind_score,
+              heartScore: userData.heart_score,
+              spiritScore: userData.spirit_score,
+              workScore: userData.work_score,
             });
             nextStep();
           }
@@ -162,6 +172,11 @@ const OnboardingSignUp = () => {
             display_name: data.user.email?.split('@')[0]!, // Default to email username
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
+            body_score: 50,
+            mind_score: 50,
+            heart_score: 50,
+            spirit_score: 50,
+            work_score: 50,
           };
 
           const { error: InsertError } = await supabase
@@ -180,6 +195,11 @@ const OnboardingSignUp = () => {
             updatedAt: userData.updated_at,
             createdAt: userData.created_at,
             onboardingComplete: true,
+            bodyScore: userData.body_score,
+            mindScore: userData.mind_score,
+            heartScore: userData.heart_score,
+            spiritScore: userData.spirit_score,
+            workScore: userData.work_score,
           });
           nextStep();
         }

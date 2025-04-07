@@ -1,22 +1,12 @@
 import { HabitCategory } from '../constants/HabitTemplates';
 import { Database } from '@/lib/utils/supabase_types';
+import { UserProfile } from '@/lib/interfaces/user_profile';
 
 // Use types derived from Supabase schema
 type Habit = Database['public']['Tables']['habits']['Row'];
 type HabitCompletion = Database['public']['Tables']['habit_completions']['Row'];
 
 // --- Interfaces ---
-
-// Represents the baseline score stored in Supabase
-export interface MatrixBaseline {
-  user_id: string;
-  body_score: number;
-  mind_score: number;
-  heart_score: number;
-  spirit_score: number;
-  work_score: number;
-  created_at: string;
-}
 
 // Represents the final displayed matrix score for all categories
 export interface DisplayedMatrixScore {
@@ -36,24 +26,23 @@ const LOOKBACK_WINDOW = 14; // Number of days (W) to consider for smoothing
 // --- Helper Functions ---
 
 /**
- * Gets the baseline score for a specific category.
+ * Gets the baseline score for a specific category from user profile.
  */
 function getBaselineScore(
-  baseline: MatrixBaseline | null,
-  category: HabitCategory
+  category: HabitCategory,
+  userProfile: UserProfile
 ): number {
-  if (!baseline) return 50; // Default baseline if none found
   switch (category) {
     case 'body':
-      return baseline.body_score;
+      return userProfile.bodyScore || 50;
     case 'mind':
-      return baseline.mind_score;
+      return userProfile.mindScore || 50;
     case 'heart':
-      return baseline.heart_score;
+      return userProfile.heartScore || 50;
     case 'spirit':
-      return baseline.spirit_score;
+      return userProfile.spiritScore || 50;
     case 'work':
-      return baseline.work_score;
+      return userProfile.workScore || 50;
     default:
       return 50;
   }
@@ -127,9 +116,10 @@ function calculateDPS(
 
 /**
  * Calculates the final Displayed Matrix Score (DMS) using exponential smoothing.
+ * Uses userProfile as the source of baseline scores.
  */
 export function calculateDMS(
-  baseline: MatrixBaseline | null,
+  userProfile: UserProfile,
   allHabits: Habit[],
   completionsHistory: HabitCompletion[] // Array of completions for the lookback window
 ): DisplayedMatrixScore {
@@ -152,7 +142,7 @@ export function calculateDMS(
   });
 
   categories.forEach((category) => {
-    let smoothedScore = getBaselineScore(baseline, category);
+    let smoothedScore = getBaselineScore(category, userProfile);
 
     // Iterate through the lookback window (e.g., 14 days)
     for (let i = LOOKBACK_WINDOW - 1; i >= 0; i--) {

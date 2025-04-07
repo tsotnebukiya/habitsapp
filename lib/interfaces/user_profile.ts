@@ -11,6 +11,11 @@ export type UserProfile = {
   createdAt: string;
   updatedAt: string;
   onboardingComplete: boolean;
+  bodyScore: number;
+  mindScore: number;
+  heartScore: number;
+  spiritScore: number;
+  workScore: number;
 };
 
 interface UserProfileState {
