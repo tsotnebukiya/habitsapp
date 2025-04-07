@@ -112,7 +112,7 @@ export const useHabitsStore = create<HabitsState>()(
       error: null,
 
       addHabit: async (habitData) => {
-        const now = new Date().toISOString();
+        const now = dayjs().format();
         const userId = useUserProfileStore.getState().profile?.id;
         if (!userId) {
           throw new Error('User not logged in');
@@ -146,9 +146,9 @@ export const useHabitsStore = create<HabitsState>()(
                 type: 'create',
                 table: 'habits',
                 data: newHabit,
-                timestamp: new Date(),
+                timestamp: dayjs().toDate(),
                 retryCount: 0,
-                lastAttempt: new Date(),
+                lastAttempt: dayjs().toDate(),
               },
             ],
           }));
@@ -165,7 +165,7 @@ export const useHabitsStore = create<HabitsState>()(
         const updatedHabit = {
           ...habit,
           ...updates,
-          updated_at: new Date().toISOString(),
+          updated_at: dayjs().format(),
         };
 
         // Update local first
@@ -191,9 +191,9 @@ export const useHabitsStore = create<HabitsState>()(
                 type: 'update',
                 table: 'habits',
                 data: updatedHabit,
-                timestamp: new Date(),
+                timestamp: dayjs().toDate(),
                 retryCount: 0,
-                lastAttempt: new Date(),
+                lastAttempt: dayjs().toDate(),
               },
             ],
           }));
@@ -221,9 +221,9 @@ export const useHabitsStore = create<HabitsState>()(
                 id,
                 type: 'delete',
                 table: 'habits',
-                timestamp: new Date(),
+                timestamp: dayjs().toDate(),
                 retryCount: 0,
-                lastAttempt: new Date(),
+                lastAttempt: dayjs().toDate(),
               },
             ],
           }));
@@ -233,7 +233,7 @@ export const useHabitsStore = create<HabitsState>()(
       },
 
       addCompletion: async (completionData) => {
-        const now = new Date().toISOString();
+        const now = dayjs().format();
         const newCompletion: HabitCompletion = {
           ...completionData,
           id: uuidv4(),
@@ -261,9 +261,9 @@ export const useHabitsStore = create<HabitsState>()(
                 type: 'create',
                 table: 'habit_completions',
                 data: newCompletion,
-                timestamp: new Date(),
+                timestamp: dayjs().toDate(),
                 retryCount: 0,
-                lastAttempt: new Date(),
+                lastAttempt: dayjs().toDate(),
               },
             ],
           }));
@@ -305,9 +305,9 @@ export const useHabitsStore = create<HabitsState>()(
                 type: 'update',
                 table: 'habit_completions',
                 data: updatedCompletion,
-                timestamp: new Date(),
+                timestamp: dayjs().toDate(),
                 retryCount: 0,
-                lastAttempt: new Date(),
+                lastAttempt: dayjs().toDate(),
               },
             ],
           }));
@@ -338,9 +338,9 @@ export const useHabitsStore = create<HabitsState>()(
                 id,
                 type: 'delete',
                 table: 'habit_completions',
-                timestamp: new Date(),
+                timestamp: dayjs().toDate(),
                 retryCount: 0,
-                lastAttempt: new Date(),
+                lastAttempt: dayjs().toDate(),
               },
             ],
           }));
@@ -510,7 +510,7 @@ export const useHabitsStore = create<HabitsState>()(
 
       processPendingOperations: async () => {
         const { pendingOperations } = get();
-        const now = new Date();
+        const now = dayjs().toDate();
         const remainingOperations: PendingOperation[] = [];
 
         for (const operation of pendingOperations) {
@@ -620,7 +620,7 @@ export const useHabitsStore = create<HabitsState>()(
           }
 
           set({
-            lastSyncTime: new Date(),
+            lastSyncTime: dayjs().toDate(),
             error: null,
           });
         } catch (error) {
@@ -662,7 +662,7 @@ export const useHabitsStore = create<HabitsState>()(
         );
         if (completions.length === 0) return 0;
 
-        const today = new Date().setHours(0, 0, 0, 0);
+        const today = dayjs().startOf('day').toDate().getTime();
         let currentStreak = 0;
         let currentDate = today;
 
