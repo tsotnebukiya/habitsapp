@@ -12,73 +12,54 @@ export const MatrixGrid = memo(function MatrixGrid({
 }: MatrixGridProps) {
   const { categories, balanceCategory } = useMatrix();
 
-  // Calculate cell width based on screen width and column count - only recalculate when dimensions change
-  const cellWidth = useMemo(() => {
-    const screenWidth = Dimensions.get('window').width;
-    return (screenWidth - 32) / columnCount; // 32 = total horizontal padding
-  }, [columnCount]);
-
-  // Render individual cells - only re-render when the data or cell width changes
-  const renderRows = useMemo(() => {
+  // Render grid cells in rows based on columnCount
+  const renderGrid = useMemo(() => {
     // Ensure we have enough categories
     if (!categories || categories.length < 5) return null;
 
-    return (
-      <>
-        {/* First row - first two categories */}
-        <View style={styles.row}>
-          <View style={[styles.cell, { width: cellWidth }]}>
-            <MatrixGridCell category={categories[0]} />
-          </View>
-          <View style={[styles.cell, { width: cellWidth }]}>
-            <MatrixGridCell category={categories[1]} />
-          </View>
-        </View>
+    const allCategories = [...categories.slice(0, 5), balanceCategory];
+    const rows = [];
 
-        {/* Second row - next two categories */}
-        <View style={styles.row}>
-          <View style={[styles.cell, { width: cellWidth }]}>
-            <MatrixGridCell category={categories[2]} />
-          </View>
-          <View style={[styles.cell, { width: cellWidth }]}>
-            <MatrixGridCell category={categories[3]} />
-          </View>
-        </View>
+    // Create rows based on columnCount
+    for (let i = 0; i < allCategories.length; i += columnCount) {
+      const rowItems = allCategories.slice(i, i + columnCount);
 
-        {/* Third row - last category and balance */}
-        <View style={styles.row}>
-          <View style={[styles.cell, { width: cellWidth }]}>
-            <MatrixGridCell category={categories[4]} />
-          </View>
-          <View style={[styles.cell, { width: cellWidth }]}>
-            <MatrixGridCell category={balanceCategory} />
-          </View>
+      rows.push(
+        <View key={`row-${i}`} style={styles.row}>
+          {rowItems.map((category, index) => (
+            <View
+              key={category.id || `category-${i + index}`}
+              style={[styles.gridItem, { flex: 1 }]}
+            >
+              <MatrixGridCell category={category} />
+            </View>
+          ))}
         </View>
-      </>
-    );
-  }, [categories, balanceCategory, cellWidth]);
+      );
+    }
+
+    return <>{rows}</>;
+  }, [categories, balanceCategory, columnCount]);
 
   return (
     <View style={styles.container}>
-      <View style={styles.gridContainer}>{renderRows}</View>
+      <View style={styles.gridContainer}>{renderGrid}</View>
     </View>
   );
 });
 
 const styles = StyleSheet.create({
   container: {
-    padding: 8,
     width: '100%',
   },
   gridContainer: {
     flex: 1,
+    gap: 16,
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginVertical: 4,
+    gap: 16,
   },
-  cell: {
-    padding: 0,
-  },
+  gridItem: {},
 });

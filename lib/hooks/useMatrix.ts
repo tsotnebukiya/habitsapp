@@ -2,10 +2,11 @@ import { useMemo } from 'react';
 import { useUserProfileStore } from '@/lib/interfaces/user_profile';
 import { calculateDMS, DisplayedMatrixScore } from '@/lib/utils/scoring';
 import { useHabitsStore } from '@/lib/interfaces/habits_store';
+import { CATEGORIES, CATEGORY_IDS } from '@/lib/constants/HabitTemplates';
 import dayjs from 'dayjs';
 
 export interface MatrixCategory {
-  id: 'body' | 'mind' | 'heart' | 'spirit' | 'work' | 'balance';
+  id: (typeof CATEGORY_IDS)[number] | 'total';
   name: string;
   score: number;
   color: string;
@@ -48,48 +49,11 @@ export function useMatrix() {
 
   // Create category objects with metadata - only recompute when matrixScore changes
   const categories: MatrixCategory[] = useMemo(
-    () => [
-      {
-        id: 'body',
-        name: 'Body',
-        score: Math.round(matrixScore.body),
-        color: '#FF5E5B', // Red
-        icon: 'body',
-        description: 'Physical health and wellness',
-      },
-      {
-        id: 'mind',
-        name: 'Mind',
-        score: Math.round(matrixScore.mind),
-        color: '#5E97F7', // Blue
-        icon: 'bulb',
-        description: 'Mental clarity and focus',
-      },
-      {
-        id: 'heart',
-        name: 'Heart',
-        score: Math.round(matrixScore.heart),
-        color: '#FF9AA2', // Pink
-        icon: 'heart',
-        description: 'Emotional well-being',
-      },
-      {
-        id: 'spirit',
-        name: 'Spirit',
-        score: Math.round(matrixScore.spirit),
-        color: '#A78BFA', // Purple
-        icon: 'leaf',
-        description: 'Spiritual fulfillment',
-      },
-      {
-        id: 'work',
-        name: 'Work',
-        score: Math.round(matrixScore.work),
-        color: '#5BBAA9', // Teal
-        icon: 'briefcase',
-        description: 'Professional growth',
-      },
-    ],
+    () =>
+      CATEGORIES.map((cat) => ({
+        ...cat,
+        score: Math.round(matrixScore[cat.id]),
+      })),
     [matrixScore]
   );
 
@@ -102,8 +66,8 @@ export function useMatrix() {
   // Create balance category - only recompute when balanceScore changes
   const balanceCategory: MatrixCategory = useMemo(
     () => ({
-      id: 'balance',
-      name: 'Balance',
+      id: 'total',
+      name: 'Total',
       score: balanceScore,
       color: '#FFBE0B', // Gold/Yellow
       icon: 'stats-chart',

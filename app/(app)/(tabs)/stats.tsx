@@ -9,32 +9,13 @@ const StatsScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.header}>
-          <Text style={styles.title}>Your Stats</Text>
-        </View>
-
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Life Balance Matrix</Text>
           <Text style={styles.sectionSubtitle}>
             Your scores across key life areas
           </Text>
           <MatrixGrid />
-          <Text style={styles.lastUpdated}>Last updated: {lastCalculated}</Text>
         </View>
-
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>About Your Matrix</Text>
-          <Text style={styles.sectionText}>
-            Each score ranges from 0 to 100 and is calculated based on your
-            habit completion rate over the past 14 days. The Balance score
-            represents your overall life harmony.
-          </Text>
-          <Text style={styles.sectionText}>
-            Complete your habits consistently to improve your scores!
-          </Text>
-        </View>
-
-        {/* Additional stats sections can be added here */}
       </ScrollView>
     </SafeAreaView>
   );

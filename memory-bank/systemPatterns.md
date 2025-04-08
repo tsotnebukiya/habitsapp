@@ -380,6 +380,137 @@ todayText: {
 </TouchableOpacity>
 ```
 
+## Matrix System Architecture
+
+### Category Management
+
+1. **Centralized Category Definitions (`lib/constants/HabitTemplates.ts`)**
+
+   ```typescript
+   // Single source of truth for category IDs
+   export const CATEGORY_IDS = [
+     'body',
+     'mind',
+     'heart',
+     'spirit',
+     'work',
+   ] as const;
+   export type HabitCategory = (typeof CATEGORY_IDS)[number];
+
+   // Complete category metadata
+   export const CATEGORIES = [
+     {
+       id: 'body',
+       name: 'Body',
+       icon: 'body',
+       description: 'Physical health and wellbeing',
+       color: '#FF5E5B',
+     },
+     // ... other categories
+   ] as const;
+   ```
+
+   - All category references use this centralized definition
+   - Type-safe category IDs through TypeScript literal types
+   - Complete metadata for UI components
+   - Used by habit templates and scoring system
+
+2. **Matrix Score Calculation (`lib/utils/scoring.ts`)**
+
+   ```typescript
+   interface DisplayedMatrixScore {
+     body: number;
+     mind: number;
+     heart: number;
+     spirit: number;
+     work: number;
+     calculated_at: Date;
+   }
+   ```
+
+   - Exponential smoothing algorithm for score updates
+   - Configurable smoothing factor and lookback window
+   - Category-specific baseline scores
+   - Daily progress score (DPS) calculation
+   - Dynamic Matrix Score (DMS) computation
+
+3. **Matrix Hook (`lib/hooks/useMatrix.ts`)**
+
+   ```typescript
+   interface MatrixCategory {
+     id: (typeof CATEGORY_IDS)[number] | 'total';
+     name: string;
+     score: number;
+     color: string;
+     icon: string;
+     description?: string;
+   }
+   ```
+
+   - Memoized matrix calculations
+   - Real-time score updates
+   - Balance score computation
+   - Integration with habit completion tracking
+   - Efficient re-rendering optimization
+
+### Matrix Data Flow
+
+```mermaid
+graph TD
+    Categories[CATEGORIES Constant] --> Templates[Habit Templates]
+    Categories --> MatrixHook[Matrix Hook]
+    Templates --> HabitStore[Habit Store]
+    HabitStore --> Scoring[Scoring System]
+    Scoring --> MatrixHook
+    MatrixHook --> MatrixGrid[Matrix Grid UI]
+    MatrixHook --> MatrixStats[Matrix Statistics]
+```
+
+### Scoring System
+
+1. **Daily Progress Score (DPS)**
+
+   - Calculated per category
+   - Based on completed habits vs. total active habits
+   - Skipped habits excluded from calculation
+   - Score range: 0-100
+
+2. **Dynamic Matrix Score (DMS)**
+
+   - Uses exponential smoothing
+   - Configurable parameters:
+     - SMOOTHING_FACTOR = 0.02 (α)
+     - LOOKBACK_WINDOW = 14 days
+   - Baseline scores from user profile
+   - Real-time updates on habit completion
+
+3. **Balance Score**
+   - Average of all category scores
+   - Updates dynamically with individual scores
+   - Represents overall life balance
+
+### Matrix Grid Implementation
+
+1. **Visual Representation**
+
+   - Category-specific colors
+   - Icon-based category identification
+   - Score visualization
+   - Interactive elements
+
+2. **Performance Optimization**
+
+   - Memoized calculations
+   - Efficient re-rendering
+   - Background score updates
+   - Smooth animations
+
+3. **User Interaction**
+   - Category selection
+   - Score history viewing
+   - Quick habit access
+   - Progress visualization
+
 ## Other System Patterns
 
 [Previous patterns remain unchanged...]
