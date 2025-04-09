@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import { FontAwesome6 } from '@expo/vector-icons';
-import Colors from '../../lib/constants/Colors';
+import Colors from '@/lib/constants/Colors';
 import * as Haptics from 'expo-haptics';
 
 interface CircularCounterProps {

@@ -13,10 +13,10 @@ import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import dayjs from 'dayjs';
 
-import { supabase } from '../supabase';
+import { supabase } from '@/lib/utils/supabase';
 import { newOnboardingStyles, onboardingGradient } from './newOnboardingStyles';
-import Colors from '../../lib/constants/Colors';
-import { useUserProfileStore } from '../../lib/interfaces/user_profile';
+import Colors from '@/lib/constants/Colors';
+import { useUserProfileStore } from '@/lib/interfaces/user_profile';
 
 const ONBOARDING_STEPS = [
   '/onboarding/OnboardingIntro',

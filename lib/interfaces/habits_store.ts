@@ -2,7 +2,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { supabase } from '../../app/supabase';
+import { supabase } from '../utils/supabase';
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
 import { Database } from '@/lib/utils/supabase_types';

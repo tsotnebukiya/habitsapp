@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, SafeAreaView } from 'react-native';
 import useUserProfileStore from '@/lib/interfaces/user_profile';
 import { useRouter } from 'expo-router';
-import { supabase } from '@/app/supabase';
+import { supabase } from '@/lib/utils/supabase';
 
 const SettingsScreen = () => {
   const router = useRouter();

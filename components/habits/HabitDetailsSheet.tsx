@@ -7,9 +7,9 @@ import {
   Dimensions,
 } from 'react-native';
 import { BottomSheetModal, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
-import { useHabitsStore } from '../../lib/interfaces/habits_store';
+import { useHabitsStore } from '@/lib/interfaces/habits_store';
 import { Database } from '@/lib/utils/supabase_types';
-import Colors from '../../lib/constants/Colors';
+import Colors from '@/lib/constants/Colors';
 import { FontAwesome6 } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import CircularCounter from '../shared/CircularCounter';

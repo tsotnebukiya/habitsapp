@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { View, Text, StyleSheet, Pressable } from 'react-native';
 import { Database } from '@/lib/utils/supabase_types';
-import Colors from '../../lib/constants/Colors';
+import Colors from '@/lib/constants/Colors';
 import * as Haptics from 'expo-haptics';
 import { FontAwesome6 } from '@expo/vector-icons';
 import Animated, {

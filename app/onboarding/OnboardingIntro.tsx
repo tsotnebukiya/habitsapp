@@ -20,7 +20,7 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import { FontAwesome6 } from '@expo/vector-icons';
-import Colors from '../../lib/constants/Colors';
+import Colors from '@/lib/constants/Colors';
 
 const { width, height } = Dimensions.get('window');
 

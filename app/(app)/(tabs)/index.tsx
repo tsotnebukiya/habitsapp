@@ -3,8 +3,8 @@ import { StyleSheet, SafeAreaView, View, TouchableOpacity } from 'react-native';
 import { ErrorBoundary } from '@sentry/react-native';
 import { useHabitsStore } from '@/lib/interfaces/habits_store';
 import useUserProfileStore from '@/lib/interfaces/user_profile';
-import WeekView from '../../../components/habits/WeekView';
-import HabitList from '../../../components/habits/HabitList';
+import WeekView from '@/components/habits/WeekView';
+import HabitList from '@/components/habits/HabitList';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 

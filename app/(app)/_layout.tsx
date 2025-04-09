@@ -1,9 +1,9 @@
 import { Redirect, Stack } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
-import useUserProfileStore from '../../lib/interfaces/user_profile';
+import useUserProfileStore from '@/lib/interfaces/user_profile';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { useHabitsStore } from '../../lib/interfaces/habits_store';
+import { useHabitsStore } from '@/lib/interfaces/habits_store';
 
 function StackLayout() {
   const { profile } = useUserProfileStore();

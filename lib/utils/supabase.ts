@@ -3,7 +3,7 @@ import 'react-native-url-polyfill/auto';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createClient } from '@supabase/supabase-js';
 import { Database } from '@/lib/utils/supabase_types';
-import { SUPABASE_ANON_KEY, SUPABASE_URL } from '../safe_constants';
+import { SUPABASE_ANON_KEY, SUPABASE_URL } from '@/safe_constants';
 
 export const supabase = createClient<Database>(
   SUPABASE_URL,
@@ -20,4 +20,4 @@ export const supabase = createClient<Database>(
 
 // Use this command to generate Supabase types
 // PROJECT_REF="PROJECT_ID"
-// npx supabase gen types typescript --project-id "$PROJECT_REF" --schema public > app/supabase_types.ts
+// npx supabase gen types typescript --project-id jmkqqbzjdndmxrtfibsa --schema public > app/supabase_types.ts

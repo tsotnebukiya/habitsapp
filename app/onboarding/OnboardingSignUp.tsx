@@ -12,10 +12,10 @@ import * as AppleAuthentication from 'expo-apple-authentication';
 import * as Haptics from 'expo-haptics';
 import { usePostHog } from 'posthog-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { supabase } from '../supabase';
+import { supabase } from '@/lib/utils/supabase';
 import { newOnboardingStyles, onboardingGradient } from './newOnboardingStyles';
-import useUserProfileStore from '../../lib/interfaces/user_profile';
-import { GOOGLE_SIGN_IN_IOS_CLIENT_ID } from '../../safe_constants';
+import useUserProfileStore from '@/lib/interfaces/user_profile';
+import { GOOGLE_SIGN_IN_IOS_CLIENT_ID } from '@/safe_constants';
 import { ONBOARDING_STEPS } from './OnboardingSteps';
 
 const OnboardingSignUp = () => {

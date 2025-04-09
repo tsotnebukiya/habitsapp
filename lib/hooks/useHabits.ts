@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useHabitsStore } from '../interfaces/habits_store';
-import { Database } from '../../app/supabase_types';
+import { Database } from '@/lib/utils/supabase_types';
 import dayjs from 'dayjs';
 
 type Habit = Database['public']['Tables']['habits']['Row'];
