@@ -58,8 +58,10 @@
 
    - ✅ Expo Router integration
    - ✅ Basic routing structure
+   - ✅ Bottom tab navigation
+   - ✅ Home and Stats tabs
    - ⚠️ Deep linking (partial)
-   - ❌ Navigation type definitions
+   - ✅ Navigation type definitions
 
 3. **State Management & Hooks**
 
@@ -119,25 +121,18 @@
 
 ### High Priority (Current Sprint)
 
-1. **Enhanced Habit Creation** ⏳
+1. **Achievement System** ⏳
 
-   - [x] Predefined habit templates by category
-   - [x] Template selection UI
-   - [x] Custom habit form fields completion
-   - [ ] Matrix category assignment
+   - [ ] Core achievement types design
+   - [ ] Achievement unlocking logic
+   - [ ] Achievement notifications
+   - [ ] Achievement display UI
 
-2. **Habit Interaction System** 📅
-
-   - [x] Unified habit detail modal
-   - [x] Uncomplete functionality
-   - [x] Increment/decrement controls
-   - [x] Edit and delete options
-
-3. **Matrix Score System** 📅
-   - [ ] Matrix categories definition
-   - [ ] Habit-to-matrix mapping
-   - [ ] Score calculations
-   - [ ] Matrix visualization
+2. **Statistics View** 📅
+   - [ ] Key charts implementation
+   - [ ] Habit comparison view
+   - [ ] Data connection
+   - [ ] Matrix score history
 
 ### Medium Priority
 
