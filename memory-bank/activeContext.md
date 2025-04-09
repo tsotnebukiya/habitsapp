@@ -332,3 +332,87 @@ The project is currently in its initial setup phase with the following areas of 
    - Consider caching strategies for score history
    - Plan UI improvements for matrix visualization
    - Consider adding category-specific insights
+
+### State Management Refactoring
+
+- Implementing shared store utilities
+- Standardizing store patterns
+- Improving offline support
+- Enhancing error handling
+
+### Achievement System
+
+- Streak-based achievements implementation
+- Integration with habits system
+- Local state management
+- Server synchronization
+
+### Recent Changes
+
+1. Created shared store utilities
+
+   - Base state interface
+   - Pending operations handling
+   - Error handling utilities
+   - AsyncStorage integration
+
+2. Updated achievements store
+
+   - Removed unnecessary functions
+   - Integrated shared utilities
+   - Improved error handling
+   - Enhanced offline support
+
+3. Updated habits store
+   - Integrated shared utilities
+   - Enhanced completion tracking
+   - Improved streak calculation
+   - Added progress tracking
+
+## Active Decisions
+
+### Store Architecture
+
+- Using Zustand for state management
+- Implementing offline-first approach
+- Standardizing error handling
+- Using shared utilities across stores
+
+### Data Flow
+
+- Optimistic updates for better UX
+- Server sync with retry mechanism
+- Pending operations for offline support
+- Local state as source of truth
+
+### Current Challenges
+
+1. Offline synchronization
+
+   - Handling conflicts
+   - Retry mechanisms
+   - Data consistency
+
+2. Achievement tracking
+   - Streak calculation
+   - Progress tracking
+   - User feedback
+
+## Next Steps
+
+1. Testing
+
+   - Unit tests for stores
+   - Integration tests
+   - Offline functionality testing
+
+2. UI Implementation
+
+   - Achievement display
+   - Progress indicators
+   - Error messages
+
+3. Performance Optimization
+   - State updates
+   - Data fetching
+   - Local storage

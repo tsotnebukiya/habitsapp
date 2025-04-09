@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, SafeAreaView } from 'react-native';
-import useUserProfileStore from '@/lib/interfaces/user_profile';
+import useUserProfileStore from '@/lib/stores/user_profile';
 import { useRouter } from 'expo-router';
 import { supabase } from '@/lib/utils/supabase';
 

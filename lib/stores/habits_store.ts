@@ -41,6 +41,7 @@ export interface HabitsState {
   deleteHabit: (id: string) => Promise<void>;
 
   // Completion actions
+  getCompletions: () => Map<string, HabitCompletion>;
   addCompletion: (
     completion: Omit<HabitCompletion, 'id' | 'created_at'>
   ) => Promise<string>;
@@ -203,18 +204,46 @@ export const useHabitsStore = create<HabitsState>()(
       },
 
       deleteHabit: async (id) => {
-        // Delete locally first
+        // Update locally first
         set((state) => {
+          const newState = { ...state };
+          // Remove all completions for this habit
+          const newCompletions = new Map(state.completions);
+          Array.from(newCompletions.entries()).forEach(([key, completion]) => {
+            if (completion.habit_id === id) {
+              newCompletions.delete(key);
+            }
+          });
+
+          // Remove the habit
           const newHabits = new Map(state.habits);
           newHabits.delete(id);
-          return { habits: newHabits };
+
+          newState.habits = newHabits;
+          newState.completions = newCompletions;
+          return newState;
         });
 
         try {
-          const { error } = await supabase.from('habits').delete().eq('id', id);
-          if (error) throw error;
+          // Delete completions from server first
+          const { error: completionsError } = await supabase
+            .from('habit_completions')
+            .delete()
+            .eq('habit_id', id);
+
+          if (completionsError) throw completionsError;
+
+          // Then delete the habit
+          const { error: habitError } = await supabase
+            .from('habits')
+            .delete()
+            .eq('id', id);
+
+          if (habitError) throw habitError;
         } catch (error) {
+          console.error('Error deleting habit:', error);
           set((state) => ({
+            ...state,
             pendingOperations: [
               ...state.pendingOperations,
               {
@@ -231,7 +260,7 @@ export const useHabitsStore = create<HabitsState>()(
 
         await get().processPendingOperations();
       },
-
+      getCompletions: () => get().completions,
       addCompletion: async (completionData) => {
         const now = dayjs().format();
         const newCompletion: HabitCompletion = {

@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useHabitsStore } from '../interfaces/habits_store';
+import { useHabitsStore } from '../stores/habits_store';
 import { Database } from '@/lib/utils/supabase_types';
 import dayjs from 'dayjs';
 

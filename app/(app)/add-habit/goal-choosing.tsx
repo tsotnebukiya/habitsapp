@@ -11,7 +11,7 @@ import { FontAwesome6 } from '@expo/vector-icons';
 import { MeasurementUnits } from '@/lib/constants/MeasurementUnits';
 import Colors from '@/lib/constants/Colors';
 import { NumericInput } from '@/components/shared/NumericInput';
-import { useAddHabitStore } from '@/lib/interfaces/add_habit_store';
+import { useAddHabitStore } from '@/lib/stores/add_habit_store';
 
 export default function GoalChoosing() {
   const router = useRouter();

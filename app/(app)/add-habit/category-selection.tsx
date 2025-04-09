@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
-import { useAddHabitStore } from '@/lib/interfaces/add_habit_store';
+import { useAddHabitStore } from '@/lib/stores/add_habit_store';
 import { CATEGORIES } from '@/lib/constants/HabitTemplates';
 import Colors from '@/lib/constants/Colors';
 

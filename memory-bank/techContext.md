@@ -185,3 +185,101 @@ yarn test --coverage
    - Prettier
    - TypeScript
    - Husky hooks
+
+## State Management
+
+### Zustand Store Implementation
+
+The application uses Zustand for state management with the following key features:
+
+- Persistent storage using AsyncStorage
+- Shared utility functions for common operations
+- Type-safe store implementations
+- Offline-first architecture
+
+### Key Dependencies
+
+- `zustand`: State management
+- `@react-native-async-storage/async-storage`: Local persistence
+- `dayjs`: Date manipulation
+- `uuid`: Unique ID generation
+- `@supabase/supabase-js`: Backend integration
+
+## Database Schema
+
+### Habits
+
+```sql
+CREATE TABLE habits (
+  id UUID PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id),
+  title TEXT NOT NULL,
+  description TEXT,
+  goal_value NUMERIC,
+  goal_unit TEXT,
+  days_of_week INTEGER[],
+  start_date TIMESTAMP WITH TIME ZONE,
+  end_date TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE,
+  updated_at TIMESTAMP WITH TIME ZONE,
+  is_active BOOLEAN DEFAULT true
+);
+```
+
+### Habit Completions
+
+```sql
+CREATE TYPE habit_completion_status AS ENUM ('not_started', 'in_progress', 'completed', 'failed');
+
+CREATE TABLE habit_completions (
+  id UUID PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id),
+  habit_id UUID REFERENCES habits(id),
+  completion_date DATE,
+  status habit_completion_status,
+  value NUMERIC,
+  created_at TIMESTAMP WITH TIME ZONE
+);
+```
+
+### User Achievements
+
+```sql
+CREATE TABLE user_achievements (
+  id UUID PRIMARY KEY,
+  user_id UUID REFERENCES auth.users(id),
+  streak_achievements JSONB,
+  created_at TIMESTAMP WITH TIME ZONE,
+  updated_at TIMESTAMP WITH TIME ZONE
+);
+```
+
+## Technical Decisions
+
+### Offline Support
+
+- Optimistic updates for immediate feedback
+- Pending operations queue for failed requests
+- Retry mechanism with exponential backoff
+- Local state as source of truth
+
+### Data Synchronization
+
+- Periodic sync with server
+- Manual sync trigger support
+- Conflict resolution favoring server state
+- Batch processing of pending operations
+
+### Error Handling
+
+- Centralized error handling
+- Type-safe error states
+- Retry mechanisms for transient failures
+- User-friendly error messages
+
+### Performance Considerations
+
+- Efficient local storage using Maps
+- Batch processing for network requests
+- Lazy loading of remote data
+- Optimized date calculations

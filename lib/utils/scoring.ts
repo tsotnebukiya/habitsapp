@@ -1,6 +1,6 @@
 import { HabitCategory, CATEGORY_IDS } from '../constants/HabitTemplates';
 import { Database } from '@/lib/utils/supabase_types';
-import { UserProfile } from '@/lib/interfaces/user_profile';
+import { UserProfile } from '@/lib/stores/user_profile';
 import dayjs from 'dayjs';
 
 // Use types derived from Supabase schema

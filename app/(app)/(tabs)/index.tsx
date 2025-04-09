@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, SafeAreaView, View, TouchableOpacity } from 'react-native';
 import { ErrorBoundary } from '@sentry/react-native';
-import { useHabitsStore } from '@/lib/interfaces/habits_store';
-import useUserProfileStore from '@/lib/interfaces/user_profile';
+import { useHabitsStore } from '@/lib/stores/habits_store';
+import useUserProfileStore from '@/lib/stores/user_profile';
 import WeekView from '@/components/habits/WeekView';
 import HabitList from '@/components/habits/HabitList';
 import { Ionicons } from '@expo/vector-icons';

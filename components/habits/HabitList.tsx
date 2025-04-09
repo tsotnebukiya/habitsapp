@@ -1,13 +1,15 @@
 import React, { useRef, useState, memo } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Button } from 'react-native';
 import { Database } from '@/lib/utils/supabase_types';
 import { useHabitsForDate } from '@/lib/hooks/useHabits';
 import HabitItem from './HabitItem';
 import HabitDetailsSheet from './HabitDetailsSheet';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import { useHabitsStore } from '@/lib/interfaces/habits_store';
+import { useHabitsStore } from '@/lib/stores/habits_store';
+import { useAchievementCalculator } from '@/lib/hooks/useAchievements';
 import Toast from 'react-native-toast-message';
 import Colors from '@/lib/constants/Colors';
+import dayjs from 'dayjs';
 
 type Habit = Database['public']['Tables']['habits']['Row'];
 
@@ -24,8 +26,9 @@ const HabitList = memo(function HabitList({ selectedDate }: HabitListProps) {
     getCurrentProgress,
     getProgressText,
     toggleHabitStatus,
+    getCompletions,
   } = useHabitsStore();
-
+  const { calculateAndUpdate } = useAchievementCalculator();
   const handleHabitLongPress = (habit: Habit) => {
     setSelectedHabit(habit);
     bottomSheetModalRef.current?.present();
@@ -33,12 +36,17 @@ const HabitList = memo(function HabitList({ selectedDate }: HabitListProps) {
 
   const handleHabitPress = (habit: Habit) => {
     const currentStatus = getHabitStatus(habit.id, selectedDate);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    selectedDate.setHours(0, 0, 0, 0);
+    const today = dayjs().startOf('day');
+    const selectedDay = dayjs(selectedDate).startOf('day');
 
-    if (selectedDate.getTime() !== today.getTime()) {
-      return; // Only allow interactions with today's habits
+    if (selectedDay.isAfter(today)) {
+      Toast.show({
+        type: 'info',
+        text1: 'Cannot complete future habits',
+        text2: 'Please wait until the day arrives',
+        position: 'bottom',
+      });
+      return;
     }
 
     if (currentStatus === 'completed') {
@@ -51,7 +59,13 @@ const HabitList = memo(function HabitList({ selectedDate }: HabitListProps) {
       return;
     }
 
-    toggleHabitStatus(habit.id, selectedDate, 'in_progress');
+    // Update habit status
+    const newStatus =
+      currentStatus === 'not_started' ? 'in_progress' : 'completed';
+    toggleHabitStatus(habit.id, selectedDate, newStatus);
+
+    // Calculate achievements on any status change that could affect streaks
+    calculateAndUpdate(getCompletions());
   };
 
   const handleDismiss = () => {
@@ -82,7 +96,6 @@ const HabitList = memo(function HabitList({ selectedDate }: HabitListProps) {
           />
         ))}
       </ScrollView>
-
       <HabitDetailsSheet
         habit={selectedHabit}
         date={selectedDate}

@@ -7,7 +7,7 @@ import {
   ScrollView,
   Image,
 } from 'react-native';
-import { useAddHabitStore } from '@/lib/interfaces/add_habit_store';
+import { useAddHabitStore } from '@/lib/stores/add_habit_store';
 import { HABIT_TEMPLATES } from '@/lib/constants/HabitTemplates';
 import { Ionicons } from '@expo/vector-icons';
 

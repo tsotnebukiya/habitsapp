@@ -11,9 +11,9 @@ import {
   Switch,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { useHabitsStore } from '@/lib/interfaces/habits_store';
-import { useAddHabitStore } from '@/lib/interfaces/add_habit_store';
-import useUserProfileStore from '@/lib/interfaces/user_profile';
+import { useHabitsStore } from '@/lib/stores/habits_store';
+import { useAddHabitStore } from '@/lib/stores/add_habit_store';
+import useUserProfileStore from '@/lib/stores/user_profile';
 import { Ionicons, FontAwesome6 } from '@expo/vector-icons';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import dayjs from 'dayjs';

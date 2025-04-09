@@ -514,3 +514,110 @@ graph TD
 ## Other System Patterns
 
 [Previous patterns remain unchanged...]
+
+## State Management
+
+### Shared Store Utilities
+
+The application uses a shared utilities pattern for store management, located in `lib/stores/shared.ts`. This provides:
+
+- Base interfaces and types for consistent store implementation
+- Utility functions for error handling and user management
+- Constants for retry attempts and intervals
+- Async storage helpers for persistence
+
+```typescript
+// Core shared interfaces
+interface BaseState {
+  lastSyncTime: Date;
+  isLoading: boolean;
+  error: string | null;
+}
+
+interface BasePendingOperation {
+  id: string;
+  type: 'create' | 'update' | 'delete';
+  timestamp: Date;
+  retryCount: number;
+  lastAttempt?: Date;
+}
+```
+
+### Store Implementation Pattern
+
+Each store follows a consistent pattern:
+
+1. **Base State Extension**
+
+   - Extends BaseState
+   - Includes local state (Maps/Arrays)
+   - Defines pending operations
+
+2. **CRUD Operations**
+
+   - Local state update first
+   - Server sync attempt
+   - Fallback to pending operations
+
+3. **Sync Management**
+   - Periodic sync with server
+   - Pending operations processing
+   - Error handling and retry logic
+
+### Achievement System
+
+The achievement system uses:
+
+- Streak-based achievements
+- Local state management
+- Server synchronization
+- Pending operations for offline support
+
+### Habits System
+
+The habits system implements:
+
+- Complex habit tracking
+- Completion status management
+- Progress calculation
+- Streak tracking
+- Offline support with pending operations
+
+## Data Flow Patterns
+
+### Optimistic Updates
+
+1. Update local state immediately
+2. Attempt server sync
+3. Queue failed operations
+4. Retry failed operations periodically
+
+### Error Handling
+
+Consistent error handling pattern:
+
+```typescript
+const errorHandler = createErrorHandler<State>(set);
+// Usage
+try {
+  // Operation
+} catch (error) {
+  errorHandler.setError(error as Error);
+}
+```
+
+### Persistence
+
+- Uses AsyncStorage for local persistence
+- Implements custom storage adapter
+- Handles serialization/deserialization
+
+## Authentication Pattern
+
+- User ID required for operations
+- Throws error if user not logged in
+- Consistent user ID retrieval:
+
+```typescript
+const userId = getUserIdOrThrow();
+```

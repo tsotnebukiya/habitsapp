@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
-import { useUserProfileStore } from '@/lib/interfaces/user_profile';
+import { useUserProfileStore } from '@/lib/stores/user_profile';
 import { calculateDMS, DisplayedMatrixScore } from '@/lib/utils/scoring';
-import { useHabitsStore } from '@/lib/interfaces/habits_store';
+import { useHabitsStore } from '@/lib/stores/habits_store';
 import { CATEGORIES, CATEGORY_IDS } from '@/lib/constants/HabitTemplates';
 import dayjs from 'dayjs';
 
