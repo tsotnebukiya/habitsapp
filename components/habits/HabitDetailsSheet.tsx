@@ -14,7 +14,6 @@ import { FontAwesome6 } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import CircularCounter from '../shared/CircularCounter';
 import Toast from 'react-native-toast-message';
-import { getAchievementDetails } from '@/lib/utils/achievement_scoring';
 import { StreakDays } from '@/lib/constants/achievements';
 
 type Habit = Database['public']['Tables']['habits']['Row'];
@@ -55,28 +54,10 @@ export default function HabitDetailsSheet({
     ),
     []
   );
-  const handleAchievementUpdate = (result: {
-    unlockedAchievements: StreakDays[];
-  }) => {
-    if (result.unlockedAchievements.length > 0) {
-      // Show achievement unlock notification for each achievement
-      result.unlockedAchievements.forEach((achievementId) => {
-        const achievement = getAchievementDetails(achievementId);
-        Toast.show({
-          type: 'success',
-          text1: '🎉 Achievement Unlocked!',
-          text2: `${achievement.name}: ${achievement.description}`,
-          position: 'bottom',
-          visibilityTime: 4000,
-        });
-      });
-    }
-  };
   const handleDelete = () => {
     if (!habit) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     deleteHabit(habit.id);
-    handleAchievementUpdate({ unlockedAchievements: [] });
     bottomSheetModalRef.current?.dismiss();
   };
 
@@ -86,20 +67,10 @@ export default function HabitDetailsSheet({
     // Will be expanded with edit functionality later
   };
 
-  const handleSkipToggle = () => {
+  const handleSkip = () => {
     if (!habit) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    const currentStatus = getHabitStatus(habit.id, date);
-    if (currentStatus === 'skipped') {
-      // If skipped, unskip to not_started state
-      const result = toggleHabitStatus(habit.id, date, 'not_started', 0);
-      handleAchievementUpdate(result);
-    } else {
-      // If not skipped, skip it (regardless of completion status)
-      const result = toggleHabitStatus(habit.id, date, 'skipped', 0);
-      handleAchievementUpdate(result);
-    }
-    bottomSheetModalRef.current?.dismiss();
+    toggleHabitStatus(habit.id, date, 'skipped');
   };
 
   const handleCompletion = () => {
@@ -108,31 +79,19 @@ export default function HabitDetailsSheet({
     const currentStatus = getHabitStatus(habit.id, date);
     if (currentStatus === 'completed') {
       // Uncomplete - reset to 0
-      const result = toggleHabitStatus(habit.id, date, 'not_started', 0);
-      handleAchievementUpdate(result);
+      toggleHabitStatus(habit.id, date, 'not_started', 0);
     } else {
       // Complete
       const maxValue = habit.goal_value || habit.completions_per_day || 1;
-      const result = toggleHabitStatus(habit.id, date, 'completed', maxValue);
-      handleAchievementUpdate(result);
+      toggleHabitStatus(habit.id, date, 'completed', maxValue);
     }
   };
 
   const handleProgressChange = (newValue: number) => {
     if (!habit) return;
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
 
-    // When maxed out, automatically mark as completed
-    const maxValue = habit.goal_value || habit.completions_per_day || 1;
-    const status: HabitCompletionStatus =
-      newValue === 0
-        ? 'not_started'
-        : newValue >= maxValue
-        ? 'completed'
-        : 'in_progress';
-
-    const result = toggleHabitStatus(habit.id, date, status, newValue);
-    handleAchievementUpdate(result);
+    const newStatus = newValue >= maxValue ? 'completed' : 'in_progress';
+    toggleHabitStatus(habit.id, date, newStatus, newValue);
   };
 
   // Fresh reads of the current status on each render
@@ -253,7 +212,7 @@ export default function HabitDetailsSheet({
                   styles.actionButton,
                   isSkipped && styles.activeActionButton,
                 ]}
-                onPress={handleSkipToggle}
+                onPress={handleSkip}
               >
                 <FontAwesome6
                   name="forward-step"

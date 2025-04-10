@@ -14,6 +14,13 @@ export const useAllHabits = () => {
   }, [habitsMap]);
 };
 
+export const useAllCompletions = () => {
+  const completionsMap = useHabitsStore((state) => state.getCompletions());
+  return useMemo(() => {
+    return Array.from(completionsMap.values());
+  }, [completionsMap]);
+};
+
 export const useHabitsForDate = (date: Date) => {
   const habitsMap = useHabitsStore((state) => state.habits);
 

@@ -7,21 +7,39 @@ import WeekView from '@/components/habits/WeekView';
 import HabitList from '@/components/habits/HabitList';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { useAllHabits, useAllCompletions } from '@/lib/hooks/useHabits';
+import {
+  useAllAchievements,
+  useCurrentStreak,
+} from '@/lib/hooks/useAchievements';
+import { useAchievementsStore } from '@/lib/stores/achievements_store';
 
 export default function Home() {
   const { profile } = useUserProfileStore();
-  const syncWithServer = useHabitsStore((state) => state.syncWithServer);
+  const syncHabits = useHabitsStore((state) => state.syncWithServer);
+  const syncAchievements = useAchievementsStore(
+    (state) => state.syncWithServer
+  );
   const [selectedDate, setSelectedDate] = useState(new Date());
   const router = useRouter();
-
+  // const habits = useAllHabits();
+  // const completions = useAllCompletions();
+  // const achievements = useAllAchievements();
+  // const currentStreak = useCurrentStreak();
+  // console.log('Habits:\n', JSON.stringify(habits, null, 2));
+  // console.log('Completions:\n', JSON.stringify(completions, null, 2));
+  // console.log('Achievements:\n', JSON.stringify(achievements, null, 2));
+  // console.log('Current Streak:\n', currentStreak);
   useEffect(() => {
     if (profile?.id) {
       // Initial sync
-      syncWithServer();
+      syncHabits();
+      syncAchievements();
 
       // Setup periodic sync every hour
       const syncInterval = setInterval(() => {
-        syncWithServer();
+        syncHabits();
+        syncAchievements();
       }, 1000 * 60 * 60); // 1 hour
 
       return () => {

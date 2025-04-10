@@ -364,10 +364,25 @@ The project is currently in its initial setup phase with the following areas of 
    - Enhanced offline support
 
 3. Updated habits store
+
    - Integrated shared utilities
    - Enhanced completion tracking
    - Improved streak calculation
    - Added progress tracking
+
+4. Optimized achievement system:
+
+- Centralized achievement notifications in achievements store
+- Removed duplicate handleAchievementUpdate functions
+- Simplified component logic
+- Improved performance with proper memoization
+
+22. Performance optimizations:
+
+- Fixed infinite update loops in hooks
+- Added solid backgrounds for shadow performance
+- Optimized shadow rendering across components
+- Removed unused imports and dead code
 
 ## Active Decisions
 
@@ -473,3 +488,156 @@ The project is currently in its initial setup phase with the following areas of 
      - Comparisons
      - Day of week calculations
      - Date formatting
+
+## Recent Changes
+
+1. Project initialization with Expo
+2. Basic directory structure setup
+3. Core dependencies installation
+4. Initial documentation creation
+5. Implemented habits interface with offline sync
+6. Added sync initialization in app layout
+7. Setup periodic sync in home tab
+8. Added App.md to Memory Bank
+9. Implemented `WeekView` and `HabitList` components.
+10. Added `AddHabit` modal form.
+11. Refactored `HabitList` to use `useHabitsForDate` hook.
+12. Renamed `habits.ts` store to `habits_store.ts`.
+13. Created `lib/hooks/useHabits.ts` with data selection hooks.
+14. Stabilized `useHabitsForDate` dependency using ISO date string.
+15. Optimized habit status toggle performance:
+
+- Removed blocking async operations
+- Implemented non-blocking state updates
+- Added performance timing measurements
+- Improved UI responsiveness
+
+16. Enhanced bottom sheet interactions:
+
+- Faster sheet closing animation
+- Immediate feedback for status changes
+
+17. Improved HabitItem UI:
+
+- Added visual feedback for skipped state
+- Enhanced status indication
+
+18. Optimized habit components:
+
+- Added React.memo for performance optimization
+- Removed console.log statements and dead code
+- Fixed weekly habit filtering by days of week
+
+19. Fixed habit filtering for weekly habits:
+
+- Implemented proper day-of-week filtering
+- Ensured weekly habits only appear on scheduled days
+
+20. Enhanced habit creation form:
+
+- Simplified UI with only essential fields visible
+- Added advanced settings section for optional fields
+- Corrected form header to always show "Add New Habit"
+
+### Calendar Day Visualization
+
+- Simplified calendar day visualization
+- Focused completion status on number only
+- Maintained clean visual hierarchy:
+  1. White container background
+  2. Light blue selected day
+  3. Blue circle indicators for completion
+  4. Blue text for today
+
+### Current Focus
+
+- Ensuring clear visual feedback for:
+  - Day selection
+  - Completion status
+  - Current day
+- Maintaining consistent spacing and alignment
+- Optimizing touch targets
+
+## Active Decisions
+
+### Authentication Implementation
+
+- Decision to use multiple auth providers (Apple, Google)
+- Token-based authentication approach
+- Secure storage strategy with MMKV
+
+### State Management
+
+- Zustand chosen for global state
+- MMKV for performance-critical data
+- AsyncStorage for larger datasets
+- Offline-first architecture with optimistic updates
+- Sync strategy with pending operations
+- **Pattern:** Use custom hooks (e.g., `useHabitsForDate`) to select and memoize derived data from stores
+- **Performance:** Non-blocking state updates for UI operations
+
+### Navigation
+
+- Expo Router v3 implementation
+- File-based routing structure
+- Deep linking support planning
+
+### Performance Optimizations
+
+1. **State Updates**
+
+   - Identified and removed blocking async operations
+   - Implemented background processing for server sync
+   - Added performance measurement points
+   - Achieved ~2-3ms response time for status updates
+
+2. **UI Responsiveness**
+   - Optimized bottom sheet animations
+   - Immediate visual feedback
+   - Background processing for non-critical operations
+
+## Next Steps
+
+### Immediate Focus: Achievement System UI
+
+1. **Achievement Display**
+
+   - Design and implement achievement list view
+   - Create achievement detail modal
+   - Add achievement progress tracking
+   - Implement achievement filters
+
+2. **Achievement Notifications**
+
+   - Design toast notification layout
+   - Add animation and interaction
+   - Implement notification queueing
+   - Add notification preferences
+
+3. **Achievement Categories**
+   - Design category system
+   - Implement category filters
+   - Add category progress tracking
+   - Create category-based views
+
+### Technical Debt & Optimization
+
+1. **Code Organization**
+
+   - Implement ESLint configuration
+   - Set up automatic import cleanup
+   - Organize component structure
+   - Document code patterns
+
+2. **Testing**
+
+   - Set up testing infrastructure
+   - Add unit tests for critical paths
+   - Implement integration tests
+   - Add performance benchmarks
+
+3. **Documentation**
+   - Update component documentation
+   - Document state management patterns
+   - Create contribution guidelines
+   - Add setup instructions

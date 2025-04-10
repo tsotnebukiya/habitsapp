@@ -75,6 +75,7 @@ export interface HabitsState extends BaseState {
     startDate: Date,
     endDate: Date
   ) => HabitCompletion[];
+  getAllCompletions: () => HabitCompletion[];
   getHabitStreak: (habitId: string) => number;
   clearError: () => void;
 }
@@ -646,6 +647,10 @@ export const useHabitsStore = create<HabitsState>()(
             completionDate.isSameOrBefore(end)
           );
         });
+      },
+
+      getAllCompletions: () => {
+        return Array.from(get().completions.values());
       },
 
       getHabitStreak: (habitId) => {

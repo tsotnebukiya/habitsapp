@@ -17,8 +17,10 @@ import {
   calculateNewAchievements,
   calculateAchievementsToRemove,
   getNewlyUnlockedAchievements,
+  getAchievementDetails,
 } from '@/lib/utils/achievement_scoring';
 import { StreakDays } from '@/lib/constants/achievements';
+import Toast from 'react-native-toast-message';
 
 type UserAchievement = Database['public']['Tables']['user_achievements']['Row'];
 type HabitCompletion = Database['public']['Tables']['habit_completions']['Row'];
@@ -77,6 +79,20 @@ export const useAchievementsStore = create<AchievementsState>()(
             get().streakAchievements,
             achievementsAfterRemoval
           );
+
+          // Show achievement unlock notifications
+          if (unlockedAchievements.length > 0) {
+            unlockedAchievements.forEach((achievementId) => {
+              const achievement = getAchievementDetails(achievementId);
+              Toast.show({
+                type: 'success',
+                text1: '🎉 Achievement Unlocked!',
+                text2: `${achievement.name}: ${achievement.description}`,
+                position: 'bottom',
+                visibilityTime: 4000,
+              });
+            });
+          }
 
           // Update local state immediately
           if (

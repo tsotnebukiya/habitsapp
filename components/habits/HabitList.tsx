@@ -9,8 +9,6 @@ import { useHabitsStore } from '@/lib/stores/habits_store';
 import Toast from 'react-native-toast-message';
 import Colors from '@/lib/constants/Colors';
 import dayjs from 'dayjs';
-import { getAchievementDetails } from '@/lib/utils/achievement_scoring';
-import { StreakDays } from '@/lib/constants/achievements';
 
 type Habit = Database['public']['Tables']['habits']['Row'];
 
@@ -28,24 +26,6 @@ const HabitList = memo(function HabitList({ selectedDate }: HabitListProps) {
     getProgressText,
     toggleHabitStatus,
   } = useHabitsStore();
-
-  const handleAchievementUpdate = (result: {
-    unlockedAchievements: StreakDays[];
-  }) => {
-    if (result.unlockedAchievements.length > 0) {
-      // Show achievement unlock notification for each achievement
-      result.unlockedAchievements.forEach((achievementId) => {
-        const achievement = getAchievementDetails(achievementId);
-        Toast.show({
-          type: 'success',
-          text1: '🎉 Achievement Unlocked!',
-          text2: `${achievement.name}: ${achievement.description}`,
-          position: 'bottom',
-          visibilityTime: 4000,
-        });
-      });
-    }
-  };
 
   const handleHabitLongPress = (habit: Habit) => {
     setSelectedHabit(habit);
@@ -80,8 +60,7 @@ const HabitList = memo(function HabitList({ selectedDate }: HabitListProps) {
     // Update habit status
     const newStatus =
       currentStatus === 'not_started' ? 'in_progress' : 'completed';
-    const result = toggleHabitStatus(habit.id, selectedDate, newStatus);
-    handleAchievementUpdate(result);
+    toggleHabitStatus(habit.id, selectedDate, newStatus);
   };
 
   const handleDismiss = () => {
