@@ -416,3 +416,48 @@ The project is currently in its initial setup phase with the following areas of 
    - State updates
    - Data fetching
    - Local storage
+
+## Current Focus (Updated)
+
+### Achievement System Optimization
+
+- Attempted to consolidate achievement calculation functions but reverted due to separation of concerns
+- Current implementation maintains distinct functions for:
+  1. `calculateNewAchievements`: Handles unlocking new achievements
+  2. `calculateAchievementsToRemove`: Manages achievement removal on streak breaks
+  3. `getNewlyUnlockedAchievements`: Tracks newly unlocked achievements
+
+### Next Steps
+
+1. Optimize achievements store
+
+   - Review current store implementation
+   - Identify potential performance bottlenecks
+   - Implement memoization where beneficial
+   - Consider using derived stores for computed values
+
+2. Optimize habits store
+
+   - Analyze current data flow
+   - Review state management patterns
+   - Implement performance optimizations
+   - Consider batch updates for multiple habits
+
+3. Optimize hooks
+   - Review current hook implementations
+   - Identify unnecessary re-renders
+   - Implement useMemo and useCallback where beneficial
+   - Consider custom hooks for shared logic
+
+### Active Decisions
+
+- Maintaining separate achievement calculation functions for better separation of concerns
+- Each function has a clear, single responsibility
+- This approach favors maintainability and clarity over code consolidation
+
+### Current Considerations
+
+- Need to balance performance optimizations with code maintainability
+- Focus on reducing unnecessary re-renders in React components
+- Consider implementing caching strategies for frequently accessed data
+- Evaluate the impact of store optimizations on overall app performance

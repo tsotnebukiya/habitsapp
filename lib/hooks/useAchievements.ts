@@ -57,7 +57,6 @@ export const useAchievementCalculator = () => {
         currentStreak,
         newAchievements
       );
-      console.log('current', achievementsAfterRemoval);
       // Get list of newly unlocked achievements
       const unlockedAchievements = getNewlyUnlockedAchievements(
         streakAchievements,
