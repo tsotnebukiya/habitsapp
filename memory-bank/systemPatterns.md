@@ -621,3 +621,62 @@ try {
 ```typescript
 const userId = getUserIdOrThrow();
 ```
+
+### Date Handling Pattern
+
+1. **Core Date Library**
+
+   ```typescript
+   // Always import from our custom instance
+   import dayjs from '@/lib/utils/dayjs';
+   ```
+
+2. **Standard Operations**
+
+   ```typescript
+   // Date normalization
+   const normalizedDate = dayjs(date).startOf('day');
+
+   // Date comparisons
+   const isInRange = startDate.isSameOrBefore(targetDate, 'day');
+
+   // Day of week
+   const dayOfWeek = dayjs(date).day(); // 0 = Sunday
+
+   // Formatting
+   const formatted = dayjs(date).format();
+   ```
+
+3. **Best Practices**
+
+   - Use custom dayjs instance from `@/lib/utils/dayjs`
+   - Avoid native Date methods
+   - Use dayjs's type-safe comparison methods
+   - Store dates in ISO format
+   - Convert to Date using `toDate()` when storing in state/database
+
+4. **Common Use Cases**
+
+   ```typescript
+   // In hooks
+   const useDataForDate = (date: Date) => {
+     return useMemo(() => {
+       const targetDate = dayjs(date);
+       // Use dayjs methods for comparisons
+     }, [date]);
+   };
+
+   // In components
+   const MyComponent = ({ date }: { date: Date }) => {
+     const normalizedDate = dayjs(date).startOf('day');
+     // Use normalized date for operations
+   };
+
+   // In stores
+   const store = create<State>()((set) => ({
+     setDate: (date: Date) =>
+       set({
+         date: dayjs(date).toDate(),
+       }),
+   }));
+   ```

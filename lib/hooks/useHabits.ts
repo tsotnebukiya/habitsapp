@@ -1,16 +1,9 @@
 import { useMemo } from 'react';
 import { useHabitsStore } from '../stores/habits_store';
 import { Database } from '@/lib/utils/supabase_types';
-import dayjs from 'dayjs';
+import dayjs from '@/lib/utils/dayjs';
 
 type Habit = Database['public']['Tables']['habits']['Row'];
-
-// Normalize date for consistent comparisons by setting time to 00:00:00
-const normalizeDate = (date: Date): Date => {
-  const normalized = new Date(date);
-  normalized.setHours(0, 0, 0, 0);
-  return normalized;
-};
 
 export const useAllHabits = () => {
   const habitsMap = useHabitsStore((state) => state.habits);
@@ -25,19 +18,19 @@ export const useHabitsForDate = (date: Date) => {
   const habitsMap = useHabitsStore((state) => state.habits);
 
   return useMemo(() => {
-    const comparisonDate = normalizeDate(date);
-    const dayOfWeek = date.getDay(); // 0 = Sunday, 1 = Monday, etc.
+    const targetDate = dayjs(date);
+    const dayOfWeek = targetDate.day(); // 0 = Sunday, 1 = Monday, etc.
 
     return Array.from(habitsMap.values()).filter((habit: Habit) => {
       // First check start/end date ranges
-      const startDate = normalizeDate(new Date(habit.start_date));
+      const startDate = dayjs(habit.start_date).startOf('day');
       const endDate = habit.end_date
-        ? normalizeDate(new Date(habit.end_date))
+        ? dayjs(habit.end_date).startOf('day')
         : null;
 
       const isInDateRange =
-        startDate <= comparisonDate &&
-        (!endDate || comparisonDate <= endDate) &&
+        startDate.isSameOrBefore(targetDate, 'day') &&
+        (!endDate || endDate.isSameOrAfter(targetDate, 'day')) &&
         habit.is_active;
 
       if (!isInDateRange) return false;

@@ -324,6 +324,47 @@ import dayjs from 'dayjs';
 - Date arithmetic: `dayjs().subtract(1, 'day')`
 - Normalized dates: `dayjs(date).format('YYYY-MM-DD')`
 
+## Date Handling Standards
+
+### Core Date Library
+
+1. **Day.js Implementation**
+
+   - Using custom dayjs instance from `@/lib/utils/dayjs`
+   - All date operations must use this instance
+   - Direct import from 'dayjs' is prohibited
+
+2. **Standard Date Operations**
+
+   - Start of day: `dayjs(date).startOf('day')`
+   - Date comparisons: Use dayjs methods like `isSameOrBefore`, `isSameOrAfter` with 'day' granularity
+   - Day of week: Use `day()` method instead of native `getDay()`
+   - Date formatting: Use dayjs's `format()` method for consistent output
+
+3. **Best Practices**
+
+   - Always use dayjs for date manipulations
+   - Avoid native Date methods
+   - Store dates in ISO format
+   - Use dayjs's type-safe methods for comparisons
+   - When storing in state/database, convert to Date using `toDate()`
+
+4. **Common Patterns**
+
+   ```typescript
+   // Date normalization
+   const normalizedDate = dayjs(date).startOf('day');
+
+   // Date comparisons
+   const isInRange = startDate.isSameOrBefore(targetDate, 'day');
+
+   // Getting day of week
+   const dayOfWeek = dayjs(date).day(); // 0 = Sunday
+
+   // Formatting
+   const formatted = dayjs(date).format();
+   ```
+
 ## Storage
 
 [Storage documentation will go here]

@@ -3,7 +3,7 @@ import { useUserProfileStore } from '@/lib/stores/user_profile';
 import { calculateDMS, DisplayedMatrixScore } from '@/lib/utils/scoring';
 import { useHabitsStore } from '@/lib/stores/habits_store';
 import { CATEGORIES, CATEGORY_IDS } from '@/lib/constants/HabitTemplates';
-import dayjs from 'dayjs';
+import dayjs from '@/lib/utils/dayjs';
 
 export interface MatrixCategory {
   id: (typeof CATEGORY_IDS)[number] | 'total';
@@ -40,7 +40,7 @@ export function useMatrix() {
         heart: 50,
         spirit: 50,
         work: 50,
-        calculated_at: new Date(),
+        calculated_at: dayjs().toDate(),
       };
     }
 

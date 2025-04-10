@@ -461,3 +461,15 @@ The project is currently in its initial setup phase with the following areas of 
 - Focus on reducing unnecessary re-renders in React components
 - Consider implementing caching strategies for frequently accessed data
 - Evaluate the impact of store optimizations on overall app performance
+
+1. Standardized date handling across the application:
+   - Migrated to custom dayjs instance from `@/lib/utils/dayjs`
+   - Removed direct dayjs imports
+   - Updated date operations in hooks:
+     - `useHabits`: Improved date comparisons with dayjs methods
+     - `useMatrix`: Standardized date handling for matrix calculations
+   - Established consistent patterns for:
+     - Date normalization
+     - Comparisons
+     - Day of week calculations
+     - Date formatting
