@@ -35,11 +35,6 @@ export interface HabitsState extends BaseState {
   completions: Map<string, HabitCompletion>;
   pendingOperations: PendingOperation[];
 
-  // Achievement-related functionality
-  getAllAchievements: () => StreakAchievements;
-  getAchievementStatus: (days: StreakDays) => boolean;
-  getCurrentStreak: () => number;
-
   // Habit actions
   addHabit: (
     habit: Omit<Habit, 'id' | 'created_at' | 'updated_at'>
@@ -61,10 +56,7 @@ export interface HabitsState extends BaseState {
     date: Date,
     status: HabitCompletionStatus,
     value?: number
-  ) => {
-    unlockedAchievements: StreakDays[];
-    currentStreak: number;
-  };
+  ) => void;
 
   // Habit status actions
   getHabitStatus: (habitId: string, date: Date) => HabitCompletionStatus;
@@ -117,30 +109,6 @@ export const useHabitsStore = create<HabitsState>()(
       completions: new Map(),
       pendingOperations: [],
 
-      // Achievement-related functionality
-      getAllAchievements: () => {
-        return useAchievementsStore.getState().getStreakAchievements();
-      },
-
-      getAchievementStatus: (days: StreakDays) => {
-        const achievements = useAchievementsStore
-          .getState()
-          .getStreakAchievements();
-        return achievements[days] || false;
-      },
-
-      getCurrentStreak: () => {
-        const achievements = useAchievementsStore
-          .getState()
-          .getStreakAchievements();
-        return Math.max(
-          ...Object.entries(achievements)
-            .filter(([_, achieved]) => achieved)
-            .map(([days]) => Number(days)),
-          0
-        );
-      },
-
       addHabit: async (habitData) => {
         const now = dayjs();
         const userId = getUserIdOrThrow();
@@ -160,6 +128,8 @@ export const useHabitsStore = create<HabitsState>()(
           newHabits.set(newHabit.id, newHabit);
           return { habits: newHabits };
         });
+
+        // TODO: Add achievement update or not?
 
         try {
           const { error } = await supabase.from('habits').insert(newHabit);
@@ -200,6 +170,8 @@ export const useHabitsStore = create<HabitsState>()(
           newHabits.set(id, updatedHabit);
           return { habits: newHabits };
         });
+
+        // TODO: Add achievement update or not?
 
         try {
           const { error } = await supabase
@@ -244,6 +216,9 @@ export const useHabitsStore = create<HabitsState>()(
 
           newState.habits = newHabits;
           newState.completions = newCompletions;
+
+          // TODO: Add achievement update or not?
+
           return newState;
         });
 
@@ -404,9 +379,8 @@ export const useHabitsStore = create<HabitsState>()(
               value: 0,
             });
           }
-          return useAchievementsStore
-            .getState()
-            .calculateAndUpdate(get().completions);
+          useAchievementsStore.getState().calculateAndUpdate(get().completions);
+          return;
         }
 
         // For not_started status, set value to 0
@@ -468,10 +442,8 @@ export const useHabitsStore = create<HabitsState>()(
             value: newValue,
           });
         }
-
-        return useAchievementsStore
-          .getState()
-          .calculateAndUpdate(get().completions);
+        useAchievementsStore.getState().calculateAndUpdate(get().completions);
+        return;
       },
 
       getHabitStatus: (habitId: string, date: Date): HabitCompletionStatus => {
