@@ -7,6 +7,13 @@ import { v4 as uuidv4 } from 'uuid';
 import dayjs from 'dayjs';
 import { Database } from '@/lib/utils/supabase_types';
 import useUserProfileStore from './user_profile';
+import {
+  BasePendingOperation,
+  BaseState,
+  createBaseState,
+  getUserIdOrThrow,
+  STORE_CONSTANTS,
+} from './shared';
 
 // Types from Supabase schema
 type Habit = Database['public']['Tables']['habits']['Row'];
@@ -14,24 +21,16 @@ type HabitCompletion = Database['public']['Tables']['habit_completions']['Row'];
 type HabitCompletionStatus =
   Database['public']['Enums']['habit_completion_status'];
 
-interface PendingOperation {
-  id: string;
-  type: 'create' | 'update' | 'delete';
+interface PendingOperation extends BasePendingOperation {
   table: 'habits' | 'habit_completions';
   data?: Habit | HabitCompletion;
-  timestamp: Date;
-  retryCount: number;
-  lastAttempt?: Date;
 }
 
-export interface HabitsState {
+export interface HabitsState extends BaseState {
   // Local state
   habits: Map<string, Habit>;
   completions: Map<string, HabitCompletion>;
   pendingOperations: PendingOperation[];
-  lastSyncTime: Date;
-  isLoading: boolean;
-  error: string | null;
 
   // Habit actions
   addHabit: (
@@ -76,10 +75,6 @@ export interface HabitsState {
   clearError: () => void;
 }
 
-// Constants
-const MAX_RETRY_ATTEMPTS = 3;
-const MIN_RETRY_INTERVAL = 1000 * 60; // 1 minute
-
 // USAGE NOTES:
 // 1. Call syncWithServer() in these situations:
 //    - When your app launches
@@ -105,19 +100,14 @@ const MIN_RETRY_INTERVAL = 1000 * 60; // 1 minute
 export const useHabitsStore = create<HabitsState>()(
   persist(
     (set, get) => ({
+      ...createBaseState(),
       habits: new Map(),
       completions: new Map(),
       pendingOperations: [],
-      lastSyncTime: new Date(0),
-      isLoading: false,
-      error: null,
 
       addHabit: async (habitData) => {
         const now = dayjs().format();
-        const userId = useUserProfileStore.getState().profile?.id;
-        if (!userId) {
-          throw new Error('User not logged in');
-        }
+        const userId = getUserIdOrThrow();
 
         const newHabit: Habit = {
           ...habitData,
@@ -384,10 +374,7 @@ export const useHabitsStore = create<HabitsState>()(
         status: HabitCompletionStatus,
         value?: number
       ) => {
-        const userId = useUserProfileStore.getState().profile?.id;
-        if (!userId) {
-          throw new Error('User not logged in');
-        }
+        const userId = getUserIdOrThrow();
 
         const habit = get().habits.get(habitId);
         if (!habit) {
@@ -546,14 +533,15 @@ export const useHabitsStore = create<HabitsState>()(
           // Skip if we've tried too recently
           if (
             operation.lastAttempt &&
-            now.getTime() - operation.lastAttempt.getTime() < MIN_RETRY_INTERVAL
+            now.getTime() - operation.lastAttempt.getTime() <
+              STORE_CONSTANTS.MIN_RETRY_INTERVAL
           ) {
             remainingOperations.push(operation);
             continue;
           }
 
           try {
-            if (operation.retryCount >= MAX_RETRY_ATTEMPTS) {
+            if (operation.retryCount >= STORE_CONSTANTS.MAX_RETRY_ATTEMPTS) {
               console.error(
                 `[Habits Store] Max retries exceeded for operation on ${operation.id}`
               );
