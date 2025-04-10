@@ -4,7 +4,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { supabase } from '../utils/supabase';
 import { v4 as uuidv4 } from 'uuid';
-import dayjs from 'dayjs';
+import dayjs from '@/lib/utils/dayjs';
 import { Database } from '@/lib/utils/supabase_types';
 import useUserProfileStore from './user_profile';
 import {
@@ -106,15 +106,15 @@ export const useHabitsStore = create<HabitsState>()(
       pendingOperations: [],
 
       addHabit: async (habitData) => {
-        const now = dayjs().format();
+        const now = dayjs();
         const userId = getUserIdOrThrow();
 
         const newHabit: Habit = {
           ...habitData,
           id: uuidv4(),
           user_id: userId,
-          created_at: now,
-          updated_at: now,
+          created_at: now.toISOString(),
+          updated_at: now.toISOString(),
           is_active: true,
         };
 
@@ -129,19 +129,17 @@ export const useHabitsStore = create<HabitsState>()(
           const { error } = await supabase.from('habits').insert(newHabit);
           if (error) throw error;
         } catch (error) {
+          const pendingOp = {
+            id: newHabit.id,
+            type: 'create' as const,
+            table: 'habits' as const,
+            data: newHabit,
+            timestamp: now.toDate(),
+            retryCount: 0,
+            lastAttempt: now.toDate(),
+          };
           set((state) => ({
-            pendingOperations: [
-              ...state.pendingOperations,
-              {
-                id: newHabit.id,
-                type: 'create',
-                table: 'habits',
-                data: newHabit,
-                timestamp: dayjs().toDate(),
-                retryCount: 0,
-                lastAttempt: dayjs().toDate(),
-              },
-            ],
+            pendingOperations: [...state.pendingOperations, pendingOp],
           }));
         }
 
@@ -153,10 +151,11 @@ export const useHabitsStore = create<HabitsState>()(
         const habit = get().habits.get(id);
         if (!habit) return;
 
+        const now = dayjs();
         const updatedHabit = {
           ...habit,
           ...updates,
-          updated_at: dayjs().format(),
+          updated_at: now.toISOString(),
         };
 
         // Update local first
@@ -174,19 +173,17 @@ export const useHabitsStore = create<HabitsState>()(
 
           if (error) throw error;
         } catch (error) {
+          const pendingOp = {
+            id,
+            type: 'update' as const,
+            table: 'habits' as const,
+            data: updatedHabit,
+            timestamp: now.toDate(),
+            retryCount: 0,
+            lastAttempt: now.toDate(),
+          };
           set((state) => ({
-            pendingOperations: [
-              ...state.pendingOperations,
-              {
-                id,
-                type: 'update',
-                table: 'habits',
-                data: updatedHabit,
-                timestamp: dayjs().toDate(),
-                retryCount: 0,
-                lastAttempt: dayjs().toDate(),
-              },
-            ],
+            pendingOperations: [...state.pendingOperations, pendingOp],
           }));
         }
 
@@ -231,32 +228,33 @@ export const useHabitsStore = create<HabitsState>()(
 
           if (habitError) throw habitError;
         } catch (error) {
+          const now = dayjs();
+          const pendingOp = {
+            id,
+            type: 'delete' as const,
+            table: 'habits' as const,
+            timestamp: now.toDate(),
+            retryCount: 0,
+            lastAttempt: now.toDate(),
+          };
           console.error('Error deleting habit:', error);
           set((state) => ({
             ...state,
-            pendingOperations: [
-              ...state.pendingOperations,
-              {
-                id,
-                type: 'delete',
-                table: 'habits',
-                timestamp: dayjs().toDate(),
-                retryCount: 0,
-                lastAttempt: dayjs().toDate(),
-              },
-            ],
+            pendingOperations: [...state.pendingOperations, pendingOp],
           }));
         }
 
         await get().processPendingOperations();
       },
+
       getCompletions: () => get().completions,
+
       addCompletion: async (completionData) => {
-        const now = dayjs().format();
+        const now = dayjs();
         const newCompletion: HabitCompletion = {
           ...completionData,
           id: uuidv4(),
-          created_at: now,
+          created_at: now.toISOString(),
         };
 
         // Update local store first
@@ -272,19 +270,17 @@ export const useHabitsStore = create<HabitsState>()(
             .insert(newCompletion);
           if (error) throw error;
         } catch (error) {
+          const pendingOp = {
+            id: newCompletion.id,
+            type: 'create' as const,
+            table: 'habit_completions' as const,
+            data: newCompletion,
+            timestamp: now.toDate(),
+            retryCount: 0,
+            lastAttempt: now.toDate(),
+          };
           set((state) => ({
-            pendingOperations: [
-              ...state.pendingOperations,
-              {
-                id: newCompletion.id,
-                type: 'create',
-                table: 'habit_completions',
-                data: newCompletion,
-                timestamp: dayjs().toDate(),
-                retryCount: 0,
-                lastAttempt: dayjs().toDate(),
-              },
-            ],
+            pendingOperations: [...state.pendingOperations, pendingOp],
           }));
         }
 
@@ -316,19 +312,18 @@ export const useHabitsStore = create<HabitsState>()(
 
           if (error) throw error;
         } catch (error) {
+          const now = dayjs();
+          const pendingOp = {
+            id,
+            type: 'update' as const,
+            table: 'habit_completions' as const,
+            data: updatedCompletion,
+            timestamp: now.toDate(),
+            retryCount: 0,
+            lastAttempt: now.toDate(),
+          };
           set((state) => ({
-            pendingOperations: [
-              ...state.pendingOperations,
-              {
-                id,
-                type: 'update',
-                table: 'habit_completions',
-                data: updatedCompletion,
-                timestamp: dayjs().toDate(),
-                retryCount: 0,
-                lastAttempt: dayjs().toDate(),
-              },
-            ],
+            pendingOperations: [...state.pendingOperations, pendingOp],
           }));
         }
 
@@ -350,18 +345,17 @@ export const useHabitsStore = create<HabitsState>()(
             .eq('id', id);
           if (error) throw error;
         } catch (error) {
+          const now = dayjs();
+          const pendingOp = {
+            id,
+            type: 'delete' as const,
+            table: 'habit_completions' as const,
+            timestamp: now.toDate(),
+            retryCount: 0,
+            lastAttempt: now.toDate(),
+          };
           set((state) => ({
-            pendingOperations: [
-              ...state.pendingOperations,
-              {
-                id,
-                type: 'delete',
-                table: 'habit_completions',
-                timestamp: dayjs().toDate(),
-                retryCount: 0,
-                lastAttempt: dayjs().toDate(),
-              },
-            ],
+            pendingOperations: [...state.pendingOperations, pendingOp],
           }));
         }
 
@@ -526,14 +520,14 @@ export const useHabitsStore = create<HabitsState>()(
 
       processPendingOperations: async () => {
         const { pendingOperations } = get();
-        const now = dayjs().toDate();
+        const now = dayjs();
         const remainingOperations: PendingOperation[] = [];
 
         for (const operation of pendingOperations) {
           // Skip if we've tried too recently
           if (
             operation.lastAttempt &&
-            now.getTime() - operation.lastAttempt.getTime() <
+            now.diff(dayjs(operation.lastAttempt)) <
               STORE_CONSTANTS.MIN_RETRY_INTERVAL
           ) {
             remainingOperations.push(operation);
@@ -571,7 +565,7 @@ export const useHabitsStore = create<HabitsState>()(
             remainingOperations.push({
               ...operation,
               retryCount: operation.retryCount + 1,
-              lastAttempt: now,
+              lastAttempt: now.toDate(),
             });
           }
         }
@@ -611,8 +605,9 @@ export const useHabitsStore = create<HabitsState>()(
               const localHabit = localHabits.get(serverHabit.id);
               if (
                 !localHabit ||
-                new Date(serverHabit.updated_at) >
-                  new Date(localHabit.updated_at)
+                dayjs(serverHabit.updated_at).isAfter(
+                  dayjs(localHabit.updated_at)
+                )
               ) {
                 set((state) => {
                   const newHabits = new Map(state.habits);
@@ -649,11 +644,12 @@ export const useHabitsStore = create<HabitsState>()(
 
       getHabitsByDate: (date) => {
         return Array.from(get().habits.values()).filter((habit) => {
-          const startDate = new Date(habit.start_date);
-          const endDate = habit.end_date ? new Date(habit.end_date) : null;
+          const startDate = dayjs(habit.start_date);
+          const endDate = habit.end_date ? dayjs(habit.end_date) : null;
+          const targetDate = dayjs(date);
           return (
-            startDate <= date &&
-            (!endDate || date <= endDate) &&
+            startDate.isSameOrBefore(targetDate) &&
+            (!endDate || endDate.isSameOrAfter(targetDate)) &&
             habit.is_active
           );
         });
@@ -661,11 +657,13 @@ export const useHabitsStore = create<HabitsState>()(
 
       getCompletionsForHabit: (habitId, startDate, endDate) => {
         return Array.from(get().completions.values()).filter((completion) => {
-          const completionDate = new Date(completion.completion_date);
+          const completionDate = dayjs(completion.completion_date);
+          const start = dayjs(startDate);
+          const end = dayjs(endDate);
           return (
             completion.habit_id === habitId &&
-            completionDate >= startDate &&
-            completionDate <= endDate
+            completionDate.isSameOrAfter(start) &&
+            completionDate.isSameOrBefore(end)
           );
         });
       },
@@ -679,21 +677,22 @@ export const useHabitsStore = create<HabitsState>()(
         );
         if (completions.length === 0) return 0;
 
-        const today = dayjs().startOf('day').toDate().getTime();
+        const today = dayjs().startOf('day');
         let currentStreak = 0;
         let currentDate = today;
 
         while (true) {
           const hasCompletionForDay = completions.some(
             (completion) =>
-              new Date(completion.completion_date).setHours(0, 0, 0, 0) ===
-                currentDate && completion.status === 'completed'
+              dayjs(completion.completion_date)
+                .startOf('day')
+                .isSame(currentDate) && completion.status === 'completed'
           );
 
           if (!hasCompletionForDay) break;
 
           currentStreak++;
-          currentDate -= 86400000; // Subtract one day in milliseconds
+          currentDate = currentDate.subtract(1, 'day');
         }
 
         return currentStreak;
@@ -714,13 +713,13 @@ export const useHabitsStore = create<HabitsState>()(
               ...value.state,
               habits: new Map(value.state.habits),
               completions: new Map(value.state.completions),
-              lastSyncTime: new Date(value.state.lastSyncTime),
+              lastSyncTime: dayjs(value.state.lastSyncTime).toDate(),
               pendingOperations: value.state.pendingOperations.map(
                 (op: any) => ({
                   ...op,
-                  timestamp: new Date(op.timestamp),
+                  timestamp: dayjs(op.timestamp).toDate(),
                   lastAttempt: op.lastAttempt
-                    ? new Date(op.lastAttempt)
+                    ? dayjs(op.lastAttempt).toDate()
                     : undefined,
                 })
               ),
@@ -738,7 +737,7 @@ export const useHabitsStore = create<HabitsState>()(
               pendingOperations: value.state.pendingOperations.map(
                 (op: PendingOperation) => ({
                   ...op,
-                  timestamp: op.timestamp.toISOString(),
+                  timestamp: dayjs(op.timestamp).toISOString(),
                   lastAttempt: op.lastAttempt?.toISOString(),
                 })
               ),

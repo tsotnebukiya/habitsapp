@@ -283,3 +283,51 @@ CREATE TABLE user_achievements (
 - Batch processing for network requests
 - Lazy loading of remote data
 - Optimized date calculations
+
+## Date Handling
+
+All date operations in the application use dayjs, configured through a central configuration file at `lib/utils/dayjs.ts`. This ensures consistent date handling across the application.
+
+### Configuration
+
+The dayjs configuration includes:
+
+- Basic date operations (`dayjs()`, `toDate()`, `toISOString()`)
+- Date comparisons (`isSameOrBefore`, `isSameOrAfter`, `isAfter`)
+- Date manipulations (`startOf('day')`, `subtract(1, 'day')`)
+- Date formatting (`format('YYYY-MM-DD')`)
+- Time differences (`diff()`)
+- Timezone support (UTC and local timezone handling)
+
+### Usage Pattern
+
+Always import dayjs from our centralized configuration:
+
+```typescript
+import dayjs from '@/lib/utils/dayjs';
+```
+
+Never import dayjs directly from the package:
+
+```typescript
+// Don't do this
+import dayjs from 'dayjs';
+```
+
+### Common Operations
+
+- Current time: `dayjs()`
+- Format for storage: `dayjs().toISOString()`
+- Parse stored dates: `dayjs(storedDate)`
+- Date comparisons: `dayjs(date1).isSameOrBefore(date2)`
+- Day boundaries: `dayjs().startOf('day')`
+- Date arithmetic: `dayjs().subtract(1, 'day')`
+- Normalized dates: `dayjs(date).format('YYYY-MM-DD')`
+
+## Storage
+
+[Storage documentation will go here]
+
+## Authentication
+
+[Authentication documentation will go here]

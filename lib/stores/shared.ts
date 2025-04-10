@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import useUserProfileStore from './user_profile';
 import { StoreApi } from 'zustand';
+import dayjs from '@/lib/utils/dayjs';
 
 export const STORE_CONSTANTS = {
   MAX_RETRY_ATTEMPTS: 3,
@@ -28,7 +29,7 @@ export const getUserIdOrThrow = () => {
 };
 
 export const createBaseState = (): BaseState => ({
-  lastSyncTime: new Date(0),
+  lastSyncTime: dayjs(0).toDate(),
   isLoading: false,
   error: null,
 });

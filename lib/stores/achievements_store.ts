@@ -3,7 +3,7 @@ import { persist } from 'zustand/middleware';
 import { supabase } from '../utils/supabase';
 import { Database } from '../utils/supabase_types';
 import { StreakAchievements } from '../utils/achievement_scoring';
-import dayjs from 'dayjs';
+import dayjs from '@/lib/utils/dayjs';
 import {
   BaseState,
   BasePendingOperation,
@@ -52,13 +52,14 @@ export const useAchievementsStore = create<AchievementsState>()(
 
         updateAchievements: async (achievements: StreakAchievements) => {
           const userId = getUserIdOrThrow();
+          const now = dayjs();
 
           const userAchievement: UserAchievement = {
             id: userId,
             user_id: userId,
             streak_achievements: achievements,
-            created_at: dayjs().toISOString(),
-            updated_at: dayjs().toISOString(),
+            created_at: now.toISOString(),
+            updated_at: now.toISOString(),
           };
 
           // Update local first
@@ -70,19 +71,18 @@ export const useAchievementsStore = create<AchievementsState>()(
               .upsert(userAchievement);
             if (error) throw error;
           } catch (error) {
+            const pendingOp = {
+              id: userAchievement.id,
+              type: 'update' as const,
+              table: 'user_achievements' as const,
+              data: userAchievement,
+              timestamp: now.toDate(),
+              retryCount: 0,
+              lastAttempt: now.toDate(),
+            };
+
             set((state) => ({
-              pendingOperations: [
-                ...state.pendingOperations,
-                {
-                  id: userAchievement.id,
-                  type: 'update',
-                  table: 'user_achievements',
-                  data: userAchievement,
-                  timestamp: dayjs().toDate(),
-                  retryCount: 0,
-                  lastAttempt: dayjs().toDate(),
-                },
-              ],
+              pendingOperations: [...state.pendingOperations, pendingOp],
             }));
           }
 
@@ -91,6 +91,7 @@ export const useAchievementsStore = create<AchievementsState>()(
 
         resetAchievements: async () => {
           const userId = getUserIdOrThrow();
+          const now = dayjs();
           set({ streakAchievements: {} });
           // Delete from server and  add pending if error
           try {
@@ -100,18 +101,16 @@ export const useAchievementsStore = create<AchievementsState>()(
               .eq('user_id', userId);
             if (error) throw error;
           } catch (error) {
+            const pendingOp = {
+              id: userId,
+              type: 'delete' as const,
+              table: 'user_achievements' as const,
+              timestamp: now.toDate(),
+              retryCount: 0,
+              lastAttempt: now.toDate(),
+            };
             set((state) => ({
-              pendingOperations: [
-                ...state.pendingOperations,
-                {
-                  id: userId,
-                  type: 'delete',
-                  table: 'user_achievements',
-                  timestamp: dayjs().toDate(),
-                  retryCount: 0,
-                  lastAttempt: dayjs().toDate(),
-                },
-              ],
+              pendingOperations: [...state.pendingOperations, pendingOp],
             }));
           }
         },
@@ -132,7 +131,7 @@ export const useAchievementsStore = create<AchievementsState>()(
               streakAchievements:
                 (userAchievement?.streak_achievements as StreakAchievements) ||
                 {},
-              lastSyncTime: new Date(),
+              lastSyncTime: dayjs().toDate(),
               isLoading: false,
             });
           } catch (error) {
@@ -142,14 +141,14 @@ export const useAchievementsStore = create<AchievementsState>()(
 
         processPendingOperations: async () => {
           const { pendingOperations } = get();
-          const now = dayjs().toDate();
+          const now = dayjs();
           const remainingOperations: PendingOperation[] = [];
 
           for (const operation of pendingOperations) {
             // Skip if we've tried too recently
             if (
               operation.lastAttempt &&
-              now.getTime() - operation.lastAttempt.getTime() <
+              now.diff(dayjs(operation.lastAttempt)) <
                 STORE_CONSTANTS.MIN_RETRY_INTERVAL
             ) {
               remainingOperations.push(operation);
@@ -159,7 +158,7 @@ export const useAchievementsStore = create<AchievementsState>()(
             try {
               if (operation.retryCount >= STORE_CONSTANTS.MAX_RETRY_ATTEMPTS) {
                 console.error(
-                  `[Habits Store] Max retries exceeded for operation on ${operation.id}`
+                  `[Achievements Store] Max retries exceeded for operation on ${operation.id}`
                 );
                 continue;
               }
@@ -187,7 +186,7 @@ export const useAchievementsStore = create<AchievementsState>()(
               remainingOperations.push({
                 ...operation,
                 retryCount: operation.retryCount + 1,
-                lastAttempt: now,
+                lastAttempt: now.toDate(),
               });
             }
           }
