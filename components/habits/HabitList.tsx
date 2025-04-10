@@ -1,15 +1,16 @@
 import React, { useRef, useState, memo } from 'react';
-import { View, Text, StyleSheet, ScrollView, Button } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { Database } from '@/lib/utils/supabase_types';
 import { useHabitsForDate } from '@/lib/hooks/useHabits';
 import HabitItem from './HabitItem';
 import HabitDetailsSheet from './HabitDetailsSheet';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { useHabitsStore } from '@/lib/stores/habits_store';
-import { useAchievementCalculator } from '@/lib/hooks/useAchievements';
 import Toast from 'react-native-toast-message';
 import Colors from '@/lib/constants/Colors';
 import dayjs from 'dayjs';
+import { getAchievementDetails } from '@/lib/utils/achievement_scoring';
+import { StreakDays } from '@/lib/constants/achievements';
 
 type Habit = Database['public']['Tables']['habits']['Row'];
 
@@ -26,9 +27,26 @@ const HabitList = memo(function HabitList({ selectedDate }: HabitListProps) {
     getCurrentProgress,
     getProgressText,
     toggleHabitStatus,
-    getCompletions,
   } = useHabitsStore();
-  const { calculateAndUpdate } = useAchievementCalculator();
+
+  const handleAchievementUpdate = (result: {
+    unlockedAchievements: StreakDays[];
+  }) => {
+    if (result.unlockedAchievements.length > 0) {
+      // Show achievement unlock notification for each achievement
+      result.unlockedAchievements.forEach((achievementId) => {
+        const achievement = getAchievementDetails(achievementId);
+        Toast.show({
+          type: 'success',
+          text1: '🎉 Achievement Unlocked!',
+          text2: `${achievement.name}: ${achievement.description}`,
+          position: 'bottom',
+          visibilityTime: 4000,
+        });
+      });
+    }
+  };
+
   const handleHabitLongPress = (habit: Habit) => {
     setSelectedHabit(habit);
     bottomSheetModalRef.current?.present();
@@ -62,10 +80,8 @@ const HabitList = memo(function HabitList({ selectedDate }: HabitListProps) {
     // Update habit status
     const newStatus =
       currentStatus === 'not_started' ? 'in_progress' : 'completed';
-    toggleHabitStatus(habit.id, selectedDate, newStatus);
-
-    // Calculate achievements on any status change that could affect streaks
-    calculateAndUpdate(getCompletions());
+    const result = toggleHabitStatus(habit.id, selectedDate, newStatus);
+    handleAchievementUpdate(result);
   };
 
   const handleDismiss = () => {

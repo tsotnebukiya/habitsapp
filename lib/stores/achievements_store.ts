@@ -12,8 +12,16 @@ import {
   STORE_CONSTANTS,
 } from './shared';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {
+  calculateCurrentStreak,
+  calculateNewAchievements,
+  calculateAchievementsToRemove,
+  getNewlyUnlockedAchievements,
+} from '@/lib/utils/achievement_scoring';
+import { StreakDays } from '@/lib/constants/achievements';
 
 type UserAchievement = Database['public']['Tables']['user_achievements']['Row'];
+type HabitCompletion = Database['public']['Tables']['habit_completions']['Row'];
 
 interface PendingOperation extends BasePendingOperation {
   table: 'user_achievements';
@@ -26,9 +34,13 @@ interface AchievementsState extends BaseState {
   pendingOperations: PendingOperation[];
 
   // Achievement actions
-  updateAchievements: (achievements: StreakAchievements) => Promise<void>;
+  updateAchievements: (achievements: StreakAchievements) => void;
   getStreakAchievements: () => StreakAchievements;
-  resetAchievements: () => Promise<void>;
+  resetAchievements: () => void;
+  calculateAndUpdate: (completions: Map<string, HabitCompletion>) => {
+    unlockedAchievements: StreakDays[];
+    currentStreak: number;
+  };
 
   // Sync actions
   syncWithServer: () => Promise<void>;
@@ -50,10 +62,77 @@ export const useAchievementsStore = create<AchievementsState>()(
           return get().streakAchievements;
         },
 
-        updateAchievements: async (achievements: StreakAchievements) => {
+        calculateAndUpdate: (completions: Map<string, HabitCompletion>) => {
+          const currentStreak = calculateCurrentStreak(completions);
+          const newAchievements = calculateNewAchievements(
+            currentStreak,
+            get().streakAchievements
+          );
+          const achievementsAfterRemoval = calculateAchievementsToRemove(
+            currentStreak,
+            newAchievements
+          );
+
+          const unlockedAchievements = getNewlyUnlockedAchievements(
+            get().streakAchievements,
+            achievementsAfterRemoval
+          );
+
+          // Update local state immediately
+          if (
+            JSON.stringify(get().streakAchievements) !==
+            JSON.stringify(achievementsAfterRemoval)
+          ) {
+            // Update local state synchronously
+            set({ streakAchievements: achievementsAfterRemoval });
+
+            // Update server in the background
+            const userId = getUserIdOrThrow();
+            const now = dayjs();
+            const userAchievement: UserAchievement = {
+              id: userId,
+              user_id: userId,
+              streak_achievements: achievementsAfterRemoval,
+              created_at: now.toISOString(),
+              updated_at: now.toISOString(),
+            };
+
+            // Fire and forget server update
+            supabase
+              .from('user_achievements')
+              .upsert(userAchievement)
+              .then(({ error }) => {
+                if (error) {
+                  // Add to pending operations if server update fails
+                  const pendingOp = {
+                    id: userAchievement.id,
+                    type: 'update' as const,
+                    table: 'user_achievements' as const,
+                    data: userAchievement,
+                    timestamp: now.toDate(),
+                    retryCount: 0,
+                    lastAttempt: now.toDate(),
+                  };
+                  set((state) => ({
+                    pendingOperations: [...state.pendingOperations, pendingOp],
+                  }));
+                }
+              });
+          }
+
+          return {
+            unlockedAchievements,
+            currentStreak,
+          };
+        },
+
+        updateAchievements: (achievements: StreakAchievements) => {
+          // Update local state immediately
+          set({ streakAchievements: achievements });
+
+          // Update server in the background
           const userId = getUserIdOrThrow();
           const now = dayjs();
-
           const userAchievement: UserAchievement = {
             id: userId,
             user_id: userId,
@@ -62,57 +141,55 @@ export const useAchievementsStore = create<AchievementsState>()(
             updated_at: now.toISOString(),
           };
 
-          // Update local first
-          set({ streakAchievements: achievements });
-
-          try {
-            const { error } = await supabase
-              .from('user_achievements')
-              .upsert(userAchievement);
-            if (error) throw error;
-          } catch (error) {
-            const pendingOp = {
-              id: userAchievement.id,
-              type: 'update' as const,
-              table: 'user_achievements' as const,
-              data: userAchievement,
-              timestamp: now.toDate(),
-              retryCount: 0,
-              lastAttempt: now.toDate(),
-            };
-
-            set((state) => ({
-              pendingOperations: [...state.pendingOperations, pendingOp],
-            }));
-          }
-
-          await get().processPendingOperations();
+          // Fire and forget server update
+          supabase
+            .from('user_achievements')
+            .upsert(userAchievement)
+            .then(({ error }) => {
+              if (error) {
+                const pendingOp = {
+                  id: userAchievement.id,
+                  type: 'update' as const,
+                  table: 'user_achievements' as const,
+                  data: userAchievement,
+                  timestamp: now.toDate(),
+                  retryCount: 0,
+                  lastAttempt: now.toDate(),
+                };
+                set((state) => ({
+                  pendingOperations: [...state.pendingOperations, pendingOp],
+                }));
+              }
+            });
         },
 
-        resetAchievements: async () => {
+        resetAchievements: () => {
           const userId = getUserIdOrThrow();
           const now = dayjs();
+
+          // Update local state immediately
           set({ streakAchievements: {} });
-          // Delete from server and  add pending if error
-          try {
-            const { error } = await supabase
-              .from('user_achievements')
-              .delete()
-              .eq('user_id', userId);
-            if (error) throw error;
-          } catch (error) {
-            const pendingOp = {
-              id: userId,
-              type: 'delete' as const,
-              table: 'user_achievements' as const,
-              timestamp: now.toDate(),
-              retryCount: 0,
-              lastAttempt: now.toDate(),
-            };
-            set((state) => ({
-              pendingOperations: [...state.pendingOperations, pendingOp],
-            }));
-          }
+
+          // Delete from server in the background
+          supabase
+            .from('user_achievements')
+            .delete()
+            .eq('user_id', userId)
+            .then(({ error }) => {
+              if (error) {
+                const pendingOp = {
+                  id: userId,
+                  type: 'delete' as const,
+                  table: 'user_achievements' as const,
+                  timestamp: now.toDate(),
+                  retryCount: 0,
+                  lastAttempt: now.toDate(),
+                };
+                set((state) => ({
+                  pendingOperations: [...state.pendingOperations, pendingOp],
+                }));
+              }
+            });
         },
 
         syncWithServer: async () => {

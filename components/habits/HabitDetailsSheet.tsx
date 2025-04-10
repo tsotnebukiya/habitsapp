@@ -13,8 +13,9 @@ import Colors from '@/lib/constants/Colors';
 import { FontAwesome6 } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import CircularCounter from '../shared/CircularCounter';
-import { useAchievementCalculator } from '@/lib/hooks/useAchievements';
-import { useAchievementsStore } from '@/lib/stores/achievements_store';
+import Toast from 'react-native-toast-message';
+import { getAchievementDetails } from '@/lib/utils/achievement_scoring';
+import { StreakDays } from '@/lib/constants/achievements';
 
 type Habit = Database['public']['Tables']['habits']['Row'];
 type HabitCompletionStatus =
@@ -41,8 +42,6 @@ export default function HabitDetailsSheet({
     getCompletions,
   } = useHabitsStore();
   const completions = getCompletions();
-  const { calculateAndUpdate } = useAchievementCalculator();
-  const { getStreakAchievements } = useAchievementsStore();
   const snapPoints = useMemo(() => ['1%', '60%'], []);
   const { width } = Dimensions.get('window');
   const circularCounterSize = Math.min(width * 0.45, 160);
@@ -56,20 +55,28 @@ export default function HabitDetailsSheet({
     ),
     []
   );
-  const handleAchievementUpdate = (
-    oldStatus: HabitCompletionStatus,
-    newStatus: HabitCompletionStatus | 'deleted'
-  ) => {
-    if (oldStatus === newStatus) {
-      return;
+  const handleAchievementUpdate = (result: {
+    unlockedAchievements: StreakDays[];
+  }) => {
+    if (result.unlockedAchievements.length > 0) {
+      // Show achievement unlock notification for each achievement
+      result.unlockedAchievements.forEach((achievementId) => {
+        const achievement = getAchievementDetails(achievementId);
+        Toast.show({
+          type: 'success',
+          text1: '🎉 Achievement Unlocked!',
+          text2: `${achievement.name}: ${achievement.description}`,
+          position: 'bottom',
+          visibilityTime: 4000,
+        });
+      });
     }
-    calculateAndUpdate(getCompletions());
   };
   const handleDelete = () => {
     if (!habit) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     deleteHabit(habit.id);
-    handleAchievementUpdate('completed', 'deleted');
+    handleAchievementUpdate({ unlockedAchievements: [] });
     bottomSheetModalRef.current?.dismiss();
   };
 
@@ -85,12 +92,12 @@ export default function HabitDetailsSheet({
     const currentStatus = getHabitStatus(habit.id, date);
     if (currentStatus === 'skipped') {
       // If skipped, unskip to not_started state
-      toggleHabitStatus(habit.id, date, 'not_started', 0);
-      handleAchievementUpdate(currentStatus, 'not_started');
+      const result = toggleHabitStatus(habit.id, date, 'not_started', 0);
+      handleAchievementUpdate(result);
     } else {
       // If not skipped, skip it (regardless of completion status)
-      toggleHabitStatus(habit.id, date, 'skipped', 0);
-      handleAchievementUpdate(currentStatus, 'skipped');
+      const result = toggleHabitStatus(habit.id, date, 'skipped', 0);
+      handleAchievementUpdate(result);
     }
     bottomSheetModalRef.current?.dismiss();
   };
@@ -101,13 +108,13 @@ export default function HabitDetailsSheet({
     const currentStatus = getHabitStatus(habit.id, date);
     if (currentStatus === 'completed') {
       // Uncomplete - reset to 0
-      toggleHabitStatus(habit.id, date, 'not_started', 0);
-      handleAchievementUpdate(currentStatus, 'not_started');
+      const result = toggleHabitStatus(habit.id, date, 'not_started', 0);
+      handleAchievementUpdate(result);
     } else {
       // Complete
       const maxValue = habit.goal_value || habit.completions_per_day || 1;
-      toggleHabitStatus(habit.id, date, 'completed', maxValue);
-      handleAchievementUpdate(currentStatus, 'completed');
+      const result = toggleHabitStatus(habit.id, date, 'completed', maxValue);
+      handleAchievementUpdate(result);
     }
   };
 
@@ -124,8 +131,8 @@ export default function HabitDetailsSheet({
         ? 'completed'
         : 'in_progress';
 
-    toggleHabitStatus(habit.id, date, status, newValue);
-    handleAchievementUpdate(currentStatus, status);
+    const result = toggleHabitStatus(habit.id, date, status, newValue);
+    handleAchievementUpdate(result);
   };
 
   // Fresh reads of the current status on each render

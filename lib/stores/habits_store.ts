@@ -14,6 +14,9 @@ import {
   getUserIdOrThrow,
   STORE_CONSTANTS,
 } from './shared';
+import { useAchievementsStore } from './achievements_store';
+import { StreakDays } from '@/lib/constants/achievements';
+import { StreakAchievements } from '@/lib/utils/achievement_scoring';
 
 // Types from Supabase schema
 type Habit = Database['public']['Tables']['habits']['Row'];
@@ -32,6 +35,11 @@ export interface HabitsState extends BaseState {
   completions: Map<string, HabitCompletion>;
   pendingOperations: PendingOperation[];
 
+  // Achievement-related functionality
+  getAllAchievements: () => StreakAchievements;
+  getAchievementStatus: (days: StreakDays) => boolean;
+  getCurrentStreak: () => number;
+
   // Habit actions
   addHabit: (
     habit: Omit<Habit, 'id' | 'created_at' | 'updated_at'>
@@ -48,13 +56,17 @@ export interface HabitsState extends BaseState {
     id: string,
     updates: Partial<HabitCompletion>
   ) => Promise<void>;
-  deleteCompletion: (id: string) => Promise<void>;
   toggleHabitStatus: (
     habitId: string,
     date: Date,
     status: HabitCompletionStatus,
     value?: number
-  ) => void;
+  ) => {
+    unlockedAchievements: StreakDays[];
+    currentStreak: number;
+  };
+
+  // Habit status actions
   getHabitStatus: (habitId: string, date: Date) => HabitCompletionStatus;
   getCurrentValue: (habitId: string, date: Date) => number;
   getCurrentProgress: (habitId: string, date: Date) => number;
@@ -104,6 +116,30 @@ export const useHabitsStore = create<HabitsState>()(
       habits: new Map(),
       completions: new Map(),
       pendingOperations: [],
+
+      // Achievement-related functionality
+      getAllAchievements: () => {
+        return useAchievementsStore.getState().getStreakAchievements();
+      },
+
+      getAchievementStatus: (days: StreakDays) => {
+        const achievements = useAchievementsStore
+          .getState()
+          .getStreakAchievements();
+        return achievements[days] || false;
+      },
+
+      getCurrentStreak: () => {
+        const achievements = useAchievementsStore
+          .getState()
+          .getStreakAchievements();
+        return Math.max(
+          ...Object.entries(achievements)
+            .filter(([_, achieved]) => achieved)
+            .map(([days]) => Number(days)),
+          0
+        );
+      },
 
       addHabit: async (habitData) => {
         const now = dayjs();
@@ -329,39 +365,6 @@ export const useHabitsStore = create<HabitsState>()(
 
         await get().processPendingOperations();
       },
-
-      deleteCompletion: async (id) => {
-        // Delete locally first
-        set((state) => {
-          const newCompletions = new Map(state.completions);
-          newCompletions.delete(id);
-          return { completions: newCompletions };
-        });
-
-        try {
-          const { error } = await supabase
-            .from('habit_completions')
-            .delete()
-            .eq('id', id);
-          if (error) throw error;
-        } catch (error) {
-          const now = dayjs();
-          const pendingOp = {
-            id,
-            type: 'delete' as const,
-            table: 'habit_completions' as const,
-            timestamp: now.toDate(),
-            retryCount: 0,
-            lastAttempt: now.toDate(),
-          };
-          set((state) => ({
-            pendingOperations: [...state.pendingOperations, pendingOp],
-          }));
-        }
-
-        await get().processPendingOperations();
-      },
-
       toggleHabitStatus: (
         habitId: string,
         date: Date,
@@ -369,7 +372,6 @@ export const useHabitsStore = create<HabitsState>()(
         value?: number
       ) => {
         const userId = getUserIdOrThrow();
-
         const habit = get().habits.get(habitId);
         if (!habit) {
           throw new Error('Habit not found');
@@ -402,7 +404,9 @@ export const useHabitsStore = create<HabitsState>()(
               value: 0,
             });
           }
-          return;
+          return useAchievementsStore
+            .getState()
+            .calculateAndUpdate(get().completions);
         }
 
         // For not_started status, set value to 0
@@ -413,10 +417,10 @@ export const useHabitsStore = create<HabitsState>()(
               status: 'not_started',
               value: 0,
             });
-          } else {
-            // No need to create a completion for not_started if none exists
           }
-          return;
+          return useAchievementsStore
+            .getState()
+            .calculateAndUpdate(get().completions);
         }
 
         // Calculate new value based on habit type
@@ -464,6 +468,10 @@ export const useHabitsStore = create<HabitsState>()(
             value: newValue,
           });
         }
+
+        return useAchievementsStore
+          .getState()
+          .calculateAndUpdate(get().completions);
       },
 
       getHabitStatus: (habitId: string, date: Date): HabitCompletionStatus => {

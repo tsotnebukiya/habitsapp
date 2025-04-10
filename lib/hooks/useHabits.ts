@@ -12,10 +12,6 @@ const normalizeDate = (date: Date): Date => {
   return normalized;
 };
 
-/**
- * Hook to get all habits
- * @returns {Habit[]} Array of all habits
- */
 export const useAllHabits = () => {
   const habitsMap = useHabitsStore((state) => state.habits);
 
@@ -25,11 +21,6 @@ export const useAllHabits = () => {
   }, [habitsMap]);
 };
 
-/**
- * Hook to get habits for a specific date
- * @param date {Date} The date to get habits for
- * @returns {Habit[]} Array of habits for the specified date
- */
 export const useHabitsForDate = (date: Date) => {
   const habitsMap = useHabitsStore((state) => state.habits);
 
@@ -63,11 +54,6 @@ export const useHabitsForDate = (date: Date) => {
   }, [habitsMap, date]); // Only recalculate if habitsMap or date changes
 };
 
-/**
- * Hook to get a single habit by ID
- * @param id {string | null} The ID of the habit to get
- * @returns {Habit | null} The habit if found, null otherwise
- */
 export const useHabit = (id: string | null) => {
   const habit = useHabitsStore((state) => (id ? state.habits.get(id) : null));
   return habit ?? null;
