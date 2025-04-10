@@ -140,7 +140,6 @@ export function calculateDMS(
   allHabits: Habit[],
   completionsHistory: HabitCompletion[]
 ): DisplayedMatrixScore {
-  const today = new Date();
   const categories = CATEGORY_IDS;
 
   const completionsMap = new Map<string, HabitCompletion>();
@@ -152,18 +151,11 @@ export function calculateDMS(
 
   const finalScores: Partial<DisplayedMatrixScore> = {};
   categories.forEach((category) => {
-    const { completionCount } = getCategoryData(
-      category,
-      allHabits,
-      completionsHistory
-    );
-
     let smoothedScore = getBaselineScore(category, userProfile);
 
     for (let i = LOOKBACK_WINDOW - 1; i >= 0; i--) {
-      const date = new Date(today);
-      date.setUTCDate(today.getUTCDate() - i);
-      const dateString = getDateString(date);
+      const date = dayjs().subtract(i, 'day');
+      const dateString = getDateString(date.toDate());
 
       const dps = calculateDPS(category, dateString, allHabits, completionsMap);
 
@@ -182,6 +174,6 @@ export function calculateDMS(
     heart: finalScores.heart ?? 50,
     spirit: finalScores.spirit ?? 50,
     work: finalScores.work ?? 50,
-    calculated_at: new Date(),
+    calculated_at: dayjs().toDate(),
   };
 }

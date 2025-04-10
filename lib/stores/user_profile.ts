@@ -2,6 +2,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { MMKV } from 'react-native-mmkv';
+import dayjs from '@/lib/utils/dayjs';
 
 export type UserProfile = {
   id: string;
@@ -56,7 +57,7 @@ export const useUserProfileStore = create<UserProfileState>()(
             ? {
                 ...state.profile,
                 ...updates,
-                updatedAt: new Date().toISOString(),
+                updatedAt: dayjs().toISOString(),
               }
             : null,
         })),
@@ -69,7 +70,7 @@ export const useUserProfileStore = create<UserProfileState>()(
             ? {
                 ...state.profile,
                 onboardingComplete: true,
-                updatedAt: new Date().toISOString(),
+                updatedAt: dayjs().toISOString(),
               }
             : null,
         })),
@@ -80,7 +81,7 @@ export const useUserProfileStore = create<UserProfileState>()(
             ? {
                 ...state.profile,
                 onboardingComplete: false,
-                updatedAt: new Date().toISOString(),
+                updatedAt: dayjs().toISOString(),
               }
             : null,
         })),

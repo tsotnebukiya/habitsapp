@@ -4,6 +4,7 @@ import {
   MeasurementUnits,
 } from '../constants/MeasurementUnits';
 import { HabitCategory, HabitTemplate } from '../constants/HabitTemplates';
+import dayjs from '@/lib/utils/dayjs';
 
 interface HabitFormData {
   name: string;
@@ -65,7 +66,7 @@ const initialFormData: HabitFormData = {
   icon: '🎯', // First icon from your list
   category: null,
   frequencyType: 'daily',
-  startDate: new Date(),
+  startDate: dayjs().toDate(),
   showDatePicker: false,
 
   // Default values for new fields

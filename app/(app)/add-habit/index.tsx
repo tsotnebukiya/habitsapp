@@ -70,12 +70,12 @@ export default function AddHabit() {
     resetForm();
 
     // Set default reminder time to 9:00 AM
-    const defaultReminderTime = new Date();
+    const defaultReminderTime = dayjs().toDate();
     defaultReminderTime.setHours(9, 0, 0, 0);
     setFormField('reminderTime', defaultReminderTime);
 
     // Set default end date to 30 days from now
-    const defaultEndDate = new Date();
+    const defaultEndDate = dayjs().toDate();
     defaultEndDate.setDate(defaultEndDate.getDate() + 30);
     setFormField('endDate', defaultEndDate);
   }, []);
@@ -369,7 +369,7 @@ export default function AddHabit() {
                 setFormField('endDate', date);
               }}
               onCancel={() => setEndDatePickerVisible(false)}
-              date={formData.endDate || new Date()}
+              date={formData.endDate || dayjs().toDate()}
               minimumDate={formData.startDate}
             />
 
@@ -382,7 +382,7 @@ export default function AddHabit() {
                   setFormField('hasReminder', value);
                   if (value && !formData.reminderTime) {
                     // Set default reminder time to 9 AM
-                    const defaultTime = new Date();
+                    const defaultTime = dayjs().toDate();
                     defaultTime.setHours(9, 0, 0, 0);
                     setFormField('reminderTime', defaultTime);
                   }
@@ -414,7 +414,7 @@ export default function AddHabit() {
                 setFormField('reminderTime', date);
               }}
               onCancel={() => setTimePickerVisible(false)}
-              date={formData.reminderTime || new Date()}
+              date={formData.reminderTime || dayjs().toDate()}
             />
 
             {/* Streak Goal */}
