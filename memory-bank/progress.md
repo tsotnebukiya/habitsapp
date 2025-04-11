@@ -32,14 +32,18 @@
    - Create Home and Stats tabs
    - Ensure proper state management
 
-2. **Achievement System** (Days 3-4) 📅
+2. **Achievement System** ⏳
 
-   - Design core achievement types
-   - Implement unlocking logic
-   - Create achievement notifications
-   - Design achievement display
+   - ✅ Core achievement types design
+   - ✅ Achievement unlocking logic
+   - ✅ Achievement notifications
+   - [ ] Achievement display UI
+     - [ ] Achievement cards display
+     - [ ] Achievement unlock modal
+     - [ ] Achievement progress indicators
+     - [ ] Achievement list view
 
-3. **Statistics View** (Days 5-7) 📅
+3. **Statistics View** 📅
    - Implement key charts
    - Create habit comparison view
    - Connect to habit data
@@ -167,10 +171,11 @@
 
 1. **Achievement System** ⏳
 
-   - [ ] Core achievement types design
-   - [ ] Achievement unlocking logic
-   - [ ] Achievement notifications
    - [ ] Achievement display UI
+     - [ ] Achievement cards display
+     - [ ] Achievement unlock modal
+     - [ ] Achievement progress indicators
+     - [ ] Achievement list view
 
 2. **Statistics View** 📅
    - [ ] Key charts implementation
