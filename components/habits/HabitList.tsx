@@ -28,6 +28,18 @@ const HabitList = memo(function HabitList({ selectedDate }: HabitListProps) {
   } = useHabitsStore();
 
   const handleHabitLongPress = (habit: Habit) => {
+    const today = dayjs().startOf('day');
+    const selectedDay = dayjs(selectedDate).startOf('day');
+
+    if (selectedDay.isAfter(today)) {
+      Toast.show({
+        type: 'info',
+        text1: 'Cannot complete future habits',
+        text2: 'Please wait until the day arrives',
+        position: 'bottom',
+      });
+      return;
+    }
     setSelectedHabit(habit);
     bottomSheetModalRef.current?.present();
   };

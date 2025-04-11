@@ -40,11 +40,7 @@ export const MatrixGridCell = memo(function MatrixGridCell({
       ]}
     >
       <View style={styles.header}>
-        <Ionicons
-          name={category.icon as any}
-          size={24}
-          color={category.color}
-        />
+        <Text>{category.icon}</Text>
         <Text style={[styles.title, { color: category.color }]}>
           {category.name}
         </Text>

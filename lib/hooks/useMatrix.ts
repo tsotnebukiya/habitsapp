@@ -70,7 +70,8 @@ export function useMatrix() {
       name: 'Total',
       score: balanceScore,
       color: '#FFBE0B', // Gold/Yellow
-      icon: 'stats-chart',
+      // emoji for balance
+      icon: '💰',
       description: 'Overall life balance',
     }),
     [balanceScore]

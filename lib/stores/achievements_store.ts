@@ -70,14 +70,15 @@ export const useAchievementsStore = create<AchievementsState>()(
             currentStreak,
             get().streakAchievements
           );
-          const achievementsAfterRemoval = calculateAchievementsToRemove(
-            currentStreak,
-            newAchievements
-          );
+          // TODO: remove this once we have a way to remove achievements
+          // const achievementsAfterRemoval = calculateAchievementsToRemove(
+          //   currentStreak,
+          //   newAchievements
+          // );
 
           const unlockedAchievements = getNewlyUnlockedAchievements(
             get().streakAchievements,
-            achievementsAfterRemoval
+            newAchievements
           );
 
           // Show achievement unlock notifications
@@ -97,10 +98,10 @@ export const useAchievementsStore = create<AchievementsState>()(
           // Update local state immediately
           if (
             JSON.stringify(get().streakAchievements) !==
-            JSON.stringify(achievementsAfterRemoval)
+            JSON.stringify(newAchievements)
           ) {
             // Update local state synchronously
-            set({ streakAchievements: achievementsAfterRemoval });
+            set({ streakAchievements: newAchievements });
 
             // Update server in the background
             const userId = getUserIdOrThrow();
@@ -108,7 +109,7 @@ export const useAchievementsStore = create<AchievementsState>()(
             const userAchievement: UserAchievement = {
               id: userId,
               user_id: userId,
-              streak_achievements: achievementsAfterRemoval,
+              streak_achievements: newAchievements,
               created_at: now.toISOString(),
               updated_at: now.toISOString(),
             };
