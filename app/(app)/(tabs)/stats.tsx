@@ -1,18 +1,76 @@
-import React from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { StyleSheet, Text, SafeAreaView, ScrollView, View } from 'react-native';
 import { MatrixGrid } from '@/components/matrix/MatrixGrid';
 import { useMatrix } from '@/lib/hooks/useMatrix';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
 
 // Import Achievement Components
 import { StreakDisplay } from '@/components/achievements/StreakDisplay';
 import { QuoteDisplay } from '@/components/achievements/QuoteDisplay';
 import { AchievementsList } from '@/components/achievements/AchievementsList';
+import { AchievementUnlockModal } from '@/components/achievements/AchievementUnlockModal';
+import { useAchievementsStore } from '@/lib/stores/achievements_store';
+import { getAchievementDetails } from '@/lib/utils/achievement_scoring';
+import { Achievement } from '@/lib/constants/achievements';
 
 // Simple Separator Component
 const Separator = () => <View style={styles.separator} />;
 
 const StatsScreen = () => {
   const { lastCalculated } = useMatrix();
+
+  // Modal state and refs
+  const achievementModalRef = useRef<BottomSheetModal>(null);
+  const [unlockedAchievement, setUnlockedAchievement] =
+    useState<Achievement | null>(null);
+
+  // Get store state and actions
+  const justUnlockedId = useAchievementsStore(
+    (state) => state.justUnlockedAchievementId
+  );
+  const clearJustUnlocked = useAchievementsStore(
+    (state) => state.clearJustUnlockedAchievement
+  );
+
+  // Effect to watch for unlocked achievement ID
+  useEffect(() => {
+    console.log(
+      '[StatsScreen] useEffect triggered. justUnlockedId:',
+      justUnlockedId
+    );
+    if (justUnlockedId !== null) {
+      console.log('[StatsScreen] Found unlocked ID:', justUnlockedId);
+      const details = getAchievementDetails(justUnlockedId);
+      console.log('[StatsScreen] Fetched details:', details);
+      if (details) {
+        setUnlockedAchievement(details); // Store details for the modal
+        // Add a small delay before presenting to allow ref to attach
+        const timerId = setTimeout(() => {
+          console.log(
+            '[StatsScreen] Attempting to present modal (after delay). Ref:',
+            achievementModalRef.current
+          );
+          achievementModalRef.current?.present(); // Present the modal
+        }, 100); // 100ms delay
+
+        // Cleanup function to clear timeout if component unmounts or ID changes
+        return () => clearTimeout(timerId);
+      } else {
+        console.warn(
+          '[StatsScreen] Could not get achievement details for ID:',
+          justUnlockedId
+        );
+      }
+    } else {
+      console.log('[StatsScreen] justUnlockedId is null, doing nothing.');
+    }
+  }, [justUnlockedId]);
+
+  // Callback for when the modal is dismissed
+  const handleDismissModal = useCallback(() => {
+    setUnlockedAchievement(null); // Clear local state
+    clearJustUnlocked(); // Clear the trigger in the store
+  }, [clearJustUnlocked]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -37,6 +95,13 @@ const StatsScreen = () => {
           </View>
         </View>
       </ScrollView>
+
+      {/* Achievement Unlock Modal - Rendered outside ScrollView */}
+      <AchievementUnlockModal
+        modalRef={achievementModalRef}
+        achievement={unlockedAchievement}
+        onDismiss={handleDismissModal}
+      />
     </SafeAreaView>
   );
 };

@@ -5,6 +5,7 @@ import useUserProfileStore from '@/lib/stores/user_profile';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { useHabitsStore } from '@/lib/stores/habits_store';
 import { useAchievementsStore } from '@/lib/stores/achievements_store';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 
 function StackLayout() {
   const { profile } = useUserProfileStore();
@@ -41,17 +42,19 @@ function StackLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="add-habit"
-          options={{
-            presentation: 'modal',
-            headerShown: false,
-            animation: 'slide_from_bottom',
-          }}
-        />
-      </Stack>
+      <BottomSheetModalProvider>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+          <Stack.Screen
+            name="add-habit"
+            options={{
+              presentation: 'modal',
+              headerShown: false,
+              animation: 'slide_from_bottom',
+            }}
+          />
+        </Stack>
+      </BottomSheetModalProvider>
     </GestureHandlerRootView>
   );
 }

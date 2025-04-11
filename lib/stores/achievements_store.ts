@@ -19,7 +19,7 @@ import {
   getNewlyUnlockedAchievements,
   getAchievementDetails,
 } from '@/lib/utils/achievement_scoring';
-import { StreakDays } from '@/lib/constants/achievements';
+import { StreakDays, Achievement } from '@/lib/constants/achievements';
 import Toast from 'react-native-toast-message';
 
 type UserAchievement = Database['public']['Tables']['user_achievements']['Row'];
@@ -34,6 +34,7 @@ interface AchievementsState extends BaseState {
   // Local state
   streakAchievements: StreakAchievements;
   pendingOperations: PendingOperation[];
+  justUnlockedAchievementId: StreakDays | null;
 
   // Achievement actions
   updateAchievements: (achievements: StreakAchievements) => void;
@@ -43,6 +44,7 @@ interface AchievementsState extends BaseState {
     unlockedAchievements: StreakDays[];
     currentStreak: number;
   };
+  clearJustUnlockedAchievement: () => void;
 
   // Sync actions
   syncWithServer: () => Promise<void>;
@@ -59,6 +61,7 @@ export const useAchievementsStore = create<AchievementsState>()(
         ...createBaseState(),
         streakAchievements: {},
         pendingOperations: [],
+        justUnlockedAchievementId: null,
 
         getStreakAchievements: () => {
           return get().streakAchievements;
@@ -71,37 +74,34 @@ export const useAchievementsStore = create<AchievementsState>()(
             get().streakAchievements
           );
           // TODO: remove this once we have a way to remove achievements
-          // const achievementsAfterRemoval = calculateAchievementsToRemove(
-          //   currentStreak,
-          //   newAchievements
-          // );
-
-          const unlockedAchievements = getNewlyUnlockedAchievements(
-            get().streakAchievements,
+          const achievementsAfterRemoval = calculateAchievementsToRemove(
+            currentStreak,
             newAchievements
           );
 
-          // Show achievement unlock notifications
-          if (unlockedAchievements.length > 0) {
-            unlockedAchievements.forEach((achievementId) => {
-              const achievement = getAchievementDetails(achievementId);
-              Toast.show({
-                type: 'success',
-                text1: '🎉 Achievement Unlocked!',
-                text2: `${achievement.name}: ${achievement.description}`,
-                position: 'bottom',
-                visibilityTime: 4000,
-              });
-            });
+          const newlyUnlockedIds = getNewlyUnlockedAchievements(
+            get().streakAchievements,
+            achievementsAfterRemoval
+          );
+
+          // Trigger modal for the *first* newly unlocked achievement
+          if (
+            newlyUnlockedIds.length > 0 &&
+            get().justUnlockedAchievementId === null
+          ) {
+            // Set the ID to trigger the modal in the UI
+            console.log('newlyUnlockedIds', newlyUnlockedIds);
+            set({ justUnlockedAchievementId: newlyUnlockedIds[0] });
+            // Removed Toast logic
           }
 
           // Update local state immediately
           if (
             JSON.stringify(get().streakAchievements) !==
-            JSON.stringify(newAchievements)
+            JSON.stringify(achievementsAfterRemoval)
           ) {
             // Update local state synchronously
-            set({ streakAchievements: newAchievements });
+            set({ streakAchievements: achievementsAfterRemoval });
 
             // Update server in the background
             const userId = getUserIdOrThrow();
@@ -109,7 +109,7 @@ export const useAchievementsStore = create<AchievementsState>()(
             const userAchievement: UserAchievement = {
               id: userId,
               user_id: userId,
-              streak_achievements: newAchievements,
+              streak_achievements: achievementsAfterRemoval,
               created_at: now.toISOString(),
               updated_at: now.toISOString(),
             };
@@ -138,7 +138,7 @@ export const useAchievementsStore = create<AchievementsState>()(
           }
 
           return {
-            unlockedAchievements,
+            unlockedAchievements: newlyUnlockedIds,
             currentStreak,
           };
         },
@@ -289,6 +289,10 @@ export const useAchievementsStore = create<AchievementsState>()(
         },
 
         clearError: () => set({ error: null }),
+
+        clearJustUnlockedAchievement: () => {
+          set({ justUnlockedAchievementId: null });
+        },
       };
     },
     {
