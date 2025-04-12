@@ -100,7 +100,15 @@ export const useAchievementsStore = create<AchievementsState>()(
 
           // Show the achievements modal with all unlocked achievements
           if (achievementDetails.length > 0) {
-            useModalStore.getState().showAchievementModal(achievementDetails);
+            // Add a delay before showing the modal
+            setTimeout(() => {
+              useModalStore
+                .getState()
+                .showAchievementModal([
+                  ...achievementDetails,
+                  ...achievementDetails,
+                ]);
+            }, 1000); // 1 second delay
           }
 
           // Update local state immediately

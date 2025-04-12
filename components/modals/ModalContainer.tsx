@@ -1,7 +1,8 @@
 import React from 'react';
 import { useModalStore } from '@/lib/stores/modal_store';
-import AchievementModal from './AchievementModal/index';
-import ConfirmationModal from './ConfirmationModal/index';
+import AchievementModal from './Achievements';
+import ConfirmationModal from './Confirmations';
+import AchievementsModal from './Achievements';
 
 const ModalContainer = () => {
   const { currentModal, hideModal } = useModalStore();
@@ -9,7 +10,7 @@ const ModalContainer = () => {
   return (
     <>
       {currentModal === 'achievement' && (
-        <AchievementModal onDismiss={hideModal} />
+        <AchievementsModal onDismiss={hideModal} />
       )}
 
       {currentModal === 'confirmation' && (
