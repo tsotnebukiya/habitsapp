@@ -14,7 +14,8 @@ export type StreakAchievements = {
  * A day is considered complete if ALL active habits for that day are completed
  */
 export function calculateCurrentStreak(
-  completions: Map<string, HabitCompletion>
+  completions: Map<string, HabitCompletion>,
+  habits: Habit[] = []
 ): number {
   if (completions.size === 0) return 0;
 
@@ -44,13 +45,40 @@ export function calculateCurrentStreak(
       break;
     }
 
-    // Check if all habits for this date are completed
+    // Get all habits that should be active for this date
+    const activeHabitsForDate = habits.filter((habit) => {
+      // Check if habit was active on this date
+      const habitStartDate = dayjs(habit.created_at).startOf('day');
+      const isAfterStart =
+        dateToCheck.isSame(habitStartDate) ||
+        dateToCheck.isAfter(habitStartDate);
+
+      // Check if habit is still active (not archived or ended)
+      const isActive =
+        habit.end_date === null || dayjs(habit.end_date).isAfter(dateToCheck);
+
+      return isAfterStart && isActive;
+    });
+
+    // Get completion records for this date
     const dateCompletions = completionsByDate.get(date) || [];
-    const allCompleted = dateCompletions.every(
-      (completion) =>
-        completion.status === 'completed' || completion.status === 'skipped'
-    );
-    if (allCompleted) {
+
+    // Create a map of habit_id to completion for quick lookup
+    const habitCompletionsMap = new Map<string, HabitCompletion>();
+    dateCompletions.forEach((completion) => {
+      habitCompletionsMap.set(completion.habit_id, completion);
+    });
+
+    // Check if all active habits for this date are either completed or skipped
+    const allHabitsCompleted = activeHabitsForDate.every((habit) => {
+      const completion = habitCompletionsMap.get(habit.id);
+      return (
+        completion &&
+        (completion.status === 'completed' || completion.status === 'skipped')
+      );
+    });
+
+    if (allHabitsCompleted && activeHabitsForDate.length > 0) {
       currentStreak++;
     } else {
       break; // Break streak if not all habits completed
