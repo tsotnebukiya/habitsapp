@@ -64,7 +64,7 @@ export interface HabitsState extends BaseState {
   ) => void;
 
   // Habit status actions
-  getHabitStatus: (habitId: string, date: Date) => HabitCompletionStatus;
+  getHabitStatus: (habitId: string, date: Date) => HabitCompletion | null;
   getCurrentValue: (habitId: string, date: Date) => number;
   getCurrentProgress: (habitId: string, date: Date) => number;
   getProgressText: (habitId: string, date: Date) => string;
@@ -371,7 +371,6 @@ export const useHabitsStore = create<HabitsState>()(
         // Calculate new status and value based on the parameters
         let newStatus = status;
         let newValue = 0;
-
         // Handle different statuses
         if (status === 'skipped') {
           newValue = 0;
@@ -393,7 +392,6 @@ export const useHabitsStore = create<HabitsState>()(
             // For single completion habits, value is 1
             newValue = 1;
           }
-
           // Determine status based on progress
           if (habit.goal_value) {
             newStatus =
@@ -428,7 +426,7 @@ export const useHabitsStore = create<HabitsState>()(
           .calculateAndUpdate(get().completions, get().habits);
       },
 
-      getHabitStatus: (habitId: string, date: Date): HabitCompletionStatus => {
+      getHabitStatus: (habitId: string, date: Date): HabitCompletion | null => {
         const normalizedDate = dayjs(date).format('YYYY-MM-DD');
 
         const completion = Array.from(get().completions.values()).find(
@@ -437,7 +435,7 @@ export const useHabitsStore = create<HabitsState>()(
             completion.completion_date === normalizedDate
         );
 
-        return completion?.status || 'not_started';
+        return completion || null;
       },
 
       getCurrentValue: (habitId: string, date: Date): number => {

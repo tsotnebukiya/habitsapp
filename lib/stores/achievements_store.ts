@@ -22,6 +22,7 @@ import {
 import { StreakDays, Achievement } from '@/lib/constants/achievements';
 import Toast from 'react-native-toast-message';
 import { MMKV } from 'react-native-mmkv';
+import { useModalStore } from './modal_store';
 
 // Create MMKV instance
 const achievementsMmkv = new MMKV({ id: 'achievements-store' });
@@ -39,7 +40,6 @@ interface AchievementsState extends BaseState {
   // Local state
   streakAchievements: StreakAchievements;
   pendingOperations: PendingOperation[];
-  justUnlockedAchievementId: StreakDays | null;
 
   // Achievement actions
   updateAchievements: (achievements: StreakAchievements) => void;
@@ -52,7 +52,6 @@ interface AchievementsState extends BaseState {
     unlockedAchievements: StreakDays[];
     currentStreak: number;
   };
-  clearJustUnlockedAchievement: () => void;
 
   // Sync actions
   syncWithServer: () => Promise<void>;
@@ -69,7 +68,6 @@ export const useAchievementsStore = create<AchievementsState>()(
         ...createBaseState(),
         streakAchievements: {},
         pendingOperations: [],
-        justUnlockedAchievementId: null,
 
         getStreakAchievements: () => {
           return get().streakAchievements;
@@ -95,14 +93,14 @@ export const useAchievementsStore = create<AchievementsState>()(
             achievementsAfterRemoval
           );
 
-          // Trigger modal for the *first* newly unlocked achievement
-          if (
-            newlyUnlockedIds.length > 0 &&
-            get().justUnlockedAchievementId === null
-          ) {
-            // Set the ID to trigger the modal in the UI
-            set({ justUnlockedAchievementId: newlyUnlockedIds[0] });
-            // Removed Toast logic
+          // Get achievement details for all newly unlocked achievements
+          const achievementDetails = newlyUnlockedIds
+            .map((id) => getAchievementDetails(id))
+            .filter(Boolean) as Achievement[];
+
+          // Show the achievements modal with all unlocked achievements
+          if (achievementDetails.length > 0) {
+            useModalStore.getState().showAchievementModal(achievementDetails);
           }
 
           // Update local state immediately
@@ -299,10 +297,6 @@ export const useAchievementsStore = create<AchievementsState>()(
         },
 
         clearError: () => set({ error: null }),
-
-        clearJustUnlockedAchievement: () => {
-          set({ justUnlockedAchievementId: null });
-        },
       };
     },
     {

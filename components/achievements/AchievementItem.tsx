@@ -8,28 +8,40 @@ const ITEM_WIDTH = width * 0.35;
 interface AchievementItemProps {
   achievement: Achievement;
   isUnlocked: boolean;
+  large?: boolean; // Optional prop for larger display in modals
 }
 
 export const AchievementItem = memo(function AchievementItem({
   achievement,
   isUnlocked,
+  large = false,
 }: AchievementItemProps) {
   const iconEmoji = achievement.icon || '❓'; // Use achievement icon emoji or default
   const containerStyle = [
     styles.container,
     isUnlocked ? styles.unlocked : styles.locked,
+    large && styles.largeContainer,
   ];
   const textColor = isUnlocked ? '#333' : '#888';
 
   return (
     <View style={containerStyle}>
-      <Text style={styles.iconText}>{iconEmoji}</Text>
-      <Text style={[styles.title, { color: textColor }]}>
+      <Text style={[styles.iconText, large && styles.largeIcon]}>
+        {iconEmoji}
+      </Text>
+      {large && <Text style={styles.unlockText}>Achievement Unlocked!</Text>}
+      <Text
+        style={[styles.title, { color: textColor }, large && styles.largeTitle]}
+      >
         {achievement.name}
       </Text>
       <Text
-        style={[styles.description, { color: textColor }]}
-        numberOfLines={2}
+        style={[
+          styles.description,
+          { color: textColor },
+          large && styles.largeDescription,
+        ]}
+        numberOfLines={large ? 4 : 2}
       >
         {achievement.description}
       </Text>
@@ -55,6 +67,16 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     position: 'relative',
   },
+  largeContainer: {
+    width: '100%',
+    height: 'auto',
+    marginHorizontal: 0,
+    paddingVertical: 20,
+    paddingHorizontal: 16,
+    shadowOpacity: 0,
+    elevation: 0,
+    borderWidth: 0,
+  },
   unlocked: {
     backgroundColor: '#fff',
     borderWidth: 1,
@@ -68,15 +90,33 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     marginTop: 5, // Add some top margin
   },
+  largeIcon: {
+    fontSize: 64,
+    marginBottom: 16,
+  },
+  unlockText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 8,
+  },
   title: {
     fontSize: 14,
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 4,
   },
+  largeTitle: {
+    fontSize: 18,
+    marginBottom: 12,
+  },
   description: {
     fontSize: 12,
     textAlign: 'center',
+  },
+  largeDescription: {
+    fontSize: 16,
+    marginTop: 4,
   },
   lockedOverlay: {
     ...StyleSheet.absoluteFillObject,

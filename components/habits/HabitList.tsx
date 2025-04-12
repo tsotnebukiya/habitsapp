@@ -45,7 +45,7 @@ const HabitList = memo(function HabitList({ selectedDate }: HabitListProps) {
   };
 
   const handleHabitPress = (habit: Habit) => {
-    const currentStatus = getHabitStatus(habit.id, selectedDate);
+    const currentCompletion = getHabitStatus(habit.id, selectedDate);
     const today = dayjs().startOf('day');
     const selectedDay = dayjs(selectedDate).startOf('day');
 
@@ -59,7 +59,7 @@ const HabitList = memo(function HabitList({ selectedDate }: HabitListProps) {
       return;
     }
 
-    if (currentStatus === 'completed') {
+    if (currentCompletion?.status === 'completed') {
       Toast.show({
         type: 'info',
         text1: 'Habit already completed',
@@ -71,7 +71,9 @@ const HabitList = memo(function HabitList({ selectedDate }: HabitListProps) {
 
     // Update habit status
     const newStatus =
-      currentStatus === 'not_started' ? 'in_progress' : 'completed';
+      currentCompletion?.status === 'not_started' ? 'in_progress' : 'completed';
+    console.log('adding');
+    console.log(currentCompletion?.status, newStatus);
     toggleHabitStatus(habit.id, selectedDate, newStatus);
   };
 
@@ -94,7 +96,9 @@ const HabitList = memo(function HabitList({ selectedDate }: HabitListProps) {
           <HabitItem
             key={habit.id}
             habit={habit}
-            status={getHabitStatus(habit.id, selectedDate)}
+            status={
+              getHabitStatus(habit.id, selectedDate)?.status || 'not_started'
+            }
             progress={getCurrentProgress(habit.id, selectedDate)}
             progressText={getProgressText(habit.id, selectedDate)}
             selectedDate={selectedDate}

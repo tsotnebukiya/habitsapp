@@ -75,8 +75,8 @@ export default function HabitDetailsSheet({
   const handleCompletion = () => {
     if (!habit) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    const currentStatus = getHabitStatus(habit.id, date);
-    if (currentStatus === 'completed') {
+    const currentCompletion = getHabitStatus(habit.id, date);
+    if (currentCompletion?.status === 'completed') {
       // Uncomplete - reset to 0
       toggleHabitStatus(habit.id, date, 'not_started', 0);
     } else {
@@ -88,15 +88,20 @@ export default function HabitDetailsSheet({
 
   const handleProgressChange = (newValue: number) => {
     if (!habit) return;
+    const newStatus =
+      newValue >= maxValue
+        ? 'completed'
+        : newValue === 0
+        ? 'not_started'
+        : 'in_progress';
 
-    const newStatus = newValue >= maxValue ? 'completed' : 'in_progress';
     toggleHabitStatus(habit.id, date, newStatus, newValue);
   };
 
   // Fresh reads of the current status on each render
-  const currentStatus = habit ? getHabitStatus(habit.id, date) : 'not_started';
-  const isSkipped = currentStatus === 'skipped';
-  const isCompleted = currentStatus === 'completed';
+  const currentCompletion = habit ? getHabitStatus(habit.id, date) : null;
+  const isSkipped = currentCompletion?.status === 'skipped';
+  const isCompleted = currentCompletion?.status === 'completed';
   const currentValue = habit ? getCurrentValue(habit.id, date) : 0;
 
   // Always use CircularCounter regardless of habit type

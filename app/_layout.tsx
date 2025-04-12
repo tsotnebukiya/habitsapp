@@ -22,6 +22,7 @@ import * as Sentry from '@sentry/react-native';
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 import { POSTHOG_API_KEY, SENTRY_DSN } from '../safe_constants';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import ModalContainer from '@/components/modals/ModalContainer';
 // import { RevenueCatProvider } from '../contexts/RevenueCatContext';
 
 const navigationIntegration = Sentry.reactNavigationIntegration({
@@ -117,6 +118,7 @@ function RootLayoutNav() {
                   options={{ headerShown: false }}
                 />
               </Stack>
+              <ModalContainer />
             </BottomSheetModalProvider>
           </GestureHandlerRootView>
           <Toast />
