@@ -33,6 +33,8 @@ interface PendingOperation extends BasePendingOperation {
   data?: Habit | HabitCompletion;
 }
 
+type HabitAction = 'toggle' | 'set_value' | 'toggle_skip' | 'toggle_complete';
+
 export interface HabitsState extends BaseState {
   // Local state
   habits: Map<string, Habit>;
@@ -59,7 +61,7 @@ export interface HabitsState extends BaseState {
   toggleHabitStatus: (
     habitId: string,
     date: Date,
-    status: HabitCompletionStatus,
+    action: HabitAction,
     value?: number
   ) => void;
 
@@ -350,7 +352,7 @@ export const useHabitsStore = create<HabitsState>()(
       toggleHabitStatus: (
         habitId: string,
         date: Date,
-        status: HabitCompletionStatus,
+        action: HabitAction,
         value?: number
       ) => {
         const userId = getUserIdOrThrow();
@@ -360,48 +362,72 @@ export const useHabitsStore = create<HabitsState>()(
         }
 
         const normalizedDate = dayjs(date).format('YYYY-MM-DD');
-
-        // Find existing completion for this habit on this date
         const existingCompletion = Array.from(get().completions.values()).find(
           (completion) =>
             completion.habit_id === habitId &&
             completion.completion_date === normalizedDate
         );
 
-        // Calculate new status and value based on the parameters
-        let newStatus = status;
+        let newStatus: HabitCompletionStatus = 'not_started';
         let newValue = 0;
-        // Handle different statuses
-        if (status === 'skipped') {
-          newValue = 0;
-        } else if (status === 'not_started') {
-          newValue = 0;
-        } else {
-          // Calculate value for in_progress or completed statuses
-          if (value !== undefined) {
-            newValue = value;
-          } else if (habit.goal_value) {
-            // For measured habits, increment by 10% of goal
-            const currentValue = existingCompletion?.value || 0;
-            newValue = currentValue + habit.goal_value * 0.1;
-          } else if (habit.completions_per_day > 1) {
-            // For multiple completions, increment by 1
-            const currentValue = existingCompletion?.value || 0;
-            newValue = currentValue + 1;
-          } else {
-            // For single completion habits, value is 1
-            newValue = 1;
-          }
-          // Determine status based on progress
-          if (habit.goal_value) {
-            newStatus =
-              newValue >= habit.goal_value ? 'completed' : 'in_progress';
-          } else if (habit.completions_per_day > 1) {
-            newStatus =
-              newValue >= habit.completions_per_day
-                ? 'completed'
-                : 'in_progress';
-          }
+
+        const maxValue = habit.goal_value || habit.completions_per_day || 1;
+        const stepSize = habit.goal_value
+          ? Math.max(habit.goal_value * 0.1, 1)
+          : 1;
+        const currentValue = existingCompletion?.value || 0;
+        const currentStatus = existingCompletion?.status || 'not_started';
+
+        switch (action) {
+          case 'toggle':
+            if (currentStatus === 'not_started') {
+              // First toggle: start progress
+              if (maxValue === 1) {
+                // Single completion habit
+                newValue = 1;
+                newStatus = 'completed';
+              } else {
+                // Multiple completions or measured habit
+                newValue = stepSize;
+                newStatus = newValue >= maxValue ? 'completed' : 'in_progress';
+              }
+            } else if (currentStatus === 'in_progress') {
+              // Already in progress: increment
+              newValue = Math.min(currentValue + stepSize, maxValue);
+              newStatus = newValue >= maxValue ? 'completed' : 'in_progress';
+            } else {
+              // Reset if completed
+              newValue = 0;
+              newStatus = 'not_started';
+            }
+            break;
+
+          case 'set_value':
+            if (value === undefined) return;
+            newValue = Math.max(0, Math.min(value, maxValue));
+            if (newValue === 0) {
+              newStatus = 'not_started';
+            } else if (newValue >= maxValue) {
+              newStatus = 'completed';
+            } else {
+              newStatus = 'in_progress';
+            }
+            break;
+
+          case 'toggle_skip':
+            newStatus = currentStatus === 'skipped' ? 'not_started' : 'skipped';
+            newValue = 0;
+            break;
+
+          case 'toggle_complete':
+            if (currentStatus === 'completed') {
+              newStatus = 'not_started';
+              newValue = 0;
+            } else {
+              newStatus = 'completed';
+              newValue = maxValue;
+            }
+            break;
         }
 
         // Update or create completion
@@ -420,7 +446,7 @@ export const useHabitsStore = create<HabitsState>()(
           });
         }
 
-        // Calculate achievements once
+        // Calculate achievements
         useAchievementsStore
           .getState()
           .calculateAndUpdate(get().completions, get().habits);

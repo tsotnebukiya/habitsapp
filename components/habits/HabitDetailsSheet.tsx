@@ -69,33 +69,18 @@ export default function HabitDetailsSheet({
   const handleSkip = () => {
     if (!habit) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    toggleHabitStatus(habit.id, date, isSkipped ? 'not_started' : 'skipped', 0);
+    toggleHabitStatus(habit.id, date, 'toggle_skip');
   };
 
   const handleCompletion = () => {
     if (!habit) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    const currentCompletion = getHabitStatus(habit.id, date);
-    if (currentCompletion?.status === 'completed') {
-      // Uncomplete - reset to 0
-      toggleHabitStatus(habit.id, date, 'not_started', 0);
-    } else {
-      // Complete
-      const maxValue = habit.goal_value || habit.completions_per_day || 1;
-      toggleHabitStatus(habit.id, date, 'completed', maxValue);
-    }
+    toggleHabitStatus(habit.id, date, 'toggle_complete');
   };
 
   const handleProgressChange = (newValue: number) => {
     if (!habit) return;
-    const newStatus =
-      newValue >= maxValue
-        ? 'completed'
-        : newValue === 0
-        ? 'not_started'
-        : 'in_progress';
-
-    toggleHabitStatus(habit.id, date, newStatus, newValue);
+    toggleHabitStatus(habit.id, date, 'set_value', newValue);
   };
 
   // Fresh reads of the current status on each render

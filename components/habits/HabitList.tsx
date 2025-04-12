@@ -27,54 +27,49 @@ const HabitList = memo(function HabitList({ selectedDate }: HabitListProps) {
     toggleHabitStatus,
   } = useHabitsStore();
 
-  const handleHabitLongPress = (habit: Habit) => {
-    const today = dayjs().startOf('day');
-    const selectedDay = dayjs(selectedDate).startOf('day');
+  const today = dayjs().startOf('day');
+  const selectedDay = dayjs(selectedDate).startOf('day');
+  const afterToday = selectedDay.isAfter(today);
+  const showIsAfterToast = () => {
+    Toast.show({
+      type: 'info',
+      text1: 'Cannot complete future habits',
+      text2: 'Please wait until the day arrives',
+      position: 'bottom',
+    });
+    return;
+  };
 
-    if (selectedDay.isAfter(today)) {
-      Toast.show({
-        type: 'info',
-        text1: 'Cannot complete future habits',
-        text2: 'Please wait until the day arrives',
-        position: 'bottom',
-      });
+  const showIsCompletedToast = (id: string) => {
+    Toast.show({
+      type: 'info',
+      text1: 'Habit already completed',
+      text2: 'This habit has been completed for today',
+      position: 'bottom',
+    });
+    return;
+  };
+  const handleHabitLongPress = (habit: Habit) => {
+    if (afterToday) {
+      showIsAfterToast();
       return;
     }
+
     setSelectedHabit(habit);
     bottomSheetModalRef.current?.present();
   };
 
   const handleHabitPress = (habit: Habit) => {
+    if (afterToday) {
+      showIsAfterToast();
+      return;
+    }
     const currentCompletion = getHabitStatus(habit.id, selectedDate);
-    const today = dayjs().startOf('day');
-    const selectedDay = dayjs(selectedDate).startOf('day');
-
-    if (selectedDay.isAfter(today)) {
-      Toast.show({
-        type: 'info',
-        text1: 'Cannot complete future habits',
-        text2: 'Please wait until the day arrives',
-        position: 'bottom',
-      });
-      return;
-    }
-
     if (currentCompletion?.status === 'completed') {
-      Toast.show({
-        type: 'info',
-        text1: 'Habit already completed',
-        text2: 'This habit has been completed for today',
-        position: 'bottom',
-      });
+      showIsCompletedToast(habit.id);
       return;
     }
-
-    // Update habit status
-    const newStatus =
-      currentCompletion?.status === 'not_started' ? 'in_progress' : 'completed';
-    console.log('adding');
-    console.log(currentCompletion?.status, newStatus);
-    toggleHabitStatus(habit.id, selectedDate, newStatus);
+    toggleHabitStatus(habit.id, selectedDate, 'toggle_complete');
   };
 
   const handleDismiss = () => {

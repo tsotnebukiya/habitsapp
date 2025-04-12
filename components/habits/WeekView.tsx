@@ -37,19 +37,24 @@ const WeekView = memo(function WeekView({
     const habits = getHabitsByDate(date.toDate());
     if (habits.length === 0) return 'no_habits';
 
-    const statuses = habits.map((habit) =>
+    const completions = habits.map((habit) =>
       getHabitStatus(habit.id, date.toDate())
     );
 
     // Count skipped habits as "done" for the purpose of daily completion
     if (
-      statuses.every((status) => status === 'completed' || status === 'skipped')
+      completions.every(
+        (completion) =>
+          completion?.status === 'completed' || completion?.status === 'skipped'
+      )
     ) {
       return 'all_completed';
     }
     if (
-      statuses.some(
-        (status) => status === 'completed' || status === 'in_progress'
+      completions.some(
+        (completion) =>
+          completion?.status === 'completed' ||
+          completion?.status === 'in_progress'
       )
     ) {
       return 'some_completed';
