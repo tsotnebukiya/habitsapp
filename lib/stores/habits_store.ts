@@ -368,79 +368,51 @@ export const useHabitsStore = create<HabitsState>()(
             completion.completion_date === normalizedDate
         );
 
-        // For skipped status, use the provided status directly
-        if (status === 'skipped') {
-          if (existingCompletion) {
-            // Update existing completion
-            get().updateCompletion(existingCompletion.id, {
-              status: 'skipped',
-              value: 0,
-            });
-          } else {
-            // Create new completion
-            get().addCompletion({
-              habit_id: habitId,
-              user_id: userId,
-              completion_date: normalizedDate,
-              status: 'skipped',
-              value: 0,
-            });
-          }
-          useAchievementsStore
-            .getState()
-            .calculateAndUpdate(get().completions, get().habits);
-          return;
-        }
-
-        // For not_started status, set value to 0
-        if (status === 'not_started') {
-          if (existingCompletion) {
-            // Update existing completion
-            get().updateCompletion(existingCompletion.id, {
-              status: 'not_started',
-              value: 0,
-            });
-          }
-          return useAchievementsStore
-            .getState()
-            .calculateAndUpdate(get().completions, get().habits);
-        }
-
-        // Calculate new value based on habit type
-        let newValue: number;
-        if (value !== undefined) {
-          newValue = value;
-        } else if (habit.goal_value) {
-          // For measured habits, increment by 10% of goal
-          const currentValue = existingCompletion?.value || 0;
-          newValue = currentValue + habit.goal_value * 0.1;
-        } else if (habit.completions_per_day > 1) {
-          // For multiple completions, increment by 1
-          const currentValue = existingCompletion?.value || 0;
-          newValue = currentValue + 1;
-        } else {
-          // For single completion habits, value is 1
-          newValue = 1;
-        }
-
-        // Determine status based on progress
+        // Calculate new status and value based on the parameters
         let newStatus = status;
-        if (habit.goal_value) {
-          newStatus =
-            newValue >= habit.goal_value ? 'completed' : 'in_progress';
-        } else if (habit.completions_per_day > 1) {
-          newStatus =
-            newValue >= habit.completions_per_day ? 'completed' : 'in_progress';
+        let newValue = 0;
+
+        // Handle different statuses
+        if (status === 'skipped') {
+          newValue = 0;
+        } else if (status === 'not_started') {
+          newValue = 0;
+        } else {
+          // Calculate value for in_progress or completed statuses
+          if (value !== undefined) {
+            newValue = value;
+          } else if (habit.goal_value) {
+            // For measured habits, increment by 10% of goal
+            const currentValue = existingCompletion?.value || 0;
+            newValue = currentValue + habit.goal_value * 0.1;
+          } else if (habit.completions_per_day > 1) {
+            // For multiple completions, increment by 1
+            const currentValue = existingCompletion?.value || 0;
+            newValue = currentValue + 1;
+          } else {
+            // For single completion habits, value is 1
+            newValue = 1;
+          }
+
+          // Determine status based on progress
+          if (habit.goal_value) {
+            newStatus =
+              newValue >= habit.goal_value ? 'completed' : 'in_progress';
+          } else if (habit.completions_per_day > 1) {
+            newStatus =
+              newValue >= habit.completions_per_day
+                ? 'completed'
+                : 'in_progress';
+          }
         }
 
+        // Update or create completion
         if (existingCompletion) {
-          // Update existing completion
           get().updateCompletion(existingCompletion.id, {
             status: newStatus,
             value: newValue,
           });
         } else {
-          // Create new completion
           get().addCompletion({
             habit_id: habitId,
             user_id: userId,
@@ -449,10 +421,11 @@ export const useHabitsStore = create<HabitsState>()(
             value: newValue,
           });
         }
+
+        // Calculate achievements once
         useAchievementsStore
           .getState()
           .calculateAndUpdate(get().completions, get().habits);
-        return;
       },
 
       getHabitStatus: (habitId: string, date: Date): HabitCompletionStatus => {

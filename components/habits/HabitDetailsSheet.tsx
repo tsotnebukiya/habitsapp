@@ -69,7 +69,7 @@ export default function HabitDetailsSheet({
   const handleSkip = () => {
     if (!habit) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    toggleHabitStatus(habit.id, date, 'skipped');
+    toggleHabitStatus(habit.id, date, isSkipped ? 'not_started' : 'skipped', 0);
   };
 
   const handleCompletion = () => {
