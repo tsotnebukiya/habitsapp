@@ -517,166 +517,153 @@ graph TD
 
 ## State Management
 
-### Shared Store Utilities
+### Zustand Stores
 
-The application uses a shared utilities pattern for store management, located in `lib/stores/shared.ts`. This provides:
+We use Zustand for global state management across the application. Each major feature has its own dedicated store:
 
-- Base interfaces and types for consistent store implementation
-- Utility functions for error handling and user management
-- Constants for retry attempts and intervals
-- Async storage helpers for persistence
+1. `habits_store.ts` - Manages habit data, completions, and sync
+2. `auth_store.ts` - Handles authentication state
+3. `achievements_store.ts` - Tracks user achievements
+4. `modal_store.ts` - Centralizes modal management
 
-```typescript
-// Core shared interfaces
-interface BaseState {
-  lastSyncTime: Date;
-  isLoading: boolean;
-  error: string | null;
-}
-
-interface BasePendingOperation {
-  id: string;
-  type: 'create' | 'update' | 'delete';
-  timestamp: Date;
-  retryCount: number;
-  lastAttempt?: Date;
-}
-```
-
-### Store Implementation Pattern
-
-Each store follows a consistent pattern:
-
-1. **Base State Extension**
-
-   - Extends BaseState
-   - Includes local state (Maps/Arrays)
-   - Defines pending operations
-
-2. **CRUD Operations**
-
-   - Local state update first
-   - Server sync attempt
-   - Fallback to pending operations
-
-3. **Sync Management**
-   - Periodic sync with server
-   - Pending operations processing
-   - Error handling and retry logic
-
-### Achievement System
-
-The achievement system uses:
-
-- Streak-based achievements
-- Local state management
-- Server synchronization
-- Pending operations for offline support
-
-### Habits System
-
-The habits system implements:
-
-- Complex habit tracking
-- Completion status management
-- Progress calculation
-- Streak tracking
-- Offline support with pending operations
-
-## Data Flow Patterns
-
-### Optimistic Updates
-
-1. Update local state immediately
-2. Attempt server sync
-3. Queue failed operations
-4. Retry failed operations periodically
-
-### Error Handling
-
-Consistent error handling pattern:
+All stores follow consistent patterns:
 
 ```typescript
-const errorHandler = createErrorHandler<State>(set);
-// Usage
-try {
-  // Operation
-} catch (error) {
-  errorHandler.setError(error as Error);
-}
+export const useHabitsStore = create<HabitsState>()(
+  persist(
+    immer((set, get) => ({
+      // State
+      habits: new Map(),
+      completions: new Map(),
+      pendingOperations: [],
+
+      // Actions
+      addHabit: async (habitData) => {
+        // Implementation...
+      },
+      // More actions...
+    })),
+    {
+      name: 'habits-store',
+      storage: {
+        // Storage implementation
+      },
+    }
+  )
+);
 ```
 
-### Persistence
+### Performance Storage with MMKV
 
-- Uses AsyncStorage for local persistence
-- Implements custom storage adapter
-- Handles serialization/deserialization
+We've migrated from AsyncStorage to MMKV for improved performance. MMKV is a key-value storage system that offers significantly better performance than AsyncStorage.
 
-## Authentication Pattern
-
-- User ID required for operations
-- Throws error if user not logged in
-- Consistent user ID retrieval:
+Implementation pattern:
 
 ```typescript
-const userId = getUserIdOrThrow();
+// Create MMKV instance for a specific store
+const habitsMmkv = new MMKV({ id: 'habits-store' });
+
+// Configure storage interface
+storage: {
+  getItem: (name) => {
+    const value = habitsMmkv.getString(name);
+    if (!value) return null;
+    return JSON.parse(value);
+  },
+  setItem: (name, value) => {
+    habitsMmkv.set(name, JSON.stringify(value));
+  },
+  removeItem: (name) => {
+    habitsMmkv.delete(name);
+  },
+},
 ```
 
-### Date Handling Pattern
+Benefits:
 
-1. **Core Date Library**
+- Faster read/write operations
+- Better app startup performance
+- Reduced memory usage
+- Native implementation for better stability
+
+### Selector Hooks
+
+Custom hooks for data selection follow this pattern:
+
+```typescript
+export const useHabitsForDate = (date: Date): Habit[] => {
+  const normalizedDate = useMemo(() => {
+    return normalizeDate(date);
+  }, [date.toISOString().split('T')[0]]);
+
+  return useHabitsStore(
+    useCallback(
+      (state) => {
+        return state.getHabitsForDate(normalizedDate);
+      },
+      [normalizedDate]
+    )
+  );
+};
+```
+
+## UI Patterns
+
+### Modal System
+
+The application now uses a centralized modal system with the following architecture:
+
+1. **Modal Store**: `modal_store.ts` manages the state of all modals in the application
 
    ```typescript
-   // Always import from our custom instance
-   import dayjs from '@/lib/utils/dayjs';
+   export type ModalType = 'achievement' | 'confirmation' | 'settings' | null;
+
+   interface ModalState {
+     currentModal: ModalType;
+     // Modal-specific state and actions
+   }
    ```
 
-2. **Standard Operations**
+2. **Modal Container**: A single component that renders the appropriate modal based on the current state
 
-   ```typescript
-   // Date normalization
-   const normalizedDate = dayjs(date).startOf('day');
+   ```tsx
+   const ModalContainer = () => {
+     const { currentModal, hideModal } = useModalStore();
 
-   // Date comparisons
-   const isInRange = startDate.isSameOrBefore(targetDate, 'day');
+     return (
+       <>
+         {currentModal === 'achievement' && (
+           <AchievementsModal onDismiss={hideModal} />
+         )}
 
-   // Day of week
-   const dayOfWeek = dayjs(date).day(); // 0 = Sunday
+         {currentModal === 'confirmation' && (
+           <ConfirmationModal onDismiss={hideModal} />
+         )}
 
-   // Formatting
-   const formatted = dayjs(date).format();
-   ```
-
-3. **Best Practices**
-
-   - Use custom dayjs instance from `@/lib/utils/dayjs`
-   - Avoid native Date methods
-   - Use dayjs's type-safe comparison methods
-   - Store dates in ISO format
-   - Convert to Date using `toDate()` when storing in state/database
-
-4. **Common Use Cases**
-
-   ```typescript
-   // In hooks
-   const useDataForDate = (date: Date) => {
-     return useMemo(() => {
-       const targetDate = dayjs(date);
-       // Use dayjs methods for comparisons
-     }, [date]);
+         {/* Other modal types */}
+       </>
+     );
    };
-
-   // In components
-   const MyComponent = ({ date }: { date: Date }) => {
-     const normalizedDate = dayjs(date).startOf('day');
-     // Use normalized date for operations
-   };
-
-   // In stores
-   const store = create<State>()((set) => ({
-     setDate: (date: Date) =>
-       set({
-         date: dayjs(date).toDate(),
-       }),
-   }));
    ```
+
+3. **Modal Components**: Individual modal implementations with specific functionality
+
+   - `AchievementsModal`: Displays unlocked achievements with confetti animation
+   - `ConfirmationModal`: Generic confirmation dialog with customizable messages
+   - More modals to be added as needed
+
+4. **Triggering Modals**: Using store actions to show modals from anywhere in the app
+
+   ```typescript
+   const { showAchievementModal } = useModalStore();
+
+   // Show an achievement modal with the specified achievements
+   showAchievementModal(achievementDetails);
+   ```
+
+Benefits:
+
+- Centralized modal management
+- Consistent UX across modal types
+- Simplified modal creation and usage
+- Decoupled modal logic from components

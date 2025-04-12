@@ -372,3 +372,157 @@ import dayjs from 'dayjs';
 ## Authentication
 
 [Authentication documentation will go here]
+
+## Core Libraries
+
+### State Management
+
+- **Zustand**: Primary state management solution
+
+  - Type-safe stores with TypeScript
+  - Middleware support (persist, immer)
+  - Minimal boilerplate
+
+- **MMKV**: High-performance key-value storage
+
+  - Native implementation using C++
+  - Significantly faster than AsyncStorage
+  - Used for persisting Zustand stores
+  - Optimized binary storage format
+
+- **Immer**: Used with Zustand for immutable state updates
+  - Simplifies complex state updates
+  - Maintains immutability guarantees
+  - Improves code readability
+
+### UI Components
+
+- **React Native**: Core UI framework
+
+  - Cross-platform components
+  - Native rendering
+
+- **Expo**: Development platform
+
+  - Easy access to native APIs
+  - Simplified build process
+  - Development tools
+
+- **react-native-reanimated**: Advanced animations
+
+  - Performance-optimized animations
+  - Gesture handling
+
+- **react-native-bottom-sheet**: Modal and drawer UI
+
+  - Smooth animations
+  - Customizable behavior
+  - Gesture-based interactions
+
+- **react-native-context-menu-view**: Context menus
+
+  - Native context menu implementation
+  - Platform-specific behavior
+
+- **react-native-confetti-cannon**: Celebration effects
+  - Used for achievement unlocks
+  - Customizable particle effects
+  - Performance-optimized animations
+
+### Navigation
+
+- **Expo Router v3**: File-based routing
+  - Type-safe navigation
+  - Deep linking support
+  - URL-based navigation
+
+### Database
+
+- **Supabase**: Backend as a service
+  - PostgreSQL database
+  - Authentication
+  - Real-time updates
+  - Edge functions
+
+### Data Formatting/Utilities
+
+- **dayjs**: Date manipulation
+
+  - Type-safe date operations
+  - Lightweight alternative to moment.js
+  - Consistent date handling
+
+- **nanoid**: ID generation
+  - Compact, URL-friendly IDs
+  - Secure, unpredictable
+  - Significantly smaller than UUID
+
+## Development Environment
+
+### Tools
+
+- **TypeScript**: Type safety
+
+  - Strict mode enabled
+  - Comprehensive type definitions
+  - Path aliases for imports
+
+- **ESLint**: Code quality
+
+  - Custom rule configuration
+  - React Native specific rules
+  - TypeScript integration
+
+- **Prettier**: Code formatting
+  - Consistent code style
+  - EditorConfig integration
+
+### Project Structure
+
+- `/app`: Expo Router file-based routes
+- `/components`: Reusable UI components
+- `/lib`: Core application logic
+  - `/hooks`: Custom React hooks
+  - `/stores`: Zustand stores
+  - `/utils`: Utility functions
+  - `/types`: TypeScript type definitions
+  - `/constants`: Application constants
+- `/assets`: Static assets
+
+## Key Technical Decisions
+
+1. **Zustand + MMKV**: Chosen for state management and persistence due to:
+
+   - Minimal boilerplate compared to Redux
+   - TypeScript integration
+   - Performance benefits with MMKV
+   - Simplified store implementation
+
+2. **Supabase**: Selected as backend for:
+
+   - PostgreSQL support
+   - Real-time capabilities
+   - Edge functions
+   - Authentication services
+   - Open-source nature
+
+3. **Expo Managed Workflow**: Adopted for:
+
+   - Simplified development
+   - Easy access to native APIs
+   - OTA updates
+   - Build service
+   - Development tools
+
+4. **File-based Routing**: Implemented with Expo Router for:
+
+   - URL-based navigation
+   - Deep linking support
+   - Familiar web-like routing
+   - Type safety
+
+5. **Offline-First Architecture**: Designed for:
+   - Resilience to connectivity issues
+   - Optimistic updates
+   - Seamless user experience
+   - Background synchronization
