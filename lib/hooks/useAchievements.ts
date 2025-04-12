@@ -20,7 +20,8 @@ export const useAllAchievements = (): StreakAchievements => {
 
 export const useCurrentStreak = () => {
   const completions = useHabitsStore((state) => state.getCompletions());
+  const habits = useHabitsStore((state) => state.getHabits());
   return useMemo(() => {
-    return calculateCurrentStreak(completions);
-  }, [completions]);
+    return calculateCurrentStreak(completions, habits);
+  }, [completions, habits]);
 };

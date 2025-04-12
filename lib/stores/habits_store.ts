@@ -17,6 +17,10 @@ import {
 import { useAchievementsStore } from './achievements_store';
 import { StreakDays } from '@/lib/constants/achievements';
 import { StreakAchievements } from '@/lib/utils/achievement_scoring';
+import { MMKV } from 'react-native-mmkv';
+
+// Create MMKV instance
+const habitsMmkv = new MMKV({ id: 'habits-store' });
 
 // Types from Supabase schema
 type Habit = Database['public']['Tables']['habits']['Row'];
@@ -36,6 +40,7 @@ export interface HabitsState extends BaseState {
   pendingOperations: PendingOperation[];
 
   // Habit actions
+  getHabits: () => Map<string, Habit>;
   addHabit: (
     habit: Omit<Habit, 'id' | 'created_at' | 'updated_at'>
   ) => Promise<string>;
@@ -110,6 +115,7 @@ export const useHabitsStore = create<HabitsState>()(
       completions: new Map(),
       pendingOperations: [],
 
+      getHabits: () => get().habits,
       addHabit: async (habitData) => {
         const now = dayjs();
         const userId = getUserIdOrThrow();
@@ -380,7 +386,9 @@ export const useHabitsStore = create<HabitsState>()(
               value: 0,
             });
           }
-          useAchievementsStore.getState().calculateAndUpdate(get().completions);
+          useAchievementsStore
+            .getState()
+            .calculateAndUpdate(get().completions, get().habits);
           return;
         }
 
@@ -395,7 +403,7 @@ export const useHabitsStore = create<HabitsState>()(
           }
           return useAchievementsStore
             .getState()
-            .calculateAndUpdate(get().completions);
+            .calculateAndUpdate(get().completions, get().habits);
         }
 
         // Calculate new value based on habit type
@@ -423,8 +431,6 @@ export const useHabitsStore = create<HabitsState>()(
         } else if (habit.completions_per_day > 1) {
           newStatus =
             newValue >= habit.completions_per_day ? 'completed' : 'in_progress';
-        } else {
-          newStatus = 'completed';
         }
 
         if (existingCompletion) {
@@ -443,7 +449,9 @@ export const useHabitsStore = create<HabitsState>()(
             value: newValue,
           });
         }
-        useAchievementsStore.getState().calculateAndUpdate(get().completions);
+        useAchievementsStore
+          .getState()
+          .calculateAndUpdate(get().completions, get().habits);
         return;
       },
 
@@ -688,18 +696,19 @@ export const useHabitsStore = create<HabitsState>()(
     {
       name: 'habits-store',
       storage: {
-        getItem: async (name) => {
-          const str = await AsyncStorage.getItem(name);
-          if (!str) return null;
-          const value = JSON.parse(str);
+        getItem: (name) => {
+          const value = habitsMmkv.getString(name);
+          if (!value) return null;
+
+          const parsed = JSON.parse(value);
           return {
-            ...value,
+            ...parsed,
             state: {
-              ...value.state,
-              habits: new Map(value.state.habits),
-              completions: new Map(value.state.completions),
-              lastSyncTime: dayjs(value.state.lastSyncTime).toDate(),
-              pendingOperations: value.state.pendingOperations.map(
+              ...parsed.state,
+              habits: new Map(parsed.state.habits),
+              completions: new Map(parsed.state.completions),
+              lastSyncTime: dayjs(parsed.state.lastSyncTime).toDate(),
+              pendingOperations: parsed.state.pendingOperations.map(
                 (op: any) => ({
                   ...op,
                   timestamp: dayjs(op.timestamp).toDate(),
@@ -711,8 +720,8 @@ export const useHabitsStore = create<HabitsState>()(
             },
           };
         },
-        setItem: async (name, value) => {
-          const str = JSON.stringify({
+        setItem: (name, value) => {
+          const serialized = JSON.stringify({
             ...value,
             state: {
               ...value.state,
@@ -728,10 +737,10 @@ export const useHabitsStore = create<HabitsState>()(
               ),
             },
           });
-          await AsyncStorage.setItem(name, str);
+          habitsMmkv.set(name, serialized);
         },
-        removeItem: async (name) => {
-          await AsyncStorage.removeItem(name);
+        removeItem: (name) => {
+          habitsMmkv.delete(name);
         },
       },
     }

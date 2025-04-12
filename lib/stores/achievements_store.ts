@@ -21,7 +21,12 @@ import {
 } from '@/lib/utils/achievement_scoring';
 import { StreakDays, Achievement } from '@/lib/constants/achievements';
 import Toast from 'react-native-toast-message';
+import { MMKV } from 'react-native-mmkv';
 
+// Create MMKV instance
+const achievementsMmkv = new MMKV({ id: 'achievements-store' });
+
+type Habit = Database['public']['Tables']['habits']['Row'];
 type UserAchievement = Database['public']['Tables']['user_achievements']['Row'];
 type HabitCompletion = Database['public']['Tables']['habit_completions']['Row'];
 
@@ -40,7 +45,10 @@ interface AchievementsState extends BaseState {
   updateAchievements: (achievements: StreakAchievements) => void;
   getStreakAchievements: () => StreakAchievements;
   resetAchievements: () => void;
-  calculateAndUpdate: (completions: Map<string, HabitCompletion>) => {
+  calculateAndUpdate: (
+    completions: Map<string, HabitCompletion>,
+    habits: Map<string, Habit>
+  ) => {
     unlockedAchievements: StreakDays[];
     currentStreak: number;
   };
@@ -67,8 +75,11 @@ export const useAchievementsStore = create<AchievementsState>()(
           return get().streakAchievements;
         },
 
-        calculateAndUpdate: (completions: Map<string, HabitCompletion>) => {
-          const currentStreak = calculateCurrentStreak(completions);
+        calculateAndUpdate: (
+          completions: Map<string, HabitCompletion>,
+          habits: Map<string, Habit>
+        ) => {
+          const currentStreak = calculateCurrentStreak(completions, habits);
           const newAchievements = calculateNewAchievements(
             currentStreak,
             get().streakAchievements
@@ -90,7 +101,6 @@ export const useAchievementsStore = create<AchievementsState>()(
             get().justUnlockedAchievementId === null
           ) {
             // Set the ID to trigger the modal in the UI
-            console.log('newlyUnlockedIds', newlyUnlockedIds);
             set({ justUnlockedAchievementId: newlyUnlockedIds[0] });
             // Removed Toast logic
           }
@@ -298,15 +308,16 @@ export const useAchievementsStore = create<AchievementsState>()(
     {
       name: 'achievements-storage',
       storage: {
-        getItem: async (name: string) => {
-          const value = await AsyncStorage.getItem(name);
-          return value ? JSON.parse(value) : null;
+        getItem: (name) => {
+          const value = achievementsMmkv.getString(name);
+          if (!value) return null;
+          return JSON.parse(value);
         },
-        setItem: async (name: string, value: any) => {
-          await AsyncStorage.setItem(name, JSON.stringify(value));
+        setItem: (name, value) => {
+          achievementsMmkv.set(name, JSON.stringify(value));
         },
-        removeItem: async (name: string) => {
-          await AsyncStorage.removeItem(name);
+        removeItem: (name) => {
+          achievementsMmkv.delete(name);
         },
       },
     }

@@ -15,7 +15,7 @@ export type StreakAchievements = {
  */
 export function calculateCurrentStreak(
   completions: Map<string, HabitCompletion>,
-  habits: Habit[] = []
+  habits: Map<string, Habit>
 ): number {
   if (completions.size === 0) return 0;
 
@@ -46,7 +46,7 @@ export function calculateCurrentStreak(
     }
 
     // Get all habits that should be active for this date
-    const activeHabitsForDate = habits.filter((habit) => {
+    const activeHabitsForDate = Array.from(habits.values()).filter((habit) => {
       // Check if habit was active on this date
       const habitStartDate = dayjs(habit.created_at).startOf('day');
       const isAfterStart =
@@ -77,13 +77,11 @@ export function calculateCurrentStreak(
         (completion.status === 'completed' || completion.status === 'skipped')
       );
     });
-
     if (allHabitsCompleted && activeHabitsForDate.length > 0) {
       currentStreak++;
     } else {
       break; // Break streak if not all habits completed
     }
-
     currentDate = dateToCheck;
   }
 

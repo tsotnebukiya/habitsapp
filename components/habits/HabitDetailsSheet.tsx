@@ -40,7 +40,6 @@ export default function HabitDetailsSheet({
     getCurrentValue,
     getCompletions,
   } = useHabitsStore();
-  const completions = getCompletions();
   const snapPoints = useMemo(() => ['1%', '60%'], []);
   const { width } = Dimensions.get('window');
   const circularCounterSize = Math.min(width * 0.45, 160);
