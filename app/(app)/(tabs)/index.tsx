@@ -22,14 +22,6 @@ export default function Home() {
   );
   const [selectedDate, setSelectedDate] = useState(new Date());
   const router = useRouter();
-  // const habits = useAllHabits();
-  const completions = useAllCompletions();
-  // const achievements = useAllAchievements();
-  // const currentStreak = useCurrentStreak();
-  // console.log('Habits:\n', JSON.stringify(habits, null, 2));
-  console.log('Completions:\n', JSON.stringify(completions, null, 2));
-  // console.log('Achievements:\n', JSON.stringify(achievements, null, 2));
-  // console.log('Current Streak:\n', currentStreak);
   useEffect(() => {
     if (profile?.id) {
       // Initial sync

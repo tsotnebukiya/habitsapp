@@ -97,17 +97,12 @@ export const useAchievementsStore = create<AchievementsState>()(
           const achievementDetails = newlyUnlockedIds
             .map((id) => getAchievementDetails(id))
             .filter(Boolean) as Achievement[];
-
+          console.log(achievementsAfterRemoval);
           // Show the achievements modal with all unlocked achievements
           if (achievementDetails.length > 0) {
             // Add a delay before showing the modal
             setTimeout(() => {
-              useModalStore
-                .getState()
-                .showAchievementModal([
-                  ...achievementDetails,
-                  ...achievementDetails,
-                ]);
+              useModalStore.getState().showAchievementModal(achievementDetails);
             }, 1000); // 1 second delay
           }
 

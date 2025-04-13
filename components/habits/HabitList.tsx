@@ -69,7 +69,7 @@ const HabitList = memo(function HabitList({ selectedDate }: HabitListProps) {
       showIsCompletedToast(habit.id);
       return;
     }
-    toggleHabitStatus(habit.id, selectedDate, 'toggle_complete');
+    toggleHabitStatus(habit.id, selectedDate, 'toggle');
   };
 
   const handleDismiss = () => {

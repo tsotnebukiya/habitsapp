@@ -8,6 +8,9 @@ import { StreakDisplay } from '@/components/achievements/StreakDisplay';
 import { QuoteDisplay } from '@/components/achievements/QuoteDisplay';
 import { AchievementsList } from '@/components/achievements/AchievementsList';
 
+// Import Calendar Component
+import CalendarView from '@/components/calendar/CalendarView';
+
 // Simple Separator Component
 const Separator = () => <View style={styles.separator} />;
 
@@ -21,6 +24,15 @@ const StatsScreen = () => {
             Your scores across key life areas
           </Text>
           <MatrixGrid />
+        </View>
+
+        {/* Calendar View Section */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Activity Calendar</Text>
+          <Text style={styles.sectionSubtitle}>
+            Track your habit completion streaks
+          </Text>
+          <CalendarView />
         </View>
 
         {/* Achievements Section - Wrapped in Glass Card */}
