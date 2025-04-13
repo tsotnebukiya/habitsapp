@@ -83,21 +83,21 @@ export const useAchievementsStore = create<AchievementsState>()(
             get().streakAchievements
           );
           // TODO: remove this once we have a way to remove achievements
-          const achievementsAfterRemoval = calculateAchievementsToRemove(
-            currentStreak,
-            newAchievements
-          );
+          // const achievementsAfterRemoval = calculateAchievementsToRemove(
+          //   currentStreak,
+          //   newAchievements
+          // );
 
           const newlyUnlockedIds = getNewlyUnlockedAchievements(
             get().streakAchievements,
-            achievementsAfterRemoval
+            newAchievements
           );
 
           // Get achievement details for all newly unlocked achievements
           const achievementDetails = newlyUnlockedIds
             .map((id) => getAchievementDetails(id))
             .filter(Boolean) as Achievement[];
-          console.log(achievementsAfterRemoval);
+          console.log(newAchievements);
           // Show the achievements modal with all unlocked achievements
           if (achievementDetails.length > 0) {
             // Add a delay before showing the modal
@@ -109,10 +109,10 @@ export const useAchievementsStore = create<AchievementsState>()(
           // Update local state immediately
           if (
             JSON.stringify(get().streakAchievements) !==
-            JSON.stringify(achievementsAfterRemoval)
+            JSON.stringify(newAchievements)
           ) {
             // Update local state synchronously
-            set({ streakAchievements: achievementsAfterRemoval });
+            set({ streakAchievements: newAchievements });
 
             // Update server in the background
             const userId = getUserIdOrThrow();
@@ -120,7 +120,7 @@ export const useAchievementsStore = create<AchievementsState>()(
             const userAchievement: UserAchievement = {
               id: userId,
               user_id: userId,
-              streak_achievements: achievementsAfterRemoval,
+              streak_achievements: newAchievements,
               created_at: now.toISOString(),
               updated_at: now.toISOString(),
             };
