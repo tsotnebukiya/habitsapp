@@ -42,7 +42,6 @@ interface AchievementsState extends BaseState {
   pendingOperations: PendingOperation[];
 
   // Achievement actions
-  updateAchievements: (achievements: StreakAchievements) => void;
   getStreakAchievements: () => StreakAchievements;
   resetAchievements: () => void;
   calculateAndUpdate: (
@@ -151,43 +150,6 @@ export const useAchievementsStore = create<AchievementsState>()(
             unlockedAchievements: newlyUnlockedIds,
             currentStreak,
           };
-        },
-
-        updateAchievements: (achievements: StreakAchievements) => {
-          // Update local state immediately
-          set({ streakAchievements: achievements });
-
-          // Update server in the background
-          const userId = getUserIdOrThrow();
-          const now = dayjs();
-          const userAchievement: UserAchievement = {
-            id: userId,
-            user_id: userId,
-            streak_achievements: achievements,
-            created_at: now.toISOString(),
-            updated_at: now.toISOString(),
-          };
-
-          // Fire and forget server update
-          supabase
-            .from('user_achievements')
-            .upsert(userAchievement)
-            .then(({ error }) => {
-              if (error) {
-                const pendingOp = {
-                  id: userAchievement.id,
-                  type: 'update' as const,
-                  table: 'user_achievements' as const,
-                  data: userAchievement,
-                  timestamp: now.toDate(),
-                  retryCount: 0,
-                  lastAttempt: now.toDate(),
-                };
-                set((state) => ({
-                  pendingOperations: [...state.pendingOperations, pendingOp],
-                }));
-              }
-            });
         },
 
         resetAchievements: () => {
