@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect, useRef } from 'react';
 import { useUserProfileStore } from '@/lib/stores/user_profile';
 import { calculateDMS, DisplayedMatrixScore } from '@/lib/utils/scoring';
 import { useHabitsStore } from '@/lib/stores/habits_store';
@@ -15,6 +15,15 @@ export interface MatrixCategory {
 }
 
 export function useMatrix() {
+  const matrixScoreTime = useRef(0);
+
+  // Log total execution time on each run
+  useEffect(() => {
+    console.log(
+      `[useMatrix] Matrix score calculation time: ${matrixScoreTime.current}ms`
+    );
+  });
+
   // Only extract the data we need from stores as stable references
   const profile = useUserProfileStore((state) => state.profile);
 
@@ -33,34 +42,36 @@ export function useMatrix() {
 
   // Calculate the displayed matrix score
   const matrixScore: DisplayedMatrixScore = useMemo(() => {
-    if (!profile) {
-      return {
-        body: 50,
-        mind: 50,
-        heart: 50,
-        spirit: 50,
-        work: 50,
-        calculated_at: dayjs().toDate(),
-      };
-    }
+    const scoreStart = Date.now();
+    const result = !profile
+      ? {
+          body: 50,
+          mind: 50,
+          heart: 50,
+          spirit: 50,
+          work: 50,
+          calculated_at: dayjs().toDate(),
+        }
+      : calculateDMS(profile, habits, completions);
 
-    return calculateDMS(profile, habits, completions);
+    matrixScoreTime.current = Date.now() - scoreStart;
+    return result;
   }, [profile, habits, completions]);
 
   // Create category objects with metadata - only recompute when matrixScore changes
-  const categories: MatrixCategory[] = useMemo(
-    () =>
-      CATEGORIES.map((cat) => ({
-        ...cat,
-        score: Math.round(matrixScore[cat.id]),
-      })),
-    [matrixScore]
-  );
+  const categories: MatrixCategory[] = useMemo(() => {
+    const result = CATEGORIES.map((cat) => ({
+      ...cat,
+      score: Math.round(matrixScore[cat.id]),
+    }));
+    return result;
+  }, [matrixScore]);
 
   // Calculate overall balance score (average of all categories) - rounded to whole number
   const balanceScore = useMemo(() => {
     const sum = categories.reduce((acc, cat) => acc + cat.score, 0);
-    return Math.round(sum / categories.length);
+    const result = Math.round(sum / categories.length);
+    return result;
   }, [categories]);
 
   // Create balance category - only recompute when balanceScore changes

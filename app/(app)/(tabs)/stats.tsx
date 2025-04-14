@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -23,7 +23,25 @@ import Colors from '@/lib/constants/Colors';
 const Separator = () => <View style={styles.separator} />;
 
 // Performance Tab Content
-const PerformanceTabContent = () => {
+const PerformanceTabContent = React.memo(() => {
+  const mountTime = useRef(Date.now());
+  const [isMatrixVisible, setIsMatrixVisible] = useState(false);
+  const [isAchievementsVisible, setIsAchievementsVisible] = useState(false);
+
+  useEffect(() => {
+    // Stagger the loading of components
+    const matrixTimer = setTimeout(() => setIsMatrixVisible(true), 50);
+    const achievementsTimer = setTimeout(
+      () => setIsAchievementsVisible(true),
+      100
+    );
+
+    return () => {
+      clearTimeout(matrixTimer);
+      clearTimeout(achievementsTimer);
+    };
+  }, []);
+
   return (
     <>
       <View style={styles.section}>
@@ -38,19 +56,40 @@ const PerformanceTabContent = () => {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Progress & Achievements</Text>
         <View style={styles.glassCard}>
-          <StreakDisplay />
-          <Separator />
-          <QuoteDisplay />
-          <Separator />
-          <AchievementsList />
+          {isAchievementsVisible && (
+            <>
+              <StreakDisplay />
+              <Separator />
+              <QuoteDisplay />
+              <Separator />
+              <AchievementsList />
+            </>
+          )}
         </View>
       </View>
     </>
   );
-};
+});
 
 // Calendar Tab Content
-const CalendarTabContent = () => {
+const CalendarTabContent = React.memo(() => {
+  const mountTime = useRef(Date.now());
+  const [isCalendarVisible, setIsCalendarVisible] = useState(false);
+
+  useEffect(() => {
+    const mountDuration = Date.now() - mountTime.current;
+    console.log(`Calendar tab mounted in ${mountDuration}ms`);
+
+    // Delay calendar loading slightly
+    const timer = setTimeout(() => setIsCalendarVisible(true), 50);
+
+    return () => {
+      clearTimeout(timer);
+      const totalTime = Date.now() - mountTime.current;
+      console.log(`Calendar tab total visible time: ${totalTime}ms`);
+    };
+  }, []);
+
   return (
     <>
       <View style={styles.section}>
@@ -62,7 +101,7 @@ const CalendarTabContent = () => {
       </View>
     </>
   );
-};
+});
 
 const StatsScreen = () => {
   const [activeTab, setActiveTab] = useState(0);

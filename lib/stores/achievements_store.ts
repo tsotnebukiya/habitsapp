@@ -97,7 +97,6 @@ export const useAchievementsStore = create<AchievementsState>()(
           const achievementDetails = newlyUnlockedIds
             .map((id) => getAchievementDetails(id))
             .filter(Boolean) as Achievement[];
-          console.log(newAchievements);
           // Show the achievements modal with all unlocked achievements
           if (achievementDetails.length > 0) {
             // Add a delay before showing the modal

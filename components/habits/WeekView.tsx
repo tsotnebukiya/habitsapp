@@ -34,9 +34,6 @@ export const WeekView = memo(function WeekView({
   // Get completion status for a date
   const getDateCompletionStatus = (date: dayjs.Dayjs) => {
     const habits = getHabitsByDate(date);
-    // if (date.format('YYYY-MM-DD') === '2025-04-12') {
-    //   console.log(date.toDate(), 'checkdate1');
-    // }
     if (habits.length === 0) return 'no_habits';
 
     const completions = habits.map((habit) =>

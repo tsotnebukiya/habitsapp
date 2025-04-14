@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import React, { memo, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { MatrixCategory } from '@/lib/hooks/useMatrix';
@@ -12,9 +12,13 @@ export const MatrixGridCell = memo(function MatrixGridCell({
   category,
   size = 'medium',
 }: MatrixGridCellProps) {
+  const colorCalcTime = useRef(0);
+
   // Create a solid background color by mixing with white
   // Instead of using opacity which causes shadow rendering issues
   const getBgColor = (color: string, opacity: number = 0.15) => {
+    const calcStart = Date.now();
+
     // Simple mixing function - assumes color is a hex value
     const r = parseInt(color.substring(1, 3), 16);
     const g = parseInt(color.substring(3, 5), 16);
@@ -26,9 +30,12 @@ export const MatrixGridCell = memo(function MatrixGridCell({
     const mixedB = Math.round(b * opacity + 255 * (1 - opacity));
 
     // Convert back to hex
-    return `#${mixedR.toString(16).padStart(2, '0')}${mixedG
+    const result = `#${mixedR.toString(16).padStart(2, '0')}${mixedG
       .toString(16)
       .padStart(2, '0')}${mixedB.toString(16).padStart(2, '0')}`;
+
+    colorCalcTime.current = Date.now() - calcStart;
+    return result;
   };
 
   return (

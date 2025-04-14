@@ -1,4 +1,4 @@
-import React, { memo, useMemo } from 'react';
+import React, { memo, useMemo, useEffect, useRef } from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
 import { useMatrix } from '@/lib/hooks/useMatrix';
 import { MatrixGridCell } from './MatrixGridCell';
@@ -10,10 +10,14 @@ interface MatrixGridProps {
 export const MatrixGrid = memo(function MatrixGrid({
   columnCount = 2,
 }: MatrixGridProps) {
+  const renderCount = useRef(0);
   const { categories, balanceCategory } = useMatrix();
 
   // Render grid cells in rows based on columnCount
   const renderGrid = useMemo(() => {
+    const gridStartTime = Date.now();
+    renderCount.current++;
+
     // Ensure we have enough categories
     if (!categories || categories.length < 5) return null;
 
@@ -37,6 +41,8 @@ export const MatrixGrid = memo(function MatrixGrid({
         </View>
       );
     }
+
+    const gridTime = Date.now() - gridStartTime;
 
     return <>{rows}</>;
   }, [categories, balanceCategory, columnCount]);

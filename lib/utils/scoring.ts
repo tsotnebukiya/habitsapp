@@ -19,23 +19,32 @@ export interface DisplayedMatrixScore {
 const SMOOTHING_FACTOR = 0.02; // Alpha (α) for exponential smoothing
 const LOOKBACK_WINDOW = 14; // Number of days to consider for smoothing
 
+// Pre-calculate baseline scores for faster lookup
+const BASELINE_SCORES: Record<HabitCategory, number> = {
+  body: 50,
+  mind: 50,
+  heart: 50,
+  spirit: 50,
+  work: 50,
+};
+
 function getBaselineScore(
   category: HabitCategory,
   userProfile: UserProfile
 ): number {
   switch (category) {
     case 'body':
-      return userProfile.bodyScore || 50;
+      return userProfile.bodyScore || BASELINE_SCORES.body;
     case 'mind':
-      return userProfile.mindScore || 50;
+      return userProfile.mindScore || BASELINE_SCORES.mind;
     case 'heart':
-      return userProfile.heartScore || 50;
+      return userProfile.heartScore || BASELINE_SCORES.heart;
     case 'spirit':
-      return userProfile.spiritScore || 50;
+      return userProfile.spiritScore || BASELINE_SCORES.spirit;
     case 'work':
-      return userProfile.workScore || 50;
+      return userProfile.workScore || BASELINE_SCORES.work;
     default:
-      return 50;
+      return BASELINE_SCORES.body;
   }
 }
 
@@ -44,10 +53,11 @@ function getDateString(date: Date | string): string {
 }
 
 function getActiveHabitsForDay(habits: Habit[], date: string): Habit[] {
+  const start = Date.now();
   const targetDate = dateUtils.normalize(date);
-  const dayOfWeek = dateUtils.getDayOfWeek(targetDate); // 0=Sun, 1=Mon, ... 6=Sat
+  const dayOfWeek = dateUtils.getDayOfWeek(targetDate);
 
-  return habits.filter((habit) => {
+  const result = habits.filter((habit) => {
     const habitStartDate = dateUtils.normalize(habit.start_date);
     const habitEndDate = habit.end_date
       ? dateUtils.normalize(habit.end_date)
@@ -70,6 +80,8 @@ function getActiveHabitsForDay(habits: Habit[], date: string): Habit[] {
     }
     return false;
   });
+
+  return result;
 }
 
 function getCategoryData(
@@ -113,6 +125,10 @@ function calculateDPS(
   allHabits: Habit[],
   completionsMap: Map<string, HabitCompletion>
 ): number {
+  const start = Date.now();
+
+  // Get active habits
+  const filterStart = Date.now();
   const activeHabits = getActiveHabitsForDay(allHabits, date).filter(
     (h) => h.category_name === category
   );
@@ -130,13 +146,134 @@ function calculateDPS(
   const pointsPerHabit = 100 / relevantHabits.length;
   let totalScoreEarned = 0;
 
+  // Calculate points
+  const scoringStart = Date.now();
   relevantHabits.forEach((habit) => {
     if (checkHabitCompletion(habit, date, completionsMap)) {
       totalScoreEarned += pointsPerHabit;
     }
   });
 
-  return Math.min(100, totalScoreEarned);
+  const result = Math.min(100, totalScoreEarned);
+
+  return result;
+}
+
+// Optimized data structures
+interface ProcessedHabit {
+  id: string;
+  category: HabitCategory;
+  activeDates: boolean[]; // Array of LOOKBACK_WINDOW length indicating active days
+  isSkipped: boolean; // Flag for skipped habits
+  isCompleted: boolean; // Flag for completed habits
+}
+
+interface ProcessedData {
+  habits: ProcessedHabit[];
+  dateStrings: string[]; // Cache of date strings
+  lookbackDates: Date[]; // Cache of Date objects
+}
+
+// Pre-process data with optimized data structures
+function preprocessData(
+  habits: Habit[],
+  completions: HabitCompletion[]
+): ProcessedData {
+  // Pre-calculate dates once
+  const today = dateUtils.today();
+  const lookbackDates = new Array(LOOKBACK_WINDOW);
+  const dateStrings = new Array(LOOKBACK_WINDOW);
+
+  for (let i = 0; i < LOOKBACK_WINDOW; i++) {
+    const date = dateUtils.subtractDays(today, i).toDate();
+    lookbackDates[i] = date;
+    dateStrings[i] = dateUtils.toDateString(date);
+  }
+
+  // Create completion lookup table
+  const completionLookup: Record<
+    string,
+    { isSkipped: boolean; isCompleted: boolean }
+  > = {};
+  completions.forEach((completion) => {
+    const key = `${completion.habit_id}_${dateUtils.toDateString(
+      completion.completion_date
+    )}`;
+    completionLookup[key] = {
+      isSkipped: completion.status === 'skipped',
+      isCompleted: completion.status === 'completed',
+    };
+  });
+
+  // Process habits
+  const processedHabits = habits
+    .filter((habit): habit is Habit & { category_name: HabitCategory } =>
+      CATEGORY_IDS.includes(habit.category_name as HabitCategory)
+    )
+    .map((habit) => {
+      const activeDates = new Array(LOOKBACK_WINDOW).fill(false);
+      const habitStartDate = dateUtils.normalize(habit.start_date);
+      const habitEndDate = habit.end_date
+        ? dateUtils.normalize(habit.end_date)
+        : null;
+
+      // Calculate active days
+      for (let i = 0; i < LOOKBACK_WINDOW; i++) {
+        const targetDate = lookbackDates[i];
+        const isActive =
+          !dateUtils.isBeforeDay(targetDate, habitStartDate) &&
+          (!habitEndDate || !dateUtils.isAfterDay(targetDate, habitEndDate)) &&
+          (habit.frequency_type === 'daily' ||
+            (habit.frequency_type === 'weekly' &&
+              habit.days_of_week?.includes(
+                dateUtils.getDayOfWeek(targetDate)
+              )));
+
+        activeDates[i] = isActive;
+      }
+
+      const completionKey = `${habit.id}_${dateStrings[0]}`; // Check most recent day
+      const completion = completionLookup[completionKey] || {
+        isSkipped: false,
+        isCompleted: false,
+      };
+
+      return {
+        id: habit.id,
+        category: habit.category_name,
+        activeDates,
+        isSkipped: completion.isSkipped,
+        isCompleted: completion.isCompleted,
+      };
+    });
+
+  return {
+    habits: processedHabits,
+    dateStrings,
+    lookbackDates,
+  };
+}
+
+// Optimized DPS calculation using pre-processed data
+function calculateOptimizedDPS(
+  habits: ProcessedHabit[],
+  dayIndex: number
+): number {
+  const activeHabits = habits.filter(
+    (h) => h.activeDates[dayIndex] && !h.isSkipped
+  );
+
+  if (activeHabits.length === 0) {
+    return -1;
+  }
+
+  const pointsPerHabit = 100 / activeHabits.length;
+  const totalScore = activeHabits.reduce(
+    (score, habit) => (habit.isCompleted ? score + pointsPerHabit : score),
+    0
+  );
+
+  return Math.min(100, totalScore);
 }
 
 export function calculateDMS(
@@ -144,40 +281,43 @@ export function calculateDMS(
   allHabits: Habit[],
   completionsHistory: HabitCompletion[]
 ): DisplayedMatrixScore {
-  const categories = CATEGORY_IDS;
+  const processedData = preprocessData(allHabits, completionsHistory);
 
-  const completionsMap = new Map<string, HabitCompletion>();
-  completionsHistory.forEach((comp) => {
-    const dateString = getDateString(comp.completion_date);
-    const key = `${comp.habit_id}_${dateString}`;
-    completionsMap.set(key, comp);
+  // Pre-allocate score arrays for vectorized calculations
+  const categoryScores = new Float32Array(CATEGORY_IDS.length);
+  const baselineScores = new Float32Array(CATEGORY_IDS.length);
+
+  // Initialize baseline scores
+  CATEGORY_IDS.forEach((category, index) => {
+    baselineScores[index] = getBaselineScore(category, userProfile);
+    categoryScores[index] = baselineScores[index];
   });
 
-  const finalScores: Partial<DisplayedMatrixScore> = {};
-  categories.forEach((category) => {
-    let smoothedScore = getBaselineScore(category, userProfile);
-
-    for (let i = LOOKBACK_WINDOW - 1; i >= 0; i--) {
-      const date = dateUtils.subtractDays(dateUtils.today(), i);
-      const dateString = getDateString(date.toDate());
-
-      const dps = calculateDPS(category, dateString, allHabits, completionsMap);
+  // Calculate scores for each day
+  for (let dayIndex = LOOKBACK_WINDOW - 1; dayIndex >= 0; dayIndex--) {
+    CATEGORY_IDS.forEach((category, categoryIndex) => {
+      const categoryHabits = processedData.habits.filter(
+        (h) => h.category === category
+      );
+      const dps = calculateOptimizedDPS(categoryHabits, dayIndex);
 
       if (dps >= 0) {
-        smoothedScore =
-          SMOOTHING_FACTOR * dps + (1 - SMOOTHING_FACTOR) * smoothedScore;
+        // Vectorized smoothing calculation
+        categoryScores[categoryIndex] =
+          SMOOTHING_FACTOR * dps +
+          (1 - SMOOTHING_FACTOR) * categoryScores[categoryIndex];
       }
-    }
+    });
+  }
 
-    finalScores[category] = Math.round(smoothedScore);
-  });
-
-  return {
-    body: finalScores.body ?? 50,
-    mind: finalScores.mind ?? 50,
-    heart: finalScores.heart ?? 50,
-    spirit: finalScores.spirit ?? 50,
-    work: finalScores.work ?? 50,
+  const result: DisplayedMatrixScore = {
+    body: Math.round(categoryScores[CATEGORY_IDS.indexOf('body')]),
+    mind: Math.round(categoryScores[CATEGORY_IDS.indexOf('mind')]),
+    heart: Math.round(categoryScores[CATEGORY_IDS.indexOf('heart')]),
+    spirit: Math.round(categoryScores[CATEGORY_IDS.indexOf('spirit')]),
+    work: Math.round(categoryScores[CATEGORY_IDS.indexOf('work')]),
     calculated_at: dateUtils.now().toDate(),
   };
+
+  return result;
 }
