@@ -15,15 +15,6 @@ export interface MatrixCategory {
 }
 
 export function useMatrix() {
-  const matrixScoreTime = useRef(0);
-
-  // Log total execution time on each run
-  useEffect(() => {
-    console.log(
-      `[useMatrix] Matrix score calculation time: ${matrixScoreTime.current}ms`
-    );
-  });
-
   // Only extract the data we need from stores as stable references
   const profile = useUserProfileStore((state) => state.profile);
 
@@ -42,7 +33,6 @@ export function useMatrix() {
 
   // Calculate the displayed matrix score
   const matrixScore: DisplayedMatrixScore = useMemo(() => {
-    const scoreStart = Date.now();
     const result = !profile
       ? {
           body: 50,
@@ -54,7 +44,6 @@ export function useMatrix() {
         }
       : calculateDMS(profile, habits, completions);
 
-    matrixScoreTime.current = Date.now() - scoreStart;
     return result;
   }, [profile, habits, completions]);
 
