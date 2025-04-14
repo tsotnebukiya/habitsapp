@@ -28,6 +28,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   onSelectDate,
   selectedDate = new Date(),
 }) => {
+  const { getHabitsByDate, getHabitStatus, getCompletions } = useHabitsStore();
   // State for the currently displayed month/year
   const [currentMonth, setCurrentMonth] = useState(dayjs(selectedDate));
 
@@ -35,7 +36,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   const [selected, setSelected] = useState(dayjs(selectedDate));
 
   // Get habit completions from store
-  const completions = useHabitsStore((state) => state.getCompletions());
+  const completions = getCompletions();
 
   // Get current streak
   const currentStreak = useCurrentStreak();
@@ -161,7 +162,34 @@ const CalendarView: React.FC<CalendarViewProps> = ({
       completionRate,
     };
   }, [currentMonth, hasCompletion]);
+  const getDateCompletionStatus = (date: dayjs.Dayjs) => {
+    const habits = getHabitsByDate(date);
+    if (habits.length === 0) return 'no_habits';
 
+    const completions = habits.map((habit) =>
+      getHabitStatus(habit.id, date.toDate())
+    );
+
+    // Count skipped habits as "done" for the purpose of daily completion
+    if (
+      completions.every(
+        (completion) =>
+          completion?.status === 'completed' || completion?.status === 'skipped'
+      )
+    ) {
+      return 'all_completed';
+    }
+    if (
+      completions.some(
+        (completion) =>
+          completion?.status === 'completed' ||
+          completion?.status === 'in_progress'
+      )
+    ) {
+      return 'some_completed';
+    }
+    return 'none_completed';
+  };
   return (
     <View style={styles.container}>
       {/* Month navigation */}
@@ -231,17 +259,21 @@ const CalendarView: React.FC<CalendarViewProps> = ({
               const isSelected = day.isSame(selected, 'day');
               const dayHasCompletion = hasCompletion(day);
               const partOfStreak = isPartOfStreak(day);
-
+              if (day.startOf('day').format('YYYY-MM-DD') === '2025-04-12') {
+                console.log(day.startOf('day'), 'checkday1');
+              }
+              const completionStatus = getDateCompletionStatus(day);
               return (
                 <DayCell
+                  completionStatus={completionStatus}
                   key={day.format('YYYY-MM-DD')}
                   date={date}
                   displayValue={day.format('D')}
                   isCurrentMonth={isCurrentMonth}
                   isToday={isToday}
                   isSelected={isSelected}
-                  hasCompletion={dayHasCompletion}
-                  isStreak={partOfStreak}
+                  // hasCompletion={dayHasCompletion}
+                  // isStreak={partOfStreak}
                   onSelect={handleSelectDay}
                 />
               );

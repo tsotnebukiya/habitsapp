@@ -1,6 +1,11 @@
 import React, { memo } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import Colors from '@/lib/constants/Colors';
+
+export type CompletionStatus =
+  | 'all_completed'
+  | 'some_completed'
+  | 'none_completed'
+  | 'no_habits';
 
 export interface DayCellProps {
   date: Date;
@@ -8,8 +13,7 @@ export interface DayCellProps {
   isCurrentMonth: boolean;
   isToday: boolean;
   isSelected: boolean;
-  hasCompletion: boolean;
-  isStreak?: boolean;
+  completionStatus: CompletionStatus;
   onSelect: (date: Date) => void;
 }
 
@@ -19,57 +23,52 @@ const DayCell: React.FC<DayCellProps> = ({
   isCurrentMonth,
   isToday,
   isSelected,
-  hasCompletion,
-  isStreak = false,
+  completionStatus,
   onSelect,
 }) => {
   const handlePress = () => {
     onSelect(date);
   };
-
-  // Combined rendering approach with clear visual hierarchy
   return (
     <TouchableOpacity
       style={styles.touchable}
       onPress={handlePress}
       activeOpacity={0.7}
     >
-      <View
-        style={[
-          styles.container,
-          isSelected && styles.selectedContainer,
-          isStreak && isCurrentMonth && styles.streakContainer,
-        ]}
-      >
-        {/* Day number with appropriate styling */}
-        <View
-          style={[styles.dayNumberContainer, isToday && styles.todayContainer]}
-        >
-          <Text
-            style={[
-              styles.dayText,
-              !isCurrentMonth && styles.otherMonthText,
-              isToday && styles.todayText,
-              isSelected && styles.selectedText,
-            ]}
-          >
-            {displayValue}
-          </Text>
-        </View>
-
-        {/* Completion indicator */}
-        {hasCompletion && (
-          <View
-            style={[
-              styles.completionIndicator,
-              isStreak && styles.streakCompletionIndicator,
-            ]}
-          />
+      <View style={[styles.container, isSelected && styles.selectedDay]}>
+        {!isCurrentMonth && (
+          <Text style={styles.dayNumber}>{displayValue}</Text>
         )}
 
-        {/* Streak indicator (only show if this is part of a streak) */}
-        {isStreak && isCurrentMonth && !hasCompletion && (
-          <View style={styles.streakIndicator} />
+        {isCurrentMonth && (
+          <>
+            <View
+              style={[
+                styles.numberContainer,
+                completionStatus === 'some_completed' &&
+                  styles.someCompletedNumber,
+              ]}
+            >
+              <View
+                style={[
+                  styles.numberBackground,
+                  completionStatus === 'all_completed' &&
+                    styles.allCompletedNumber,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.dayNumber,
+                    isToday && styles.todayText,
+                    completionStatus === 'all_completed' &&
+                      styles.allCompletedText,
+                  ]}
+                >
+                  {displayValue}
+                </Text>
+              </View>
+            </View>
+          </>
         )}
       </View>
     </TouchableOpacity>
@@ -86,65 +85,43 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 10,
     position: 'relative',
-    backgroundColor: 'transparent',
   },
-  selectedContainer: {
-    backgroundColor: Colors.shared.primary[50],
-    borderWidth: 1,
-    borderColor: Colors.shared.primary[200],
+  selectedDay: {
+    backgroundColor: '#E3F2FF',
+    borderRadius: 12,
   },
-  streakContainer: {
-    borderBottomWidth: 2,
-    borderBottomColor: Colors.shared.primary[300],
-  },
-  dayNumberContainer: {
-    width: 30,
-    height: 30,
+  numberContainer: {
+    width: 32,
+    height: 32,
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 15,
+    borderRadius: 16,
   },
-  todayContainer: {
-    backgroundColor: Colors.shared.primary[500],
+  someCompletedNumber: {
+    borderWidth: 1.5,
+    borderColor: '#007AFF',
   },
-  dayText: {
-    fontSize: 14,
+  numberBackground: {
+    width: '100%',
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 16,
+  },
+  allCompletedNumber: {
+    backgroundColor: '#007AFF',
+  },
+  dayNumber: {
+    fontSize: 17,
     fontWeight: '600',
-    color: Colors.light.text.primary,
+    color: '#000',
   },
-  otherMonthText: {
-    color: Colors.light.text.disabled,
-    fontWeight: '400',
+  allCompletedText: {
+    color: '#fff',
   },
   todayText: {
-    color: Colors.light.background.default,
-  },
-  selectedText: {
-    color: Colors.shared.primary[700],
-  },
-  completionIndicator: {
-    position: 'absolute',
-    bottom: 4,
-    width: 5,
-    height: 5,
-    borderRadius: 2.5,
-    backgroundColor: Colors.shared.primary[400],
-  },
-  streakCompletionIndicator: {
-    backgroundColor: Colors.shared.primary[600],
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-  },
-  streakIndicator: {
-    position: 'absolute',
-    bottom: 4,
-    width: 20,
-    height: 2,
-    borderRadius: 1,
-    backgroundColor: Colors.shared.primary[300],
+    color: '#007AFF',
   },
 });
 

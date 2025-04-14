@@ -18,8 +18,7 @@ interface WeekViewProps {
 
 const DAY_WIDTH = 60;
 const DAYS_TO_SHOW = 14; // Show 2 weeks
-
-const WeekView = memo(function WeekView({
+export const WeekView = memo(function WeekView({
   selectedDate,
   onDateSelect,
 }: WeekViewProps) {
@@ -34,7 +33,10 @@ const WeekView = memo(function WeekView({
 
   // Get completion status for a date
   const getDateCompletionStatus = (date: dayjs.Dayjs) => {
-    const habits = getHabitsByDate(date.toDate());
+    const habits = getHabitsByDate(date);
+    // if (date.format('YYYY-MM-DD') === '2025-04-12') {
+    //   console.log(date.toDate(), 'checkdate1');
+    // }
     if (habits.length === 0) return 'no_habits';
 
     const completions = habits.map((habit) =>
@@ -85,7 +87,6 @@ const WeekView = memo(function WeekView({
           const isSelected = date.isSame(selectedDayjs, 'day');
           const isToday = date.isSame(dayjs(), 'day');
           const completionStatus = getDateCompletionStatus(date);
-
           return (
             <TouchableOpacity
               key={date.format('YYYY-MM-DD')}

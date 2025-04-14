@@ -76,7 +76,7 @@ export interface HabitsState extends BaseState {
   processPendingOperations: () => Promise<void>;
 
   // Queries
-  getHabitsByDate: (date: Date) => Habit[];
+  getHabitsByDate: (date: dayjs.Dayjs) => Habit[];
   getCompletionsForHabit: (
     habitId: string,
     startDate: Date,
@@ -630,9 +630,12 @@ export const useHabitsStore = create<HabitsState>()(
 
       getHabitsByDate: (date) => {
         return Array.from(get().habits.values()).filter((habit) => {
-          const startDate = dayjs(habit.start_date);
-          const endDate = habit.end_date ? dayjs(habit.end_date) : null;
-          const targetDate = dayjs(date);
+          const startDate = dayjs(habit.start_date).startOf('day');
+          const endDate = habit.end_date
+            ? dayjs(habit.end_date).startOf('day')
+            : null;
+          const targetDate = dayjs(date).startOf('day');
+
           return (
             startDate.isSameOrBefore(targetDate) &&
             (!endDate || endDate.isSameOrAfter(targetDate)) &&

@@ -1,5 +1,12 @@
-import React from 'react';
-import { StyleSheet, Text, SafeAreaView, ScrollView, View } from 'react-native';
+import React, { useState } from 'react';
+import {
+  StyleSheet,
+  Text,
+  SafeAreaView,
+  ScrollView,
+  View,
+  TouchableOpacity,
+} from 'react-native';
 import { MatrixGrid } from '@/components/matrix/MatrixGrid';
 import { useMatrix } from '@/lib/hooks/useMatrix';
 
@@ -10,42 +17,87 @@ import { AchievementsList } from '@/components/achievements/AchievementsList';
 
 // Import Calendar Component
 import CalendarView from '@/components/calendar/CalendarView';
+import Colors from '@/lib/constants/Colors';
 
 // Simple Separator Component
 const Separator = () => <View style={styles.separator} />;
 
+// Performance Tab Content
+const PerformanceTabContent = () => {
+  return (
+    <>
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Life Balance Matrix</Text>
+        <Text style={styles.sectionSubtitle}>
+          Your scores across key life areas
+        </Text>
+        <MatrixGrid />
+      </View>
+
+      {/* Achievements Section - Wrapped in Glass Card */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Progress & Achievements</Text>
+        <View style={styles.glassCard}>
+          <StreakDisplay />
+          <Separator />
+          <QuoteDisplay />
+          <Separator />
+          <AchievementsList />
+        </View>
+      </View>
+    </>
+  );
+};
+
+// Calendar Tab Content
+const CalendarTabContent = () => {
+  return (
+    <>
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Activity Calendar</Text>
+        <Text style={styles.sectionSubtitle}>
+          Track your habit completion streaks
+        </Text>
+        <CalendarView />
+      </View>
+    </>
+  );
+};
+
 const StatsScreen = () => {
+  const [activeTab, setActiveTab] = useState(0);
+
   return (
     <SafeAreaView style={styles.container}>
+      {/* Tab Header */}
+      <View style={styles.tabHeader}>
+        <TouchableOpacity
+          style={[styles.tab, activeTab === 0 && styles.activeTab]}
+          onPress={() => setActiveTab(0)}
+        >
+          <Text
+            style={[styles.tabText, activeTab === 0 && styles.activeTabText]}
+          >
+            Performance
+          </Text>
+          {activeTab === 0 && <View style={styles.activeIndicator} />}
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.tab, activeTab === 1 && styles.activeTab]}
+          onPress={() => setActiveTab(1)}
+        >
+          <Text
+            style={[styles.tabText, activeTab === 1 && styles.activeTabText]}
+          >
+            Calendar
+          </Text>
+          {activeTab === 1 && <View style={styles.activeIndicator} />}
+        </TouchableOpacity>
+      </View>
+
+      {/* Tab Content */}
       <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Life Balance Matrix</Text>
-          <Text style={styles.sectionSubtitle}>
-            Your scores across key life areas
-          </Text>
-          <MatrixGrid />
-        </View>
-
-        {/* Calendar View Section */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Activity Calendar</Text>
-          <Text style={styles.sectionSubtitle}>
-            Track your habit completion streaks
-          </Text>
-          <CalendarView />
-        </View>
-
-        {/* Achievements Section - Wrapped in Glass Card */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Progress & Achievements</Text>
-          <View style={styles.glassCard}>
-            <StreakDisplay />
-            <Separator />
-            <QuoteDisplay />
-            <Separator />
-            <AchievementsList />
-          </View>
-        </View>
+        {activeTab === 0 ? <PerformanceTabContent /> : <CalendarTabContent />}
       </ScrollView>
     </SafeAreaView>
   );
@@ -60,14 +112,36 @@ const styles = StyleSheet.create({
     padding: 16,
     paddingBottom: 48, // Ensure space at the bottom
   },
-  header: {
-    marginBottom: 24,
-    marginTop: 12,
+  tabHeader: {
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    paddingTop: 12,
   },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#333',
+  tab: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: 12,
+    position: 'relative',
+  },
+  activeTab: {
+    backgroundColor: '#fff',
+  },
+  tabText: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: Colors.light.text.secondary,
+  },
+  activeTabText: {
+    color: Colors.shared.primary[500],
+    fontWeight: '600',
+  },
+  activeIndicator: {
+    position: 'absolute',
+    bottom: 0,
+    height: 3,
+    width: '40%',
+    backgroundColor: Colors.shared.primary[500],
+    borderRadius: 1.5,
   },
   section: {
     marginBottom: 24, // Adjusted spacing between sections
