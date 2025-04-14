@@ -25,21 +25,10 @@ const Separator = () => <View style={styles.separator} />;
 // Performance Tab Content
 const PerformanceTabContent = React.memo(() => {
   const mountTime = useRef(Date.now());
-  const [isMatrixVisible, setIsMatrixVisible] = useState(false);
-  const [isAchievementsVisible, setIsAchievementsVisible] = useState(false);
 
   useEffect(() => {
-    // Stagger the loading of components
-    const matrixTimer = setTimeout(() => setIsMatrixVisible(true), 50);
-    const achievementsTimer = setTimeout(
-      () => setIsAchievementsVisible(true),
-      100
-    );
-
-    return () => {
-      clearTimeout(matrixTimer);
-      clearTimeout(achievementsTimer);
-    };
+    const mountDuration = Date.now() - mountTime.current;
+    console.log(`Perfomance tab mounted in ${mountDuration}ms`);
   }, []);
 
   return (
@@ -56,15 +45,14 @@ const PerformanceTabContent = React.memo(() => {
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Progress & Achievements</Text>
         <View style={styles.glassCard}>
-          {isAchievementsVisible && (
-            <>
-              <StreakDisplay />
-              <Separator />
-              <QuoteDisplay />
-              <Separator />
-              <AchievementsList />
-            </>
-          )}
+          <View style={styles.glassEffect} />
+          <>
+            <StreakDisplay />
+            <Separator />
+            <QuoteDisplay />
+            <Separator />
+            <AchievementsList />
+          </>
         </View>
       </View>
     </>
@@ -74,20 +62,10 @@ const PerformanceTabContent = React.memo(() => {
 // Calendar Tab Content
 const CalendarTabContent = React.memo(() => {
   const mountTime = useRef(Date.now());
-  const [isCalendarVisible, setIsCalendarVisible] = useState(false);
 
   useEffect(() => {
     const mountDuration = Date.now() - mountTime.current;
     console.log(`Calendar tab mounted in ${mountDuration}ms`);
-
-    // Delay calendar loading slightly
-    const timer = setTimeout(() => setIsCalendarVisible(true), 50);
-
-    return () => {
-      clearTimeout(timer);
-      const totalTime = Date.now() - mountTime.current;
-      console.log(`Calendar tab total visible time: ${totalTime}ms`);
-    };
   }, []);
 
   return (
@@ -197,15 +175,20 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   glassCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.85)', // Slightly less transparent
-    borderRadius: 18, // Increased radius
-    paddingTop: 15, // Adjust padding
+    backgroundColor: '#FFFFFF', // Solid background color
+    borderRadius: 18,
+    paddingTop: 15,
     paddingBottom: 5,
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.12,
     shadowRadius: 6,
     elevation: 5,
+    overflow: 'hidden', // Important for the BlurView
+  },
+  glassEffect: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(255, 255, 255, 0.85)',
   },
   separator: {
     height: StyleSheet.hairlineWidth,

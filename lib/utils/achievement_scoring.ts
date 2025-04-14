@@ -17,75 +17,86 @@ export function calculateCurrentStreak(
   completions: Map<string, HabitCompletion>,
   habits: Map<string, Habit>
 ): number {
-  if (completions.size === 0) return 0;
+  // Early return for empty cases
+  if (completions.size === 0 || habits.size === 0) return 0;
 
-  // Group completions by date
-  const completionsByDate = new Map<string, HabitCompletion[]>();
+  // Pre-process: Normalize dates and create lookup structures
+  const today = dateUtils.normalize(dateUtils.today());
+
+  // Create a map of normalized dates to completions
+  const completionsByDate = new Map<string, Set<string>>();
+  const normalizedDates = new Set<string>();
+
   completions.forEach((completion) => {
-    const date = dateUtils.toDateString(completion.completion_date);
-    const dateCompletions = completionsByDate.get(date) || [];
-    dateCompletions.push(completion);
-    completionsByDate.set(date, dateCompletions);
+    const normalizedDate = dateUtils
+      .normalize(completion.completion_date)
+      .format('YYYY-MM-DD');
+    normalizedDates.add(normalizedDate);
+
+    if (!completionsByDate.has(normalizedDate)) {
+      completionsByDate.set(normalizedDate, new Set());
+    }
+
+    // Store only completed/skipped habits
+    if (completion.status === 'completed' || completion.status === 'skipped') {
+      completionsByDate.get(normalizedDate)!.add(completion.habit_id);
+    }
   });
 
-  // Sort dates in descending order
-  const dates = Array.from(completionsByDate.keys()).sort((a, b) =>
-    dateUtils.isBeforeDay(a, b) ? 1 : -1
+  // Pre-calculate habit activity periods
+  type HabitPeriod = { id: string; start: string; end: string | null };
+  const habitPeriods: HabitPeriod[] = Array.from(habits.values()).map(
+    (habit) => ({
+      id: habit.id,
+      start: dateUtils.normalize(habit.created_at).format('YYYY-MM-DD'),
+      end: habit.end_date
+        ? dateUtils.normalize(habit.end_date).format('YYYY-MM-DD')
+        : null,
+    })
+  );
+
+  // Sort dates once, in descending order
+  const sortedDates = Array.from(normalizedDates).sort((a, b) =>
+    b.localeCompare(a)
   );
 
   let currentStreak = 0;
-  let currentDate = dateUtils.today();
+  let previousDate = today.format('YYYY-MM-DD');
 
-  // Check each date for streak
-  for (const date of dates) {
-    const dateToCheck = dateUtils.normalize(date);
-
+  // Calculate streak
+  for (const date of sortedDates) {
     // Break streak if there's a gap
-    const daysDiff = dateUtils.normalize(currentDate).diff(dateToCheck, 'day');
-    if (daysDiff > 1) {
-      break;
+    const daysDiff = dateUtils
+      .normalize(previousDate)
+      .diff(dateUtils.normalize(date), 'day');
+
+    if (daysDiff > 1) break;
+
+    // Get active habits for this date
+    const activeHabits = habitPeriods.filter(({ start, end }) => {
+      const isAfterStart = date >= start;
+      const isBeforeEnd = !end || date <= end;
+      return isAfterStart && isBeforeEnd;
+    });
+
+    // Skip dates with no active habits
+    if (activeHabits.length === 0) {
+      previousDate = date;
+      continue;
     }
 
-    // Get all habits that should be active for this date
-    const activeHabitsForDate = Array.from(habits.values()).filter((habit) => {
-      // Check if habit was active on this date
-      const habitStartDate = dateUtils.normalize(habit.created_at);
-      const isAfterStart =
-        dateUtils.isSameDay(dateToCheck, habitStartDate) ||
-        dateUtils.isAfterDay(dateToCheck, habitStartDate);
+    // Get completed habits for this date
+    const completedHabits = completionsByDate.get(date) || new Set();
 
-      // Check if habit is still active (not archived or ended)
-      const isActive =
-        habit.end_date === null ||
-        dateUtils.isAfterDay(dateUtils.normalize(habit.end_date), dateToCheck);
+    // Check if all active habits are completed
+    const allCompleted = activeHabits.every((habit) =>
+      completedHabits.has(habit.id)
+    );
 
-      return isAfterStart && isActive;
-    });
+    if (!allCompleted) break;
 
-    // Get completion records for this date
-    const dateCompletions = completionsByDate.get(date) || [];
-
-    // Create a map of habit_id to completion for quick lookup
-    const habitCompletionsMap = new Map<string, HabitCompletion>();
-    dateCompletions.forEach((completion) => {
-      habitCompletionsMap.set(completion.habit_id, completion);
-    });
-
-    // Check if all active habits for this date are either completed or skipped
-    const allHabitsCompleted = activeHabitsForDate.every((habit) => {
-      const completion = habitCompletionsMap.get(habit.id);
-      return (
-        completion &&
-        (completion.status === 'completed' || completion.status === 'skipped')
-      );
-    });
-
-    if (allHabitsCompleted && activeHabitsForDate.length > 0) {
-      currentStreak++;
-    } else {
-      break; // Break streak if not all habits completed
-    }
-    currentDate = dateToCheck;
+    currentStreak++;
+    previousDate = date;
   }
 
   return currentStreak;
