@@ -2,7 +2,7 @@
 
 ## Current Focus
 
-We are focusing on implementing the Achievement Display UI components. We've made significant progress with the addition of modal components and the achievement display system.
+We are focusing on implementing the Achievement Display UI components and the Notification System after completing calendar optimizations.
 
 ### Achievement UI Implementation Progress
 
@@ -687,3 +687,76 @@ The project is currently in its initial setup phase with the following areas of 
    - Document state management patterns
    - Create contribution guidelines
    - Add setup instructions
+
+### Recent Calendar Optimizations
+
+1. Optimized Calendar Performance:
+   - Removed performance logging for cleaner code
+   - Pre-calculated cell values during grid generation
+   - Simplified component structure with DayCellData interface
+   - Improved memoization strategy for cell rendering
+   - Reduced date operations during render phase
+   - Achieved significant performance improvements
+
+### Next Feature: Notification System
+
+Detailed implementation plan for the notification system:
+
+#### Phase 1: Infrastructure Setup (Week 1)
+
+1. Install and configure Expo Notifications
+2. Set up notification permissions handling
+3. Implement notification token management
+4. Create notification store for state management
+5. Design notification interfaces and types
+
+#### Phase 2: Core Notification Features (Week 1-2)
+
+1. Implement local notification scheduling
+2. Create notification triggers for:
+   - Daily habit reminders
+   - Weekly habit reminders
+   - Achievement unlocks
+   - Streak milestones
+3. Add notification grouping and categorization
+4. Implement notification queue management
+
+#### Phase 3: User Interface (Week 2)
+
+1. Design and implement notification preferences screen
+2. Create notification history view
+3. Add notification badges to relevant UI elements
+4. Implement in-app notification center
+5. Add quick actions for notifications
+
+#### Phase 4: Integration & Testing (Week 3)
+
+1. Integrate with existing habit system
+2. Connect with achievement system
+3. Implement background task handling
+4. Add error handling and retry mechanisms
+5. Create comprehensive testing suite
+
+#### Phase 5: Polish & Optimization (Week 3-4)
+
+1. Optimize notification delivery timing
+2. Implement smart notification batching
+3. Add user engagement analytics
+4. Fine-tune notification frequency
+5. Implement do-not-disturb handling
+
+### Technical Considerations
+
+- Expo Notifications setup
+- Background task handling
+- Notification permissions
+- Token management
+- Cross-platform compatibility
+
+### Success Criteria
+
+1. Users receive timely reminders for habits
+2. Achievement notifications are engaging
+3. Notification preferences are easily manageable
+4. System handles background state efficiently
+5. Notifications are properly grouped and categorized

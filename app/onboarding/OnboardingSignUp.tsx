@@ -71,17 +71,14 @@ const OnboardingSignUp = () => {
 
   const handleAppleSignIn = async () => {
     try {
-      console.log('Starting Apple Sign In process');
       const credential = await AppleAuthentication.signInAsync({
         requestedScopes: [
           AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
           AppleAuthentication.AppleAuthenticationScope.EMAIL,
         ],
       });
-      console.log('Apple credential received:', credential);
 
       if (credential.identityToken) {
-        console.log('Attempting to sign in with Supabase using Apple token');
         const {
           error,
           data: { user },
@@ -89,8 +86,6 @@ const OnboardingSignUp = () => {
           provider: 'apple',
           token: credential.identityToken,
         });
-
-        console.log('Supabase sign in response:', { error, user });
 
         if (!error && user) {
           const userData = {
@@ -105,7 +100,6 @@ const OnboardingSignUp = () => {
             spirit_score: 50,
             work_score: 50,
           };
-          console.log('Attempting to upsert user data:', userData);
 
           const { error: InsertError } = await supabase
             .from('users')

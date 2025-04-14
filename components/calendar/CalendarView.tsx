@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -25,19 +25,73 @@ interface CalendarViewProps {
 
 const WEEKDAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 
+type CompletionStatus =
+  | 'no_habits'
+  | 'all_completed'
+  | 'some_completed'
+  | 'none_completed';
+
+interface DayCellData {
+  date: Date;
+  displayValue: string;
+  isCurrentMonth: boolean;
+  isToday: boolean;
+  isSelected: boolean;
+  completionStatus: CompletionStatus;
+}
+
+// Optimized cell component that only receives primitive values
+const MemoizedDayCell = React.memo(
+  function MemoizedDayCell({
+    cellData,
+    onSelect,
+  }: {
+    cellData: DayCellData;
+    onSelect: (date: Date) => void;
+  }) {
+    return (
+      <DayCell
+        completionStatus={cellData.completionStatus}
+        date={cellData.date}
+        displayValue={cellData.displayValue}
+        isCurrentMonth={cellData.isCurrentMonth}
+        isToday={cellData.isToday}
+        isSelected={cellData.isSelected}
+        onSelect={onSelect}
+      />
+    );
+  },
+  (prevProps, nextProps) => {
+    // Simplified comparison using primitive values
+    const prev = prevProps.cellData;
+    const next = nextProps.cellData;
+    return (
+      prev.isCurrentMonth === next.isCurrentMonth &&
+      prev.isToday === next.isToday &&
+      prev.isSelected === next.isSelected &&
+      prev.completionStatus === next.completionStatus &&
+      prev.displayValue === next.displayValue &&
+      prev.date.getTime() === next.date.getTime() &&
+      prevProps.onSelect === nextProps.onSelect
+    );
+  }
+);
+
 const CalendarView: React.FC<CalendarViewProps> = ({
   onSelectDate,
   selectedDate = new Date(),
 }) => {
-  const { getHabitsByDate, getHabitStatus, getCompletions } = useHabitsStore();
+  // Get the cached status calculator from the store
+  const { getMonthStatusMap } = useHabitsStore();
+
   // State for the currently displayed month/year
   const [currentMonth, setCurrentMonth] = useState(() => dayjs(selectedDate));
 
   // State for the selected day
   const [selected, setSelected] = useState(dateUtils.normalize(selectedDate));
 
-  // Get habit completions from store
-  const completions = getCompletions();
+  // Get today's date for highlighting
+  const today = useMemo(() => dateUtils.today(), []);
 
   // Get current streak
   const currentStreak = useCurrentStreak();
@@ -45,113 +99,82 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   // Format the month/year for display
   const monthYearText = currentMonth.format('MMMM YYYY');
 
-  // Get today's date for highlighting
-  const today = dateUtils.today();
+  // Get the cached status map for the current month
+  const allHabitStatuses = useMemo(() => {
+    const statusMap = getMonthStatusMap(currentMonth);
+    return statusMap;
+  }, [currentMonth, getMonthStatusMap]);
 
-  // Generate the days for the current month's grid
+  // Generate the days for the current month's grid using optimized calculation
   const calendarDays = useMemo(() => {
-    const firstDayOfMonth = currentMonth.startOf('month');
-    const lastDayOfMonth = currentMonth.endOf('month');
+    // Get first day of month as native Date
+    const firstDay = currentMonth.startOf('month').toDate();
+    const firstDayOfWeek = firstDay.getDay();
 
-    // Find the first Sunday before or on the first day of the month
-    let startDate = firstDayOfMonth.day(0);
-    if (dateUtils.isAfterDay(startDate, firstDayOfMonth)) {
-      startDate = dateUtils.subtractDays(startDate, 7);
-    }
+    // Calculate days needed before the first day of month
+    const daysBeforeMonth = firstDayOfWeek;
 
-    // Find the last Saturday after or on the last day of the month
-    let endDate = lastDayOfMonth.day(6);
-    if (dateUtils.isBeforeDay(endDate, lastDayOfMonth)) {
-      endDate = dateUtils.addDays(endDate, 7);
-    }
+    // Calculate total days in month
+    const daysInMonth = currentMonth.daysInMonth();
 
-    // Create array of all days in the grid
-    const days = [];
-    let day = startDate;
+    // Calculate days needed after the month
+    const lastDay = new Date(
+      firstDay.getFullYear(),
+      firstDay.getMonth(),
+      daysInMonth
+    );
+    const daysAfterMonth = 6 - lastDay.getDay();
 
-    while (
-      dateUtils.isBeforeDay(day, endDate) ||
-      dateUtils.isSameDay(day, endDate)
-    ) {
-      days.push(day);
-      day = dateUtils.addDays(day, 1);
-    }
+    // Calculate total days needed
+    const totalDays = daysBeforeMonth + daysInMonth + daysAfterMonth;
+    const totalWeeks = Math.ceil(totalDays / 7);
 
-    // Group days into weeks
-    const weeks = [];
-    for (let i = 0; i < days.length; i += 7) {
-      weeks.push(days.slice(i, i + 7));
+    // Create weeks array directly with pre-calculated values
+    const weeks: DayCellData[][] = Array(totalWeeks)
+      .fill(null)
+      .map(() => []);
+
+    // Start date is first day of grid
+    let currentDate = new Date(firstDay);
+    currentDate.setDate(1 - daysBeforeMonth);
+
+    const currentMonthValue = currentMonth.month();
+    const todayTime = today.toDate().getTime();
+    const selectedTime = selected.toDate().getTime();
+
+    // Fill weeks array with pre-calculated cell data
+    for (let week = 0; week < totalWeeks; week++) {
+      for (let day = 0; day < 7; day++) {
+        const date = new Date(currentDate);
+        const dateString = dateUtils.toDateString(date);
+        const status = allHabitStatuses.get(dateString);
+
+        weeks[week][day] = {
+          date,
+          displayValue: date.getDate().toString(),
+          isCurrentMonth: date.getMonth() === currentMonthValue,
+          isToday: date.getTime() === todayTime,
+          isSelected: date.getTime() === selectedTime,
+          completionStatus: status?.completionStatus ?? 'no_habits',
+        };
+
+        currentDate.setDate(currentDate.getDate() + 1);
+      }
     }
 
     return weeks;
-  }, [currentMonth]);
+  }, [currentMonth, allHabitStatuses, today, selected]);
 
-  // Check if a date has a completion
-  const hasCompletion = useCallback(
-    (date: dayjs.Dayjs) => {
-      const dateString = dateUtils.toDateString(date);
-
-      // Check if any completions exist for this date
-      const hasAnyCompletion = Array.from(completions.values()).some(
-        (completion) => {
-          const completionDate = dateUtils.toDateString(
-            completion.completion_date
-          );
-          return (
-            completionDate === dateString &&
-            (completion.status === 'completed' ||
-              completion.status === 'skipped')
-          );
-        }
-      );
-
-      return hasAnyCompletion;
-    },
-    [completions]
-  );
-
-  // Check if date is part of a streak
-  const isPartOfStreak = useCallback(
-    (date: dayjs.Dayjs) => {
-      if (!currentStreak || currentStreak <= 0) return false;
-
-      // Get the range of dates for the current streak
-      const streakEndDate = dateUtils.today();
-      const streakStartDate = dateUtils.subtractDays(
-        streakEndDate,
-        currentStreak - 1
-      );
-
-      // Check if the given date is within the streak range
-      return dateUtils.isBetweenDays(date, streakStartDate, streakEndDate);
-    },
-    [currentStreak]
-  );
-
-  // Handle month navigation
-  const goToPreviousMonth = () => {
-    setCurrentMonth(currentMonth.subtract(1, 'month'));
-  };
-
-  const goToNextMonth = () => {
-    setCurrentMonth(currentMonth.add(1, 'month'));
-  };
-
-  // Handle day selection
-  const handleSelectDay = (date: Date) => {
-    const selectedDay = dateUtils.normalize(date);
-    setSelected(selectedDay);
-    onSelectDate?.(date);
-  };
-
-  // Get current month stats
+  // Calculate month stats using pre-calculated values
   const monthStats = useMemo(() => {
     const totalDays = currentMonth.daysInMonth();
     let completedDays = 0;
 
     for (let i = 1; i <= totalDays; i++) {
       const date = currentMonth.date(i);
-      if (hasCompletion(date)) {
+      const dateString = dateUtils.toDateString(date);
+      const status = allHabitStatuses.get(dateString);
+      if (status?.completionStatus === 'all_completed') {
         completedDays++;
       }
     }
@@ -164,35 +187,27 @@ const CalendarView: React.FC<CalendarViewProps> = ({
       totalDays,
       completionRate,
     };
-  }, [currentMonth, hasCompletion]);
-  const getDateCompletionStatus = (date: dayjs.Dayjs) => {
-    const habits = getHabitsByDate(date);
-    if (habits.length === 0) return 'no_habits';
+  }, [currentMonth, allHabitStatuses]);
 
-    const completions = habits.map((habit) =>
-      getHabitStatus(habit.id, date.toDate())
-    );
+  // Handle month navigation
+  const goToPreviousMonth = useCallback(() => {
+    setCurrentMonth((prev) => prev.subtract(1, 'month'));
+  }, []);
 
-    // Count skipped habits as "done" for the purpose of daily completion
-    if (
-      completions.every(
-        (completion) =>
-          completion?.status === 'completed' || completion?.status === 'skipped'
-      )
-    ) {
-      return 'all_completed';
-    }
-    if (
-      completions.some(
-        (completion) =>
-          completion?.status === 'completed' ||
-          completion?.status === 'in_progress'
-      )
-    ) {
-      return 'some_completed';
-    }
-    return 'none_completed';
-  };
+  const goToNextMonth = useCallback(() => {
+    setCurrentMonth((prev) => prev.add(1, 'month'));
+  }, []);
+
+  // Memoize the selection handler
+  const handleSelectDay = useCallback(
+    (date: Date) => {
+      const selectedDay = dateUtils.normalize(dayjs(date));
+      setSelected(selectedDay);
+      onSelectDate?.(date);
+    },
+    [onSelectDate]
+  );
+
   return (
     <View style={styles.container}>
       {/* Month navigation */}
@@ -225,7 +240,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
       </View>
 
       {/* Month stats */}
-      <View style={styles.statsContainer}>
+      {/* <View style={styles.statsContainer}>
         <View style={styles.statItem}>
           <Text style={styles.statValue}>{monthStats.completedDays}</Text>
           <Text style={styles.statLabel}>Completed</Text>
@@ -240,7 +255,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
           <Text style={styles.statValue}>{currentStreak || 0}</Text>
           <Text style={styles.statLabel}>Day Streak</Text>
         </View>
-      </View>
+      </View> */}
 
       {/* Weekday headers */}
       <View style={styles.weekdayHeader}>
@@ -255,27 +270,13 @@ const CalendarView: React.FC<CalendarViewProps> = ({
       <View style={styles.calendarGrid}>
         {calendarDays.map((week, weekIndex) => (
           <View key={`week-${weekIndex}`} style={styles.weekRow}>
-            {week.map((day) => {
-              const date = day.toDate();
-              const isCurrentMonth = day.month() === currentMonth.month();
-              const isToday = dateUtils.isSameDay(day, today);
-              const isSelected = dateUtils.isSameDay(day, selected);
-              const dayHasCompletion = hasCompletion(day);
-              const partOfStreak = isPartOfStreak(day);
-              const completionStatus = getDateCompletionStatus(day);
-              return (
-                <DayCell
-                  completionStatus={completionStatus}
-                  key={dateUtils.toDateString(day)}
-                  date={date}
-                  displayValue={day.format('D')}
-                  isCurrentMonth={isCurrentMonth}
-                  isToday={isToday}
-                  isSelected={isSelected}
-                  onSelect={handleSelectDay}
-                />
-              );
-            })}
+            {week.map((cellData, dayIndex) => (
+              <MemoizedDayCell
+                key={`${weekIndex}-${dayIndex}`}
+                cellData={cellData}
+                onSelect={handleSelectDay}
+              />
+            ))}
           </View>
         ))}
       </View>
@@ -362,4 +363,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CalendarView;
+export default React.memo(CalendarView);
