@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import dayjs from '@/lib/utils/dayjs';
 import { Database } from '@/lib/utils/supabase_types';
 import useUserProfileStore from './user_profile';
+import { dateUtils } from '@/lib/utils/dayjs';
 import {
   BasePendingOperation,
   BaseState,
@@ -630,16 +631,19 @@ export const useHabitsStore = create<HabitsState>()(
 
       getHabitsByDate: (date) => {
         return Array.from(get().habits.values()).filter((habit) => {
-          const startDate = dayjs(habit.start_date).startOf('day');
+          const startDate = dateUtils.normalize(habit.start_date);
           const endDate = habit.end_date
-            ? dayjs(habit.end_date).startOf('day')
+            ? dateUtils.normalize(habit.end_date)
             : null;
-          const targetDate = dayjs(date).startOf('day');
+          const targetDate = dateUtils.normalize(date);
 
           return (
-            startDate.isSameOrBefore(targetDate) &&
-            (!endDate || endDate.isSameOrAfter(targetDate)) &&
-            habit.is_active
+            dateUtils.isSameDay(startDate, targetDate) ||
+            (dateUtils.isBeforeDay(startDate, targetDate) &&
+              (!endDate ||
+                dateUtils.isSameDay(endDate, targetDate) ||
+                dateUtils.isAfterDay(endDate, targetDate)) &&
+              habit.is_active)
           );
         });
       },

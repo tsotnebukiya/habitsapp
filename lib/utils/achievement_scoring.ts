@@ -1,6 +1,6 @@
 import { StreakDays, ACHIEVEMENTS } from '../constants/achievements';
 import { Database } from './supabase_types';
-import dayjs from 'dayjs';
+import { dateUtils } from './dayjs';
 
 type Habit = Database['public']['Tables']['habits']['Row'];
 type HabitCompletion = Database['public']['Tables']['habit_completions']['Row'];
@@ -22,7 +22,7 @@ export function calculateCurrentStreak(
   // Group completions by date
   const completionsByDate = new Map<string, HabitCompletion[]>();
   completions.forEach((completion) => {
-    const date = dayjs(completion.completion_date).format('YYYY-MM-DD');
+    const date = dateUtils.toDateString(completion.completion_date);
     const dateCompletions = completionsByDate.get(date) || [];
     dateCompletions.push(completion);
     completionsByDate.set(date, dateCompletions);
@@ -30,32 +30,34 @@ export function calculateCurrentStreak(
 
   // Sort dates in descending order
   const dates = Array.from(completionsByDate.keys()).sort((a, b) =>
-    dayjs(b).diff(dayjs(a))
+    dateUtils.isBeforeDay(a, b) ? 1 : -1
   );
 
   let currentStreak = 0;
-  let currentDate = dayjs().startOf('day');
+  let currentDate = dateUtils.today();
 
   // Check each date for streak
   for (const date of dates) {
-    const dateToCheck = dayjs(date).startOf('day');
+    const dateToCheck = dateUtils.normalize(date);
 
     // Break streak if there's a gap
-    if (currentDate.diff(dateToCheck, 'day') > 1) {
+    const daysDiff = dateUtils.normalize(currentDate).diff(dateToCheck, 'day');
+    if (daysDiff > 1) {
       break;
     }
 
     // Get all habits that should be active for this date
     const activeHabitsForDate = Array.from(habits.values()).filter((habit) => {
       // Check if habit was active on this date
-      const habitStartDate = dayjs(habit.created_at).startOf('day');
+      const habitStartDate = dateUtils.normalize(habit.created_at);
       const isAfterStart =
-        dateToCheck.isSame(habitStartDate) ||
-        dateToCheck.isAfter(habitStartDate);
+        dateUtils.isSameDay(dateToCheck, habitStartDate) ||
+        dateUtils.isAfterDay(dateToCheck, habitStartDate);
 
       // Check if habit is still active (not archived or ended)
       const isActive =
-        habit.end_date === null || dayjs(habit.end_date).isAfter(dateToCheck);
+        habit.end_date === null ||
+        dateUtils.isAfterDay(dateUtils.normalize(habit.end_date), dateToCheck);
 
       return isAfterStart && isActive;
     });
@@ -77,6 +79,7 @@ export function calculateCurrentStreak(
         (completion.status === 'completed' || completion.status === 'skipped')
       );
     });
+
     if (allHabitsCompleted && activeHabitsForDate.length > 0) {
       currentStreak++;
     } else {

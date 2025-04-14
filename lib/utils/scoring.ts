@@ -1,7 +1,7 @@
 import { HabitCategory, CATEGORY_IDS } from '../constants/HabitTemplates';
 import { Database } from '@/lib/utils/supabase_types';
 import { UserProfile } from '@/lib/stores/user_profile';
-import dayjs from 'dayjs';
+import { dateUtils } from './dayjs';
 
 // Use types derived from Supabase schema
 type Habit = Database['public']['Tables']['habits']['Row'];
@@ -40,21 +40,25 @@ function getBaselineScore(
 }
 
 function getDateString(date: Date | string): string {
-  return dayjs(date).format('YYYY-MM-DD');
+  return dateUtils.toDateString(date);
 }
 
 function getActiveHabitsForDay(habits: Habit[], date: string): Habit[] {
-  const dayOfWeek = dayjs(date).day(); // 0=Sun, 1=Mon, ... 6=Sat
+  const targetDate = dateUtils.normalize(date);
+  const dayOfWeek = dateUtils.getDayOfWeek(targetDate); // 0=Sun, 1=Mon, ... 6=Sat
 
   return habits.filter((habit) => {
-    const habitStartDateString = getDateString(habit.start_date);
-    const habitEndDateString = habit.end_date
-      ? getDateString(habit.end_date)
+    const habitStartDate = dateUtils.normalize(habit.start_date);
+    const habitEndDate = habit.end_date
+      ? dateUtils.normalize(habit.end_date)
       : null;
 
     const existsOnDate =
-      habitStartDateString <= date &&
-      (!habitEndDateString || date <= habitEndDateString);
+      dateUtils.isSameDay(habitStartDate, targetDate) ||
+      (dateUtils.isBeforeDay(habitStartDate, targetDate) &&
+        (!habitEndDate ||
+          dateUtils.isSameDay(habitEndDate, targetDate) ||
+          dateUtils.isAfterDay(habitEndDate, targetDate)));
 
     if (!existsOnDate) return false;
 
@@ -154,7 +158,7 @@ export function calculateDMS(
     let smoothedScore = getBaselineScore(category, userProfile);
 
     for (let i = LOOKBACK_WINDOW - 1; i >= 0; i--) {
-      const date = dayjs().subtract(i, 'day');
+      const date = dateUtils.subtractDays(dateUtils.today(), i);
       const dateString = getDateString(date.toDate());
 
       const dps = calculateDPS(category, dateString, allHabits, completionsMap);
@@ -174,6 +178,6 @@ export function calculateDMS(
     heart: finalScores.heart ?? 50,
     spirit: finalScores.spirit ?? 50,
     work: finalScores.work ?? 50,
-    calculated_at: dayjs().toDate(),
+    calculated_at: dateUtils.now().toDate(),
   };
 }

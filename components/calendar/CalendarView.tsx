@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import dayjs from '@/lib/utils/dayjs';
+import { dateUtils } from '@/lib/utils/dayjs';
 import DayCell from './DayCell';
 import Colors from '@/lib/constants/Colors';
 import { useHabitsStore } from '@/lib/stores/habits_store';
@@ -30,10 +31,10 @@ const CalendarView: React.FC<CalendarViewProps> = ({
 }) => {
   const { getHabitsByDate, getHabitStatus, getCompletions } = useHabitsStore();
   // State for the currently displayed month/year
-  const [currentMonth, setCurrentMonth] = useState(dayjs(selectedDate));
+  const [currentMonth, setCurrentMonth] = useState(() => dayjs(selectedDate));
 
   // State for the selected day
-  const [selected, setSelected] = useState(dayjs(selectedDate));
+  const [selected, setSelected] = useState(dateUtils.normalize(selectedDate));
 
   // Get habit completions from store
   const completions = getCompletions();
@@ -45,7 +46,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   const monthYearText = currentMonth.format('MMMM YYYY');
 
   // Get today's date for highlighting
-  const today = dayjs().startOf('day');
+  const today = dateUtils.today();
 
   // Generate the days for the current month's grid
   const calendarDays = useMemo(() => {
@@ -54,23 +55,26 @@ const CalendarView: React.FC<CalendarViewProps> = ({
 
     // Find the first Sunday before or on the first day of the month
     let startDate = firstDayOfMonth.day(0);
-    if (startDate.isAfter(firstDayOfMonth)) {
-      startDate = startDate.subtract(7, 'day');
+    if (dateUtils.isAfterDay(startDate, firstDayOfMonth)) {
+      startDate = dateUtils.subtractDays(startDate, 7);
     }
 
     // Find the last Saturday after or on the last day of the month
     let endDate = lastDayOfMonth.day(6);
-    if (endDate.isBefore(lastDayOfMonth)) {
-      endDate = endDate.add(7, 'day');
+    if (dateUtils.isBeforeDay(endDate, lastDayOfMonth)) {
+      endDate = dateUtils.addDays(endDate, 7);
     }
 
     // Create array of all days in the grid
     const days = [];
     let day = startDate;
 
-    while (day.isBefore(endDate) || day.isSame(endDate, 'day')) {
+    while (
+      dateUtils.isBeforeDay(day, endDate) ||
+      dateUtils.isSameDay(day, endDate)
+    ) {
       days.push(day);
-      day = day.add(1, 'day');
+      day = dateUtils.addDays(day, 1);
     }
 
     // Group days into weeks
@@ -85,13 +89,13 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   // Check if a date has a completion
   const hasCompletion = useCallback(
     (date: dayjs.Dayjs) => {
-      const dateString = date.format('YYYY-MM-DD');
+      const dateString = dateUtils.toDateString(date);
 
       // Check if any completions exist for this date
       const hasAnyCompletion = Array.from(completions.values()).some(
         (completion) => {
-          const completionDate = dayjs(completion.completion_date).format(
-            'YYYY-MM-DD'
+          const completionDate = dateUtils.toDateString(
+            completion.completion_date
           );
           return (
             completionDate === dateString &&
@@ -111,16 +115,15 @@ const CalendarView: React.FC<CalendarViewProps> = ({
     (date: dayjs.Dayjs) => {
       if (!currentStreak || currentStreak <= 0) return false;
 
-      // Get the range of dates for the current streak (today and days back equal to streak count)
-      const streakEndDate = dayjs().startOf('day');
-      const streakStartDate = streakEndDate.subtract(currentStreak - 1, 'day');
+      // Get the range of dates for the current streak
+      const streakEndDate = dateUtils.today();
+      const streakStartDate = dateUtils.subtractDays(
+        streakEndDate,
+        currentStreak - 1
+      );
 
       // Check if the given date is within the streak range
-      return (
-        date.isSame(streakStartDate) ||
-        (date.isAfter(streakStartDate) && date.isSame(streakEndDate)) ||
-        date.isBefore(streakEndDate)
-      );
+      return dateUtils.isBetweenDays(date, streakStartDate, streakEndDate);
     },
     [currentStreak]
   );
@@ -136,7 +139,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
 
   // Handle day selection
   const handleSelectDay = (date: Date) => {
-    const selectedDay = dayjs(date);
+    const selectedDay = dateUtils.normalize(date);
     setSelected(selectedDay);
     onSelectDate?.(date);
   };
@@ -255,25 +258,20 @@ const CalendarView: React.FC<CalendarViewProps> = ({
             {week.map((day) => {
               const date = day.toDate();
               const isCurrentMonth = day.month() === currentMonth.month();
-              const isToday = day.isSame(today, 'day');
-              const isSelected = day.isSame(selected, 'day');
+              const isToday = dateUtils.isSameDay(day, today);
+              const isSelected = dateUtils.isSameDay(day, selected);
               const dayHasCompletion = hasCompletion(day);
               const partOfStreak = isPartOfStreak(day);
-              if (day.startOf('day').format('YYYY-MM-DD') === '2025-04-12') {
-                console.log(day.startOf('day'), 'checkday1');
-              }
               const completionStatus = getDateCompletionStatus(day);
               return (
                 <DayCell
                   completionStatus={completionStatus}
-                  key={day.format('YYYY-MM-DD')}
+                  key={dateUtils.toDateString(day)}
                   date={date}
                   displayValue={day.format('D')}
                   isCurrentMonth={isCurrentMonth}
                   isToday={isToday}
                   isSelected={isSelected}
-                  // hasCompletion={dayHasCompletion}
-                  // isStreak={partOfStreak}
                   onSelect={handleSelectDay}
                 />
               );
