@@ -7,11 +7,6 @@ import WeekView from '@/components/habits/WeekView';
 import HabitList from '@/components/habits/HabitList';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useAllHabits, useAllCompletions } from '@/lib/hooks/useHabits';
-import {
-  useAllAchievements,
-  useCurrentStreak,
-} from '@/lib/hooks/useAchievements';
 import { useAchievementsStore } from '@/lib/stores/achievements_store';
 
 export default function Home() {

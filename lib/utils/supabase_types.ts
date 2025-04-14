@@ -133,6 +133,11 @@ export type Database = {
       };
       user_achievements: {
         Row: {
+          cat1: number | null;
+          cat2: number | null;
+          cat3: number | null;
+          cat4: number | null;
+          cat5: number | null;
           created_at: string;
           current_streak: number;
           id: string;
@@ -142,6 +147,11 @@ export type Database = {
           user_id: string;
         };
         Insert: {
+          cat1?: number | null;
+          cat2?: number | null;
+          cat3?: number | null;
+          cat4?: number | null;
+          cat5?: number | null;
           created_at?: string;
           current_streak?: number;
           id?: string;
@@ -151,6 +161,11 @@ export type Database = {
           user_id: string;
         };
         Update: {
+          cat1?: number | null;
+          cat2?: number | null;
+          cat3?: number | null;
+          cat4?: number | null;
+          cat5?: number | null;
           created_at?: string;
           current_streak?: number;
           id?: string;

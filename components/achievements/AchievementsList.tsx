@@ -6,26 +6,16 @@ import {
   FlatList,
   ActivityIndicator,
 } from 'react-native';
-import { useAllAchievements } from '@/lib/hooks/useAchievements';
 import { AchievementItem } from './AchievementItem';
 import { Achievement, ACHIEVEMENTS } from '@/lib/constants/achievements';
-import { StreakAchievements } from '@/lib/utils/achievement_scoring'; // Import specific type
-
-// Helper function to get achievement details from constants/definition file
-// This assumes you have a way to get details based on the ID (StreakDays)
-import { getAchievementDetails } from '@/lib/utils/achievement_scoring'; // Reuse if available
+import { useAchievementsStore } from '@/lib/stores/achievements_store';
 
 export const AchievementsList = () => {
-  const userAchievements: StreakAchievements = useAllAchievements(); // Hook returns { [key in StreakDays]?: boolean }
-
+  const userAchievements = useAchievementsStore(
+    (state) => state.streakAchievements
+  );
   // Convert the ACHIEVEMENTS record into an array
   const allPossibleAchievements: Achievement[] = Object.values(ACHIEVEMENTS);
-
-  // Check if data is still loading or empty
-  // NOTE: useAllAchievements might need adjustment to provide a loading state
-  // if (!userAchievements) {
-  //   return <ActivityIndicator style={styles.loader} />;
-  // }
 
   const renderItem = ({ item }: { item: Achievement }) => {
     const isUnlocked = userAchievements[item.id] === true;

@@ -39,10 +39,11 @@ interface PendingOperation extends BasePendingOperation {
 interface AchievementsState extends BaseState {
   // Local state
   streakAchievements: StreakAchievements;
+  currentStreak: number;
+  maxStreak: number;
   pendingOperations: PendingOperation[];
 
   // Achievement actions
-  getStreakAchievements: () => StreakAchievements;
   resetAchievements: () => void;
   calculateAndUpdate: (
     completions: Map<string, HabitCompletion>,
@@ -66,11 +67,9 @@ export const useAchievementsStore = create<AchievementsState>()(
       return {
         ...createBaseState(),
         streakAchievements: {},
+        currentStreak: 0,
+        maxStreak: 0,
         pendingOperations: [],
-
-        getStreakAchievements: () => {
-          return get().streakAchievements;
-        },
 
         calculateAndUpdate: (
           completions: Map<string, HabitCompletion>,
@@ -81,11 +80,6 @@ export const useAchievementsStore = create<AchievementsState>()(
             currentStreak,
             get().streakAchievements
           );
-          // TODO: remove this once we have a way to remove achievements
-          // const achievementsAfterRemoval = calculateAchievementsToRemove(
-          //   currentStreak,
-          //   newAchievements
-          // );
 
           const newlyUnlockedIds = getNewlyUnlockedAchievements(
             get().streakAchievements,
@@ -96,21 +90,30 @@ export const useAchievementsStore = create<AchievementsState>()(
           const achievementDetails = newlyUnlockedIds
             .map((id) => getAchievementDetails(id))
             .filter(Boolean) as Achievement[];
+
           // Show the achievements modal with all unlocked achievements
           if (achievementDetails.length > 0) {
-            // Add a delay before showing the modal
             setTimeout(() => {
               useModalStore.getState().showAchievementModal(achievementDetails);
-            }, 1000); // 1 second delay
+            }, 1000);
           }
+
+          // Calculate new max streak
+          const newMaxStreak = Math.max(currentStreak, get().maxStreak);
 
           // Update local state immediately
           if (
             JSON.stringify(get().streakAchievements) !==
-            JSON.stringify(newAchievements)
+              JSON.stringify(newAchievements) ||
+            currentStreak !== get().currentStreak ||
+            newMaxStreak !== get().maxStreak
           ) {
             // Update local state synchronously
-            set({ streakAchievements: newAchievements });
+            set({
+              streakAchievements: newAchievements,
+              currentStreak,
+              maxStreak: newMaxStreak,
+            });
 
             // Update server in the background
             const userId = getUserIdOrThrow();
@@ -119,6 +122,8 @@ export const useAchievementsStore = create<AchievementsState>()(
               id: userId,
               user_id: userId,
               streak_achievements: newAchievements,
+              current_streak: currentStreak,
+              max_streak: newMaxStreak,
               created_at: now.toISOString(),
               updated_at: now.toISOString(),
             };
@@ -157,7 +162,11 @@ export const useAchievementsStore = create<AchievementsState>()(
           const now = dayjs();
 
           // Update local state immediately
-          set({ streakAchievements: {} });
+          set({
+            streakAchievements: {},
+            currentStreak: 0,
+            maxStreak: 0,
+          });
 
           // Delete from server in the background
           supabase
@@ -197,6 +206,8 @@ export const useAchievementsStore = create<AchievementsState>()(
               streakAchievements:
                 (userAchievement?.streak_achievements as StreakAchievements) ||
                 {},
+              currentStreak: userAchievement?.current_streak || 0,
+              maxStreak: userAchievement?.max_streak || 0,
               lastSyncTime: dayjs().toDate(),
               isLoading: false,
             });

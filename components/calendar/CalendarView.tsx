@@ -12,7 +12,7 @@ import { dateUtils } from '@/lib/utils/dayjs';
 import DayCell from './DayCell';
 import Colors from '@/lib/constants/Colors';
 import { useHabitsStore } from '@/lib/stores/habits_store';
-import { useCurrentStreak } from '@/lib/hooks/useAchievements';
+import { useAchievementsStore } from '@/lib/stores/achievements_store';
 
 // Get screen width to ensure responsive sizing
 const screenWidth = Dimensions.get('window').width;
@@ -94,7 +94,7 @@ const CalendarView: React.FC<CalendarViewProps> = ({
   const today = useMemo(() => dateUtils.today(), []);
 
   // Get current streak
-  const currentStreak = useCurrentStreak();
+  const currentStreak = useAchievementsStore((state) => state.currentStreak);
 
   // Format the month/year for display
   const monthYearText = currentMonth.format('MMMM YYYY');
