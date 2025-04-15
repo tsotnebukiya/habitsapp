@@ -43,7 +43,7 @@ export default function TabLayout() {
             ),
           }}
         />
-        <Tabs.Screen
+        {/* <Tabs.Screen
           name="journal"
           options={{
             title: 'Journal',
@@ -52,7 +52,7 @@ export default function TabLayout() {
               <TabBarIcon name="journal" color={color} />
             ),
           }}
-        />
+        /> */}
         <Tabs.Screen
           name="settings"
           options={{

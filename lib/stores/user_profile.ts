@@ -12,11 +12,11 @@ export type UserProfile = {
   createdAt: string;
   updatedAt: string;
   onboardingComplete: boolean;
-  bodyScore: number;
-  mindScore: number;
-  heartScore: number;
-  spiritScore: number;
-  workScore: number;
+  cat1: number;
+  cat2: number;
+  cat3: number;
+  cat4: number;
+  cat5: number;
 };
 
 interface UserProfileState {
@@ -49,7 +49,9 @@ export const useUserProfileStore = create<UserProfileState>()(
     (set, get) => ({
       profile: null,
 
-      setProfile: (profile) => set({ profile }),
+      setProfile: (profile) => {
+        set({ profile });
+      },
 
       updateProfile: (updates) =>
         set((state) => ({

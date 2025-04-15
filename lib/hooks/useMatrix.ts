@@ -4,6 +4,7 @@ import { calculateDMS, DisplayedMatrixScore } from '@/lib/utils/scoring';
 import { useHabitsStore } from '@/lib/stores/habits_store';
 import { CATEGORIES, CATEGORY_IDS } from '@/lib/constants/HabitTemplates';
 import dayjs from '@/lib/utils/dayjs';
+import { useAchievementsStore } from '@/lib/stores/achievements_store';
 
 export interface MatrixCategory {
   id: (typeof CATEGORY_IDS)[number] | 'total';
@@ -15,37 +16,28 @@ export interface MatrixCategory {
 }
 
 export function useMatrix() {
-  // Only extract the data we need from stores as stable references
+  // Extract category values directly from the achievements store
+  const cat1 = useAchievementsStore((state) => state.cat1);
+  const cat2 = useAchievementsStore((state) => state.cat2);
+  const cat3 = useAchievementsStore((state) => state.cat3);
+  const cat4 = useAchievementsStore((state) => state.cat4);
+  const cat5 = useAchievementsStore((state) => state.cat5);
+
+  // Fallback to profile only if needed
   const profile = useUserProfileStore((state) => state.profile);
 
-  // Improving memoization by getting specific values from the store
-  // instead of creating new arrays on every render
-  const habitsMap = useHabitsStore((state) => state.habits);
-  const completionsMap = useHabitsStore((state) => state.completions);
-
-  // Convert maps to arrays only when the maps change
-  const habits = useMemo(() => Array.from(habitsMap.values()), [habitsMap]);
-
-  const completions = useMemo(
-    () => Array.from(completionsMap.values()),
-    [completionsMap]
+  // Cache the matrix scores to avoid recalculation
+  const matrixScore = useMemo<DisplayedMatrixScore>(
+    () => ({
+      cat1: cat1 || 50,
+      cat2: cat2 || 50,
+      cat3: cat3 || 50,
+      cat4: cat4 || 50,
+      cat5: cat5 || 50,
+      calculated_at: dayjs().toDate(),
+    }),
+    [cat1, cat2, cat3, cat4, cat5]
   );
-
-  // Calculate the displayed matrix score
-  const matrixScore: DisplayedMatrixScore = useMemo(() => {
-    const result = !profile
-      ? {
-          body: 50,
-          mind: 50,
-          heart: 50,
-          spirit: 50,
-          work: 50,
-          calculated_at: dayjs().toDate(),
-        }
-      : calculateDMS(profile, habits, completions);
-
-    return result;
-  }, [profile, habits, completions]);
 
   // Create category objects with metadata - only recompute when matrixScore changes
   const categories: MatrixCategory[] = useMemo(() => {
@@ -78,7 +70,10 @@ export function useMatrix() {
   );
 
   // Add lastCalculated using dayjs for consistent date formatting
-  const lastCalculated = dayjs(matrixScore.calculated_at).format();
+  const lastCalculated = useMemo(
+    () => dayjs(matrixScore.calculated_at).format(),
+    [matrixScore.calculated_at]
+  );
 
   // Return memoized result to prevent unnecessary re-renders
   return useMemo(

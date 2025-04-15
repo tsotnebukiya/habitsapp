@@ -42,11 +42,6 @@ function OnboardingLogin() {
       updatedAt: dayjs().toISOString(),
       createdAt: userData.created_at || dayjs().toISOString(),
       onboardingComplete: true,
-      bodyScore: userData.body_score,
-      mindScore: userData.mind_score,
-      heartScore: userData.heart_score,
-      spiritScore: userData.spirit_score,
-      workScore: userData.work_score,
     });
     router.replace('/(tabs)');
   };

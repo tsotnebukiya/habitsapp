@@ -18,6 +18,7 @@ import useUserProfileStore from '@/lib/stores/user_profile';
 import { GOOGLE_SIGN_IN_IOS_CLIENT_ID } from '@/safe_constants';
 import { ONBOARDING_STEPS } from './OnboardingSteps';
 import dayjs from '@/lib/utils/dayjs';
+import { useAchievementsStore } from '@/lib/stores/achievements_store';
 
 const OnboardingSignUp = () => {
   const router = useRouter();
@@ -94,11 +95,11 @@ const OnboardingSignUp = () => {
             display_name: user.email?.split('@')[0] || '', // Default to email username
             created_at: dayjs().toISOString(),
             updated_at: dayjs().toISOString(),
-            body_score: 50,
-            mind_score: 50,
-            heart_score: 50,
-            spirit_score: 50,
-            work_score: 50,
+            cat1: 50,
+            cat2: 50,
+            cat3: 50,
+            cat4: 50,
+            cat5: 50,
           };
 
           const { error: InsertError } = await supabase
@@ -121,12 +122,33 @@ const OnboardingSignUp = () => {
               updatedAt: userData.updated_at,
               createdAt: userData.created_at,
               onboardingComplete: true,
-              bodyScore: userData.body_score,
-              mindScore: userData.mind_score,
-              heartScore: userData.heart_score,
-              spiritScore: userData.spirit_score,
-              workScore: userData.work_score,
+              cat1: userData.cat1,
+              cat2: userData.cat2,
+              cat3: userData.cat3,
+              cat4: userData.cat4,
+              cat5: userData.cat5,
             });
+
+            // Initialize achievements
+            const initialAchievements = {
+              id: userData.id,
+              user_id: userData.id,
+              cat1: userData.cat1,
+              cat2: userData.cat2,
+              cat3: userData.cat3,
+              cat4: userData.cat4,
+              cat5: userData.cat5,
+              current_streak: 0,
+              max_streak: 0,
+              streak_achievements: {},
+              created_at: dayjs().toISOString(),
+              updated_at: dayjs().toISOString(),
+            };
+
+            useAchievementsStore
+              .getState()
+              .setAchievements(initialAchievements);
+
             nextStep();
           }
         }
@@ -167,11 +189,11 @@ const OnboardingSignUp = () => {
             display_name: data.user.email?.split('@')[0]!, // Default to email username
             created_at: dayjs().toISOString(),
             updated_at: dayjs().toISOString(),
-            body_score: 50,
-            mind_score: 50,
-            heart_score: 50,
-            spirit_score: 50,
-            work_score: 50,
+            cat1: 50,
+            cat2: 50,
+            cat3: 50,
+            cat4: 50,
+            cat5: 50,
           };
 
           const { error: InsertError } = await supabase
@@ -190,12 +212,31 @@ const OnboardingSignUp = () => {
             updatedAt: userData.updated_at,
             createdAt: userData.created_at,
             onboardingComplete: true,
-            bodyScore: userData.body_score,
-            mindScore: userData.mind_score,
-            heartScore: userData.heart_score,
-            spiritScore: userData.spirit_score,
-            workScore: userData.work_score,
+            cat1: userData.cat1,
+            cat2: userData.cat2,
+            cat3: userData.cat3,
+            cat4: userData.cat4,
+            cat5: userData.cat5,
           });
+
+          // Initialize achievements
+          const initialAchievements = {
+            id: userData.id,
+            user_id: userData.id,
+            cat1: userData.cat1,
+            cat2: userData.cat2,
+            cat3: userData.cat3,
+            cat4: userData.cat4,
+            cat5: userData.cat5,
+            current_streak: 0,
+            max_streak: 0,
+            streak_achievements: {},
+            created_at: dayjs().toISOString(),
+            updated_at: dayjs().toISOString(),
+          };
+
+          useAchievementsStore.getState().setAchievements(initialAchievements);
+
           nextStep();
         }
       }
