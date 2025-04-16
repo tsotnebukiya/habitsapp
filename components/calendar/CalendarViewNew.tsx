@@ -1,11 +1,11 @@
 import React, { useCallback } from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { Calendar } from 'react-native-calendars';
-import { useDayStatusStore } from '@/lib/stores/day_status_store';
+import { CompletionStatus, useHabitsStore } from '@/lib/stores/habits_store';
 import { useAchievementsStore } from '@/lib/stores/achievements_store';
 import Colors from '@/lib/constants/Colors';
 import dayjs from '@/lib/utils/dayjs';
-import type { CompletionStatus } from '@/lib/stores/day_status_store';
+// import type { CompletionStatus\ }
 
 // Get screen width to ensure responsive sizing
 const screenWidth = Dimensions.get('window').width;
@@ -20,7 +20,7 @@ const CalendarViewNew: React.FC<CalendarViewProps> = ({
   onSelectDate,
   selectedDate = new Date(),
 }) => {
-  const { getMonthStatuses } = useDayStatusStore();
+  const { getMonthStatuses } = useHabitsStore();
   const currentStreak = useAchievementsStore((state) => state.currentStreak);
 
   // Get current month stats

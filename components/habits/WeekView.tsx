@@ -24,7 +24,7 @@ export const WeekView = memo(function WeekView({
 }: WeekViewProps) {
   const scrollViewRef = useRef<ScrollView>(null);
   const selectedDayjs = dayjs(selectedDate);
-  const { getHabitsByDate, getHabitStatus } = useHabitsStore();
+  const { getDayStatus, calculateDateStatus } = useHabitsStore();
 
   // Generate array of dates
   const dates = Array.from({ length: DAYS_TO_SHOW }, (_, i) => {
@@ -33,41 +33,23 @@ export const WeekView = memo(function WeekView({
 
   // Get completion status for a date
   const getDateCompletionStatus = (date: dayjs.Dayjs) => {
-    const habits = getHabitsByDate(date);
-    if (habits.length === 0) return 'no_habits';
-
-    const completions = habits.map((habit) =>
-      getHabitStatus(habit.id, date.toDate())
-    );
-
-    // Count skipped habits as "done" for the purpose of daily completion
-    if (
-      completions.every(
-        (completion) =>
-          completion?.status === 'completed' || completion?.status === 'skipped'
-      )
-    ) {
-      return 'all_completed';
+    // First try to get from cache
+    const cachedStatus = getDayStatus(date.toDate());
+    if (cachedStatus) {
+      return cachedStatus.status;
     }
-    if (
-      completions.some(
-        (completion) =>
-          completion?.status === 'completed' ||
-          completion?.status === 'in_progress'
-      )
-    ) {
-      return 'some_completed';
-    }
-    return 'none_completed';
+    // If not in cache, calculate it
+    return calculateDateStatus(date.toDate());
   };
 
-  // Scroll to today on mount
   useEffect(() => {
     const todayIndex = dates.findIndex((date) => date.isSame(dayjs(), 'day'));
     if (todayIndex !== -1 && scrollViewRef.current) {
-      scrollViewRef.current.scrollTo({
-        x: todayIndex * DAY_WIDTH,
-        animated: false,
+      requestAnimationFrame(() => {
+        scrollViewRef.current?.scrollTo({
+          x: todayIndex * DAY_WIDTH,
+          animated: false,
+        });
       });
     }
   }, []);
@@ -133,7 +115,15 @@ export default WeekView;
 const styles = StyleSheet.create({
   container: {
     height: 80,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.light.background.paper,
+    borderRadius: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
+    marginHorizontal: 16,
+    marginVertical: 8,
   },
   scrollContent: {
     paddingHorizontal: 10,
@@ -146,12 +136,12 @@ const styles = StyleSheet.create({
     marginHorizontal: 2,
   },
   selectedDay: {
-    backgroundColor: '#E3F2FF',
+    backgroundColor: Colors.shared.primary[50],
     borderRadius: 12,
   },
   dayName: {
     fontSize: 13,
-    color: '#8E8E93',
+    color: Colors.light.text.secondary,
     marginBottom: 4,
   },
   numberContainer: {
@@ -163,7 +153,7 @@ const styles = StyleSheet.create({
   },
   someCompletedNumber: {
     borderWidth: 1.5,
-    borderColor: '#007AFF',
+    borderColor: Colors.shared.primary[500],
   },
   numberBackground: {
     width: '100%',
@@ -173,17 +163,17 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   allCompletedNumber: {
-    backgroundColor: '#007AFF',
+    backgroundColor: Colors.shared.primary[500],
   },
   dayNumber: {
     fontSize: 17,
     fontWeight: '600',
-    color: '#000',
+    color: Colors.light.text.primary,
   },
   allCompletedText: {
-    color: '#fff',
+    color: Colors.light.background.paper,
   },
   todayText: {
-    color: '#007AFF',
+    color: Colors.shared.primary[500],
   },
 });

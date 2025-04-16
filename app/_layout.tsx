@@ -85,7 +85,7 @@ function RootLayout() {
   }, [loaded]);
 
   if (!loaded) {
-    return <Slot />;
+    return null;
   }
 
   return <RootLayoutNav />;

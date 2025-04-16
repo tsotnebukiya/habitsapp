@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, SafeAreaView, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { ErrorBoundary } from '@sentry/react-native';
 import { useHabitsStore } from '@/lib/stores/habits_store';
 import useUserProfileStore from '@/lib/stores/user_profile';
@@ -8,6 +8,7 @@ import HabitList from '@/components/habits/HabitList';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useAchievementsStore } from '@/lib/stores/achievements_store';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function Home() {
   const { profile } = useUserProfileStore();
@@ -17,6 +18,8 @@ export default function Home() {
   );
   const [selectedDate, setSelectedDate] = useState(new Date());
   const router = useRouter();
+  const insets = useSafeAreaInsets();
+
   useEffect(() => {
     if (profile?.id) {
       // Initial sync
@@ -36,23 +39,18 @@ export default function Home() {
   }, [profile?.id]);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <ErrorBoundary>
-        <View style={styles.content}>
-          <WeekView
-            selectedDate={selectedDate}
-            onDateSelect={setSelectedDate}
-          />
-          <HabitList selectedDate={selectedDate} />
-          <TouchableOpacity
-            style={styles.addButton}
-            onPress={() => router.push('/add-habit')}
-          >
-            <Ionicons name="add" size={30} color="#FFF" />
-          </TouchableOpacity>
-        </View>
-      </ErrorBoundary>
-    </SafeAreaView>
+    <View style={[styles.container, { paddingTop: insets.top }]}>
+      <View style={styles.content}>
+        <WeekView selectedDate={selectedDate} onDateSelect={setSelectedDate} />
+        <HabitList selectedDate={selectedDate} />
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => router.push('/add-habit')}
+        >
+          <Ionicons name="add" size={30} color="#FFF" />
+        </TouchableOpacity>
+      </View>
+    </View>
   );
 }
 
