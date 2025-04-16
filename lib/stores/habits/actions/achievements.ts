@@ -70,12 +70,15 @@ export const createAchievementSlice: StateCreator<
       });
   },
 
-  calculateAndUpdate: (completions, habits) => {
+  calculateAndUpdate: () => {
     const { profile } = useUserProfileStore.getState();
     if (!profile) return { unlockedAchievements: [], currentStreak: 0 };
 
     // Calculate streaks
-    const currentStreak = calculateCurrentStreak(completions, habits);
+    const currentStreak = calculateCurrentStreak(
+      get().completions,
+      get().habits
+    );
     const newAchievements = calculateNewAchievements(
       currentStreak,
       get().streakAchievements
@@ -84,8 +87,8 @@ export const createAchievementSlice: StateCreator<
     // Calculate matrix scores
     const matrixScores = calculateDMS(
       profile,
-      Array.from(habits.values()),
-      Array.from(completions.values())
+      Array.from(get().habits.values()),
+      Array.from(get().completions.values())
     );
     // Update both
     const userId = getUserIdOrThrow();

@@ -138,10 +138,7 @@ export interface AchievementSlice {
 
   resetAchievements: () => void;
   setAchievements: (achievements: UserAchievement) => void;
-  calculateAndUpdate: (
-    completions: Map<string, HabitCompletion>,
-    habits: Map<string, Habit>
-  ) => {
+  calculateAndUpdate: () => {
     unlockedAchievements: StreakDays[];
     currentStreak: number;
   };
