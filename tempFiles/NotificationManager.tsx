@@ -1,14 +1,17 @@
 // components/notifications/NotificationManager.tsx
 import { useEffect } from 'react';
 import * as Notifications from 'expo-notifications';
-import useUserProfileStore from '../../interfaces/user_profile';
-import { registerForPushNotificationsAsync, savePushToken, scheduleLocalNotification } from '../../utils/NotificationsSetup';
-
+import useUserProfileStore from '@/lib/stores/user_profile';
+import {
+  registerForPushNotificationsAsync,
+  savePushToken,
+  scheduleLocalNotification,
+} from '../../utils/NotificationsSetup';
 
 export function useNotifications() {
   useEffect(() => {
     const userId = useUserProfileStore.getState().profile?.id;
-    
+
     // Register for notifications and save token
     const registerDevice = async () => {
       const token = await registerForPushNotificationsAsync();
@@ -18,14 +21,17 @@ export function useNotifications() {
     };
 
     // Set up notification handlers
-    const notificationListener = Notifications.addNotificationReceivedListener(notification => {
-      console.log('Notification received:', notification);
-    });
+    const notificationListener = Notifications.addNotificationReceivedListener(
+      (notification) => {
+        console.log('Notification received:', notification);
+      }
+    );
 
-    const responseListener = Notifications.addNotificationResponseReceivedListener(response => {
-      console.log('Notification response:', response);
-      // Handle notification interaction here
-    });
+    const responseListener =
+      Notifications.addNotificationResponseReceivedListener((response) => {
+        console.log('Notification response:', response);
+        // Handle notification interaction here
+      });
 
     registerDevice();
 
@@ -39,30 +45,30 @@ export function useNotifications() {
   // Example functions for scheduling notifications
   const scheduleWeightCheckInReminder = async () => {
     await scheduleLocalNotification({
-      title: "Time to check in!",
+      title: 'Time to check in!',
       body: "Don't forget to log your weight today!",
       trigger: {
         hour: 8, // 8 AM
         minute: 0,
-        repeats: true
-      }
+        repeats: true,
+      },
     });
   };
 
   const scheduleGoalReminder = async () => {
     await scheduleLocalNotification({
-      title: "Goal Check-in",
+      title: 'Goal Check-in',
       body: "How's your progress going? Time to review your goals!",
-      trigger: { 
+      trigger: {
         hour: 20, // 8 PM
         minute: 0,
-        repeats: true
-      }
+        repeats: true,
+      },
     });
   };
 
   return {
     scheduleWeightCheckInReminder,
-    scheduleGoalReminder
+    scheduleGoalReminder,
   };
 }

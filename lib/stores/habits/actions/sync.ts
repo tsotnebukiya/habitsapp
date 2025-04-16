@@ -7,7 +7,7 @@ import {
 } from '../types';
 import dayjs from '@/lib/utils/dayjs';
 import { supabase } from '@/lib/utils/supabase';
-import { getUserIdOrThrow, STORE_CONSTANTS } from '../../shared';
+import { getUserIdOrThrow, STORE_CONSTANTS } from '../utils';
 
 export const createSyncSlice: StateCreator<SharedSlice, [], [], SyncSlice> = (
   set,

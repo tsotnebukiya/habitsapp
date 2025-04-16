@@ -5,7 +5,7 @@ import { CompletionSlice, SharedSlice } from '../types';
 import dayjs from '@/lib/utils/dayjs';
 import { v4 as uuidv4 } from 'uuid';
 import { supabase } from '@/lib/utils/supabase';
-import { getUserIdOrThrow } from '../../shared';
+import { getUserIdOrThrow } from '../utils';
 
 export const createCompletionSlice: StateCreator<
   SharedSlice,

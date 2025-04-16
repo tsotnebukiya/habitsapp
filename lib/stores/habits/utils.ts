@@ -3,6 +3,10 @@ import { Database } from '@/lib/utils/supabase_types';
 import { CompletionStatus, Habit, HabitAction, HabitCompletion } from './types';
 import useUserProfileStore from '../user_profile';
 
+export const STORE_CONSTANTS = {
+  MAX_RETRY_ATTEMPTS: 3,
+  MIN_RETRY_INTERVAL: 1000 * 60, // 1 minute
+};
 /**
  * Gets a month key in the format YYYY-MM for caching purposes
  */

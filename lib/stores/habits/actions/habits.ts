@@ -2,7 +2,7 @@ import { StateCreator } from 'zustand';
 import { supabase } from '@/lib/utils/supabase';
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from '@/lib/utils/dayjs';
-import { getUserIdOrThrow } from '@/lib/stores/shared';
+import { getUserIdOrThrow } from '../utils';
 import { HabitCompletion, type Habit } from '../types';
 import { HabitSlice, SharedSlice } from '../types';
 import { getCurrentProgress, getProgressText } from '../utils';
