@@ -16,8 +16,8 @@ import { QuoteDisplay } from '@/components/achievements/QuoteDisplay';
 import { AchievementsList } from '@/components/achievements/AchievementsList';
 
 // Import Calendar Component
-import CalendarView from '@/components/calendar/CalendarView';
 import Colors from '@/lib/constants/Colors';
+import CalendarViewNew from '@/components/calendar/CalendarViewNew';
 
 // Simple Separator Component
 const Separator = () => <View style={styles.separator} />;
@@ -75,7 +75,8 @@ const CalendarTabContent = React.memo(() => {
         <Text style={styles.sectionSubtitle}>
           Track your habit completion streaks
         </Text>
-        <CalendarView />
+        {/* <CalendarView /> */}
+        <CalendarViewNew />
       </View>
     </>
   );
