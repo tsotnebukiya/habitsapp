@@ -7,13 +7,12 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { AchievementItem } from './AchievementItem';
-import { Achievement, ACHIEVEMENTS } from '@/lib/constants/achievements';
-import { useAchievementsStore } from '@/lib/stores/achievements_store';
+import { ACHIEVEMENTS } from '@/lib/constants/achievements';
+import useHabitsStore from '@/lib/stores/habits/store';
+import { Achievement } from '@/lib/stores/habits/types';
 
 export const AchievementsList = () => {
-  const userAchievements = useAchievementsStore(
-    (state) => state.streakAchievements
-  );
+  const userAchievements = useHabitsStore((state) => state.streakAchievements);
   // Convert the ACHIEVEMENTS record into an array
   const allPossibleAchievements: Achievement[] = Object.values(ACHIEVEMENTS);
 

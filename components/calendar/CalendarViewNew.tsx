@@ -1,8 +1,8 @@
 import React, { useCallback } from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { Calendar } from 'react-native-calendars';
-import { CompletionStatus, useHabitsStore } from '@/lib/stores/habits_store';
-import { useAchievementsStore } from '@/lib/stores/achievements_store';
+import useHabitsStore from '@/lib/stores/habits/store';
+import { CompletionStatus } from '@/lib/stores/habits/types';
 import Colors from '@/lib/constants/Colors';
 import dayjs from '@/lib/utils/dayjs';
 // import type { CompletionStatus\ }
@@ -20,8 +20,7 @@ const CalendarViewNew: React.FC<CalendarViewProps> = ({
   onSelectDate,
   selectedDate = new Date(),
 }) => {
-  const { getMonthStatuses } = useHabitsStore();
-  const currentStreak = useAchievementsStore((state) => state.currentStreak);
+  const { getMonthStatuses, currentStreak } = useHabitsStore();
 
   // Get current month stats
   const month = dayjs(selectedDate);

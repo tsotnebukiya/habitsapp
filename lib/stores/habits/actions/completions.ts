@@ -1,20 +1,10 @@
-import {
-  calculateHabitToggle,
-  normalizeDate,
-  type HabitAction,
-  type HabitCompletion,
-} from '@/lib/utils/habits';
+import { type HabitAction, type HabitCompletion } from '../types';
+import { calculateHabitToggle, normalizeDate } from '../utils';
 import { StateCreator } from 'zustand';
-import {
-  CalendarSlice,
-  CompletionSlice,
-  HabitSlice,
-  SharedSlice,
-} from '../types';
+import { CompletionSlice, SharedSlice } from '../types';
 import dayjs from '@/lib/utils/dayjs';
 import { v4 as uuidv4 } from 'uuid';
 import { supabase } from '@/lib/utils/supabase';
-import { useAchievementsStore } from '../../achievements_store';
 import { getUserIdOrThrow } from '../../shared';
 
 export const createCompletionSlice: StateCreator<
@@ -152,8 +142,6 @@ export const createCompletionSlice: StateCreator<
     get().updateDayStatus(date, status);
 
     // Calculate achievements
-    useAchievementsStore
-      .getState()
-      .calculateAndUpdate(get().completions, get().habits);
+    get().calculateAndUpdate(get().completions, get().habits);
   },
 });

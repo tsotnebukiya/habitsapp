@@ -1,8 +1,10 @@
 import { StateCreator } from 'zustand';
 import { CalendarSlice, CompletionStatus, SharedSlice } from '../types';
-import { calculateDateStatusUtility } from '@/lib/utils/habits';
-import { getAffectedDates } from '@/lib/utils/habits';
-import { getMonthKey } from '@/lib/utils/habits';
+import {
+  calculateDateStatusUtility,
+  getAffectedDates,
+  getMonthKey,
+} from '../utils';
 import dayjs from '@/lib/utils/dayjs';
 
 export const createCalendarSlice: StateCreator<

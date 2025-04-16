@@ -8,9 +8,8 @@ import {
   Dimensions,
 } from 'react-native';
 import dayjs from 'dayjs';
-import { useHabitsStore } from '@/lib/stores/habits_store';
 import Colors from '@/lib/constants/Colors';
-
+import useHabitsStore from '@/lib/stores/habits/store';
 interface WeekViewProps {
   selectedDate: Date;
   onDateSelect: (date: Date) => void;

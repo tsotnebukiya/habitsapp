@@ -1,10 +1,9 @@
 import { useMemo, useEffect, useRef } from 'react';
 import { useUserProfileStore } from '@/lib/stores/user_profile';
-import { calculateDMS, DisplayedMatrixScore } from '@/lib/utils/scoring';
-import { useHabitsStore } from '@/lib/stores/habits_store';
+import { DisplayedMatrixScore } from '@/lib/stores/habits/types';
 import { CATEGORIES, CATEGORY_IDS } from '@/lib/constants/HabitTemplates';
 import dayjs from '@/lib/utils/dayjs';
-import { useAchievementsStore } from '@/lib/stores/achievements_store';
+import useHabitsStore from '@/lib/stores/habits/store';
 
 export interface MatrixCategory {
   id: (typeof CATEGORY_IDS)[number] | 'total';
@@ -17,11 +16,11 @@ export interface MatrixCategory {
 
 export function useMatrix() {
   // Extract category values directly from the achievements store
-  const cat1 = useAchievementsStore((state) => state.cat1);
-  const cat2 = useAchievementsStore((state) => state.cat2);
-  const cat3 = useAchievementsStore((state) => state.cat3);
-  const cat4 = useAchievementsStore((state) => state.cat4);
-  const cat5 = useAchievementsStore((state) => state.cat5);
+  const cat1 = useHabitsStore((state) => state.cat1);
+  const cat2 = useHabitsStore((state) => state.cat2);
+  const cat3 = useHabitsStore((state) => state.cat3);
+  const cat4 = useHabitsStore((state) => state.cat4);
+  const cat5 = useHabitsStore((state) => state.cat5);
 
   // Fallback to profile only if needed
   const profile = useUserProfileStore((state) => state.profile);

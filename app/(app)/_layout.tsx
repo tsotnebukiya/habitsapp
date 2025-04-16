@@ -3,9 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import useUserProfileStore from '@/lib/stores/user_profile';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { useHabitsStore } from '@/lib/stores/habits_store';
-import { useAchievementsStore } from '@/lib/stores/achievements_store';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import useHabitsStore from '@/lib/stores/habits/store';
 
 function StackLayout() {
   const { profile } = useUserProfileStore();
@@ -16,10 +15,7 @@ function StackLayout() {
       try {
         // Initial sync for habits if user is logged in
         if (profile?.id) {
-          await Promise.all([
-            useHabitsStore.getState().syncWithServer(),
-            useAchievementsStore.getState().syncWithServer(),
-          ]);
+          await Promise.all([useHabitsStore.getState().syncWithServer()]);
         }
         await new Promise((resolve) => setTimeout(resolve, 100));
       } catch (error) {

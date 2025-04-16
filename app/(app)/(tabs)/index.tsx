@@ -1,21 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, TouchableOpacity } from 'react-native';
 import { ErrorBoundary } from '@sentry/react-native';
-import { useHabitsStore } from '@/lib/stores/habits_store';
+import useHabitsStore from '@/lib/stores/habits/store';
 import useUserProfileStore from '@/lib/stores/user_profile';
 import WeekView from '@/components/habits/WeekView';
 import HabitList from '@/components/habits/HabitList';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useAchievementsStore } from '@/lib/stores/achievements_store';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function Home() {
   const { profile } = useUserProfileStore();
-  const syncHabits = useHabitsStore((state) => state.syncWithServer);
-  const syncAchievements = useAchievementsStore(
-    (state) => state.syncWithServer
-  );
+  const syncData = useHabitsStore((state) => state.syncWithServer);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -23,13 +19,11 @@ export default function Home() {
   useEffect(() => {
     if (profile?.id) {
       // Initial sync
-      syncHabits();
-      syncAchievements();
+      syncData();
 
       // Setup periodic sync every hour
       const syncInterval = setInterval(() => {
-        syncHabits();
-        syncAchievements();
+        syncData();
       }, 1000 * 60 * 60); // 1 hour
 
       return () => {

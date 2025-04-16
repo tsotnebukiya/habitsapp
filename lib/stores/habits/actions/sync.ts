@@ -1,22 +1,13 @@
-import {
-  normalizeDate,
-  type HabitAction,
-  type HabitCompletion,
-} from '@/lib/utils/habits';
 import { StateCreator } from 'zustand';
 import {
-  CalendarSlice,
-  CompletionSlice,
-  HabitSlice,
   PendingOperation,
   SharedSlice,
+  StreakAchievements,
   SyncSlice,
 } from '../types';
 import dayjs from '@/lib/utils/dayjs';
-import { v4 as uuidv4 } from 'uuid';
 import { supabase } from '@/lib/utils/supabase';
-import { useAchievementsStore } from '../../achievements_store';
-import { STORE_CONSTANTS } from '../../shared';
+import { getUserIdOrThrow, STORE_CONSTANTS } from '../../shared';
 
 export const createSyncSlice: StateCreator<SharedSlice, [], [], SyncSlice> = (
   set,
@@ -104,6 +95,16 @@ export const createSyncSlice: StateCreator<SharedSlice, [], [], SyncSlice> = (
 
       if (completionsError) throw completionsError;
 
+      // Add achievements sync
+      const { data: serverAchievements, error: achievementsError } =
+        await supabase
+          .from('user_achievements')
+          .select('*')
+          .eq('user_id', getUserIdOrThrow())
+          .single();
+
+      if (achievementsError) throw achievementsError;
+
       const affectedHabits = new Set<string>();
 
       if (serverHabits) {
@@ -145,7 +146,21 @@ export const createSyncSlice: StateCreator<SharedSlice, [], [], SyncSlice> = (
           get().updateDayStatus(new Date(dateString), 'some_completed');
         });
       }
-
+      if (serverAchievements) {
+        // Update achievements state
+        set({
+          streakAchievements:
+            (serverAchievements?.streak_achievements as StreakAchievements) ||
+            {},
+          currentStreak: serverAchievements.current_streak,
+          maxStreak: serverAchievements.max_streak,
+          cat1: serverAchievements.cat1 || 50,
+          cat2: serverAchievements.cat2 || 50,
+          cat3: serverAchievements.cat3 || 50,
+          cat4: serverAchievements.cat4 || 50,
+          cat5: serverAchievements.cat5 || 50,
+        });
+      }
       // Update cache for affected habits
       affectedHabits.forEach((habitId) => {
         get().updateAffectedDates(habitId);

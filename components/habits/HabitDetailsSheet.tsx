@@ -7,12 +7,12 @@ import {
   Dimensions,
 } from 'react-native';
 import { BottomSheetModal, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
-import { useHabitsStore } from '@/lib/stores/habits_store';
+import useHabitsStore from '@/lib/stores/habits/store';
 import Colors from '@/lib/constants/Colors';
 import { FontAwesome6 } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import CircularCounter from '../shared/CircularCounter';
-import { Habit } from '@/lib/utils/habits';
+import { Habit } from '@/lib/stores/habits/types';
 
 interface HabitDetailsSheetProps {
   habit: Habit | null;
@@ -27,13 +27,8 @@ export default function HabitDetailsSheet({
   bottomSheetModalRef,
   onDismiss,
 }: HabitDetailsSheetProps) {
-  const {
-    toggleHabitStatus,
-    deleteHabit,
-    getHabitStatus,
-    getCurrentValue,
-    getCompletions,
-  } = useHabitsStore();
+  const { toggleHabitStatus, deleteHabit, getHabitStatus, getCurrentValue } =
+    useHabitsStore();
   const snapPoints = useMemo(() => ['1%', '60%'], []);
   const { width } = Dimensions.get('window');
   const circularCounterSize = Math.min(width * 0.45, 160);

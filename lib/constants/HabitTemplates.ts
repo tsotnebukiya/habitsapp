@@ -1,6 +1,7 @@
 import { MeasurementUnits } from './MeasurementUnits';
 
 export const CATEGORY_IDS = ['cat1', 'cat2', 'cat3', 'cat4', 'cat5'] as const;
+
 export type HabitCategory = (typeof CATEGORY_IDS)[number];
 
 export interface HabitTemplate {

@@ -7,6 +7,7 @@ import { createCompletionSlice } from './actions/completions';
 import { createCalendarSlice } from './actions/calendar';
 import dayjs from '@/lib/utils/dayjs';
 import { options } from './storage';
+import { createAchievementSlice } from './actions/achievements';
 
 const useHabitsStore = create<SharedSlice>()(
   persist(
@@ -18,6 +19,7 @@ const useHabitsStore = create<SharedSlice>()(
       ...createCompletionSlice(...a),
       ...createCalendarSlice(...a),
       ...createSyncSlice(...a),
+      ...createAchievementSlice(...a),
     }),
     options
   )

@@ -18,7 +18,7 @@ import useUserProfileStore from '@/lib/stores/user_profile';
 import { GOOGLE_SIGN_IN_IOS_CLIENT_ID } from '@/safe_constants';
 import { ONBOARDING_STEPS } from './OnboardingSteps';
 import dayjs from '@/lib/utils/dayjs';
-import { useAchievementsStore } from '@/lib/stores/achievements_store';
+import useHabitsStore from '@/lib/stores/habits/store';
 
 const OnboardingSignUp = () => {
   const router = useRouter();
@@ -145,9 +145,7 @@ const OnboardingSignUp = () => {
               updated_at: dayjs().toISOString(),
             };
 
-            useAchievementsStore
-              .getState()
-              .setAchievements(initialAchievements);
+            useHabitsStore.getState().setAchievements(initialAchievements);
 
             nextStep();
           }
@@ -235,7 +233,7 @@ const OnboardingSignUp = () => {
             updated_at: dayjs().toISOString(),
           };
 
-          useAchievementsStore.getState().setAchievements(initialAchievements);
+          useHabitsStore.getState().setAchievements(initialAchievements);
 
           nextStep();
         }

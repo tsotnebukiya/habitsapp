@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
-import { useHabitsStore } from '../stores/habits_store';
+import useHabitsStore from '@/lib/stores/habits/store';
 import { Database } from '@/lib/utils/supabase_types';
 import dayjs from '@/lib/utils/dayjs';
-import { Habit } from '../utils/habits';
+import { Habit } from '@/lib/stores/habits/types';
 
 export const useAllHabits = () => {
   const habitsMap = useHabitsStore((state) => state.habits);
@@ -14,7 +14,7 @@ export const useAllHabits = () => {
 };
 
 export const useAllCompletions = () => {
-  const completionsMap = useHabitsStore((state) => state.getCompletions());
+  const completionsMap = useHabitsStore((state) => state.completions);
   return useMemo(() => {
     return Array.from(completionsMap.values());
   }, [completionsMap]);

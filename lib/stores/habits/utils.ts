@@ -1,21 +1,7 @@
 import dayjs, { dateUtils } from '@/lib/utils/dayjs';
 import { Database } from '@/lib/utils/supabase_types';
-
-export type Habit = Database['public']['Tables']['habits']['Row'];
-export type HabitCompletion =
-  Database['public']['Tables']['habit_completions']['Row'];
-
-export type HabitAction =
-  | 'toggle'
-  | 'set_value'
-  | 'toggle_skip'
-  | 'toggle_complete';
-
-export type CompletionStatus =
-  | 'no_habits'
-  | 'all_completed'
-  | 'some_completed'
-  | 'none_completed';
+import { CompletionStatus, Habit, HabitAction, HabitCompletion } from './types';
+import useUserProfileStore from '../user_profile';
 
 /**
  * Gets a month key in the format YYYY-MM for caching purposes
@@ -142,6 +128,12 @@ export const calculateDateStatusUtility = (
     return 'some_completed';
   }
   return 'none_completed';
+};
+
+export const getUserIdOrThrow = () => {
+  const userId = useUserProfileStore.getState().profile?.id;
+  if (!userId) throw new Error('User not logged in');
+  return userId;
 };
 
 /**

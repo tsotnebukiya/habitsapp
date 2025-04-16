@@ -1,24 +1,5 @@
-export type StreakDays =
-  | 1
-  | 3
-  | 7
-  | 10
-  | 14
-  | 21
-  | 28
-  | 30
-  | 60
-  | 90
-  | 180
-  | 365;
-
-export interface Achievement {
-  id: StreakDays;
-  name: string;
-  description: string;
-  icon: string;
-  days: number;
-}
+import { Achievement } from '../stores/habits/types';
+import { StreakDays } from '../stores/habits/types';
 
 export const ACHIEVEMENTS: Record<StreakDays, Achievement> = {
   1: {
