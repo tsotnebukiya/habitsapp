@@ -19,6 +19,7 @@ import { useAchievementsStore } from './achievements_store';
 import { StreakDays } from '@/lib/constants/achievements';
 import { StreakAchievements } from '@/lib/utils/achievement_scoring';
 import { MMKV } from 'react-native-mmkv';
+import { useDayStatusStore } from './day_status_store';
 
 // Create MMKV instance
 const habitsMmkv = new MMKV({ id: 'habits-store' });
@@ -163,7 +164,8 @@ export const useHabitsStore = create<HabitsState>()(
           return { habits: newHabits };
         });
 
-        // TODO: Add achievement update or not?
+        // Update day status cache
+        useDayStatusStore.getState().onHabitChange(newHabit.id);
 
         try {
           const { error } = await supabase.from('habits').insert(newHabit);
@@ -205,7 +207,8 @@ export const useHabitsStore = create<HabitsState>()(
           return { habits: newHabits };
         });
 
-        // TODO: Add achievement update or not?
+        // Update day status cache
+        useDayStatusStore.getState().onHabitChange(id);
 
         try {
           const { error } = await supabase
@@ -233,6 +236,12 @@ export const useHabitsStore = create<HabitsState>()(
       },
 
       deleteHabit: async (id) => {
+        const habit = get().habits.get(id);
+        if (!habit) return;
+
+        // Update day status cache before deleting
+        useDayStatusStore.getState().onHabitChange(id);
+
         // Update locally first
         set((state) => {
           const newState = { ...state };
@@ -250,8 +259,6 @@ export const useHabitsStore = create<HabitsState>()(
 
           newState.habits = newHabits;
           newState.completions = newCompletions;
-
-          // TODO: Add achievement update or not?
 
           return newState;
         });
@@ -471,6 +478,9 @@ export const useHabitsStore = create<HabitsState>()(
           });
         }
 
+        // Update day status cache
+        useDayStatusStore.getState().onCompletionChange(date);
+
         // Calculate achievements
         useAchievementsStore
           .getState()
@@ -610,6 +620,8 @@ export const useHabitsStore = create<HabitsState>()(
 
           if (completionsError) throw completionsError;
 
+          const affectedHabits = new Set<string>();
+
           if (serverHabits) {
             const localHabits = get().habits;
             serverHabits.forEach((serverHabit) => {
@@ -625,12 +637,15 @@ export const useHabitsStore = create<HabitsState>()(
                   newHabits.set(serverHabit.id, serverHabit);
                   return { habits: newHabits };
                 });
+                affectedHabits.add(serverHabit.id);
               }
             });
           }
 
           if (serverCompletions) {
             const localCompletions = get().completions;
+            const affectedDates = new Set<string>();
+
             serverCompletions.forEach((serverCompletion) => {
               if (!localCompletions.has(serverCompletion.id)) {
                 set((state) => {
@@ -638,9 +653,23 @@ export const useHabitsStore = create<HabitsState>()(
                   newCompletions.set(serverCompletion.id, serverCompletion);
                   return { completions: newCompletions };
                 });
+                affectedDates.add(serverCompletion.completion_date);
+                affectedHabits.add(serverCompletion.habit_id);
               }
             });
+
+            // Update cache for affected dates
+            affectedDates.forEach((dateString) => {
+              useDayStatusStore
+                .getState()
+                .onCompletionChange(new Date(dateString));
+            });
           }
+
+          // Update cache for affected habits
+          affectedHabits.forEach((habitId) => {
+            useDayStatusStore.getState().onHabitChange(habitId);
+          });
 
           set({
             lastSyncTime: dayjs().toDate(),

@@ -1,11 +1,6 @@
+import { CompletionStatus } from '@/lib/stores/day_status_store';
 import React, { memo } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-
-export type CompletionStatus =
-  | 'all_completed'
-  | 'some_completed'
-  | 'none_completed'
-  | 'no_habits';
 
 export interface DayCellProps {
   date: Date;
