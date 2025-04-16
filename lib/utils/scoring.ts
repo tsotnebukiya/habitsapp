@@ -1,11 +1,8 @@
 import { HabitCategory, CATEGORY_IDS } from '../constants/HabitTemplates';
-import { Database } from '@/lib/utils/supabase_types';
 import { UserProfile } from '@/lib/stores/user_profile';
 import { dateUtils } from './dayjs';
-
-// Use types derived from Supabase schema
-type Habit = Database['public']['Tables']['habits']['Row'];
-type HabitCompletion = Database['public']['Tables']['habit_completions']['Row'];
+import { HabitCompletion } from './habits';
+import { Habit } from './habits';
 
 export interface DisplayedMatrixScore {
   cat1: number;

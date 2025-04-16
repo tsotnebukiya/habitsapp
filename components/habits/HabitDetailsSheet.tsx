@@ -8,17 +8,11 @@ import {
 } from 'react-native';
 import { BottomSheetModal, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import { useHabitsStore } from '@/lib/stores/habits_store';
-import { Database } from '@/lib/utils/supabase_types';
 import Colors from '@/lib/constants/Colors';
 import { FontAwesome6 } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import CircularCounter from '../shared/CircularCounter';
-import Toast from 'react-native-toast-message';
-import { StreakDays } from '@/lib/constants/achievements';
-
-type Habit = Database['public']['Tables']['habits']['Row'];
-type HabitCompletionStatus =
-  Database['public']['Enums']['habit_completion_status'];
+import { Habit } from '@/lib/utils/habits';
 
 interface HabitDetailsSheetProps {
   habit: Habit | null;

@@ -1,12 +1,9 @@
-// interfaces/habits.ts
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { supabase } from '../utils/supabase';
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from '@/lib/utils/dayjs';
 import { Database } from '@/lib/utils/supabase_types';
-import useUserProfileStore from './user_profile';
 import { dateUtils } from '@/lib/utils/dayjs';
 import {
   BasePendingOperation,
@@ -16,31 +13,31 @@ import {
   STORE_CONSTANTS,
 } from './shared';
 import { useAchievementsStore } from './achievements_store';
-import { StreakDays } from '@/lib/constants/achievements';
-import { StreakAchievements } from '@/lib/utils/achievement_scoring';
 import { MMKV } from 'react-native-mmkv';
+import {
+  getMonthKey,
+  getAffectedDates,
+  normalizeDate,
+  CompletionStatus,
+  calculateDateStatusUtility,
+  getHabitStatus,
+  calculateHabitToggle,
+  getCurrentValue,
+  getCurrentProgress,
+  getProgressText,
+  Habit,
+  HabitCompletion,
+  HabitAction,
+} from '@/lib/utils/habits';
 
-// Create MMKV instance
 const habitsMmkv = new MMKV({ id: 'habits-store' });
-
-// Types from Supabase schema
-type Habit = Database['public']['Tables']['habits']['Row'];
-type HabitCompletion = Database['public']['Tables']['habit_completions']['Row'];
-type HabitCompletionStatus =
-  Database['public']['Enums']['habit_completion_status'];
 
 interface PendingOperation extends BasePendingOperation {
   table: 'habits' | 'habit_completions';
   data?: Habit | HabitCompletion;
 }
 
-type HabitAction = 'toggle' | 'set_value' | 'toggle_skip' | 'toggle_complete';
-
-export type CompletionStatus =
-  | 'no_habits'
-  | 'all_completed'
-  | 'some_completed'
-  | 'none_completed';
+export type { CompletionStatus }; // Re-export for backwards compatibility
 
 interface CachedDayStatus {
   date: string;
@@ -52,37 +49,6 @@ interface MonthCache {
   [dateString: string]: CachedDayStatus;
 }
 
-// Helper functions
-const getMonthKey = (date: Date): string => {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(
-    2,
-    '0'
-  )}`;
-};
-
-const getAffectedDates = (habit: Habit): Date[] => {
-  const startDate = dayjs(habit.start_date).startOf('day');
-  const endDate = habit.end_date
-    ? dayjs(habit.end_date).endOf('day')
-    : dayjs().add(1, 'month').endOf('day');
-
-  const dates: Date[] = [];
-  let currentDate = startDate;
-
-  while (currentDate.isSameOrBefore(endDate)) {
-    if (habit.frequency_type === 'weekly' && habit.days_of_week) {
-      if (habit.days_of_week.includes(currentDate.day())) {
-        dates.push(currentDate.toDate());
-      }
-    } else {
-      dates.push(currentDate.toDate());
-    }
-    currentDate = currentDate.add(1, 'day');
-  }
-
-  return dates;
-};
-
 export interface HabitsState extends BaseState {
   // Local state
   habits: Map<string, Habit>;
@@ -91,7 +57,6 @@ export interface HabitsState extends BaseState {
   monthCache: Map<string, MonthCache>;
 
   // Habit actions
-  getHabits: () => Map<string, Habit>;
   addHabit: (
     habit: Omit<Habit, 'id' | 'created_at' | 'updated_at'>
   ) => Promise<string>;
@@ -99,7 +64,6 @@ export interface HabitsState extends BaseState {
   deleteHabit: (id: string) => Promise<void>;
 
   // Completion actions
-  getCompletions: () => Map<string, HabitCompletion>;
   addCompletion: (
     completion: Omit<HabitCompletion, 'id' | 'created_at'>
   ) => Promise<string>;
@@ -117,7 +81,6 @@ export interface HabitsState extends BaseState {
   // Day status actions
   getMonthStatuses: (month: Date) => MonthCache;
   updateDayStatus: (date: Date, status: CompletionStatus) => void;
-  invalidateMonth: (month: Date) => void;
   getDayStatus: (date: Date) => CachedDayStatus | null;
   calculateDateStatus: (date: Date) => CompletionStatus;
   updateAffectedDates: (habitId: string) => void;
@@ -131,40 +94,7 @@ export interface HabitsState extends BaseState {
   // Sync actions
   syncWithServer: () => Promise<void>;
   processPendingOperations: () => Promise<void>;
-
-  // Queries
-  getHabitsByDate: (date: dayjs.Dayjs) => Habit[];
-  getCompletionsForHabit: (
-    habitId: string,
-    startDate: Date,
-    endDate: Date
-  ) => HabitCompletion[];
-  getAllCompletions: () => HabitCompletion[];
-  getHabitStreak: (habitId: string) => number;
-  clearError: () => void;
 }
-
-// USAGE NOTES:
-// 1. Call syncWithServer() in these situations:
-//    - When your app launches
-//    - After user logs in
-//    - When user manually requests sync
-//    - Periodically (e.g., every hour) if needed
-//
-// 2. The store automatically attempts to sync pending operations:
-//    - After adding/updating/deleting a habit
-//    - After adding/updating/deleting a completion
-//
-// 3. Error Handling:
-//    - Check store.error for sync/operation errors
-//    - Call clearError() after handling errors in UI
-//    - isLoading indicates sync in progress
-//
-// 4. Best Practices:
-//    - Consider adding pull-to-refresh in UI to trigger manual sync
-//    - Show last sync time in UI for transparency
-//    - Handle loading states in UI during syncs
-//    - Clean up subscriptions when component unmounts
 
 export const useHabitsStore = create<HabitsState>()(
   persist(
@@ -175,7 +105,6 @@ export const useHabitsStore = create<HabitsState>()(
       pendingOperations: [],
       monthCache: new Map(),
 
-      getHabits: () => get().habits,
       addHabit: async (habitData) => {
         const now = dayjs();
         const userId = getUserIdOrThrow();
@@ -331,8 +260,6 @@ export const useHabitsStore = create<HabitsState>()(
         await get().processPendingOperations();
       },
 
-      getCompletions: () => get().completions,
-
       addCompletion: async (completionData) => {
         const now = dayjs();
         const newCompletion: HabitCompletion = {
@@ -425,74 +352,20 @@ export const useHabitsStore = create<HabitsState>()(
           throw new Error('Habit not found');
         }
 
-        const normalizedDate = dayjs(date).format('YYYY-MM-DD');
+        const { newValue, newStatus } = calculateHabitToggle({
+          habit,
+          date,
+          action,
+          value,
+          completions: Array.from(get().completions.values()),
+        });
+
+        const normalizedDate = normalizeDate(date);
         const existingCompletion = Array.from(get().completions.values()).find(
           (completion) =>
             completion.habit_id === habitId &&
             completion.completion_date === normalizedDate
         );
-
-        let newStatus: HabitCompletionStatus = 'not_started';
-        let newValue = 0;
-
-        const maxValue = habit.goal_value || habit.completions_per_day || 1;
-        const stepSize = habit.goal_value
-          ? Math.max(habit.goal_value * 0.1, 1)
-          : 1;
-        const currentValue = existingCompletion?.value || 0;
-        const currentStatus = existingCompletion?.status || 'not_started';
-
-        switch (action) {
-          case 'toggle':
-            if (currentStatus === 'not_started') {
-              // First toggle: start progress
-              if (maxValue === 1) {
-                // Single completion habit
-                newValue = 1;
-                newStatus = 'completed';
-              } else {
-                // Multiple completions or measured habit
-                newValue = stepSize;
-                newStatus = newValue >= maxValue ? 'completed' : 'in_progress';
-              }
-            } else if (currentStatus === 'in_progress') {
-              // Already in progress: increment
-              newValue = Math.min(currentValue + stepSize, maxValue);
-              newStatus = newValue >= maxValue ? 'completed' : 'in_progress';
-            } else {
-              // Reset if completed
-              newValue = 0;
-              newStatus = 'not_started';
-            }
-            break;
-
-          case 'set_value':
-            if (value === undefined) return;
-            newValue = Math.max(0, Math.min(value, maxValue));
-            if (newValue === 0) {
-              newStatus = 'not_started';
-            } else if (newValue >= maxValue) {
-              newStatus = 'completed';
-            } else {
-              newStatus = 'in_progress';
-            }
-            break;
-
-          case 'toggle_skip':
-            newStatus = currentStatus === 'skipped' ? 'not_started' : 'skipped';
-            newValue = 0;
-            break;
-
-          case 'toggle_complete':
-            if (currentStatus === 'completed') {
-              newStatus = 'not_started';
-              newValue = 0;
-            } else {
-              newStatus = 'completed';
-              newValue = maxValue;
-            }
-            break;
-        }
 
         // Update or create completion
         if (existingCompletion) {
@@ -521,25 +394,19 @@ export const useHabitsStore = create<HabitsState>()(
       },
 
       getHabitStatus: (habitId: string, date: Date): HabitCompletion | null => {
-        const normalizedDate = dayjs(date).format('YYYY-MM-DD');
-
-        const completion = Array.from(get().completions.values()).find(
-          (completion) =>
-            completion.habit_id === habitId &&
-            completion.completion_date === normalizedDate
+        return getHabitStatus(
+          Array.from(get().completions.values()),
+          habitId,
+          date
         );
-
-        return completion || null;
       },
 
       getCurrentValue: (habitId: string, date: Date): number => {
-        const normalizedDate = dayjs(date).format('YYYY-MM-DD');
-        const completion = Array.from(get().completions.values()).find(
-          (completion) =>
-            completion.habit_id === habitId &&
-            completion.completion_date === normalizedDate
+        return getCurrentValue(
+          Array.from(get().completions.values()),
+          habitId,
+          date
         );
-        return completion?.value || 0;
       },
 
       getCurrentProgress: (habitId: string, date: Date): number => {
@@ -547,14 +414,7 @@ export const useHabitsStore = create<HabitsState>()(
         if (!habit) return 0;
 
         const currentValue = get().getCurrentValue(habitId, date);
-
-        if (habit.goal_value) {
-          return Math.min(currentValue / habit.goal_value, 1);
-        } else if (habit.completions_per_day > 1) {
-          return Math.min(currentValue / habit.completions_per_day, 1);
-        }
-
-        return currentValue > 0 ? 1 : 0;
+        return getCurrentProgress(habit, currentValue);
       },
 
       getProgressText: (habitId: string, date: Date): string => {
@@ -562,16 +422,58 @@ export const useHabitsStore = create<HabitsState>()(
         if (!habit) return '0/1';
 
         const currentValue = get().getCurrentValue(habitId, date);
-
-        if (habit.goal_value && habit.goal_unit) {
-          return `${currentValue}/${habit.goal_value}${habit.goal_unit}`;
-        } else if (habit.completions_per_day > 1) {
-          return `${currentValue}/${habit.completions_per_day}`;
-        }
-
-        return `${currentValue}/1`;
+        return getProgressText(habit, currentValue);
       },
 
+      getMonthStatuses: (month: Date) => {
+        const monthKey = getMonthKey(month);
+        return get().monthCache.get(monthKey) || {};
+      },
+
+      updateDayStatus: (date: Date, status: CompletionStatus) => {
+        const monthKey = getMonthKey(date);
+        const currentCache = get().monthCache.get(monthKey) || {};
+        const dateString = dayjs(date).format('YYYY-MM-DD');
+
+        const updatedCache = {
+          ...currentCache,
+          [dateString]: {
+            date: dateString,
+            status,
+            lastUpdated: Date.now(),
+          },
+        };
+
+        set((state) => ({
+          monthCache: new Map(state.monthCache).set(monthKey, updatedCache),
+        }));
+      },
+
+      getDayStatus: (date: Date) => {
+        const monthKey = getMonthKey(date);
+        const cache = get().monthCache.get(monthKey) || {};
+        const dateString = dayjs(date).format('YYYY-MM-DD');
+        return cache[dateString] || null;
+      },
+
+      calculateDateStatus: (date: Date): CompletionStatus => {
+        return calculateDateStatusUtility(
+          Array.from(get().habits.values()),
+          Array.from(get().completions.values()),
+          date
+        );
+      },
+
+      updateAffectedDates: (habitId: string) => {
+        const habit = get().habits.get(habitId);
+        if (!habit) return;
+
+        const dates = getAffectedDates(habit);
+        dates.forEach((date) => {
+          const status = get().calculateDateStatus(date);
+          get().updateDayStatus(date, status);
+        });
+      },
       processPendingOperations: async () => {
         const { pendingOperations } = get();
         const now = dayjs();
@@ -711,155 +613,6 @@ export const useHabitsStore = create<HabitsState>()(
         } finally {
           set({ isLoading: false });
         }
-      },
-
-      getHabitsByDate: (date) => {
-        return Array.from(get().habits.values()).filter((habit) => {
-          const startDate = dateUtils.normalize(habit.start_date);
-          const endDate = habit.end_date
-            ? dateUtils.normalize(habit.end_date)
-            : null;
-          const targetDate = dateUtils.normalize(date);
-
-          return (
-            dateUtils.isSameDay(startDate, targetDate) ||
-            (dateUtils.isBeforeDay(startDate, targetDate) &&
-              (!endDate ||
-                dateUtils.isSameDay(endDate, targetDate) ||
-                dateUtils.isAfterDay(endDate, targetDate)) &&
-              habit.is_active)
-          );
-        });
-      },
-
-      getCompletionsForHabit: (habitId, startDate, endDate) => {
-        return Array.from(get().completions.values()).filter((completion) => {
-          const completionDate = dayjs(completion.completion_date);
-          const start = dayjs(startDate);
-          const end = dayjs(endDate);
-          return (
-            completion.habit_id === habitId &&
-            completionDate.isSameOrAfter(start) &&
-            completionDate.isSameOrBefore(end)
-          );
-        });
-      },
-
-      getAllCompletions: () => {
-        return Array.from(get().completions.values());
-      },
-
-      getHabitStreak: (habitId) => {
-        const habit = get().habits.get(habitId);
-        if (!habit) return 0;
-
-        const completions = Array.from(get().completions.values()).filter(
-          (c) => c.habit_id === habitId
-        );
-        if (completions.length === 0) return 0;
-
-        const today = dayjs().startOf('day');
-        let currentStreak = 0;
-        let currentDate = today;
-
-        while (true) {
-          const hasCompletionForDay = completions.some(
-            (completion) =>
-              dayjs(completion.completion_date)
-                .startOf('day')
-                .isSame(currentDate) && completion.status === 'completed'
-          );
-
-          if (!hasCompletionForDay) break;
-
-          currentStreak++;
-          currentDate = currentDate.subtract(1, 'day');
-        }
-
-        return currentStreak;
-      },
-
-      clearError: () => set({ error: null }),
-
-      getMonthStatuses: (month: Date) => {
-        const monthKey = getMonthKey(month);
-        return get().monthCache.get(monthKey) || {};
-      },
-
-      updateDayStatus: (date: Date, status: CompletionStatus) => {
-        const monthKey = getMonthKey(date);
-        const currentCache = get().monthCache.get(monthKey) || {};
-        const dateString = dayjs(date).format('YYYY-MM-DD');
-
-        const updatedCache = {
-          ...currentCache,
-          [dateString]: {
-            date: dateString,
-            status,
-            lastUpdated: Date.now(),
-          },
-        };
-
-        set((state) => ({
-          monthCache: new Map(state.monthCache).set(monthKey, updatedCache),
-        }));
-      },
-
-      invalidateMonth: (month: Date) => {
-        const monthKey = getMonthKey(month);
-        set((state) => {
-          const newCache = new Map(state.monthCache);
-          newCache.delete(monthKey);
-          return { monthCache: newCache };
-        });
-      },
-
-      getDayStatus: (date: Date) => {
-        const monthKey = getMonthKey(date);
-        const cache = get().monthCache.get(monthKey) || {};
-        const dateString = dayjs(date).format('YYYY-MM-DD');
-        return cache[dateString] || null;
-      },
-
-      calculateDateStatus: (date: Date) => {
-        const habitsForDate = get().getHabitsByDate(dayjs(date));
-
-        if (habitsForDate.length === 0) {
-          return 'no_habits';
-        }
-
-        let completed = 0;
-        let inProgress = 0;
-
-        habitsForDate.forEach((habit) => {
-          const completion = get().getHabitStatus(habit.id, date);
-          if (
-            completion?.status === 'completed' ||
-            completion?.status === 'skipped'
-          ) {
-            completed++;
-          } else if (completion?.status === 'in_progress') {
-            inProgress++;
-          }
-        });
-
-        if (completed === habitsForDate.length) {
-          return 'all_completed';
-        } else if (completed > 0 || inProgress > 0) {
-          return 'some_completed';
-        }
-        return 'none_completed';
-      },
-
-      updateAffectedDates: (habitId: string) => {
-        const habit = get().habits.get(habitId);
-        if (!habit) return;
-
-        const dates = getAffectedDates(habit);
-        dates.forEach((date) => {
-          const status = get().calculateDateStatus(date);
-          get().updateDayStatus(date, status);
-        });
       },
     }),
     {

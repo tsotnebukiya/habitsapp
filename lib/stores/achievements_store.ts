@@ -23,13 +23,13 @@ import { MMKV } from 'react-native-mmkv';
 import { useModalStore } from './modal_store';
 import { useUserProfileStore } from './user_profile';
 import { calculateDMS } from '@/lib/utils/scoring';
+import { Habit } from '../utils/habits';
+import { HabitCompletion } from '../utils/habits';
 
 // Create MMKV instance
 const achievementsMmkv = new MMKV({ id: 'achievements-store' });
 
-type Habit = Database['public']['Tables']['habits']['Row'];
 type UserAchievement = Database['public']['Tables']['user_achievements']['Row'];
-type HabitCompletion = Database['public']['Tables']['habit_completions']['Row'];
 
 interface PendingOperation extends BasePendingOperation {
   table: 'user_achievements';

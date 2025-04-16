@@ -1,6 +1,5 @@
 import React, { useRef, useState, memo } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { Database } from '@/lib/utils/supabase_types';
 import { useHabitsForDate } from '@/lib/hooks/useHabits';
 import HabitItem from './HabitItem';
 import HabitDetailsSheet from './HabitDetailsSheet';
@@ -9,8 +8,7 @@ import { useHabitsStore } from '@/lib/stores/habits_store';
 import Toast from 'react-native-toast-message';
 import Colors from '@/lib/constants/Colors';
 import dayjs from 'dayjs';
-
-type Habit = Database['public']['Tables']['habits']['Row'];
+import { Habit } from '@/lib/utils/habits';
 
 interface HabitListProps {
   selectedDate: Date;

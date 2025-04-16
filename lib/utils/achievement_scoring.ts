@@ -1,9 +1,7 @@
 import { StreakDays, ACHIEVEMENTS } from '../constants/achievements';
-import { Database } from './supabase_types';
 import { dateUtils } from './dayjs';
-
-type Habit = Database['public']['Tables']['habits']['Row'];
-type HabitCompletion = Database['public']['Tables']['habit_completions']['Row'];
+import { Habit } from './habits';
+import { HabitCompletion } from './habits';
 
 export type StreakAchievements = {
   [K in StreakDays]?: boolean;
