@@ -161,10 +161,6 @@ export const createSyncSlice: StateCreator<SharedSlice, [], [], SyncSlice> = (
           cat5: serverAchievements.cat5 || 50,
         });
       }
-      // Update cache for affected habits
-      affectedHabits.forEach((habitId) => {
-        get().updateAffectedDates(habitId);
-      });
 
       set({
         lastSyncTime: dayjs().toDate(),

@@ -35,9 +35,6 @@ export const createHabitSlice: StateCreator<SharedSlice, [], [], HabitSlice> = (
       return { habits: newHabits };
     });
 
-    // Update affected dates
-    get().updateAffectedDates(newHabit.id);
-
     try {
       const { error } = await supabase.from('habits').insert(newHabit);
       if (error) throw error;
@@ -78,9 +75,6 @@ export const createHabitSlice: StateCreator<SharedSlice, [], [], HabitSlice> = (
       return { habits: newHabits };
     });
 
-    // Update affected dates
-    get().updateAffectedDates(id);
-
     try {
       const { error } = await supabase
         .from('habits')
@@ -109,9 +103,6 @@ export const createHabitSlice: StateCreator<SharedSlice, [], [], HabitSlice> = (
   deleteHabit: async (id) => {
     const habit = get().habits.get(id);
     if (!habit) return;
-
-    // Update affected dates before deleting
-    get().updateAffectedDates(id);
 
     // Update locally first
     set((state) => {

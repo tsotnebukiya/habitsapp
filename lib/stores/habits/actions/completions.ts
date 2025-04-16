@@ -140,8 +140,5 @@ export const createCompletionSlice: StateCreator<
     // Update day status
     const status = get().calculateDateStatus(date);
     get().updateDayStatus(date, status);
-
-    // Calculate achievements
-    get().calculateAndUpdate();
   },
 });
