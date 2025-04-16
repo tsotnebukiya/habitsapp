@@ -27,24 +27,48 @@ react-native-starter/
 
 ### State Management
 
-1. **Zustand Store Pattern (`lib/interfaces/*_store.ts`)**
+1. **Zustand Store Pattern with Subscriptions**
 
    ```typescript
-   interface StoreState {
-     /* Raw state */
-   }
-   export interface Store extends StoreState {
-     actions: Actions;
-     syncActions?: SyncActions;
-     queryFunctions?: QueryFunctions; // Optional: simple queries can live here
-   }
+   // Store creation with subscribeWithSelector middleware
+   const useStore = create<SharedSlice>()(
+     subscribeWithSelector(
+       persist(
+         (...a) => ({
+           // Initial state
+           ...createSlice1(...a),
+           ...createSlice2(...a),
+         }),
+         options
+       )
+     )
+   );
+
+   // Efficient state change tracking
+   useStore.subscribe(
+     (state) => ({
+       // Track multiple state changes in one selector
+       stateA: state.someData,
+       stateB: new Set(state.collection.keys()),
+       count: state.items.size,
+     }),
+     (newState, oldState) => {
+       // Handle state changes efficiently
+       if (newState.stateA !== oldState.stateA) {
+         // Handle stateA changes
+       }
+       if (newState.stateB.size !== oldState.stateB.size) {
+         // Handle collection size changes
+       }
+     }
+   );
    ```
 
-   - Separate state, actions, sync, queries.
-   - Use TypeScript for type safety.
-   - Implement persistence with MMKV/AsyncStorage via `persist` middleware.
-   - Support offline-first operations via actions.
-   - Sync mechanism with pending operations.
+   - Use `subscribeWithSelector` for efficient state tracking
+   - Combine multiple state changes in one selector
+   - Use Sets and size tracking for efficient collection comparison
+   - Avoid infinite loops in calculations
+   - Trigger side effects based on specific state changes
 
 2. **Custom Hook Selectors (`lib/hooks/*.ts`)**
 
@@ -667,3 +691,45 @@ Benefits:
 - Consistent UX across modal types
 - Simplified modal creation and usage
 - Decoupled modal logic from components
+
+### Notification System
+
+1. **Setup and Configuration**
+
+   ```typescript
+   // Configure notification handling
+   Notifications.setNotificationHandler({
+     handleNotification: async () => ({
+       shouldShowAlert: true,
+       shouldPlaySound: true,
+       shouldSetBadge: true,
+     }),
+   });
+   ```
+
+2. **Registration and Permissions**
+
+   - Platform-specific setup (iOS/Android)
+   - Permission handling
+   - Token management
+   - Backend integration
+
+3. **Notification Types**
+
+   - Local notifications for reminders
+   - Push notifications for updates
+   - Scheduled notifications
+   - Custom notification channels (Android)
+
+4. **Usage Pattern**
+
+   ```typescript
+   // Schedule notification
+   const scheduleNotification = async ({ title, body, trigger }) => {
+     const id = await Notifications.scheduleNotificationAsync({
+       content: { title, body },
+       trigger,
+     });
+     return id;
+   };
+   ```

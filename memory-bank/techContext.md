@@ -43,7 +43,10 @@
   "posthog-react-native": "^3.3.9",
   "@sentry/react-native": "^6.1.0",
   "react-native-mmkv": "2.12.2",
-  "zustand": "^5.0.1"
+  "zustand": "^5.0.1",
+  "react-native-calendars": "^1.1311.0",
+  "react-native-confetti-cannon": "^1.5.2",
+  "react-native-context-menu-view": "^1.16.0"
 }
 ```
 
@@ -78,7 +81,11 @@
 ### Backend Services
 
 1. **Supabase**
-   - Database
+   - Database Schema:
+     - Users: Stores user profiles with category scores (cat1_score through cat5_score)
+     - Habits: Stores habit definitions and configurations
+     - Habit Completions: Tracks habit completion history
+     - User Achievements: Stores achievement progress with one-to-one user relationship
    - Authentication
    - Real-time subscriptions
    - Storage
