@@ -23,14 +23,12 @@ export const WeekView = memo(function WeekView({
 }: WeekViewProps) {
   const scrollViewRef = useRef<ScrollView>(null);
   const selectedDayjs = dayjs(selectedDate);
-  const { getDayStatus, calculateDateStatus } = useHabitsStore();
-
+  const { getDayStatus } = useHabitsStore();
   // Generate array of dates
   const dates = Array.from({ length: DAYS_TO_SHOW }, (_, i) => {
     return dayjs().subtract(7, 'day').add(i, 'day');
   });
 
-  // Get completion status for a date
   const getDateCompletionStatus = (date: dayjs.Dayjs) => {
     // First try to get from cache
     const cachedStatus = getDayStatus(date.toDate());
@@ -38,7 +36,7 @@ export const WeekView = memo(function WeekView({
       return cachedStatus.status;
     }
     // If not in cache, calculate it
-    return calculateDateStatus(date.toDate());
+    return 'none_completed';
   };
 
   useEffect(() => {

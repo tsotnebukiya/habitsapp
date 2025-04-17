@@ -1,7 +1,12 @@
 import dayjs, { dateUtils } from '@/lib/utils/dayjs';
 import { Database } from '@/lib/utils/supabase_types';
-import { CompletionStatus, Habit, HabitAction, HabitCompletion } from './types';
-import useUserProfileStore from '../user_profile';
+import {
+  CompletionStatus,
+  Habit,
+  HabitAction,
+  HabitCompletion,
+} from '@/lib/stores/habits/types';
+import useUserProfileStore from '@/lib/stores/user_profile';
 
 export const STORE_CONSTANTS = {
   MAX_RETRY_ATTEMPTS: 3,
@@ -71,67 +76,101 @@ export const getHabitStatus = (
 /**
  * Calculates the overall completion status for a specific date
  */
-export const calculateDateStatusUtility = (
-  habits: Habit[],
-  completions: HabitCompletion[],
+
+export const calculateDateStatus = (
+  allHabits: Habit[], // Guaranteed to be an array
+  allCompletions: HabitCompletion[], // Guaranteed to be an array
   date: Date
 ): CompletionStatus => {
-  const filteredHabits = habits.filter((habit) => {
-    const startDate = dateUtils.normalize(habit.start_date);
-    const endDate = habit.end_date ? dateUtils.normalize(habit.end_date) : null;
-    const targetDate = dateUtils.normalize(date);
+  // 1. Pre-normalize target date and get its properties ONCE
+  const targetDateNormalized = dayjs(date).startOf('day');
+  const targetDayOfWeek = targetDateNormalized.day(); // 0 (Sun) - 6 (Sat)
+  const targetDateString = targetDateNormalized.format('YYYY-MM-DD'); // For completion lookup
 
-    return (
-      dateUtils.isSameDay(startDate, targetDate) ||
-      (dateUtils.isBeforeDay(startDate, targetDate) &&
-        (!endDate ||
-          dateUtils.isSameDay(endDate, targetDate) ||
-          dateUtils.isAfterDay(endDate, targetDate)) &&
-        habit.is_active)
-    );
-  });
-  const habitsForDate = filteredHabits.filter((habit) => {
-    const startDate = dayjs(habit.start_date).startOf('day');
-    const endDate = habit.end_date
-      ? dayjs(habit.end_date).endOf('day')
-      : dayjs().add(1, 'month').endOf('day');
-    const targetDate = dayjs(date).startOf('day');
+  // 2. Single pass filtering to get active habits for the specific date
+  const activeHabitsForDate: Habit[] = [];
 
-    const isInDateRange =
-      targetDate.isSameOrAfter(startDate) && targetDate.isSameOrBefore(endDate);
+  for (const habit of allHabits) {
+    // Directly iterate over the input array
+    // --- Start Combined Filtering Logic ---
 
-    if (habit.frequency_type === 'weekly' && habit.days_of_week) {
-      return isInDateRange && habit.days_of_week.includes(targetDate.day());
+    // a. Check is_active (Early exit)
+    if (!habit.is_active) {
+      continue;
     }
 
-    return isInDateRange;
-  });
+    // b. Check date range (using pre-normalized target date)
+    const startDate = dayjs(habit.start_date).startOf('day');
+    if (targetDateNormalized.isBefore(startDate)) {
+      continue; // Target date is before habit started
+    }
+    if (habit.end_date) {
+      const endDate = dayjs(habit.end_date).startOf('day');
+      if (targetDateNormalized.isAfter(endDate)) {
+        continue; // Target date is after habit ended
+      }
+    }
+    // Habit is active during the target date range
 
-  if (habitsForDate.length === 0) {
+    // c. Check frequency
+    if (habit.frequency_type === 'weekly') {
+      // Ensure days_of_week exists and includes the target day
+      if (!habit.days_of_week?.includes(targetDayOfWeek)) {
+        continue; // Weekly habit, but not scheduled for this day of the week
+      }
+    }
+    // If frequency is 'daily', it passes this check.
+
+    // --- End Combined Filtering Logic ---
+
+    // If all checks pass, the habit is active for this date
+    activeHabitsForDate.push(habit);
+  }
+
+  // 3. Handle case where no habits are active for the date
+  if (activeHabitsForDate.length === 0) {
     return 'no_habits';
   }
 
-  let completed = 0;
-  let inProgress = 0;
+  // 4. Prepare completions lookup map for the target date for efficiency
+  const completionsForDateMap = new Map<string, HabitCompletion['status']>();
 
-  habitsForDate.forEach((habit) => {
-    const completion = getHabitStatus(completions, habit.id, date);
+  for (const completion of allCompletions) {
+    // Directly iterate over the input array
+    // Compare formatted strings for date equality check
     if (
-      completion?.status === 'completed' ||
-      completion?.status === 'skipped'
+      dayjs(completion.completion_date).format('YYYY-MM-DD') ===
+      targetDateString
     ) {
-      completed++;
-    } else if (completion?.status === 'in_progress') {
-      inProgress++;
+      completionsForDateMap.set(completion.habit_id, completion.status);
     }
-  });
-
-  if (completed === habitsForDate.length) {
-    return 'all_completed';
-  } else if (completed > 0 || inProgress > 0) {
-    return 'some_completed';
   }
-  return 'none_completed';
+
+  // 5. Calculate overall status based on filtered habits and completions map
+  let completedCount = 0;
+  let inProgressCount = 0;
+
+  for (const habit of activeHabitsForDate) {
+    const status = completionsForDateMap.get(habit.id); // O(1) lookup
+
+    if (status === 'completed' || status === 'skipped') {
+      completedCount++;
+    } else if (status === 'in_progress') {
+      inProgressCount++;
+    }
+    // 'not_started' or undefined status means neither completed nor in progress
+  }
+  // 6. Determine and return final status
+  let finalStatus: CompletionStatus;
+  if (completedCount === activeHabitsForDate.length) {
+    finalStatus = 'all_completed';
+  } else if (completedCount > 0 || inProgressCount > 0) {
+    finalStatus = 'some_completed';
+  } else {
+    finalStatus = 'none_completed';
+  }
+
+  return finalStatus;
 };
 
 export const getUserIdOrThrow = () => {

@@ -1,20 +1,39 @@
 import { StateCreator } from 'zustand';
 import {
-  AchievementSlice,
   SharedSlice,
   StreakAchievements,
+  StreakDays,
   UserAchievement,
 } from '../types';
 import dayjs from '@/lib/utils/dayjs';
 import { supabase } from '@/lib/utils/supabase';
-import { getUserIdOrThrow } from '../utils';
-import { useUserProfileStore } from '../../user_profile';
+import { getUserIdOrThrow } from '@/lib/utils/habits';
+import { useUserProfileStore } from '@/lib/stores/user_profile';
 import {
   calculateCurrentStreak,
   calculateDMS,
   calculateNewAchievements,
   getNewlyUnlockedAchievements,
-} from '../utils-achieve';
+} from '@/lib/utils/achievements';
+import { useMemo } from 'react';
+
+export interface AchievementSlice {
+  streakAchievements: StreakAchievements;
+  currentStreak: number;
+  maxStreak: number;
+  cat1: number;
+  cat2: number;
+  cat3: number;
+  cat4: number;
+  cat5: number;
+
+  resetAchievements: () => void;
+  setAchievements: (achievements: UserAchievement) => void;
+  calculateAndUpdate: () => {
+    unlockedAchievements: StreakDays[];
+    currentStreak: number;
+  };
+}
 
 export const createAchievementSlice: StateCreator<
   SharedSlice,
@@ -72,25 +91,42 @@ export const createAchievementSlice: StateCreator<
 
   calculateAndUpdate: () => {
     const { profile } = useUserProfileStore.getState();
-    if (!profile) return { unlockedAchievements: [], currentStreak: 0 };
-
-    // Calculate streaks
+    if (!profile) {
+      return { unlockedAchievements: [], currentStreak: 0 };
+    }
+    const startTime = performance.now();
     const currentStreak = calculateCurrentStreak(
       get().completions,
       get().habits
     );
+    const endTime = performance.now();
+    console.log(
+      `calculateCurrentStreak took: ${(endTime - startTime).toFixed(2)}ms`
+    );
+
+    const startAchievements = performance.now();
     const newAchievements = calculateNewAchievements(
       currentStreak,
       get().streakAchievements
     );
+    const endAchievements = performance.now();
+    console.log(
+      `calculateNewAchievements took: ${(
+        endAchievements - startAchievements
+      ).toFixed(2)}ms`
+    );
 
-    // Calculate matrix scores
+    const startMatrixScores = performance.now();
     const matrixScores = calculateDMS(
       profile,
       Array.from(get().habits.values()),
       Array.from(get().completions.values())
     );
-    // Update both
+    const endMatrixScores = performance.now();
+    console.log(
+      `calculateDMS took: ${(endMatrixScores - startMatrixScores).toFixed(2)}ms`
+    );
+
     const userId = getUserIdOrThrow();
     const now = dayjs();
 
@@ -120,7 +156,6 @@ export const createAchievementSlice: StateCreator<
       maxStreak: userAchievement.max_streak,
     });
 
-    // Sync to server
     supabase
       .from('user_achievements')
       .upsert(userAchievement)
@@ -141,13 +176,12 @@ export const createAchievementSlice: StateCreator<
         }
       });
 
-    return {
-      unlockedAchievements: getNewlyUnlockedAchievements(
-        get().streakAchievements,
-        newAchievements
-      ),
-      currentStreak,
-    };
+    const unlockedAchievements = getNewlyUnlockedAchievements(
+      get().streakAchievements,
+      newAchievements
+    );
+
+    return { unlockedAchievements, currentStreak };
   },
 
   resetAchievements: () => {

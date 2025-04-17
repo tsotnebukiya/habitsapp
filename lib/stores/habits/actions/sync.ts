@@ -1,13 +1,15 @@
 import { StateCreator } from 'zustand';
-import {
-  PendingOperation,
-  SharedSlice,
-  StreakAchievements,
-  SyncSlice,
-} from '../types';
+import { PendingOperation, SharedSlice, StreakAchievements } from '../types';
 import dayjs from '@/lib/utils/dayjs';
 import { supabase } from '@/lib/utils/supabase';
-import { getUserIdOrThrow, STORE_CONSTANTS } from '../utils';
+import { getUserIdOrThrow, STORE_CONSTANTS } from '@/lib/utils/habits';
+
+export interface SyncSlice {
+  pendingOperations: PendingOperation[];
+
+  syncWithServer: () => Promise<void>;
+  processPendingOperations: () => Promise<void>;
+}
 
 export const createSyncSlice: StateCreator<SharedSlice, [], [], SyncSlice> = (
   set,
@@ -143,7 +145,8 @@ export const createSyncSlice: StateCreator<SharedSlice, [], [], SyncSlice> = (
 
         // Update cache for affected dates
         affectedDates.forEach((dateString) => {
-          get().updateDayStatus(new Date(dateString), 'some_completed');
+          const date = dayjs(dateString).toDate();
+          get().updateDayStatus(date);
         });
       }
       if (serverAchievements) {

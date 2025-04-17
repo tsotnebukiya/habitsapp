@@ -1,7 +1,11 @@
 import { CATEGORY_IDS, HabitCategory } from '@/lib/constants/HabitTemplates';
-import { UserProfile } from '../user_profile';
-import { DisplayedMatrixScore, HabitCompletion, StreakDays } from './types';
-import { Habit } from './types';
+import { UserProfile } from '@/lib/stores/user_profile';
+import {
+  DisplayedMatrixScore,
+  HabitCompletion,
+  StreakDays,
+} from '@/lib/stores/habits/types';
+import { Habit } from '@/lib/stores/habits/types';
 import { dateUtils } from '@/lib/utils/dayjs';
 import { ACHIEVEMENTS } from '@/lib/constants/achievements';
 
@@ -178,7 +182,9 @@ export function calculateDMS(
         (h) => h.category === category
       );
       const dps = calculateOptimizedDPS(categoryHabits, dayIndex);
-
+      if (category === 'cat1') {
+        console.log(dps, dayIndex, categoryHabits.length);
+      }
       if (dps >= 0) {
         // Vectorized smoothing calculation
         categoryScores[categoryIndex] =

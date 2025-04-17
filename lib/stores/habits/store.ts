@@ -28,7 +28,6 @@ const useHabitsStore = create<SharedSlice>()(
 );
 
 useHabitsStore.subscribe(
-  // Watch all trigger data in one selector
   (state) => ({
     completions: state.completions,
     habitIds: new Set(state.habits.keys()),
@@ -37,22 +36,24 @@ useHabitsStore.subscribe(
   (newState, oldState) => {
     const state = useHabitsStore.getState();
 
-    // Check if achievements need recalculation
     if (
       newState.completions !== oldState.completions ||
       newState.habitIds.size !== oldState.habitIds.size
     ) {
-      state.calculateAndUpdate();
+      setTimeout(() => {
+        state.calculateAndUpdate();
+      }, 100);
     }
 
-    // Check if dates need recalculation
     if (
       newState.habitIds.size !== oldState.habitIds.size ||
       newState.completionsCount !== oldState.completionsCount
     ) {
-      Array.from(state.habits.values()).forEach((habit) => {
-        state.updateAffectedDates(habit.id);
-      });
+      setTimeout(() => {
+        Array.from(state.habits.values()).forEach((habit) => {
+          state.updateAffectedDates(habit.id);
+        });
+      }, 100);
     }
   }
 );

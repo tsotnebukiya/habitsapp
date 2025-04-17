@@ -1,4 +1,9 @@
 import { Database } from '@/lib/utils/supabase_types';
+import { HabitSlice } from './actions/habits';
+import { AchievementSlice } from './actions/achievements';
+import { CalendarSlice } from './actions/calendar';
+import { SyncSlice } from './actions/sync';
+import { CompletionSlice } from './actions/completions';
 
 export type HabitFrequency = 'daily' | 'weekly';
 
@@ -79,87 +84,19 @@ export interface HabitsState extends BaseState {
   pendingOperations: PendingOperation[];
 }
 
-interface CachedDayStatus {
+export interface CachedDayStatus {
   date: string;
   status: CompletionStatus;
   lastUpdated: number;
 }
 
-interface MonthCache {
+export interface MonthCache {
   [dateString: string]: CachedDayStatus;
-}
-
-export interface HabitSlice {
-  habits: Map<string, Habit>;
-
-  addHabit: (
-    habit: Omit<Habit, 'id' | 'created_at' | 'updated_at'>
-  ) => Promise<string>;
-  updateHabit: (id: string, updates: Partial<Habit>) => Promise<void>;
-  deleteHabit: (id: string) => Promise<void>;
-
-  getHabitStatus: (habitId: string, date: Date) => HabitCompletion | null;
-  getCurrentValue: (habitId: string, date: Date) => number;
-  getCurrentProgress: (habitId: string, date: Date) => number;
-  getProgressText: (habitId: string, date: Date) => string;
-}
-
-export interface CompletionSlice {
-  completions: Map<string, HabitCompletion>;
-
-  addCompletion: (
-    completion: Omit<HabitCompletion, 'id' | 'created_at'>
-  ) => Promise<string>;
-  updateCompletion: (
-    id: string,
-    updates: Partial<HabitCompletion>
-  ) => Promise<void>;
-  toggleHabitStatus: (
-    habitId: string,
-    date: Date,
-    action: HabitAction,
-    value?: number
-  ) => void;
 }
 
 export type StreakAchievements = {
   [K in StreakDays]?: boolean;
 };
-
-export interface AchievementSlice {
-  streakAchievements: StreakAchievements;
-  currentStreak: number;
-  maxStreak: number;
-  cat1: number;
-  cat2: number;
-  cat3: number;
-  cat4: number;
-  cat5: number;
-
-  resetAchievements: () => void;
-  setAchievements: (achievements: UserAchievement) => void;
-  calculateAndUpdate: () => {
-    unlockedAchievements: StreakDays[];
-    currentStreak: number;
-  };
-}
-
-export interface CalendarSlice {
-  monthCache: Map<string, MonthCache>;
-
-  getMonthStatuses: (month: Date) => MonthCache;
-  updateDayStatus: (date: Date, status: CompletionStatus) => void;
-  getDayStatus: (date: Date) => CachedDayStatus | null;
-  calculateDateStatus: (date: Date) => CompletionStatus;
-  updateAffectedDates: (habitId: string) => void;
-}
-
-export interface SyncSlice {
-  pendingOperations: PendingOperation[];
-
-  syncWithServer: () => Promise<void>;
-  processPendingOperations: () => Promise<void>;
-}
 
 export type SharedSlice = HabitSlice &
   CompletionSlice &

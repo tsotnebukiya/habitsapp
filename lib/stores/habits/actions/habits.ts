@@ -2,12 +2,30 @@ import { StateCreator } from 'zustand';
 import { supabase } from '@/lib/utils/supabase';
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from '@/lib/utils/dayjs';
-import { getUserIdOrThrow } from '../utils';
+import {
+  getUserIdOrThrow,
+  getCurrentProgress,
+  getProgressText,
+  getHabitStatus,
+  getCurrentValue,
+} from '@/lib/utils/habits';
 import { HabitCompletion, type Habit } from '../types';
-import { HabitSlice, SharedSlice } from '../types';
-import { getCurrentProgress, getProgressText } from '../utils';
-import { getHabitStatus } from '../utils';
-import { getCurrentValue } from '../utils';
+import { SharedSlice } from '../types';
+
+export interface HabitSlice {
+  habits: Map<string, Habit>;
+
+  addHabit: (
+    habit: Omit<Habit, 'id' | 'created_at' | 'updated_at'>
+  ) => Promise<string>;
+  updateHabit: (id: string, updates: Partial<Habit>) => Promise<void>;
+  deleteHabit: (id: string) => Promise<void>;
+
+  getHabitStatus: (habitId: string, date: Date) => HabitCompletion | null;
+  getCurrentValue: (habitId: string, date: Date) => number;
+  getCurrentProgress: (habitId: string, date: Date) => number;
+  getProgressText: (habitId: string, date: Date) => string;
+}
 
 export const createHabitSlice: StateCreator<SharedSlice, [], [], HabitSlice> = (
   set,
