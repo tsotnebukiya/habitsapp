@@ -327,6 +327,14 @@
 
 ## Recent Progress
 
+### Performance Optimization & Refactoring
+
+✅ **Performance Analysis & Logging:** Added `performance.now()` metrics and console logs throughout store actions and relevant UI components to analyze performance bottlenecks.
+✅ **`calculateDateStatus` Optimization:** Significantly improved the performance of calculating daily completion status through optimized filtering and map lookups.
+✅ **Store Subscription Optimization:** Deferred heavy calculations (`calculateAndUpdate`, `updateAffectedDates`) triggered by store subscriptions using `setTimeout` to improve UI responsiveness.
+✅ **Store Structure Refactoring:** Modularized Zustand store slice definitions (e.g., `HabitSlice`, `CompletionSlice`) by moving them into their respective action files (`lib/stores/habits/actions/*`), improving code organization and type colocation.
+✅ **Utility File Reorganization:** Moved core habit and achievement/scoring utility functions into dedicated files (`lib/utils/habits.ts`, `lib/utils/achievements.ts`) for better structure.
+
 ### Achievement System
 
 - ✅ Implemented core achievement calculation logic
@@ -334,6 +342,12 @@
 - ✅ Established clear separation of concerns in achievement calculations
 - ✅ Implemented streak calculation functionality
 - ✅ Added achievement unlocking and removal logic
+
+### Known Issues
+
+- **Ongoing:** Performance optimization needed for stores and hooks (though recent improvements made).
+- Potential unnecessary re-renders in components
+- Room for improvement in state management efficiency
 
 ## Current Status
 
@@ -365,12 +379,6 @@
    - [ ] Implement performance improvements
    - [ ] Add memoization
    - [ ] Create shared custom hooks
-
-### Known Issues
-
-- Performance optimization needed for stores and hooks
-- Potential unnecessary re-renders in components
-- Room for improvement in state management efficiency
 
 ## Latest Implementation Updates
 

@@ -490,9 +490,10 @@ import dayjs from 'dayjs';
 - `/components`: Reusable UI components
 - `/lib`: Core application logic
   - `/hooks`: Custom React hooks
-  - `/stores`: Zustand stores
-  - `/utils`: Utility functions
-  - `/types`: TypeScript type definitions
+  - `/stores`: Zustand stores (e.g., `habits_store.ts`, `user_profile_store.ts`)
+    - `/actions`: Modular store slices/actions (e.g., `habits/actions/completions.ts`)
+  - `/utils`: Utility functions (e.g., `dayjs.ts`, `supabase.ts`, `habits.ts`, `achievements.ts`)
+  - `/types`: Global TypeScript type definitions (many slice-specific types are now colocated within `/lib/stores/actions`)
   - `/constants`: Application constants
 - `/assets`: Static assets
 

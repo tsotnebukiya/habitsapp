@@ -27,17 +27,20 @@ react-native-starter/
 
 ### State Management
 
-1. **Zustand Store Pattern with Subscriptions**
+1. **Zustand Store Pattern with Subscriptions & Deferred Calculations**
 
    ```typescript
    // Store creation with subscribeWithSelector middleware
    const useStore = create<SharedSlice>()(
      subscribeWithSelector(
        persist(
-         (...a) => ({
-           // Initial state
-           ...createSlice1(...a),
-           ...createSlice2(...a),
+         (set, get, api) => ({
+           // Initial state combining modular slices
+           ...createHabitSlice(set, get, api),
+           ...createCompletionSlice(set, get, api),
+           ...createCalendarSlice(set, get, api),
+           ...createAchievementSlice(set, get, api),
+           ...createSyncSlice(set, get, api),
          }),
          options
        )
@@ -60,6 +63,13 @@ react-native-starter/
        if (newState.stateB.size !== oldState.stateB.size) {
          // Handle collection size changes
        }
+
+       // Heavy calculations can be deferred slightly
+       if (needsHeavyRecalculation(newState, oldState)) {
+         setTimeout(() => {
+           state.performHeavyRecalculation();
+         }, 100);
+       }
      }
    );
    ```
@@ -69,6 +79,7 @@ react-native-starter/
    - Use Sets and size tracking for efficient collection comparison
    - Avoid infinite loops in calculations
    - Trigger side effects based on specific state changes
+   - **Optimization:** Defer potentially heavy calculations triggered by subscriptions using `setTimeout` to avoid blocking the main thread.
 
 2. **Custom Hook Selectors (`lib/hooks/*.ts`)**
 
@@ -457,6 +468,7 @@ todayText: {
    - Category-specific baseline scores
    - Daily progress score (DPS) calculation
    - Dynamic Matrix Score (DMS) computation
+   - **Location:** `lib/utils/achievements.ts` (Confirm this, looks like DMS is here now)
 
 3. **Matrix Hook (`lib/hooks/useMatrix.ts`)**
 
@@ -476,6 +488,7 @@ todayText: {
    - Balance score computation
    - Integration with habit completion tracking
    - Efficient re-rendering optimization
+   - **Location:** `lib/utils/achievements.ts`
 
 ### Matrix Data Flow
 
@@ -507,6 +520,7 @@ graph TD
      - LOOKBACK_WINDOW = 14 days
    - Baseline scores from user profile
    - Real-time updates on habit completion
+   - **Location:** `lib/utils/achievements.ts` (Confirm this, looks like DMS is here now)
 
 3. **Balance Score**
    - Average of all category scores
@@ -546,33 +560,31 @@ graph TD
 We use Zustand for global state management across the application. Each major feature has its own dedicated store:
 
 1. `habits_store.ts` - Manages habit data, completions, and sync
-2. `auth_store.ts` - Handles authentication state
+2. `user_profile_store.ts` - Handles user profile and related settings (Confirm if `auth_store.ts` exists or was replaced)
 3. `achievements_store.ts` - Tracks user achievements
 4. `modal_store.ts` - Centralizes modal management
 
 All stores follow consistent patterns:
 
 ```typescript
-export const useHabitsStore = create<HabitsState>()(
-  persist(
-    immer((set, get) => ({
-      // State
-      habits: new Map(),
-      completions: new Map(),
-      pendingOperations: [],
-
-      // Actions
-      addHabit: async (habitData) => {
-        // Implementation...
-      },
-      // More actions...
-    })),
-    {
-      name: 'habits-store',
-      storage: {
-        // Storage implementation
-      },
-    }
+export const useHabitsStore = create<SharedSlice>()(
+  subscribeWithSelector(
+    persist(
+      immer((set, get, api) => ({
+        // State & Actions combined from modular slices
+        ...createHabitSlice(set, get, api),
+        ...createCompletionSlice(set, get, api),
+        ...createCalendarSlice(set, get, api),
+        ...createAchievementSlice(set, get, api),
+        ...createSyncSlice(set, get, api),
+      })),
+      {
+        name: 'habits-store',
+        storage: {
+          // MMKV storage implementation
+        },
+      }
+    )
   )
 );
 ```
@@ -630,6 +642,11 @@ export const useHabitsForDate = (date: Date): Habit[] => {
   );
 };
 ```
+
+### Utility Functions
+
+- Core habit logic moved to `lib/utils/habits.ts` (e.g., `calculateDateStatus`, `getHabitStatus`)
+- Core achievement/scoring logic moved to `lib/utils/achievements.ts` (e.g., `calculateCurrentStreak`, `calculateDMS`)
 
 ## UI Patterns
 
