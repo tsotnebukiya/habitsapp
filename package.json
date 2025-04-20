@@ -12,7 +12,8 @@
     "prepare": "npm run compile",
     "pretest": "npm run compile",
     "posttest": "npm run lint",
-    "dev": "APP_VARIANT=development npx expo start"
+    "dev": "APP_VARIANT=development npx expo start",
+    "supabase:typegen": "npx supabase gen types typescript --project-id jmkqqbzjdndmxrtfibsa --schema public > lib/utils/supabase_types.ts"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.4",

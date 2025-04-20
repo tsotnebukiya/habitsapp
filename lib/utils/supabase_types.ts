@@ -196,7 +196,6 @@ export type Database = {
           display_name: string | null
           email: string
           id: string
-          notifications_enabled: boolean | null
           onboarding_complete: boolean | null
           push_token: string | null
           updated_at: string
@@ -212,7 +211,6 @@ export type Database = {
           display_name?: string | null
           email: string
           id: string
-          notifications_enabled?: boolean | null
           onboarding_complete?: boolean | null
           push_token?: string | null
           updated_at?: string
@@ -228,7 +226,6 @@ export type Database = {
           display_name?: string | null
           email?: string
           id?: string
-          notifications_enabled?: boolean | null
           onboarding_complete?: boolean | null
           push_token?: string | null
           updated_at?: string

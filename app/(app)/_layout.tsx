@@ -5,9 +5,11 @@ import useUserProfileStore from '@/lib/stores/user_profile';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import useHabitsStore from '@/lib/stores/habits/store';
+import { useNotifications } from '@/lib/hooks/useNotifications';
 
 function StackLayout() {
   const { profile } = useUserProfileStore();
+  useNotifications();
   const [isInitializing, setIsInitializing] = useState(true);
 
   useEffect(() => {
