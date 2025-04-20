@@ -28,11 +28,11 @@ export function useMatrix() {
   // Cache the matrix scores to avoid recalculation
   const matrixScore = useMemo<DisplayedMatrixScore>(
     () => ({
-      cat1: cat1 || 50,
-      cat2: cat2 || 50,
-      cat3: cat3 || 50,
-      cat4: cat4 || 50,
-      cat5: cat5 || 50,
+      cat1: cat1 || profile?.cat1 || 50,
+      cat2: cat2 || profile?.cat2 || 50,
+      cat3: cat3 || profile?.cat3 || 50,
+      cat4: cat4 || profile?.cat4 || 50,
+      cat5: cat5 || profile?.cat5 || 50,
       calculated_at: dayjs().toDate(),
     }),
     [cat1, cat2, cat3, cat4, cat5]
