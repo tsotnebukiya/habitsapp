@@ -19,6 +19,7 @@ import { GOOGLE_SIGN_IN_IOS_CLIENT_ID } from '@/safe_constants';
 import { ONBOARDING_STEPS } from './OnboardingSteps';
 import dayjs from '@/lib/utils/dayjs';
 import useHabitsStore from '@/lib/stores/habits/store';
+import { dateUtils } from '@/lib/utils/dayjs';
 
 const OnboardingSignUp = () => {
   const router = useRouter();
@@ -93,8 +94,8 @@ const OnboardingSignUp = () => {
             id: user.id,
             email: user.email!,
             display_name: user.email?.split('@')[0] || '', // Default to email username
-            created_at: dayjs().toISOString(),
-            updated_at: dayjs().toISOString(),
+            created_at: dateUtils.toServerDateTime(dateUtils.nowUTC()),
+            updated_at: dateUtils.toServerDateTime(dateUtils.nowUTC()),
             cat1: 50,
             cat2: 50,
             cat3: 50,
@@ -141,8 +142,8 @@ const OnboardingSignUp = () => {
               current_streak: 0,
               max_streak: 0,
               streak_achievements: {},
-              created_at: dayjs().toISOString(),
-              updated_at: dayjs().toISOString(),
+              created_at: dateUtils.toServerDateTime(dateUtils.nowUTC()),
+              updated_at: dateUtils.toServerDateTime(dateUtils.nowUTC()),
             };
 
             useHabitsStore.getState().setAchievements(initialAchievements);
@@ -185,8 +186,8 @@ const OnboardingSignUp = () => {
             id: data.user.id,
             email: data.user.email!,
             display_name: data.user.email?.split('@')[0]!, // Default to email username
-            created_at: dayjs().toISOString(),
-            updated_at: dayjs().toISOString(),
+            created_at: dateUtils.toServerDateTime(dateUtils.nowUTC()),
+            updated_at: dateUtils.toServerDateTime(dateUtils.nowUTC()),
             cat1: 50,
             cat2: 50,
             cat3: 50,
@@ -229,8 +230,8 @@ const OnboardingSignUp = () => {
             current_streak: 0,
             max_streak: 0,
             streak_achievements: {},
-            created_at: dayjs().toISOString(),
-            updated_at: dayjs().toISOString(),
+            created_at: dateUtils.toServerDateTime(dateUtils.nowUTC()),
+            updated_at: dateUtils.toServerDateTime(dateUtils.nowUTC()),
           };
 
           useHabitsStore.getState().setAchievements(initialAchievements);

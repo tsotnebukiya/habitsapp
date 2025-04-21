@@ -9,6 +9,7 @@ import Toast from 'react-native-toast-message';
 import Colors from '@/lib/constants/Colors';
 import dayjs from 'dayjs';
 import { Habit } from '@/lib/stores/habits/types';
+import { dateUtils } from '@/lib/utils/dayjs';
 
 interface HabitListProps {
   selectedDate: Date;
@@ -25,9 +26,10 @@ const HabitList = memo(function HabitList({ selectedDate }: HabitListProps) {
     toggleHabitStatus,
   } = useHabitsStore();
 
-  const today = dayjs().startOf('day');
-  const selectedDay = dayjs(selectedDate).startOf('day');
+  const today = dateUtils.todayUTC();
+  const selectedDay = dateUtils.fromUTC(selectedDate);
   const afterToday = selectedDay.isAfter(today);
+  console.log(selectedDay);
   const showIsAfterToast = () => {
     Toast.show({
       type: 'info',

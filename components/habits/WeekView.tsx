@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, memo } from 'react';
+import React, { useEffect, useRef, memo, useMemo } from 'react';
 import {
   View,
   ScrollView,
@@ -10,6 +10,9 @@ import {
 import dayjs from 'dayjs';
 import Colors from '@/lib/constants/Colors';
 import useHabitsStore from '@/lib/stores/habits/store';
+import { dateUtils } from '@/lib/utils/dayjs';
+import type { CompletionStatus } from '@/lib/stores/habits/types';
+
 interface WeekViewProps {
   selectedDate: Date;
   onDateSelect: (date: Date) => void;
@@ -22,15 +25,22 @@ export const WeekView = memo(function WeekView({
   onDateSelect,
 }: WeekViewProps) {
   const scrollViewRef = useRef<ScrollView>(null);
-  const selectedDayjs = dayjs(selectedDate);
+  const selectedDayjs = dateUtils.fromUTC(selectedDate);
   const { getDayStatus } = useHabitsStore();
-  // Generate array of dates
-  const dates = Array.from({ length: DAYS_TO_SHOW }, (_, i) => {
-    return dayjs().subtract(7, 'day').add(i, 'day');
-  });
+
+  const dates = useMemo(() => {
+    const result = [];
+    for (let i = 0; i < 14; i++) {
+      result.push(dateUtils.todayUTC().subtract(7, 'day').add(i, 'day'));
+    }
+    return result;
+  }, []);
+
+  const todayIndex = dates.findIndex((date) =>
+    date.isSame(dateUtils.todayUTC(), 'day')
+  );
 
   useEffect(() => {
-    const todayIndex = dates.findIndex((date) => date.isSame(dayjs(), 'day'));
     if (todayIndex !== -1 && scrollViewRef.current) {
       requestAnimationFrame(() => {
         scrollViewRef.current?.scrollTo({
@@ -49,15 +59,19 @@ export const WeekView = memo(function WeekView({
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        {dates.map((date) => {
+        {dates.map((date, index) => {
           const isSelected = date.isSame(selectedDayjs, 'day');
-          const isToday = date.isSame(dayjs(), 'day');
+          const isToday = date.isSame(dateUtils.todayUTC(), 'day');
           const completionStatus = getDayStatus(date.toDate());
           return (
             <TouchableOpacity
               key={date.format('YYYY-MM-DD')}
               onPress={() => onDateSelect(date.toDate())}
-              style={[styles.dayContainer, isSelected && styles.selectedDay]}
+              style={[
+                styles.dayContainer,
+                isSelected && styles.selectedDay,
+                isToday && styles.today,
+              ]}
             >
               <Text style={[styles.dayName, isToday && styles.todayText]}>
                 {date.format('ddd')}
@@ -162,5 +176,8 @@ const styles = StyleSheet.create({
   },
   todayText: {
     color: Colors.shared.primary[500],
+  },
+  today: {
+    backgroundColor: Colors.shared.primary[50],
   },
 });

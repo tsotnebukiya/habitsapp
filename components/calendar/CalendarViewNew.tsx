@@ -2,9 +2,10 @@ import React, { useCallback } from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { Calendar } from 'react-native-calendars';
 import useHabitsStore from '@/lib/stores/habits/store';
-import { CompletionStatus } from '@/lib/stores/habits/types';
+import type { CompletionStatus } from '@/lib/stores/habits/types';
 import Colors from '@/lib/constants/Colors';
 import dayjs from '@/lib/utils/dayjs';
+import { dateUtils } from '@/lib/utils/dayjs';
 // import type { CompletionStatus\ }
 
 // Get screen width to ensure responsive sizing
@@ -21,16 +22,15 @@ const CalendarViewNew: React.FC<CalendarViewProps> = ({
   selectedDate = new Date(),
 }) => {
   const { getMonthStatuses, currentStreak } = useHabitsStore();
-
   // Get current month stats
-  const month = dayjs(selectedDate);
-  const monthStatuses = getMonthStatuses(month.toDate());
-  const daysInMonth = month.daysInMonth();
+  const monthDate = dateUtils.fromUTC(selectedDate);
+  const monthStatuses = getMonthStatuses(selectedDate);
+  const daysInMonth = monthDate.daysInMonth();
 
   let completedDays = 0;
   for (let i = 1; i <= daysInMonth; i++) {
-    const dateStr = month.date(i).format('YYYY-MM-DD');
-    if (monthStatuses[dateStr]?.status === 'all_completed') {
+    const dateStr = monthDate.date(i).format('YYYY-MM-DD');
+    if (monthStatuses[dateStr] === 'all_completed') {
       completedDays++;
     }
   }
@@ -41,10 +41,14 @@ const CalendarViewNew: React.FC<CalendarViewProps> = ({
 
   // Prepare marked dates
   const markedDates = Object.entries(monthStatuses).reduce(
-    (acc, [dateStr, status]) => {
+    (
+      acc: Record<string, any>,
+      [dateStr, status]: [string, CompletionStatus]
+    ) => {
+      const currentDateStr = dateUtils.toServerDateString(selectedDate);
       let customStyles = {};
 
-      switch (status.status as CompletionStatus) {
+      switch (status) {
         case 'all_completed':
           customStyles = {
             container: {
@@ -77,13 +81,14 @@ const CalendarViewNew: React.FC<CalendarViewProps> = ({
       };
       return acc;
     },
-    {} as Record<string, any>
+    {}
   );
 
   // Handle date selection
   const handleDayPress = useCallback(
     (day: any) => {
-      onSelectDate?.(new Date(day.timestamp));
+      const selectedDate = dateUtils.fromServerDate(day.dateString);
+      onSelectDate?.(selectedDate.toDate());
     },
     [onSelectDate]
   );

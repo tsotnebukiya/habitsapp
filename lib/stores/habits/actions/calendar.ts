@@ -18,7 +18,7 @@ export interface CalendarSlice {
   getMonthStatuses: (month: Date) => MonthCache;
   updateDayStatus: (date: Date) => void;
   getDayStatus: (date: Date) => CompletionStatus;
-  updateAffectedDates: (habitId: string) => void;
+  updateAffectedDates: (habitId: string, dates?: Date[]) => void;
   batchUpdateDayStatuses: (dates: Date[]) => void;
 }
 
@@ -57,15 +57,20 @@ export const createCalendarSlice: StateCreator<
   updateDayStatus: (date: Date) => {
     get().batchUpdateDayStatuses([date]);
   },
-  updateAffectedDates: (habitId: string) => {
-    const habit = get().habits.get(habitId);
-    if (!habit) return;
-    const dates = getAffectedDates(habit);
-    get().batchUpdateDayStatuses(dates);
+  updateAffectedDates: (habitId: string, dates?: Date[]) => {
+    let datesToUpdate = dates;
+    if (dates) {
+      datesToUpdate = dates;
+    } else {
+      const habit = get().habits.get(habitId);
+      if (!habit) return;
+      datesToUpdate = getAffectedDates(habit);
+    }
+    get().batchUpdateDayStatuses(datesToUpdate);
   },
   batchUpdateDayStatuses: (dates: Date[]) => {
     const updates = new Map<string, OptimizedMonthCache>();
-
+    console.log(dates);
     dates.forEach((date) => {
       const monthKey = getMonthKey(date);
       const dateString = dayjs(date).format('YYYY-MM-DD');
@@ -81,7 +86,7 @@ export const createCalendarSlice: StateCreator<
         Array.from(get().completions.values()),
         date
       );
-
+      console.log(status, date);
       const currentCache = get().monthCache.get(monthKey) || {};
       const currentStatus = currentCache[dateString];
 

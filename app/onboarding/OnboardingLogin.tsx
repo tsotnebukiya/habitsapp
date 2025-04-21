@@ -17,6 +17,7 @@ import { supabase } from '@/supabase/client';
 import { newOnboardingStyles, onboardingGradient } from './newOnboardingStyles';
 import Colors from '@/lib/constants/Colors';
 import { useUserProfileStore } from '@/lib/stores/user_profile';
+import { dateUtils } from '@/lib/utils/dayjs';
 
 const ONBOARDING_STEPS = [
   '/onboarding/OnboardingIntro',
@@ -39,8 +40,9 @@ function OnboardingLogin() {
     setProfile({
       ...userData,
       displayName: userData.display_name,
-      updatedAt: dayjs().toISOString(),
-      createdAt: userData.created_at || dayjs().toISOString(),
+      updatedAt: dateUtils.toServerDateTime(dateUtils.nowUTC()),
+      createdAt:
+        userData.created_at || dateUtils.toServerDateTime(dateUtils.nowUTC()),
       onboardingComplete: true,
     });
     router.replace('/(tabs)');

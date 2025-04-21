@@ -8,6 +8,7 @@ import {
   getProgressText,
   getHabitStatus,
   getCurrentValue,
+  getAffectedDates,
 } from '@/lib/utils/habits';
 import { HabitCompletion, type Habit } from '../types';
 import { SharedSlice } from '../types';
@@ -133,7 +134,7 @@ export const createHabitSlice: StateCreator<SharedSlice, [], [], HabitSlice> = (
   deleteHabit: async (id) => {
     const habit = get().habits.get(id);
     if (!habit) return;
-
+    console.log('deleting habit', habit);
     // Update locally first
     set((state) => {
       const newState = { ...state };
@@ -154,9 +155,10 @@ export const createHabitSlice: StateCreator<SharedSlice, [], [], HabitSlice> = (
 
       return newState;
     });
-
+    const dates = getAffectedDates(habit);
     // Actions
-    get().updateAffectedDates(habit.id);
+    console.log(dates);
+    get().updateAffectedDates(habit.id, dates);
     setTimeout(() => {
       get().calculateAndUpdate();
     }, 100);

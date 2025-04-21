@@ -21,6 +21,7 @@ import CategorySelection from './category-selection';
 import TemplateSelection from './template-selection';
 import Colors from '@/lib/constants/Colors';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { dateUtils } from '@/lib/utils/dayjs';
 
 const COLORS = [
   '#FF6B6B',
@@ -84,41 +85,49 @@ export default function AddHabit() {
   const handleSubmit = async () => {
     if (!formData.name.trim() || !profile?.id) return;
 
-    addHabit({
-      name: formData.name,
-      description: formData.description,
-      color: formData.color,
-      icon: formData.icon,
-      frequency_type: formData.frequencyType,
-      start_date: formData.startDate.toISOString(),
-      user_id: profile.id,
-      is_active: true,
-      category_name: formData.category,
+    try {
+      const habit = {
+        name: formData.name,
+        description: formData.description,
+        color: formData.color,
+        icon: formData.icon,
+        frequency_type: formData.frequencyType,
+        start_date: dateUtils.toServerDateString(formData.startDate),
+        user_id: profile.id,
+        is_active: true,
+        category_name: formData.category,
 
-      // Updated or new fields
-      days_of_week:
-        formData.frequencyType === 'weekly' ? formData.daysOfWeek : null,
-      end_date:
-        formData.hasEndDate && formData.endDate
-          ? formData.endDate.toISOString()
-          : null,
-      gamification_attributes: null,
-      reminder_time:
-        formData.hasReminder && formData.reminderTime
-          ? formData.reminderTime.toISOString()
-          : null,
-      streak_goal: formData.streakGoal,
+        // Updated or new fields
+        days_of_week:
+          formData.frequencyType === 'weekly' ? formData.daysOfWeek : null,
+        end_date:
+          formData.hasEndDate && formData.endDate
+            ? dateUtils.toServerDateString(formData.endDate)
+            : null,
+        gamification_attributes: null,
+        reminder_time:
+          formData.hasReminder && formData.reminderTime
+            ? dateUtils.toServerDateTime(formData.reminderTime)
+            : null,
+        streak_goal: formData.streakGoal,
 
-      // Existing fields
-      completions_per_day:
-        formData.goal.unit.id === 'count' ? formData.goal.value : 1,
-      goal_unit:
-        formData.goal.unit.id === 'count' ? null : formData.goal.unit.shortName,
-      goal_value:
-        formData.goal.unit.id === 'count' ? null : formData.goal.value,
-    });
+        // Existing fields
+        completions_per_day:
+          formData.goal.unit.id === 'count' ? formData.goal.value : 1,
+        goal_unit:
+          formData.goal.unit.id === 'count'
+            ? null
+            : formData.goal.unit.shortName,
+        goal_value:
+          formData.goal.unit.id === 'count' ? null : formData.goal.value,
+      };
 
-    router.back();
+      addHabit(habit);
+
+      router.back();
+    } catch (error) {
+      // ... error handling ...
+    }
   };
 
   // Render different components based on current step
@@ -281,7 +290,7 @@ export default function AddHabit() {
             >
               <View style={styles.dateButtonContent}>
                 <Text style={styles.dateButtonText}>
-                  {dayjs(formData.startDate).format('MMMM D, YYYY')}
+                  {dateUtils.fromUTC(formData.startDate).format('MMMM D, YYYY')}
                 </Text>
                 <FontAwesome6 name="calendar" size={16} color="#8E8E93" />
               </View>
@@ -354,7 +363,9 @@ export default function AddHabit() {
                 <View style={styles.dateButtonContent}>
                   <Text style={styles.dateButtonText}>
                     {formData.endDate
-                      ? dayjs(formData.endDate).format('MMMM D, YYYY')
+                      ? dateUtils
+                          .fromUTC(formData.endDate)
+                          .format('MMMM D, YYYY')
                       : 'Select End Date'}
                   </Text>
                   <FontAwesome6 name="calendar" size={16} color="#8E8E93" />
@@ -399,7 +410,9 @@ export default function AddHabit() {
                 <View style={styles.dateButtonContent}>
                   <Text style={styles.dateButtonText}>
                     {formData.reminderTime
-                      ? dayjs(formData.reminderTime).format('h:mm A')
+                      ? dateUtils
+                          .fromUTC(formData.reminderTime)
+                          .format('h:mm A')
                       : 'Select Time'}
                   </Text>
                   <FontAwesome6 name="clock" size={16} color="#8E8E93" />
