@@ -1,5 +1,5 @@
 import { StateCreator } from 'zustand';
-import { CachedDayStatus, MonthCache, SharedSlice } from '../types';
+import { SharedSlice, CompletionStatus, MonthCache } from '../types';
 import {
   calculateDateStatus,
   getAffectedDates,
@@ -7,13 +7,19 @@ import {
 } from '@/lib/utils/habits';
 import dayjs from '@/lib/utils/dayjs';
 
+// Optimized cache type that only stores non-none_completed statuses
+type OptimizedMonthCache = {
+  [dateString: string]: CompletionStatus;
+};
+
 export interface CalendarSlice {
-  monthCache: Map<string, MonthCache>;
+  monthCache: Map<string, OptimizedMonthCache>;
 
   getMonthStatuses: (month: Date) => MonthCache;
   updateDayStatus: (date: Date) => void;
-  getDayStatus: (date: Date) => CachedDayStatus | null;
+  getDayStatus: (date: Date) => CompletionStatus;
   updateAffectedDates: (habitId: string) => void;
+  batchUpdateDayStatuses: (dates: Date[]) => void;
 }
 
 export const createCalendarSlice: StateCreator<
@@ -23,66 +29,83 @@ export const createCalendarSlice: StateCreator<
   CalendarSlice
 > = (set, get) => ({
   monthCache: new Map(),
-  updateDayStatus: (date: Date) => {
-    const monthKey = getMonthKey(date);
-    const currentCache = get().monthCache.get(monthKey) || {};
-    const dateString = dayjs(date).format('YYYY-MM-DD');
-    const status = calculateDateStatus(
-      Array.from(get().habits.values()),
-      Array.from(get().completions.values()),
-      date
-    );
-
-    const updatedCache = {
-      ...currentCache,
-      [dateString]: {
-        date: dateString,
-        status,
-        lastUpdated: Date.now(),
-      },
-    };
-
-    set((state) => ({
-      monthCache: new Map(state.monthCache).set(monthKey, updatedCache),
-    }));
-  },
 
   getDayStatus: (date: Date) => {
     const monthKey = getMonthKey(date);
     const cache = get().monthCache.get(monthKey) || {};
     const dateString = dayjs(date).format('YYYY-MM-DD');
-    return cache[dateString] || null;
-  },
-
-  updateAffectedDates: (habitId: string) => {
-    const startTime = performance.now();
-    const habit = get().habits.get(habitId);
-    if (!habit) return;
-
-    const datesStartTime = performance.now();
-    const dates = getAffectedDates(habit);
-    const datesEndTime = performance.now();
-    console.log(
-      `Getting affected dates took: ${(datesEndTime - datesStartTime).toFixed(
-        2
-      )}ms`
-    );
-
-    const updateStartTime = performance.now();
-
-    const updateEndTime = performance.now();
-    console.log(
-      `Updating all affected dates took: ${(
-        updateEndTime - updateStartTime
-      ).toFixed(2)}ms`
-    );
-
-    const totalTime = performance.now() - startTime;
-    console.log(`Total update affected dates took: ${totalTime.toFixed(2)}ms`);
+    return cache[dateString] || 'none_completed';
   },
 
   getMonthStatuses: (month: Date) => {
     const monthKey = getMonthKey(month);
-    return get().monthCache.get(monthKey) || {};
+    const optimizedCache = get().monthCache.get(monthKey) || {};
+
+    const fullCache: MonthCache = {};
+    const startOfMonth = dayjs(month).startOf('month');
+    const daysInMonth = startOfMonth.daysInMonth();
+
+    for (let i = 0; i < daysInMonth; i++) {
+      const currentDate = startOfMonth.add(i, 'days');
+      const dateString = currentDate.format('YYYY-MM-DD');
+
+      fullCache[dateString] = optimizedCache[dateString] || 'none_completed';
+    }
+
+    return fullCache;
+  },
+  updateDayStatus: (date: Date) => {
+    get().batchUpdateDayStatuses([date]);
+  },
+  updateAffectedDates: (habitId: string) => {
+    const habit = get().habits.get(habitId);
+    if (!habit) return;
+    const dates = getAffectedDates(habit);
+    get().batchUpdateDayStatuses(dates);
+  },
+  batchUpdateDayStatuses: (dates: Date[]) => {
+    const updates = new Map<string, OptimizedMonthCache>();
+
+    dates.forEach((date) => {
+      const monthKey = getMonthKey(date);
+      const dateString = dayjs(date).format('YYYY-MM-DD');
+
+      if (!updates.has(monthKey)) {
+        updates.set(monthKey, {
+          ...(get().monthCache.get(monthKey) || {}),
+        });
+      }
+
+      const status = calculateDateStatus(
+        Array.from(get().habits.values()),
+        Array.from(get().completions.values()),
+        date
+      );
+
+      const currentCache = get().monthCache.get(monthKey) || {};
+      const currentStatus = currentCache[dateString];
+
+      if (status !== currentStatus) {
+        if (status === 'none_completed') {
+          delete updates.get(monthKey)![dateString];
+        } else {
+          updates.get(monthKey)![dateString] = status;
+        }
+      } else {
+        delete updates.get(monthKey)![dateString];
+      }
+    });
+
+    set((state) => {
+      const newMonthCache = new Map(state.monthCache);
+      updates.forEach((monthUpdates, monthKey) => {
+        if (Object.keys(monthUpdates).length === 0) {
+          newMonthCache.delete(monthKey);
+        } else {
+          newMonthCache.set(monthKey, monthUpdates);
+        }
+      });
+      return { monthCache: newMonthCache };
+    });
   },
 });

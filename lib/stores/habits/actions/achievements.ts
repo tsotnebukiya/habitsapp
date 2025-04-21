@@ -94,37 +94,19 @@ export const createAchievementSlice: StateCreator<
     if (!profile) {
       return { unlockedAchievements: [], currentStreak: 0 };
     }
-    const startTime = performance.now();
     const currentStreak = calculateCurrentStreak(
       get().completions,
       get().habits
     );
-    const endTime = performance.now();
-    console.log(
-      `calculateCurrentStreak took: ${(endTime - startTime).toFixed(2)}ms`
-    );
-
-    const startAchievements = performance.now();
     const newAchievements = calculateNewAchievements(
       currentStreak,
       get().streakAchievements
     );
-    const endAchievements = performance.now();
-    console.log(
-      `calculateNewAchievements took: ${(
-        endAchievements - startAchievements
-      ).toFixed(2)}ms`
-    );
 
-    const startMatrixScores = performance.now();
     const matrixScores = calculateDMS(
       profile,
       Array.from(get().habits.values()),
       Array.from(get().completions.values())
-    );
-    const endMatrixScores = performance.now();
-    console.log(
-      `calculateDMS took: ${(endMatrixScores - startMatrixScores).toFixed(2)}ms`
     );
 
     const userId = getUserIdOrThrow();

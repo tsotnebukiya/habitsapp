@@ -37,7 +37,6 @@ export interface Achievement {
 }
 
 export type CompletionStatus =
-  | 'no_habits'
   | 'all_completed'
   | 'some_completed'
   | 'none_completed';
@@ -84,14 +83,8 @@ export interface HabitsState extends BaseState {
   pendingOperations: PendingOperation[];
 }
 
-export interface CachedDayStatus {
-  date: string;
-  status: CompletionStatus;
-  lastUpdated: number;
-}
-
 export interface MonthCache {
-  [dateString: string]: CachedDayStatus;
+  [dateString: string]: CompletionStatus;
 }
 
 export type StreakAchievements = {

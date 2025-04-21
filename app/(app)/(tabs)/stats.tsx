@@ -24,13 +24,6 @@ const Separator = () => <View style={styles.separator} />;
 
 // Performance Tab Content
 const PerformanceTabContent = React.memo(() => {
-  const mountTime = useRef(Date.now());
-
-  useEffect(() => {
-    const mountDuration = Date.now() - mountTime.current;
-    console.log(`Perfomance tab mounted in ${mountDuration}ms`);
-  }, []);
-
   return (
     <>
       <View style={styles.section}>
@@ -61,13 +54,6 @@ const PerformanceTabContent = React.memo(() => {
 
 // Calendar Tab Content
 const CalendarTabContent = React.memo(() => {
-  const mountTime = useRef(Date.now());
-
-  useEffect(() => {
-    const mountDuration = Date.now() - mountTime.current;
-    console.log(`Calendar tab mounted in ${mountDuration}ms`);
-  }, []);
-
   return (
     <>
       <View style={styles.section}>

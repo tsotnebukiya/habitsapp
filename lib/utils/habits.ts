@@ -27,25 +27,55 @@ export const getMonthKey = (date: Date): string => {
  */
 export const getAffectedDates = (habit: Habit): Date[] => {
   const startDate = dayjs(habit.start_date).startOf('day');
+  const today = dayjs().endOf('day');
   const endDate = habit.end_date
-    ? dayjs(habit.end_date).endOf('day')
-    : dayjs().add(1, 'month').endOf('day');
+    ? dayjs(habit.end_date).endOf('day').isBefore(today)
+      ? dayjs(habit.end_date).endOf('day')
+      : today
+    : today;
 
-  const dates: Date[] = [];
-  let currentDate = startDate;
+  const dates: string[] = [];
 
-  while (currentDate.isSameOrBefore(endDate)) {
-    if (habit.frequency_type === 'weekly' && habit.days_of_week) {
-      if (habit.days_of_week.includes(currentDate.day())) {
-        dates.push(currentDate.toDate());
+  if (habit.frequency_type === 'weekly' && habit.days_of_week) {
+    let currentDate = startDate;
+    const daysOfWeek = new Set(habit.days_of_week); // O(1) lookup
+
+    while (currentDate.isSameOrBefore(endDate)) {
+      const dayOfWeek = currentDate.day();
+
+      if (daysOfWeek.has(dayOfWeek)) {
+        dates.push(currentDate.format('YYYY-MM-DD'));
       }
-    } else {
-      dates.push(currentDate.toDate());
+
+      let nextDay = dayOfWeek + 1;
+      let daysToAdd = 1;
+
+      while (nextDay <= 6) {
+        if (daysOfWeek.has(nextDay)) {
+          break;
+        }
+        nextDay++;
+        daysToAdd++;
+      }
+
+      if (nextDay > 6) {
+        const firstValidDay = Math.min(...Array.from(daysOfWeek));
+        daysToAdd = 7 - dayOfWeek + firstValidDay;
+      }
+
+      currentDate = currentDate.add(daysToAdd, 'day');
     }
-    currentDate = currentDate.add(1, 'day');
+  } else {
+    let currentDate = startDate;
+    while (currentDate.isSameOrBefore(endDate)) {
+      dates.push(currentDate.format('YYYY-MM-DD'));
+      currentDate = currentDate.add(1, 'day');
+    }
   }
 
-  return dates;
+  const result = dates.map((dateStr) => dayjs(dateStr).toDate());
+
+  return result;
 };
 
 /**
@@ -82,6 +112,7 @@ export const calculateDateStatus = (
   allCompletions: HabitCompletion[], // Guaranteed to be an array
   date: Date
 ): CompletionStatus => {
+  if (!allHabits || !allCompletions) return 'none_completed';
   // 1. Pre-normalize target date and get its properties ONCE
   const targetDateNormalized = dayjs(date).startOf('day');
   const targetDayOfWeek = targetDateNormalized.day(); // 0 (Sun) - 6 (Sat)
@@ -129,7 +160,7 @@ export const calculateDateStatus = (
 
   // 3. Handle case where no habits are active for the date
   if (activeHabitsForDate.length === 0) {
-    return 'no_habits';
+    return 'none_completed';
   }
 
   // 4. Prepare completions lookup map for the target date for efficiency

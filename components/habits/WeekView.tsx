@@ -29,16 +29,6 @@ export const WeekView = memo(function WeekView({
     return dayjs().subtract(7, 'day').add(i, 'day');
   });
 
-  const getDateCompletionStatus = (date: dayjs.Dayjs) => {
-    // First try to get from cache
-    const cachedStatus = getDayStatus(date.toDate());
-    if (cachedStatus) {
-      return cachedStatus.status;
-    }
-    // If not in cache, calculate it
-    return 'none_completed';
-  };
-
   useEffect(() => {
     const todayIndex = dates.findIndex((date) => date.isSame(dayjs(), 'day'));
     if (todayIndex !== -1 && scrollViewRef.current) {
@@ -62,7 +52,7 @@ export const WeekView = memo(function WeekView({
         {dates.map((date) => {
           const isSelected = date.isSame(selectedDayjs, 'day');
           const isToday = date.isSame(dayjs(), 'day');
-          const completionStatus = getDateCompletionStatus(date);
+          const completionStatus = getDayStatus(date.toDate());
           return (
             <TouchableOpacity
               key={date.format('YYYY-MM-DD')}

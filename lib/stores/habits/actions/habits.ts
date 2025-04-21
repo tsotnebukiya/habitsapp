@@ -53,6 +53,13 @@ export const createHabitSlice: StateCreator<SharedSlice, [], [], HabitSlice> = (
       return { habits: newHabits };
     });
 
+    // Actions
+
+    get().updateAffectedDates(newHabit.id);
+    setTimeout(() => {
+      get().calculateAndUpdate();
+    }, 100);
+
     try {
       const { error } = await supabase.from('habits').insert(newHabit);
       if (error) throw error;
@@ -92,6 +99,12 @@ export const createHabitSlice: StateCreator<SharedSlice, [], [], HabitSlice> = (
       newHabits.set(id, updatedHabit);
       return { habits: newHabits };
     });
+
+    // Actions
+    get().updateAffectedDates(habit.id);
+    setTimeout(() => {
+      get().calculateAndUpdate();
+    }, 100);
 
     try {
       const { error } = await supabase
@@ -142,6 +155,12 @@ export const createHabitSlice: StateCreator<SharedSlice, [], [], HabitSlice> = (
 
       return newState;
     });
+
+    // Actions
+    get().updateAffectedDates(habit.id);
+    setTimeout(() => {
+      get().calculateAndUpdate();
+    }, 100);
 
     try {
       // Delete completions from server first

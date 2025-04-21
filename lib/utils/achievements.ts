@@ -182,9 +182,6 @@ export function calculateDMS(
         (h) => h.category === category
       );
       const dps = calculateOptimizedDPS(categoryHabits, dayIndex);
-      if (category === 'cat1') {
-        console.log(dps, dayIndex, categoryHabits.length);
-      }
       if (dps >= 0) {
         // Vectorized smoothing calculation
         categoryScores[categoryIndex] =

@@ -32,18 +32,6 @@ export default function HabitDetailsSheet({
   const snapPoints = useMemo(() => ['1%', '60%'], []);
   const { width } = Dimensions.get('window');
   const circularCounterSize = Math.min(width * 0.45, 160);
-  const performanceMetrics = useRef<{
-    buttonClickTime: number | null;
-    storeUpdateStartTime: number | null;
-    storeUpdateEndTime: number | null;
-    renderStartTime: number | null;
-  }>({
-    buttonClickTime: null,
-    storeUpdateStartTime: null,
-    storeUpdateEndTime: null,
-    renderStartTime: null,
-  });
-  const lastCompletionAttemptTime = useRef<number | null>(null);
   const renderBackdrop = useCallback(
     (props: any) => (
       <BottomSheetBackdrop
@@ -75,8 +63,7 @@ export default function HabitDetailsSheet({
 
   const handleCompletion = () => {
     if (!habit) return;
-    performanceMetrics.current.buttonClickTime = performance.now();
-    performanceMetrics.current.storeUpdateStartTime = performance.now();
+
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     toggleHabitStatus(habit.id, date, 'toggle_complete');
   };
@@ -100,21 +87,6 @@ export default function HabitDetailsSheet({
 
   // Get appropriate label for circular counter
   const progressLabel = habit?.goal_unit || 'Completions';
-
-  useEffect(() => {
-    if (performanceMetrics.current.buttonClickTime !== null) {
-      performanceMetrics.current.storeUpdateEndTime = performance.now();
-      performanceMetrics.current.renderStartTime = performance.now();
-
-      const totalDuration =
-        performanceMetrics.current.storeUpdateEndTime -
-        performanceMetrics.current.buttonClickTime;
-
-      console.log('**********');
-      console.log('Performance metrics:');
-      console.log(`Total time from click: ${totalDuration.toFixed(2)}ms`);
-    }
-  }, [isCompleted]);
 
   return (
     <BottomSheetModal

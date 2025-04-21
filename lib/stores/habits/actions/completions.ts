@@ -48,22 +48,10 @@ export const createCompletionSlice: StateCreator<
       return { completions: newCompletions };
     });
 
-    const localUpdateTime = performance.now();
-    console.log(
-      `Local store update took: ${(localUpdateTime - startTime).toFixed(2)}ms`
-    );
-
     try {
-      const supabaseStartTime = performance.now();
       const { error } = await supabase
         .from('habit_completions')
         .insert(newCompletion);
-      const supabaseEndTime = performance.now();
-      console.log(
-        `Supabase insert took: ${(supabaseEndTime - supabaseStartTime).toFixed(
-          2
-        )}ms`
-      );
 
       if (error) throw error;
     } catch (error) {
@@ -81,14 +69,7 @@ export const createCompletionSlice: StateCreator<
       }));
     }
 
-    const processingStartTime = performance.now();
     await get().processPendingOperations();
-    const processingEndTime = performance.now();
-    console.log(
-      `Processing pending operations took: ${(
-        processingEndTime - processingStartTime
-      ).toFixed(2)}ms`
-    );
 
     return newCompletion.id;
   },
@@ -140,7 +121,6 @@ export const createCompletionSlice: StateCreator<
     action: HabitAction,
     value?: number
   ) => {
-    const startTime = performance.now();
     const userId = getUserIdOrThrow();
     const habit = get().habits.get(habitId);
     if (!habit) {
@@ -155,20 +135,13 @@ export const createCompletionSlice: StateCreator<
       completions: Array.from(get().completions.values()),
     });
 
-    const secondTime = performance.now();
-    console.log(
-      `calculateHabitToggle took: ${(secondTime - startTime).toFixed(2)}ms`
-    );
     const normalizedDate = normalizeDate(date);
     const existingCompletion = Array.from(get().completions.values()).find(
       (completion) =>
         completion.habit_id === habitId &&
         completion.completion_date === normalizedDate
     );
-    const thirdTime = performance.now();
-    console.log(
-      `find existing completion took: ${(thirdTime - secondTime).toFixed(2)}ms`
-    );
+
     // Update or create completion
     if (existingCompletion) {
       get().updateCompletion(existingCompletion.id, {
@@ -184,12 +157,12 @@ export const createCompletionSlice: StateCreator<
         value: newValue,
       });
     }
-    const fourthTime = performance.now();
-    console.log(`addCompletion took: ${(fourthTime - thirdTime).toFixed(2)}ms`);
+
+    // Actions
+
     get().updateDayStatus(date);
-    const fifthTime = performance.now();
-    console.log(
-      `updateDayStatus took: ${(fifthTime - fourthTime).toFixed(2)}ms`
-    );
+    setTimeout(() => {
+      get().calculateAndUpdate();
+    }, 100);
   },
 });

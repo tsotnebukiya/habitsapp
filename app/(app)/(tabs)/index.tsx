@@ -12,10 +12,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 export default function Home() {
   const { profile } = useUserProfileStore();
   const syncData = useHabitsStore((state) => state.syncWithServer);
+  const cache = useHabitsStore((state) => state.monthCache);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const router = useRouter();
   const insets = useSafeAreaInsets();
-
+  console.log(cache);
   useEffect(() => {
     if (profile?.id) {
       // Initial sync
