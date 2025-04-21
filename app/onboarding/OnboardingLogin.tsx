@@ -13,7 +13,7 @@ import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import dayjs from 'dayjs';
 
-import { supabase } from '@/lib/utils/supabase';
+import { supabase } from '@/supabase/client';
 import { newOnboardingStyles, onboardingGradient } from './newOnboardingStyles';
 import Colors from '@/lib/constants/Colors';
 import { useUserProfileStore } from '@/lib/stores/user_profile';

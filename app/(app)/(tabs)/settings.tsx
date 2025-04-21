@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import useUserProfileStore from '@/lib/stores/user_profile';
 import { useRouter } from 'expo-router';
-import { supabase } from '@/lib/utils/supabase';
+import { supabase } from '@/supabase/client';
 import { useNotifications } from '@/lib/hooks/useNotifications';
 import { useAppStore } from '@/lib/stores/app_state';
 

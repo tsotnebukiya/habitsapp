@@ -1,5 +1,5 @@
 import { StateCreator } from 'zustand';
-import { supabase } from '@/lib/utils/supabase';
+import { supabase } from '@/supabase/client';
 import { v4 as uuidv4 } from 'uuid';
 import dayjs from '@/lib/utils/dayjs';
 import {

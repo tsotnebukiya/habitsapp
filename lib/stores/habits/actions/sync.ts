@@ -1,7 +1,7 @@
 import { StateCreator } from 'zustand';
 import { PendingOperation, SharedSlice, StreakAchievements } from '../types';
 import dayjs from '@/lib/utils/dayjs';
-import { supabase } from '@/lib/utils/supabase';
+import { supabase } from '@/supabase/client';
 import { getUserIdOrThrow, STORE_CONSTANTS } from '@/lib/utils/habits';
 
 export interface SyncSlice {

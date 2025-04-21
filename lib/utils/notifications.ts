@@ -1,7 +1,7 @@
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
 import Constants from 'expo-constants';
-import { supabase } from './supabase';
+import { supabase } from '../../supabase/client';
 import { dateUtils } from './dayjs';
 
 // Configure notification handling

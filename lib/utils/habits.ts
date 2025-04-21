@@ -1,5 +1,5 @@
 import dayjs, { dateUtils } from '@/lib/utils/dayjs';
-import { Database } from '@/lib/utils/supabase_types';
+import { Database } from '@/supabase/types';
 import {
   CompletionStatus,
   Habit,

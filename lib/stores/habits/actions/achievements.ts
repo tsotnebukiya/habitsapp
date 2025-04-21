@@ -6,7 +6,7 @@ import {
   UserAchievement,
 } from '../types';
 import dayjs from '@/lib/utils/dayjs';
-import { supabase } from '@/lib/utils/supabase';
+import { supabase } from '@/supabase/client';
 import { getUserIdOrThrow } from '@/lib/utils/habits';
 import { useUserProfileStore } from '@/lib/stores/user_profile';
 import {

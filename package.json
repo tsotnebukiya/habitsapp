@@ -13,7 +13,7 @@
     "pretest": "npm run compile",
     "posttest": "npm run lint",
     "dev": "APP_VARIANT=development npx expo start",
-    "supabase:typegen": "npx supabase gen types typescript --project-id jmkqqbzjdndmxrtfibsa --schema public > lib/utils/supabase_types.ts"
+    "supabase:typegen": "npx supabase gen types typescript --project-id jmkqqbzjdndmxrtfibsa --schema public > supabase/types.ts"
   },
   "dependencies": {
     "@expo/vector-icons": "^14.0.4",
@@ -30,7 +30,7 @@
     "@react-navigation/native": "^6.0.2",
     "@sentry/react-native": "^6.1.0",
     "@shopify/react-native-skia": "1.2.3",
-    "@supabase/supabase-js": "^2.44.4",
+    "@supabase/supabase-js": "^2.49.4",
     "@types/randomcolor": "^0.5.9",
     "bplist-creator": "^0.1.1",
     "date-fns": "^3.6.0",

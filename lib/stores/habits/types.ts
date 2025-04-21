@@ -1,4 +1,4 @@
-import { Database } from '@/lib/utils/supabase_types';
+import { Database } from '@/supabase/types';
 import { HabitSlice } from './actions/habits';
 import { AchievementSlice } from './actions/achievements';
 import { CalendarSlice } from './actions/calendar';

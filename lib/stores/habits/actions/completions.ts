@@ -4,7 +4,7 @@ import { StateCreator } from 'zustand';
 import { SharedSlice } from '../types';
 import dayjs from '@/lib/utils/dayjs';
 import { v4 as uuidv4 } from 'uuid';
-import { supabase } from '@/lib/utils/supabase';
+import { supabase } from '@/supabase/client';
 import { getUserIdOrThrow } from '@/lib/utils/habits';
 
 export interface CompletionSlice {

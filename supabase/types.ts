@@ -131,6 +131,45 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          badge: number | null
+          body: string
+          created_at: string
+          data: Json | null
+          id: string
+          read_at: string | null
+          sound: string | null
+          subtitle: string | null
+          title: string
+          user_id: string | null
+        }
+        Insert: {
+          badge?: number | null
+          body: string
+          created_at?: string
+          data?: Json | null
+          id?: string
+          read_at?: string | null
+          sound?: string | null
+          subtitle?: string | null
+          title: string
+          user_id?: string | null
+        }
+        Update: {
+          badge?: number | null
+          body?: string
+          created_at?: string
+          data?: Json | null
+          id?: string
+          read_at?: string | null
+          sound?: string | null
+          subtitle?: string | null
+          title?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       user_achievements: {
         Row: {
           cat1: number | null
