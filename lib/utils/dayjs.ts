@@ -5,6 +5,7 @@ import customParseFormat from 'dayjs/plugin/customParseFormat';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import isBetween from 'dayjs/plugin/isBetween';
+import isToday from 'dayjs/plugin/isToday';
 
 // Extend dayjs with plugins
 dayjs.extend(isSameOrBefore);
@@ -13,6 +14,7 @@ dayjs.extend(customParseFormat);
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(isBetween);
+dayjs.extend(isToday);
 
 // Set default timezone to local
 dayjs.tz.setDefault(dayjs.tz.guess());
@@ -22,32 +24,49 @@ export type DateInput = string | number | Date | dayjs.Dayjs;
 
 // Core date utilities
 export const dateUtils = {
-  // Normalization for comparison
-  normalize: (date: DateInput) => dayjs(date).startOf('day'),
+  // UTC Conversion
+  toUTC: (date: DateInput) => dayjs(date).utc(),
+  fromUTC: (date: DateInput) => dayjs.utc(date).local(),
 
-  // Comparisons (always normalized)
+  // Server date formatting (always UTC)
+  toServerDateString: (date: DateInput) =>
+    dayjs(date).utc().format('YYYY-MM-DD'),
+  toServerDateTime: (date: DateInput) => dayjs(date).utc().toISOString(),
+  fromServerDate: (dateStr: string) => dayjs.utc(dateStr).local(),
+
+  // Validation
+  isValidDate: (date: DateInput) => dayjs(date).isValid(),
+  isToday: (date: DateInput) => dayjs(date).isToday(),
+  isFutureDate: (date: DateInput) => dayjs(date).isAfter(dayjs(), 'day'),
+  isPastDate: (date: DateInput) => dayjs(date).isBefore(dayjs(), 'day'),
+
+  // Normalization for comparison (always in UTC)
+  normalize: (date: DateInput) => dayjs(date).utc().startOf('day'),
+
+  // Comparisons (always normalized and in UTC)
   isSameDay: (date1: DateInput, date2: DateInput) =>
-    dayjs(date1).startOf('day').isSame(dayjs(date2).startOf('day')),
+    dateUtils.normalize(date1).isSame(dateUtils.normalize(date2)),
   isBeforeDay: (date1: DateInput, date2: DateInput) =>
-    dayjs(date1).startOf('day').isBefore(dayjs(date2).startOf('day')),
+    dateUtils.normalize(date1).isBefore(dateUtils.normalize(date2)),
   isAfterDay: (date1: DateInput, date2: DateInput) =>
-    dayjs(date1).startOf('day').isAfter(dayjs(date2).startOf('day')),
+    dateUtils.normalize(date1).isAfter(dateUtils.normalize(date2)),
   isBetweenDays: (date: DateInput, start: DateInput, end: DateInput) =>
-    dayjs(date)
-      .startOf('day')
+    dateUtils
+      .normalize(date)
       .isBetween(
-        dayjs(start).startOf('day'),
-        dayjs(end).startOf('day'),
+        dateUtils.normalize(start),
+        dateUtils.normalize(end),
         'day',
         '[]'
       ),
 
-  // Formatting
+  // Formatting (always in local time for display)
   toDateString: (date: DateInput) => dayjs(date).format('YYYY-MM-DD'),
   toDisplayDate: (date: DateInput) => dayjs(date).format('MMMM D, YYYY'),
   toTimeString: (date: DateInput) => dayjs(date).format('HH:mm'),
+  toFullDateTime: (date: DateInput) => dayjs(date).format('MMMM D, YYYY HH:mm'),
 
-  // Common operations
+  // Common operations (preserving timezone)
   startOfDay: (date: DateInput) => dayjs(date).startOf('day'),
   endOfDay: (date: DateInput) => dayjs(date).endOf('day'),
   addDays: (date: DateInput, days: number) => dayjs(date).add(days, 'day'),
@@ -58,10 +77,16 @@ export const dateUtils = {
   // Current time
   today: () => dayjs().startOf('day'),
   now: () => dayjs(),
+  todayUTC: () => dayjs().utc().startOf('day'),
+  nowUTC: () => dayjs().utc(),
 
-  // Date creation
+  // Date creation (always in local time)
   create: (year: number, month: number, day: number) =>
     dayjs().year(year).month(month).date(day).startOf('day'),
+
+  // Date creation (UTC)
+  createUTC: (year: number, month: number, day: number) =>
+    dayjs.utc().year(year).month(month).date(day).startOf('day'),
 };
 
 export default dayjs;
