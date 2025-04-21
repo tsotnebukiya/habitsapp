@@ -61,15 +61,15 @@ function preprocessData(
   habits: Habit[],
   completions: HabitCompletion[]
 ): ProcessedData {
-  // Pre-calculate dates once
-  const today = dateUtils.today();
+  // Pre-calculate dates once using UTC
+  const today = dateUtils.todayUTC();
   const lookbackDates = new Array(LOOKBACK_WINDOW);
   const dateStrings = new Array(LOOKBACK_WINDOW);
 
   for (let i = 0; i < LOOKBACK_WINDOW; i++) {
     const date = dateUtils.subtractDays(today, i).toDate();
     lookbackDates[i] = date;
-    dateStrings[i] = dateUtils.toDateString(date);
+    dateStrings[i] = dateUtils.toServerDateString(date);
   }
 
   // Create completion lookup table
@@ -78,7 +78,7 @@ function preprocessData(
     { isSkipped: boolean; isCompleted: boolean }
   > = {};
   completions.forEach((completion) => {
-    const key = `${completion.habit_id}_${dateUtils.toDateString(
+    const key = `${completion.habit_id}_${dateUtils.toServerDateString(
       completion.completion_date
     )}`;
     completionLookup[key] = {
