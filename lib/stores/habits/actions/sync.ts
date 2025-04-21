@@ -1,6 +1,6 @@
 import { StateCreator } from 'zustand';
 import { PendingOperation, SharedSlice, StreakAchievements } from '../types';
-import dayjs from '@/lib/utils/dayjs';
+import { dateUtils } from '@/lib/utils/dayjs';
 import { supabase } from '@/supabase/client';
 import { getUserIdOrThrow, STORE_CONSTANTS } from '@/lib/utils/habits';
 
@@ -18,15 +18,18 @@ export const createSyncSlice: StateCreator<SharedSlice, [], [], SyncSlice> = (
   pendingOperations: [],
   processPendingOperations: async () => {
     const { pendingOperations } = get();
-    const now = dayjs();
+    const now = dateUtils.nowUTC();
     const remainingOperations: PendingOperation[] = [];
 
     for (const operation of pendingOperations) {
       // Skip if we've tried too recently
       if (
         operation.lastAttempt &&
-        now.diff(dayjs(operation.lastAttempt)) <
-          STORE_CONSTANTS.MIN_RETRY_INTERVAL
+        now.diff(
+          dateUtils.fromServerDate(
+            dateUtils.toServerDateTime(operation.lastAttempt)
+          )
+        ) < STORE_CONSTANTS.MIN_RETRY_INTERVAL
       ) {
         remainingOperations.push(operation);
         continue;
@@ -78,7 +81,7 @@ export const createSyncSlice: StateCreator<SharedSlice, [], [], SyncSlice> = (
       // Process any pending operations first
       await get().processPendingOperations();
 
-      const lastSync = get().lastSyncTime.toISOString();
+      const lastSync = dateUtils.toServerDateTime(get().lastSyncTime);
 
       // Sync habits
       const { data: serverHabits, error: habitsError } = await supabase
@@ -115,7 +118,10 @@ export const createSyncSlice: StateCreator<SharedSlice, [], [], SyncSlice> = (
           const localHabit = localHabits.get(serverHabit.id);
           if (
             !localHabit ||
-            dayjs(serverHabit.updated_at).isAfter(dayjs(localHabit.updated_at))
+            dateUtils.isAfterDay(
+              dateUtils.fromServerDate(serverHabit.updated_at),
+              dateUtils.fromServerDate(localHabit.updated_at)
+            )
           ) {
             set((state) => {
               const newHabits = new Map(state.habits);
@@ -145,7 +151,7 @@ export const createSyncSlice: StateCreator<SharedSlice, [], [], SyncSlice> = (
 
         // Update cache for affected dates
         affectedDates.forEach((dateString) => {
-          const date = dayjs(dateString).toDate();
+          const date = dateUtils.fromServerDate(dateString).toDate();
           get().updateDayStatus(date);
         });
       }
@@ -166,7 +172,7 @@ export const createSyncSlice: StateCreator<SharedSlice, [], [], SyncSlice> = (
       }
 
       set({
-        lastSyncTime: dayjs().toDate(),
+        lastSyncTime: dateUtils.nowUTC().toDate(),
         error: null,
       });
     } catch (error) {

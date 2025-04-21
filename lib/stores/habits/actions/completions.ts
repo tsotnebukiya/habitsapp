@@ -2,7 +2,7 @@ import { type HabitAction, type HabitCompletion } from '../types';
 import { calculateHabitToggle, normalizeDate } from '@/lib/utils/habits';
 import { StateCreator } from 'zustand';
 import { SharedSlice } from '../types';
-import dayjs from '@/lib/utils/dayjs';
+import { dateUtils } from '@/lib/utils/dayjs';
 import { v4 as uuidv4 } from 'uuid';
 import { supabase } from '@/supabase/client';
 import { getUserIdOrThrow } from '@/lib/utils/habits';
@@ -33,12 +33,11 @@ export const createCompletionSlice: StateCreator<
 > = (set, get) => ({
   completions: new Map(),
   addCompletion: async (completionData) => {
-    const startTime = performance.now();
-    const now = dayjs();
+    const now = dateUtils.nowUTC();
     const newCompletion: HabitCompletion = {
       ...completionData,
       id: uuidv4(),
-      created_at: now.toISOString(),
+      created_at: dateUtils.toServerDateTime(now),
     };
 
     // Update local store first
@@ -98,7 +97,7 @@ export const createCompletionSlice: StateCreator<
 
       if (error) throw error;
     } catch (error) {
-      const now = dayjs();
+      const now = dateUtils.nowUTC();
       const pendingOp = {
         id,
         type: 'update' as const,
@@ -115,6 +114,7 @@ export const createCompletionSlice: StateCreator<
 
     await get().processPendingOperations();
   },
+
   toggleHabitStatus: (
     habitId: string,
     date: Date,
@@ -159,7 +159,6 @@ export const createCompletionSlice: StateCreator<
     }
 
     // Actions
-
     get().updateDayStatus(date);
     setTimeout(() => {
       get().calculateAndUpdate();

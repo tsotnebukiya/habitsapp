@@ -1,7 +1,7 @@
 import { StateCreator } from 'zustand';
 import { supabase } from '@/supabase/client';
 import { v4 as uuidv4 } from 'uuid';
-import dayjs from '@/lib/utils/dayjs';
+import { dateUtils } from '@/lib/utils/dayjs';
 import {
   getUserIdOrThrow,
   getCurrentProgress,
@@ -34,15 +34,15 @@ export const createHabitSlice: StateCreator<SharedSlice, [], [], HabitSlice> = (
   habits: new Map(),
 
   addHabit: async (habitData) => {
-    const now = dayjs();
+    const now = dateUtils.nowUTC();
     const userId = getUserIdOrThrow();
 
     const newHabit: Habit = {
       ...habitData,
       id: uuidv4(),
       user_id: userId,
-      created_at: now.toISOString(),
-      updated_at: now.toISOString(),
+      created_at: dateUtils.toServerDateTime(now),
+      updated_at: dateUtils.toServerDateTime(now),
       is_active: true,
     };
 
@@ -54,7 +54,6 @@ export const createHabitSlice: StateCreator<SharedSlice, [], [], HabitSlice> = (
     });
 
     // Actions
-
     get().updateAffectedDates(newHabit.id);
     setTimeout(() => {
       get().calculateAndUpdate();
@@ -86,11 +85,11 @@ export const createHabitSlice: StateCreator<SharedSlice, [], [], HabitSlice> = (
     const habit = get().habits.get(id);
     if (!habit) return;
 
-    const now = dayjs();
+    const now = dateUtils.nowUTC();
     const updatedHabit = {
       ...habit,
       ...updates,
-      updated_at: now.toISOString(),
+      updated_at: dateUtils.toServerDateTime(now),
     };
 
     // Update local first
@@ -179,7 +178,7 @@ export const createHabitSlice: StateCreator<SharedSlice, [], [], HabitSlice> = (
 
       if (habitError) throw habitError;
     } catch (error) {
-      const now = dayjs();
+      const now = dateUtils.nowUTC();
       const pendingOp = {
         id,
         type: 'delete' as const,
@@ -197,6 +196,7 @@ export const createHabitSlice: StateCreator<SharedSlice, [], [], HabitSlice> = (
 
     await get().processPendingOperations();
   },
+
   getHabitStatus: (habitId: string, date: Date): HabitCompletion | null => {
     return getHabitStatus(
       Array.from(get().completions.values()),
@@ -204,6 +204,7 @@ export const createHabitSlice: StateCreator<SharedSlice, [], [], HabitSlice> = (
       date
     );
   },
+
   getCurrentValue: (habitId: string, date: Date): number => {
     return getCurrentValue(
       Array.from(get().completions.values()),

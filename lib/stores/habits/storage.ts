@@ -1,4 +1,4 @@
-import dayjs from '@/lib/utils/dayjs';
+import { dateUtils } from '@/lib/utils/dayjs';
 import { MMKV } from 'react-native-mmkv';
 import { PersistOptions } from 'zustand/middleware';
 import { SharedSlice } from './types';
@@ -18,12 +18,12 @@ const storage: PersistStorage<SharedSlice> = {
       ...parsed,
       state: {
         ...parsed.state,
-        // Existing
         habits: new Map(parsed.state.habits),
         completions: new Map(parsed.state.completions),
         monthCache: new Map(Object.entries(parsed.state.monthCache || {})),
-        lastSyncTime: dayjs(parsed.state.lastSyncTime).toDate(),
-        // New achievement fields
+        lastSyncTime: dateUtils
+          .fromServerDate(parsed.state.lastSyncTime)
+          .toDate(),
         streakAchievements: parsed.state.streakAchievements || {},
         currentStreak: parsed.state.currentStreak || 0,
         maxStreak: parsed.state.maxStreak || 0,
@@ -40,12 +40,10 @@ const storage: PersistStorage<SharedSlice> = {
       ...value,
       state: {
         ...value.state,
-        // Existing
         habits: Array.from(value.state.habits.entries()),
         completions: Array.from(value.state.completions.entries()),
         monthCache: Object.fromEntries(value.state.monthCache),
-        lastSyncTime: value.state.lastSyncTime.toISOString(),
-        // Achievement fields pass through as is - they're already serializable
+        lastSyncTime: dateUtils.toServerDateTime(value.state.lastSyncTime),
         streakAchievements: value.state.streakAchievements,
         currentStreak: value.state.currentStreak,
         maxStreak: value.state.maxStreak,

@@ -5,14 +5,14 @@ import { createHabitSlice } from './actions/habits';
 import { createSyncSlice } from './actions/sync';
 import { createCompletionSlice } from './actions/completions';
 import { createCalendarSlice } from './actions/calendar';
-import dayjs from '@/lib/utils/dayjs';
+import { dateUtils } from '@/lib/utils/dayjs';
 import { options } from './storage';
 import { createAchievementSlice } from './actions/achievements';
 
 const useHabitsStore = create<SharedSlice>()(
   persist(
     (...a) => ({
-      lastSyncTime: dayjs(0).toDate(),
+      lastSyncTime: dateUtils.nowUTC().toDate(),
       isLoading: false,
       error: null,
       ...createHabitSlice(...a),
