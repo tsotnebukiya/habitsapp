@@ -1421,3 +1421,25 @@ Detailed implementation plan for the notification system:
 3. Notification preferences are easily manageable
 4. System handles background state efficiently
 5. Notifications are properly grouped and categorized
+
+### Supabase Integration Updates (25c50d03)
+
+- Upgraded Supabase client to v2.49.4
+- Moved Supabase client to dedicated directory
+- Added notifications table and functionality
+- Implemented push notification system with Edge Functions
+- Removed temporary notification files in favor of Supabase-based solution
+- Added push_token field to users table
+
+### Current Focus
+
+- Implementing and testing push notification system
+- Fixing habit deletion bug where updateAffectedDates fails
+- Ensuring proper type generation and usage
+
+### Next Steps
+
+1. Test push notification delivery
+2. Fix habit deletion calendar update issue
+3. Implement notification preferences
+4. Add notification UI components

@@ -534,3 +534,31 @@ import dayjs from 'dayjs';
    - Optimistic updates
    - Seamless user experience
    - Background synchronization
+
+## Supabase Integration
+
+### Version and Setup
+
+- Using @supabase/supabase-js v2.49.4 (upgraded from 2.44.4)
+- Supabase client is now located in `supabase/client.ts`
+- Types are auto-generated using `supabase:typegen` npm script
+
+### Database Schema
+
+The database includes the following tables:
+
+- habits
+- habit_completions
+- notifications (new)
+- user_achievements
+- users (updated with push_token field)
+
+### Edge Functions
+
+- New edge function for handling push notifications in `supabase/functions/index.ts`
+- Integrates with Expo push notification service
+
+### Type Generation
+
+- Types are now generated into `supabase/types.ts`
+- Command: `npx supabase gen types typescript --project-id jmkqqbzjdndmxrtfibsa --schema public`

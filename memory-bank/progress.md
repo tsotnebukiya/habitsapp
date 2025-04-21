@@ -425,3 +425,26 @@
    - ✅ Backend token storage
    - ⏳ Notification preferences
    - ⏳ User notification settings
+
+## Latest Updates
+
+### Completed
+
+- Upgraded Supabase integration to v2.49.4
+- Implemented server-side push notification handling
+- Added notifications table to database
+- Set up Edge Functions for notification delivery
+- Moved Supabase client to dedicated directory
+- Added type generation script
+
+### In Progress
+
+- Testing push notification system
+- Fixing habit deletion bug with calendar updates
+- Implementing notification preferences UI
+
+### Known Issues
+
+1. Calendar update fails after habit deletion due to timing issue with updateAffectedDates
+2. Push notification types need to be properly integrated with the app
+3. Need to implement proper error handling for notification delivery
