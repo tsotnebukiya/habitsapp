@@ -138,7 +138,10 @@ export type Database = {
           created_at: string
           data: Json | null
           id: string
+          notification_type: string
           read_at: string | null
+          scheduled_for: string | null
+          sent_at: string | null
           sound: string | null
           subtitle: string | null
           title: string
@@ -150,7 +153,10 @@ export type Database = {
           created_at?: string
           data?: Json | null
           id?: string
+          notification_type?: string
           read_at?: string | null
+          scheduled_for?: string | null
+          sent_at?: string | null
           sound?: string | null
           subtitle?: string | null
           title: string
@@ -162,7 +168,10 @@ export type Database = {
           created_at?: string
           data?: Json | null
           id?: string
+          notification_type?: string
           read_at?: string | null
+          scheduled_for?: string | null
+          sent_at?: string | null
           sound?: string | null
           subtitle?: string | null
           title?: string
@@ -237,6 +246,7 @@ export type Database = {
           id: string
           onboarding_complete: boolean | null
           push_token: string | null
+          timezone: string
           updated_at: string
         }
         Insert: {
@@ -252,6 +262,7 @@ export type Database = {
           id: string
           onboarding_complete?: boolean | null
           push_token?: string | null
+          timezone?: string
           updated_at?: string
         }
         Update: {
@@ -267,6 +278,7 @@ export type Database = {
           id?: string
           onboarding_complete?: boolean | null
           push_token?: string | null
+          timezone?: string
           updated_at?: string
         }
         Relationships: []
