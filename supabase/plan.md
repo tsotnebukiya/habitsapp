@@ -63,7 +63,7 @@ export function getTimezoneOffset(timezone: string): number {
     return sign * hours;
   }
 
-  // For more complex timezones (e.g., America/New_York),
+  // For more complex timezones (e.g., America/New_York),î
   // we would need to use a timezone database
   const commonTimezones: Record<string, number> = {
     'America/New_York': -5, // EST

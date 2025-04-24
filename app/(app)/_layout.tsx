@@ -9,11 +9,9 @@ import { useNotifications } from '@/lib/hooks/useNotifications';
 
 function StackLayout() {
   const { profile } = useUserProfileStore();
-
   const [isInitializing, setIsInitializing] = useState(true);
-
+  useNotifications();
   useEffect(() => {
-    useNotifications();
     async function initializeApp() {
       try {
         // Initial sync for habits if user is logged in

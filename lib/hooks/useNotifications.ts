@@ -9,6 +9,8 @@ import {
   getNotificationState,
 } from '../utils/notifications';
 import { useAppStore } from '../stores/app_state';
+import { supabase } from '@/supabase/client';
+import { dateUtils } from '../utils/dayjs';
 
 export function useNotifications() {
   const userId = useUserProfileStore((state) => state.profile?.id);
@@ -18,9 +20,17 @@ export function useNotifications() {
     if (!userId) return;
 
     async function setupNotifications() {
+      // Update user timezone
+      const currentTimezone = dateUtils.getCurrentTimezone();
       // Try to register if preference is null or enabled
       if (notificationsEnabled === null || notificationsEnabled) {
-        const token = await registerForPushNotificationsAsync();
+        const [token] = await Promise.all([
+          registerForPushNotificationsAsync(),
+          await supabase
+            .from('users')
+            .update({ timezone: currentTimezone })
+            .eq('id', userId!),
+        ]);
         if (token) {
           await savePushToken(userId!, token);
           setNotificationsEnabled(true);
@@ -52,17 +62,20 @@ export function useNotifications() {
 
   const toggleNotifications = useCallback(
     async (enable: boolean) => {
-      if (!userId) return;
-      if (enable) {
-        const token = await registerForPushNotificationsAsync();
-
-        if (token) {
-          await savePushToken(userId, token);
-          setNotificationsEnabled(true);
+      try {
+        if (!userId) return;
+        if (enable) {
+          const token = await registerForPushNotificationsAsync();
+          if (token) {
+            await savePushToken(userId, token);
+            setNotificationsEnabled(true);
+          }
+        } else {
+          await removePushToken(userId);
+          setNotificationsEnabled(false);
         }
-      } else {
-        await removePushToken(userId);
-        setNotificationsEnabled(false);
+      } catch (err) {
+        console.log(err, 'error');
       }
     },
     [userId]

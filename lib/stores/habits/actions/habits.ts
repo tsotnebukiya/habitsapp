@@ -134,7 +134,6 @@ export const createHabitSlice: StateCreator<SharedSlice, [], [], HabitSlice> = (
   deleteHabit: async (id) => {
     const habit = get().habits.get(id);
     if (!habit) return;
-    console.log('deleting habit', habit);
     // Update locally first
     set((state) => {
       const newState = { ...state };
@@ -157,7 +156,6 @@ export const createHabitSlice: StateCreator<SharedSlice, [], [], HabitSlice> = (
     });
     const dates = getAffectedDates(habit);
     // Actions
-    console.log(dates);
     get().updateAffectedDates(habit.id, dates);
     setTimeout(() => {
       get().calculateAndUpdate();

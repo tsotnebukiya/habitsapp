@@ -70,7 +70,6 @@ export const createCalendarSlice: StateCreator<
   },
   batchUpdateDayStatuses: (dates: Date[]) => {
     const updates = new Map<string, OptimizedMonthCache>();
-    console.log(dates);
     dates.forEach((date) => {
       const monthKey = getMonthKey(date);
       const dateString = dayjs(date).format('YYYY-MM-DD');
@@ -86,7 +85,6 @@ export const createCalendarSlice: StateCreator<
         Array.from(get().completions.values()),
         date
       );
-      console.log(status, date);
       const currentCache = get().monthCache.get(monthKey) || {};
       const currentStatus = currentCache[dateString];
 

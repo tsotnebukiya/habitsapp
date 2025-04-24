@@ -28,6 +28,9 @@ export const dateUtils = {
   toUTC: (date: DateInput) => dayjs(date).utc(),
   fromUTC: (date: DateInput) => dayjs.utc(date).local(),
 
+  // Timezone utilities
+  getCurrentTimezone: () => dayjs.tz.guess(),
+
   // Server date formatting (always UTC)
   toServerDateString: (date: DateInput) =>
     dayjs(date).utc().format('YYYY-MM-DD'),

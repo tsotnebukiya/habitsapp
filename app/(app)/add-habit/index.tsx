@@ -64,7 +64,6 @@ export default function AddHabit() {
       // Add the day
       setFormField('daysOfWeek', [...currentDays, dayIndex].sort());
     }
-    console.log(formData.daysOfWeek);
   };
 
   // Reset form when component mounts

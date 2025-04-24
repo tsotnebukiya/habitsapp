@@ -29,7 +29,6 @@ const HabitList = memo(function HabitList({ selectedDate }: HabitListProps) {
   const today = dateUtils.todayUTC();
   const selectedDay = dateUtils.fromUTC(selectedDate);
   const afterToday = selectedDay.isAfter(today);
-  console.log(selectedDay);
   const showIsAfterToast = () => {
     Toast.show({
       type: 'info',
