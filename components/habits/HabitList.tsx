@@ -10,6 +10,7 @@ import Colors from '@/lib/constants/Colors';
 import dayjs from 'dayjs';
 import { Habit } from '@/lib/stores/habits/types';
 import { dateUtils } from '@/lib/utils/dayjs';
+import { after } from 'node:test';
 
 interface HabitListProps {
   selectedDate: Date;
@@ -28,7 +29,7 @@ const HabitList = memo(function HabitList({ selectedDate }: HabitListProps) {
 
   const today = dateUtils.todayUTC();
   const selectedDay = dateUtils.fromUTC(selectedDate);
-  const afterToday = selectedDay.isAfter(today);
+  const afterToday = selectedDay.startOf('day').isAfter(today.startOf('day'));
   const showIsAfterToast = () => {
     Toast.show({
       type: 'info',

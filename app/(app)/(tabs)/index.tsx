@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Button } from 'react-native';
 import { ErrorBoundary } from '@sentry/react-native';
 import useHabitsStore from '@/lib/stores/habits/store';
 import useUserProfileStore from '@/lib/stores/user_profile';
@@ -12,6 +12,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 export default function Home() {
   const { profile } = useUserProfileStore();
   const syncData = useHabitsStore((state) => state.syncWithServer);
+  const resetAchievements = useHabitsStore((state) => state.resetAchievements);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const router = useRouter();
   const insets = useSafeAreaInsets();
@@ -34,6 +35,7 @@ export default function Home() {
   return (
     <View style={[styles.container, { paddingTop: insets.top }]}>
       <View style={styles.content}>
+        {/* <Button title="Reset Achievements" onPress={resetAchievements} /> */}
         <WeekView selectedDate={selectedDate} onDateSelect={setSelectedDate} />
         <HabitList selectedDate={selectedDate} />
         <TouchableOpacity
