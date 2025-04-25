@@ -137,47 +137,62 @@ export type Database = {
           body: string
           created_at: string
           data: Json | null
+          habit_id: string | null
           id: string
-          notification_type: string
-          read_at: string | null
-          scheduled_for: string | null
-          sent_at: string | null
+          notification_type: Database["public"]["Enums"]["notification_type"]
+          processed: boolean
+          scheduled_for: string
           sound: string | null
           subtitle: string | null
           title: string
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           badge?: number | null
           body: string
           created_at?: string
           data?: Json | null
+          habit_id?: string | null
           id?: string
-          notification_type?: string
-          read_at?: string | null
-          scheduled_for?: string | null
-          sent_at?: string | null
+          notification_type?: Database["public"]["Enums"]["notification_type"]
+          processed?: boolean
+          scheduled_for: string
           sound?: string | null
           subtitle?: string | null
           title: string
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           badge?: number | null
           body?: string
           created_at?: string
           data?: Json | null
+          habit_id?: string | null
           id?: string
-          notification_type?: string
-          read_at?: string | null
-          scheduled_for?: string | null
-          sent_at?: string | null
+          notification_type?: Database["public"]["Enums"]["notification_type"]
+          processed?: boolean
+          scheduled_for?: string
           sound?: string | null
           subtitle?: string | null
           title?: string
-          user_id?: string | null
+          user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "notifications_habit_id_fkey"
+            columns: ["habit_id"]
+            isOneToOne: false
+            referencedRelation: "habits"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "notifications_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_achievements: {
         Row: {
@@ -296,6 +311,7 @@ export type Database = {
         | "skipped"
         | "completed"
         | "in_progress"
+      notification_type: "HABIT" | "MORNING" | "EVENING" | "STREAK" | "GENERAL"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -417,6 +433,7 @@ export const Constants = {
         "completed",
         "in_progress",
       ],
+      notification_type: ["HABIT", "MORNING", "EVENING", "STREAK", "GENERAL"],
     },
   },
 } as const

@@ -76,7 +76,7 @@ export const createSyncSlice: StateCreator<SharedSlice, [], [], SyncSlice> = (
 
   syncWithServer: async () => {
     set({ isLoading: true });
-
+    console.log('syncWithServer');
     try {
       // Process any pending operations first
       await get().processPendingOperations();
@@ -88,7 +88,7 @@ export const createSyncSlice: StateCreator<SharedSlice, [], [], SyncSlice> = (
         .from('habits')
         .select('*')
         .gt('updated_at', lastSync);
-
+      console.log(serverHabits);
       if (habitsError) throw habitsError;
 
       // Sync completions
@@ -97,7 +97,7 @@ export const createSyncSlice: StateCreator<SharedSlice, [], [], SyncSlice> = (
           .from('habit_completions')
           .select('*')
           .gt('created_at', lastSync);
-
+      console.log(serverCompletions);
       if (completionsError) throw completionsError;
 
       // Add achievements sync
@@ -107,47 +107,31 @@ export const createSyncSlice: StateCreator<SharedSlice, [], [], SyncSlice> = (
           .select('*')
           .eq('user_id', getUserIdOrThrow())
           .single();
-
+      console.log(serverAchievements);
       if (achievementsError) throw achievementsError;
 
       const affectedHabits = new Set<string>();
 
       if (serverHabits) {
-        const localHabits = get().habits;
+        const newHabits = new Map();
         serverHabits.forEach((serverHabit) => {
-          const localHabit = localHabits.get(serverHabit.id);
-          if (
-            !localHabit ||
-            dateUtils.isAfterDay(
-              dateUtils.fromServerDate(serverHabit.updated_at),
-              dateUtils.fromServerDate(localHabit.updated_at)
-            )
-          ) {
-            set((state) => {
-              const newHabits = new Map(state.habits);
-              newHabits.set(serverHabit.id, serverHabit);
-              return { habits: newHabits };
-            });
-            affectedHabits.add(serverHabit.id);
-          }
+          newHabits.set(serverHabit.id, serverHabit);
+          affectedHabits.add(serverHabit.id);
         });
+        set({ habits: newHabits });
       }
 
       if (serverCompletions) {
-        const localCompletions = get().completions;
+        const newCompletions = new Map();
         const affectedDates = new Set<string>();
 
         serverCompletions.forEach((serverCompletion) => {
-          if (!localCompletions.has(serverCompletion.id)) {
-            set((state) => {
-              const newCompletions = new Map(state.completions);
-              newCompletions.set(serverCompletion.id, serverCompletion);
-              return { completions: newCompletions };
-            });
-            affectedDates.add(serverCompletion.completion_date);
-            affectedHabits.add(serverCompletion.habit_id);
-          }
+          newCompletions.set(serverCompletion.id, serverCompletion);
+          affectedDates.add(serverCompletion.completion_date);
+          affectedHabits.add(serverCompletion.habit_id);
         });
+
+        set({ completions: newCompletions });
 
         // Update cache for affected dates
         affectedDates.forEach((dateString) => {

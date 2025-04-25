@@ -28,7 +28,7 @@ interface HabitFormData {
 
   // Reminder fields
   hasReminder: boolean;
-  reminderTime: Date | null;
+  reminderTime: string | null;
 
   // Streak goal
   streakGoal: number | null;
@@ -144,7 +144,13 @@ export const useAddHabitStore = create<AddHabitState>()((set, get) => ({
 
   resetForm: () => {
     set({
-      formData: { ...initialFormData },
+      formData: {
+        ...initialFormData,
+        // Ensure dates are reset properly if needed, though initialFormData handles it
+        startDate: dayjs().toDate(),
+        endDate: null,
+        reminderTime: null, // Ensure reminderTime is reset to null string
+      },
       currentStep: 'category', // Reset to category step
       isValid: false,
       selectedTemplate: null,

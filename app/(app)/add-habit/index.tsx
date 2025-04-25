@@ -70,16 +70,10 @@ export default function AddHabit() {
   useEffect(() => {
     resetForm();
 
-    // Set default reminder time to 9:00 AM
-    const defaultReminderTime = dayjs().toDate();
-    defaultReminderTime.setHours(9, 0, 0, 0);
-    setFormField('reminderTime', defaultReminderTime);
-
-    // Set default end date to 30 days from now
-    const defaultEndDate = dayjs().toDate();
-    defaultEndDate.setDate(defaultEndDate.getDate() + 30);
-    setFormField('endDate', defaultEndDate);
-  }, []);
+    // Set default values only if needed (resetForm handles initial)
+    // Default reminder time is handled when toggling the switch
+    // Default end date is handled when toggling the switch
+  }, [resetForm]); // Added resetForm dependency
 
   const handleSubmit = async () => {
     if (!formData.name.trim() || !profile?.id) return;
@@ -104,10 +98,7 @@ export default function AddHabit() {
             ? dateUtils.toServerDateString(formData.endDate)
             : null,
         gamification_attributes: null,
-        reminder_time:
-          formData.hasReminder && formData.reminderTime
-            ? dateUtils.toServerDateTime(formData.reminderTime)
-            : null,
+        reminder_time: formData.hasReminder ? formData.reminderTime : null,
         streak_goal: formData.streakGoal,
 
         // Existing fields
@@ -127,6 +118,13 @@ export default function AddHabit() {
     } catch (error) {
       // ... error handling ...
     }
+  };
+
+  // Helper function to get Date object for Time Picker from HH:mm string
+  const getPickerDate = (timeString: string | null): Date => {
+    if (!timeString) return dayjs().hour(9).minute(0).toDate(); // Default to 9 AM if null
+    const [hour, minute] = timeString.split(':').map(Number);
+    return dayjs().hour(hour).minute(minute).toDate();
   };
 
   // Render different components based on current step
@@ -392,10 +390,12 @@ export default function AddHabit() {
                 onValueChange={(value) => {
                   setFormField('hasReminder', value);
                   if (value && !formData.reminderTime) {
-                    // Set default reminder time to 9 AM
-                    const defaultTime = dayjs().toDate();
-                    defaultTime.setHours(9, 0, 0, 0);
-                    setFormField('reminderTime', defaultTime);
+                    // Set default reminder time string to 9 AM
+                    setFormField('reminderTime', '09:00');
+                  }
+                  // If toggled off, we might want to set reminderTime back to null
+                  else {
+                    setFormField('reminderTime', null);
                   }
                 }}
               />
@@ -408,10 +408,11 @@ export default function AddHabit() {
               >
                 <View style={styles.dateButtonContent}>
                   <Text style={styles.dateButtonText}>
+                    {/* Format HH:mm string for display */}
                     {formData.reminderTime
-                      ? dateUtils
-                          .fromUTC(formData.reminderTime)
-                          .format('h:mm A')
+                      ? dayjs(getPickerDate(formData.reminderTime)).format(
+                          'h:mm A'
+                        )
                       : 'Select Time'}
                   </Text>
                   <FontAwesome6 name="clock" size={16} color="#8E8E93" />
@@ -423,11 +424,15 @@ export default function AddHabit() {
               isVisible={isTimePickerVisible}
               mode="time"
               onConfirm={(date) => {
+                // Convert selected date object to HH:mm string
+                const selectedTime = dayjs(date);
+                const formattedTime = selectedTime.format('HH:mm');
+                setFormField('reminderTime', formattedTime);
                 setTimePickerVisible(false);
-                setFormField('reminderTime', date);
               }}
               onCancel={() => setTimePickerVisible(false)}
-              date={formData.reminderTime || dayjs().toDate()}
+              // Convert HH:mm string back to Date for the picker
+              date={getPickerDate(formData.reminderTime)}
             />
 
             {/* Streak Goal */}
