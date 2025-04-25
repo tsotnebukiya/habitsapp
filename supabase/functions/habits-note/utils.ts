@@ -4,9 +4,11 @@ import { SupabaseClient } from 'jsr:@supabase/supabase-js@2';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
+import isBetween from 'dayjs/plugin/isBetween';
 
 dayjs.extend(timezone);
 dayjs.extend(utc);
+dayjs.extend(isBetween);
 
 export interface User {
   id: string;
@@ -43,11 +45,17 @@ export interface UserWithHabits extends User {
 
 export interface NotificationData {
   user_id: string;
+  habit_id?: string;
   title: string;
   body: string;
-  notification_type: 'MORNING' | 'EVENING';
+  notification_type: 'MORNING' | 'EVENING' | 'HABIT';
   scheduled_for: string;
   processed: boolean;
+  data?: {
+    habit_id: string;
+    color: string;
+    icon: string;
+  };
 }
 
 export async function getUsersWithPushTokens(
@@ -74,11 +82,9 @@ export async function getActiveHabits(
     .select('*')
     .in('user_id', userIds)
     .eq('is_active', true)
+    .not('reminder_time', 'is', null)
     .lte('start_date', date)
-    // Handle (end_date is null OR end_date >= date)
     .or(`end_date.is.null,end_date.gte.${date}`)
-    // Frequency logic:
-    // (frequency_type = 'daily') OR (frequency_type = 'weekly' AND days_of_week contains dayOfWeek)
     .or(
       `frequency_type.eq.daily,and(frequency_type.eq.weekly,days_of_week.cs.{${dayOfWeek}})`
     );
@@ -148,88 +154,80 @@ export function isNextHourTarget(
 }
 
 export function prepareNotifications(
-  usersWithData: UserWithHabits[],
-  morningHour: number,
-  eveningHour: number
+  usersWithHabits: UserWithHabits[]
 ): NotificationData[] {
-  const scheduledNotifications: NotificationData[] = [];
+  const notifications: NotificationData[] = [];
 
-  for (const user of usersWithData) {
-    const isMorningNext = isNextHourTarget(user.timezone, morningHour);
-    const isEveningNext = isNextHourTarget(user.timezone, eveningHour);
+  for (const user of usersWithHabits) {
+    // Get next hour in user's timezone
+    const userNextHour = dayjs().tz(user.timezone).add(1, 'hour').hour();
 
-    if (!isMorningNext && !isEveningNext) {
-      continue; // Skip if next hour isn't a target hour
-    }
+    console.log('Processing user timezone:', {
+      userId: user.id,
+      timezone: user.timezone,
+      nextHour: userNextHour,
+      totalHabits: user.habits.length,
+    });
 
-    const scheduledTime = dayjs()
-      .tz(user.timezone || 'UTC')
-      .add(1, 'hour')
-      .hour(isMorningNext ? morningHour : eveningHour)
-      .minute(0)
-      .second(0)
-      .millisecond(0);
-
-    if (isMorningNext) {
-      // Morning notification
-      if (user.habits.length === 0) {
-        scheduledNotifications.push({
-          user_id: user.id,
-          title: 'Start Your Day Right!',
-          body: 'Time to create some healthy habits! Add your first habit to get started. 🌟',
-          notification_type: 'MORNING',
-          scheduled_for: scheduledTime.toISOString(),
-          processed: false,
-        });
-      } else {
-        scheduledNotifications.push({
-          user_id: user.id,
-          title: 'Start Your Day Right!',
-          body: "Time to kickstart your daily habits! You've got this! 💫",
-          notification_type: 'MORNING',
-          scheduled_for: scheduledTime.toISOString(),
-          processed: false,
-        });
-      }
-    } else if (isEveningNext && user.habits.length > 0) {
-      // Evening notification (only for users with habits)
-      const completedHabits = user.habits.filter((habit) =>
-        habit.completions.some((c) => c.status === 'completed')
+    // Filter habits that:
+    // 1. Haven't been completed/skipped
+    // 2. Have reminder_time in the next hour of user's timezone
+    const habitsToNotify = user.habits.filter((habit) => {
+      // Check completion status
+      const isNotCompleted = !habit.completions.some(
+        (completion) =>
+          completion.status === 'completed' || completion.status === 'skipped'
       );
 
-      const completionRate =
-        (completedHabits.length / user.habits.length) * 100;
+      // Parse reminder time hour
+      const reminderHour = parseInt(habit.reminder_time!.split(':')[0]);
 
-      let message;
-      if (completionRate === 100) {
-        message = "Amazing job! You've completed all your habits today! 🎉";
-      } else if (completionRate >= 75) {
-        message = `Great progress! You've completed ${completedHabits.length} out of ${user.habits.length} habits. Keep going! 💪`;
-      } else if (completionRate >= 50) {
-        message = `You're halfway there! ${
-          completedHabits.length
-        } habits done, ${
-          user.habits.length - completedHabits.length
-        } to go. 🎯`;
-      } else if (completionRate > 0) {
-        message = `You've made a start with ${completedHabits.length} habit${
-          completedHabits.length === 1 ? '' : 's'
-        }. There's still time to complete more! 🚀`;
-      } else {
-        message =
-          "Don't forget about your habits! There's still time to make progress today. ✨";
-      }
+      // Check if reminder falls in next hour
+      const isInNextHour = reminderHour === userNextHour;
 
-      scheduledNotifications.push({
-        user_id: user.id,
-        title: 'Daily Habits Update',
-        body: message,
-        notification_type: 'EVENING',
-        scheduled_for: scheduledTime.toISOString(),
-        processed: false,
+      console.log('Checking habit:', {
+        habitId: habit.id,
+        habitName: habit.name,
+        reminderTime: habit.reminder_time,
+        reminderHour,
+        nextHour: userNextHour,
+        isNotCompleted,
+        isInNextHour,
       });
-    }
+
+      return isNotCompleted && isInNextHour;
+    });
+
+    console.log('Filtered habits:', {
+      userId: user.id,
+      totalHabitsToNotify: habitsToNotify.length,
+    });
+
+    // Create notifications for filtered habits
+    notifications.push(
+      ...habitsToNotify.map((habit) => {
+        // Create scheduled_for time in UTC
+        const [hours, minutes] = habit.reminder_time!.split(':');
+        const scheduledTime = dayjs()
+          .tz(user.timezone)
+          .hour(parseInt(hours))
+          .minute(parseInt(minutes))
+          .second(0)
+          .utc()
+          .format();
+
+        return {
+          user_id: user.id,
+          habit_id: habit.id,
+          title: `Hey! ${habit.name} Time ✨`,
+          body: `A few minutes of ${habit.name.toLowerCase()} will make your day better`,
+          notification_type: 'HABIT' as const,
+          scheduled_for: scheduledTime,
+          processed: false,
+        };
+      })
+    );
   }
 
-  return scheduledNotifications;
+  return notifications;
 }

@@ -10,15 +10,11 @@ import {
   getHabitCompletions,
   groupHabitsAndCompletions,
   prepareNotifications,
-  isNextHourTarget,
 } from './utils.ts';
 
 // Configure dayjs with UTC and timezone plugins
 dayjs.extend(utc);
 dayjs.extend(timezone);
-
-const MORNING_HOUR = 8;
-const EVENING_HOUR = 17; // 5 PM
 
 Deno.serve(async (req) => {
   try {
@@ -39,16 +35,7 @@ Deno.serve(async (req) => {
     const users = await getUsersWithPushTokens(supabaseClient);
     console.log(`Found ${users.length} users with push tokens`);
 
-    // 2. Filter users based on their next hour
-    console.log('Filtering users based on next hour');
-    const usersInTargetHour = users.filter(
-      (user) =>
-        isNextHourTarget(user.timezone, MORNING_HOUR) ||
-        isNextHourTarget(user.timezone, EVENING_HOUR)
-    );
-    console.log(`Found ${usersInTargetHour.length} users in target hour`);
-
-    if (usersInTargetHour.length === 0) {
+    if (users.length === 0) {
       return new Response(
         JSON.stringify({ success: true, notificationsScheduled: 0 }),
         { headers: { 'Content-Type': 'application/json' } }
@@ -60,7 +47,7 @@ Deno.serve(async (req) => {
     console.log(`Fetching habits for date: ${today}`);
     const habits = await getActiveHabits(
       supabaseClient,
-      usersInTargetHour.map((u) => u.id),
+      users.map((u) => u.id),
       today
     );
     console.log(`Found ${habits.length} active habits`);
@@ -79,19 +66,11 @@ Deno.serve(async (req) => {
 
     // 5. Group all data together
     console.log('Grouping data');
-    const usersWithData = groupHabitsAndCompletions(
-      usersInTargetHour,
-      habits,
-      completions
-    );
+    const usersWithData = groupHabitsAndCompletions(users, habits, completions);
 
     // 6. Prepare notifications
     console.log('Preparing notifications');
-    const scheduledNotifications = prepareNotifications(
-      usersWithData,
-      MORNING_HOUR,
-      EVENING_HOUR
-    );
+    const scheduledNotifications = prepareNotifications(usersWithData);
     console.log(`Prepared ${scheduledNotifications.length} notifications`);
 
     // 7. Insert scheduled notifications into the database

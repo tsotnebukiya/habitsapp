@@ -2,6 +2,7 @@
   "imports": {
     "dayjs": "https://esm.sh/dayjs@1.11.10",
     "dayjs/plugin/utc": "https://esm.sh/dayjs@1.11.10/plugin/utc",
-    "dayjs/plugin/timezone": "https://esm.sh/dayjs@1.11.10/plugin/timezone"
+    "dayjs/plugin/timezone": "https://esm.sh/dayjs@1.11.10/plugin/timezone",
+    "dayjs/plugin/isBetween": "https://esm.sh/dayjs@1.11.10/plugin/isBetween"
   }
 }
