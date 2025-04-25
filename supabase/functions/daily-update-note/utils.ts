@@ -46,13 +46,6 @@ export interface NotificationData {
   title: string;
   body: string;
   notification_type: 'MORNING' | 'EVENING';
-  data: {
-    type: 'daily_update';
-    time: 'morning' | 'evening';
-    completionRate?: number;
-    completedCount?: number;
-    totalCount?: number;
-  };
   scheduled_for: string;
   processed: boolean;
 }
@@ -185,10 +178,6 @@ export function prepareNotifications(
           title: 'Start Your Day Right!',
           body: 'Time to create some healthy habits! Add your first habit to get started. 🌟',
           notification_type: 'MORNING',
-          data: {
-            type: 'daily_update',
-            time: 'morning',
-          },
           scheduled_for: scheduledTime.toISOString(),
           processed: false,
         });
@@ -198,11 +187,6 @@ export function prepareNotifications(
           title: 'Start Your Day Right!',
           body: "Time to kickstart your daily habits! You've got this! 💫",
           notification_type: 'MORNING',
-          data: {
-            type: 'daily_update',
-            time: 'morning',
-            totalCount: user.habits.length,
-          },
           scheduled_for: scheduledTime.toISOString(),
           processed: false,
         });
@@ -241,13 +225,6 @@ export function prepareNotifications(
         title: 'Daily Habits Update',
         body: message,
         notification_type: 'EVENING',
-        data: {
-          type: 'daily_update',
-          time: 'evening',
-          completionRate,
-          completedCount: completedHabits.length,
-          totalCount: user.habits.length,
-        },
         scheduled_for: scheduledTime.toISOString(),
         processed: false,
       });

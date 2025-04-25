@@ -44,7 +44,11 @@ export const dateUtils = {
   isPastDate: (date: DateInput) => dayjs(date).isBefore(dayjs(), 'day'),
 
   // Normalization for comparison (always in UTC)
-  normalize: (date: DateInput) => dayjs(date).utc().startOf('day'),
+  normalize: (date: DateInput) => {
+    // First ensure we're in UTC, then normalize to start of day
+    const utcDate = dayjs.utc(date);
+    return utcDate.startOf('day');
+  },
 
   // Comparisons (always normalized and in UTC)
   isSameDay: (date1: DateInput, date2: DateInput) =>
