@@ -261,6 +261,37 @@ CREATE TABLE user_achievements (
 );
 ```
 
+### Notifications
+
+```sql
+CREATE TYPE notification_type AS ENUM (
+    'HABIT',
+    'MORNING',
+    'EVENING',
+    'STREAK',
+    'GENERAL'
+);
+
+CREATE TABLE notifications (
+    id uuid DEFAULT uuid_generate_v4() PRIMARY KEY,
+    user_id uuid REFERENCES auth.users(id),
+    habit_id uuid REFERENCES habits(id),
+    title text NOT NULL,
+    body text NOT NULL,
+    subtitle text,
+    data jsonb DEFAULT '{}'::jsonb,
+    badge integer,
+    sound text,
+    notification_type notification_type DEFAULT 'GENERAL'::notification_type,
+    scheduled_for timestamptz NOT NULL,
+    processed boolean DEFAULT false
+);
+
+CREATE INDEX idx_notifications_unprocessed_scheduled
+ON notifications(scheduled_for)
+WHERE processed = false;
+```
+
 ## Technical Decisions
 
 ### Offline Support
@@ -549,16 +580,111 @@ The database includes the following tables:
 
 - habits
 - habit_completions
-- notifications (new)
+- notifications
 - user_achievements
 - users (updated with push_token field)
 
 ### Edge Functions
 
-- New edge function for handling push notifications in `supabase/functions/index.ts`
-- Integrates with Expo push notification service
+1. **Notification Processor** (`notification-processor/index.ts`)
+
+   - Runs every minute
+   - Processes notifications in batches of 599
+   - Handles invalid tokens
+   - Updates notification status
+
+2. **Habit Notifications** (`habits-note/index.ts`)
+
+   - Runs hourly
+   - Schedules habit reminders
+   - Handles timezone-aware scheduling
+   - Performance considerations for large scale
+
+3. **Streak Notifications** (`streak-note/index.ts`)
+   - Runs hourly
+   - Schedules streak achievement notifications
+   - Targets 2 PM local time
+   - Handles timezone differences
 
 ### Type Generation
 
 - Types are now generated into `supabase/types.ts`
 - Command: `npx supabase gen types typescript --project-id jmkqqbzjdndmxrtfibsa --schema public`
+
+### Performance Constraints
+
+1. Edge Function Limits:
+
+   - 5000ms timeout maximum
+   - Memory limitations
+   - CPU constraints
+
+2. Batch Processing:
+   - Expo limit: 599 notifications per batch
+   - Database query optimization needed
+   - Memory efficient processing required
+
+### Environment Variables
+
+```bash
+SUPABASE_URL=project_url
+SUPABASE_SERVICE_ROLE_KEY=service_role_key
+EXPO_ACCESS_TOKEN=expo_token
+```
+
+### Technical Dependencies
+
+1. **Supabase Edge Runtime**
+
+   - Edge function environment
+   - Database access
+   - Type definitions
+
+2. **Day.js**
+
+   - Timezone handling
+   - Date calculations
+   - UTC conversions
+
+3. **Expo Notifications**
+   - Push notification delivery
+   - Token management
+   - Error handling
+
+### Development Patterns
+
+1. **Timezone Handling**
+
+   - Store times in UTC
+   - Convert to user timezone for processing
+   - Handle DST changes
+
+2. **Error Handling**
+
+   - Invalid token cleanup
+   - Batch processing errors
+   - Database transaction safety
+
+3. **Performance Optimization**
+   - Efficient database queries
+   - Memory-efficient processing
+   - Batch operations
+
+### Monitoring Considerations
+
+1. **Logging**
+
+   - Detailed debug information
+   - Error tracking
+   - Performance metrics
+
+2. **Metrics**
+
+   - Notification delivery rates
+   - Processing times
+   - Error rates
+
+3. **Alerts**
+   - Function timeouts
+   - High error rates
+   - Invalid token spikes
