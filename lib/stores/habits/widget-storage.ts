@@ -5,8 +5,18 @@ import dayjs from 'dayjs';
 
 const { WidgetStorage } = NativeModules;
 
+// ---> ADDED: Check if the native module exists
+if (WidgetStorage) {
+  console.log('WidgetStorage native module found.');
+} else {
+  console.error(
+    'WidgetStorage native module is NOT available. Check linking/compilation.'
+  );
+}
+// <--- END ADDED
+
 const WIDGET_GROUP = 'group.com.vdl.habitapp.widget';
-const WIDGET_DATA_KEY = 'widget-data';
+const WIDGET_DATA_KEY = 'habits'; // Use 'habits' as the key to match widget code
 
 interface WidgetStorageInterface {
   setItem(key: string, value: string): Promise<boolean>;
@@ -27,27 +37,29 @@ const transformStoreDataForWidget = (state: SharedSlice) => {
       dateUtils.fromServerDate(c.completion_date).isAfter(startOfWeek)
     );
 
-  // Transform into widget format
-  const widgetData = {
-    habits: habits.map((habit) => ({
-      id: habit.id,
-      name: habit.name,
-      icon: habit.icon,
-      completions: completions
-        .filter((c) => c.habit_id === habit.id)
-        .reduce((acc, completion) => {
-          acc[completion.completion_date] = true;
-          return acc;
-        }, {} as Record<string, boolean>),
-    })),
-    lastUpdated: dateUtils.nowUTC().toISOString(),
-  };
+  // Transform into widget format (matching Swift Habit struct)
+  const widgetData = habits.map((habit) => ({
+    id: habit.id,
+    name: habit.name,
+    icon: habit.icon,
+    completions: completions
+      .filter((c) => c.habit_id === habit.id)
+      .map((c) => dateUtils.fromServerDate(c.completion_date).toISOString()), // Store ISO strings
+  }));
 
   return widgetData;
 };
 
 export const widgetStorage: WidgetStorageInterface = {
   async setItem(key: string, value: string) {
+    // ---> ADDED: Check before calling
+    if (!WidgetStorage) {
+      console.error(
+        'Cannot setItem: WidgetStorage native module is not available.'
+      );
+      return false;
+    }
+    // <--- END ADDED
     try {
       return await WidgetStorage.setItem(key, value);
     } catch (error) {
@@ -57,6 +69,14 @@ export const widgetStorage: WidgetStorageInterface = {
   },
 
   async getItem(key: string) {
+    // ---> ADDED: Check before calling
+    if (!WidgetStorage) {
+      console.error(
+        'Cannot getItem: WidgetStorage native module is not available.'
+      );
+      return null;
+    }
+    // <--- END ADDED
     try {
       return await WidgetStorage.getItem(key);
     } catch (error) {
@@ -66,6 +86,14 @@ export const widgetStorage: WidgetStorageInterface = {
   },
 
   async removeItem(key: string) {
+    // ---> ADDED: Check before calling
+    if (!WidgetStorage) {
+      console.error(
+        'Cannot removeItem: WidgetStorage native module is not available.'
+      );
+      return false;
+    }
+    // <--- END ADDED
     try {
       return await WidgetStorage.removeItem(key);
     } catch (error) {
@@ -81,6 +109,7 @@ export const syncStoreToWidget = (state: SharedSlice) => {
     const widgetData = transformStoreDataForWidget(state);
     // Fire and forget - don't await the promise
     widgetStorage.setItem(WIDGET_DATA_KEY, JSON.stringify(widgetData));
+    console.log('Attempted to sync data to widget.'); // Added log
     return true;
   } catch (error) {
     console.error('Failed to sync store to widget:', error);

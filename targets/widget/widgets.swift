@@ -3,6 +3,8 @@ import SwiftUI
 import AppIntents
 
 struct Provider: TimelineProvider {
+    private let appGroup = "group.com.vdl.habitapp.widget"  // Match app.config.ts
+    
     func placeholder(in context: Context) -> SimpleEntry {
         SimpleEntry(date: Date(), habits: mockHabits())
     }
@@ -27,7 +29,7 @@ struct Provider: TimelineProvider {
     }
     
     func loadHabits() -> [Habit] {
-        if let userDefaults = UserDefaults(suiteName: "group.com.vdl.habitapp.widget"),
+        if let userDefaults = UserDefaults(suiteName: appGroup),
            let habitsData = userDefaults.string(forKey: "habits") {
             // Parse JSON string to [Habit]
             if let data = habitsData.data(using: .utf8),
@@ -62,6 +64,8 @@ struct Habit: Codable, Identifiable {
 struct ToggleHabitIntent: AppIntent {
     static var title: LocalizedStringResource = "Toggle Habit"
     static var description: LocalizedStringResource = "Marks a habit as complete or incomplete"
+    
+    private let appGroup = "group.com.vdl.habitapp.widget"  // Match app.config.ts
 
     @Parameter(title: "Habit ID")
     var habitId: String
@@ -77,7 +81,7 @@ struct ToggleHabitIntent: AppIntent {
     }
     
     func perform() async throws -> some IntentResult {
-        if let userDefaults = UserDefaults(suiteName: "group.com.vdl.habitapp.widget"),
+        if let userDefaults = UserDefaults(suiteName: appGroup),
            let habitsData = userDefaults.string(forKey: "habits"),
            let data = habitsData.data(using: .utf8),
            var habits = try? JSONDecoder().decode([Habit].self, from: data) {
@@ -220,6 +224,8 @@ struct WeeklyHabitsWidgetEntryView: View {
                 }
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(.background)
     }
 }
 
