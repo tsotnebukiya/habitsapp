@@ -41,6 +41,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
     'expo-router',
     'expo-localization',
     'expo-apple-authentication',
+    '@bacons/apple-targets',
     [
       'expo-notifications',
       {
