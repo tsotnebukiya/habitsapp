@@ -186,11 +186,22 @@
 
 ### High Priority (Current Sprint)
 
-1. **Statistics View** ⏳
-   - [ ] Key charts implementation
-   - [ ] Habit comparison view
-   - [ ] Data connection
-   - [ ] Matrix score history
+1. **iOS Widget Implementation** ⏳
+
+   - [ ] Verify `@bacons/expo-apple-targets` setup
+   - [ ] Investigate/Implement App Group data sharing (React Native <-> Swift)
+   - [ ] Implement Medium Widget UI (SwiftUI)
+   - [ ] Implement Medium Widget functionality (data fetching, completion)
+   - [ ] Implement Large Widget UI (SwiftUI)
+   - [ ] Implement Large Widget functionality (data fetching, completion)
+   - [ ] Implement widget interactions (open app)
+   - [ ] Test widgets thoroughly
+
+2. **Statistics View** ⏳
+   - [ ] Implement key charts
+   - [ ] Create habit comparison view
+   - [ ] Connect to habit data
+   - [ ] Add matrix score history
 
 ### Medium Priority
 

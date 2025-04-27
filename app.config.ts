@@ -1,6 +1,8 @@
 import { ExpoConfig, ConfigContext } from 'expo/config';
 
-export default ({ config }: ConfigContext): ExpoConfig => ({
+export default ({
+  config,
+}: ConfigContext): ExpoConfig & { ios: { appleTeamId: string } } => ({
   name: 'HabitsApp',
   slug: 'HabitsApp',
   version: '1.0.0',
@@ -16,6 +18,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
   },
   assetBundlePatterns: ['**/*'],
   ios: {
+    appleTeamId: '43SWDCX5G6',
     supportsTablet: true,
     usesAppleSignIn: true,
     bundleIdentifier: 'com.vdl.habitapp',

@@ -2,6 +2,53 @@
 
 ## Current Focus
 
+We are shifting focus to implementing iOS widgets to enhance user engagement and provide quick access to habit tracking. This involves using the `@bacons/expo-apple-targets` library to create native widget extensions.
+
+### Widget Specifications
+
+Based on the provided design descriptions:
+
+#### Medium Widget (2x1)
+
+- **Purpose**: Today's habits with completion tracking
+- **Components**:
+  - Date display
+  - List of today's habits (3-4)
+  - Completion toggles
+  - Overall progress indicator
+- **Key Interactions**:
+  - Mark habits complete
+  - Tap to open app to that day
+
+#### Large Widget (4x2)
+
+- **Purpose**: Weekly overview with completion tracking
+- **Components**:
+  - 7-day grid
+  - Top habits for each day
+  - Completion status indicators
+  - Weekly progress bar
+- **Key Interactions**:
+  - Complete habits directly
+  - Tap day to open app to that day
+  - View weekly progress at a glance
+
+### Technology Choice
+
+- `@bacons/expo-apple-targets` for generating and managing native Apple targets.
+- SwiftUI for widget UI development.
+- App Groups and `UserDefaults` for data sharing between the main app and the widget extension (initial approach).
+
+### Next Steps
+
+1. Verify the initial setup of `@bacons/expo-apple-targets` and the `targets/widget` directory.
+2. Investigate and confirm the data sharing mechanism between the React Native app (using Zustand) and the Swift widget extension, focusing initially on App Groups/UserDefaults.
+3. Implement the Medium Widget UI and functionality.
+4. Implement the Large Widget UI and functionality.
+5. Test and refine both widgets.
+
+## Current Focus
+
 We are focusing on optimizing the store implementation and integrating the notification system.
 
 ### Recent Implementation Changes
