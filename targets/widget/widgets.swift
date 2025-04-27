@@ -1,16 +1,18 @@
 import WidgetKit
 import SwiftUI
+import AppIntents
 
-struct Provider: AppIntentTimelineProvider {
+struct Provider: TimelineProvider {
     func placeholder(in context: Context) -> SimpleEntry {
         SimpleEntry(date: Date(), habits: mockHabits())
     }
 
-    func snapshot(for configuration: ConfigurationAppIntent, in context: Context) async -> SimpleEntry {
-        SimpleEntry(date: Date(), habits: mockHabits())
+    func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
+        let entry = SimpleEntry(date: Date(), habits: mockHabits())
+        completion(entry)
     }
     
-    func timeline(for configuration: ConfigurationAppIntent, in context: Context) async -> Timeline<SimpleEntry> {
+    func getTimeline(in context: Context, completion: @escaping (Timeline<SimpleEntry>) -> ()) {
         var entries: [SimpleEntry] = []
         let currentDate = Date()
         let habits = loadHabits()
@@ -20,10 +22,11 @@ struct Provider: AppIntentTimelineProvider {
         entries.append(entry)
         
         // Create a timeline that updates at midnight
-        return Timeline(entries: entries, policy: .atEnd)
+        let timeline = Timeline(entries: entries, policy: .atEnd)
+        completion(timeline)
     }
     
-    private func loadHabits() -> [Habit] {
+    func loadHabits() -> [Habit] {
         if let userDefaults = UserDefaults(suiteName: "group.com.vdl.habitapp.widget"),
            let habitsData = userDefaults.string(forKey: "habits") {
             // Parse JSON string to [Habit]
@@ -35,7 +38,7 @@ struct Provider: AppIntentTimelineProvider {
         return mockHabits()
     }
     
-    private func mockHabits() -> [Habit] {
+    func mockHabits() -> [Habit] {
         return [
             Habit(id: "1", name: "Meditation", icon: "🧘‍♂️", completions: []),
             Habit(id: "2", name: "Reading", icon: "📚", completions: []),
@@ -53,7 +56,49 @@ struct Habit: Codable, Identifiable {
     let id: String
     let name: String
     let icon: String
-    let completions: [String] // ISO date strings
+    var completions: [String] // Changed from 'let' to 'var' to make it mutable
+}
+
+struct ToggleHabitIntent: AppIntent {
+    static var title: LocalizedStringResource = "Toggle Habit"
+    static var description: LocalizedStringResource = "Marks a habit as complete or incomplete"
+
+    @Parameter(title: "Habit ID")
+    var habitId: String
+    
+    @Parameter(title: "Date")
+    var date: String
+    
+    init() {}
+    
+    init(habitId: String, date: String) {
+        self.habitId = habitId
+        self.date = date
+    }
+    
+    func perform() async throws -> some IntentResult {
+        if let userDefaults = UserDefaults(suiteName: "group.com.vdl.habitapp.widget"),
+           let habitsData = userDefaults.string(forKey: "habits"),
+           let data = habitsData.data(using: .utf8),
+           var habits = try? JSONDecoder().decode([Habit].self, from: data) {
+            
+            if let index = habits.firstIndex(where: { $0.id == habitId }) {
+                var habit = habits[index]
+                if habit.completions.contains(date) {
+                    habit.completions.removeAll { $0 == date }
+                } else {
+                    habit.completions.append(date)
+                }
+                habits[index] = habit
+                
+                if let updatedData = try? JSONEncoder().encode(habits),
+                   let updatedString = String(data: updatedData, encoding: .utf8) {
+                    userDefaults.set(updatedString, forKey: "habits")
+                }
+            }
+        }
+        return .result()
+    }
 }
 
 struct WeekHeaderView: View {
@@ -131,13 +176,15 @@ struct HabitRowView: View {
             .frame(width: 100, alignment: .leading)
             
             ForEach(weekDays, id: \.timeIntervalSince1970) { date in
-                Circle()
-                    .stroke(Color.secondary.opacity(0.3), lineWidth: 1)
-                    .background(
-                        Circle()
-                            .fill(isCompleted(for: date) ? Color.green : Color.clear)
-                    )
-                    .frame(width: 20, height: 20)
+                Button(intent: ToggleHabitIntent(habitId: habit.id, date: ISO8601DateFormatter().string(from: date))) {
+                    Circle()
+                        .stroke(Color.secondary.opacity(0.3), lineWidth: 1)
+                        .background(
+                            Circle()
+                                .fill(isCompleted(for: date) ? Color.green : Color.clear)
+                        )
+                        .frame(width: 20, height: 20)
+                }
             }
         }
         .padding(.horizontal, 16)
@@ -176,12 +223,11 @@ struct WeeklyHabitsWidgetEntryView: View {
     }
 }
 
-@main
 struct WeeklyHabitsWidget: Widget {
     let kind: String = "WeeklyHabitsWidget"
 
     var body: some WidgetConfiguration {
-        AppIntentConfiguration(kind: kind, intent: ConfigurationAppIntent.self, provider: Provider()) { entry in
+        StaticConfiguration(kind: kind, provider: Provider()) { entry in
             WeeklyHabitsWidgetEntryView(entry: entry)
                 .containerBackground(.fill.tertiary, for: .widget)
         }
