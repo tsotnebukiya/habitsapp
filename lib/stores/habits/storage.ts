@@ -3,6 +3,7 @@ import { MMKV } from 'react-native-mmkv';
 import { PersistOptions } from 'zustand/middleware';
 import { SharedSlice } from './types';
 import { PersistStorage } from 'zustand/middleware';
+import { syncStoreToWidget } from './widget-storage';
 
 const storeName = 'habits-store';
 
@@ -54,7 +55,12 @@ const storage: PersistStorage<SharedSlice> = {
         cat5: value.state.cat5,
       },
     });
+
+    // Save to MMKV
     habitsMmkv.set(name, serialized);
+
+    // Fire and forget - no await needed
+    syncStoreToWidget(value.state);
   },
   removeItem: (name: string) => {
     habitsMmkv.delete(name);
