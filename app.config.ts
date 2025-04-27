@@ -31,6 +31,11 @@ export default ({
         },
       ],
     },
+    entitlements: {
+      'com.apple.security.application-groups': [
+        'group.com.vdl.habitapp.widget',
+      ],
+    },
   },
   android: {
     adaptiveIcon: {
