@@ -1,7 +1,7 @@
 import { NativeModules } from 'react-native';
 import { dateUtils } from '@/lib/utils/dayjs';
 import { SharedSlice } from './types';
-import dayjs from 'dayjs';
+import dayjs, { OpUnitType } from 'dayjs';
 
 const { WidgetStorage } = NativeModules;
 
@@ -15,7 +15,6 @@ if (WidgetStorage) {
 }
 // <--- END ADDED
 
-const WIDGET_GROUP = 'group.com.vdl.habitapp.widget';
 const WIDGET_DATA_KEY = 'habits'; // Use 'habits' as the key to match widget code
 
 interface WidgetStorageInterface {
@@ -27,28 +26,43 @@ interface WidgetStorageInterface {
 // Transform store data into widget format
 const transformStoreDataForWidget = (state: SharedSlice) => {
   const now = dateUtils.nowUTC();
-  const startOfWeek = dayjs(now).startOf('week');
+  const startOfWeek = dayjs(now)
+    .startOf('isoWeek' as OpUnitType)
+    .startOf('day');
 
-  // Get all habits
   const habits = Array.from(state.habits.values());
-  const completions = Array.from(state.completions.values())
-    // Only include completions from current week
-    .filter((c) =>
-      dateUtils.fromServerDate(c.completion_date).isAfter(startOfWeek)
-    );
+  const completions = Array.from(state.completions.values()).filter((c) => {
+    const completionDate = dateUtils
+      .fromServerDate(c.completion_date)
+      .startOf('day');
+    const isAfter = completionDate.isSameOrAfter(startOfWeek, 'day');
+    return isAfter;
+  });
 
-  // Transform into widget format (matching Swift Habit struct)
-  const widgetData = habits.map((habit) => ({
-    id: habit.id,
-    name: habit.name,
-    icon: habit.icon,
-    completions: completions
-      .filter((c) => c.habit_id === habit.id)
-      .map((c) => ({
-        date: dateUtils.fromServerDate(c.completion_date).toISOString(),
-        status: c.status,
-      })),
-  }));
+  const widgetData = habits.map((habit) => {
+    const weeklyStatus: { [key: string]: boolean } = {};
+
+    for (let i = 0; i < 7; i++) {
+      const date = dayjs(startOfWeek).add(i, 'day').utc().startOf('day');
+      const dateKey = date.toISOString();
+
+      const isCompleted = completions.some((c) => {
+        const completionDate = dayjs.utc(c.completion_date).startOf('day');
+        const isSameHabit = c.habit_id === habit.id;
+        const isSameDay = completionDate.isSame(date, 'day');
+        const isCompletedStatus = c.status === 'completed';
+        return isSameHabit && isSameDay && isCompletedStatus;
+      });
+      weeklyStatus[dateKey] = isCompleted;
+    }
+    return {
+      id: habit.id,
+      name: habit.name,
+      icon: habit.icon,
+      color: habit.color,
+      weeklyStatus,
+    };
+  });
 
   return widgetData;
 };
@@ -110,14 +124,13 @@ export const widgetStorage: WidgetStorageInterface = {
 export const syncStoreToWidget = async (state: SharedSlice) => {
   try {
     const widgetData = transformStoreDataForWidget(state);
-    // Fire and forget - don't await the promise
     await widgetStorage.setItem(WIDGET_DATA_KEY, JSON.stringify(widgetData));
     const data = await widgetStorage.getItem(WIDGET_DATA_KEY);
+    console.log(data, 'data');
     if (WidgetStorage?.reloadAllTimelines) {
       await WidgetStorage.reloadAllTimelines();
     }
-    console.log(data, 'widgetData');
-    console.log('Attempted to sync data to widget.'); // Added log
+    console.log('Attempted to sync data to widget.');
     return true;
   } catch (error) {
     console.error('Failed to sync store to widget:', error);

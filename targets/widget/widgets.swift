@@ -46,10 +46,20 @@ struct Provider: TimelineProvider {
     }
     
     func mockHabits() -> [Habit] {
+        let today = Date()
+        let weeklyStatus = Dictionary(
+            uniqueKeysWithValues: (0...6).map { day -> (String, Bool) in
+                let date = Calendar.current.date(byAdding: .day, value: day, to: today)!
+                let formatter = ISO8601DateFormatter()
+                formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+                return (formatter.string(from: date), false)
+            }
+        )
+        
         return [
-            Habit(id: "1", name: "Meditation", icon: "🧘‍♂️", completions: []),
-            Habit(id: "2", name: "Reading", icon: "📚", completions: []),
-            Habit(id: "3", name: "Exercise", icon: "💪", completions: [])
+            Habit(id: "1", name: "Meditation", icon: "🧘‍♂️", color: "#3498DB", weeklyStatus: weeklyStatus),
+            Habit(id: "2", name: "Reading", icon: "📚", color: "#2ECC71", weeklyStatus: weeklyStatus),
+            Habit(id: "3", name: "Exercise", icon: "💪", color: "#E74C3C", weeklyStatus: weeklyStatus)
         ]
     }
 }
@@ -63,11 +73,8 @@ struct Habit: Codable, Identifiable {
     let id: String
     let name: String
     let icon: String
-    struct Completion: Codable {
-        let date: String
-        let status: String  // 'completed', 'in_progress', 'skipped'
-    }
-    var completions: [Completion] // Changed from 'let' to 'var' to make it mutable
+    let color: String
+    let weeklyStatus: [String: Bool]
 }
 
 struct WeekHeaderView: View {
@@ -131,19 +138,10 @@ struct HabitRowView: View {
 }
     
     private func isCompleted(for date: Date) -> Bool {
-        var calendar = Calendar.current
-        calendar.timeZone = TimeZone(identifier: "UTC")!
-        let startOfDay = calendar.startOfDay(for: date)
-      let formatter = ISO8601DateFormatter()
-      formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-      let dateString = formatter.string(from: startOfDay)
-      widgetLogger.info("Checking completion for date: \(dateString, privacy: .public)")
-      widgetLogger.info("Current habit: \(String(describing: habit), privacy: .public)")
-
-      return habit.completions.contains { completion in
-        completion.date == dateString && 
-        (completion.status == "completed")
-    }
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        let dateString = formatter.string(from: date)
+        return habit.weeklyStatus[dateString] ?? false
     }
     
     var body: some View {
