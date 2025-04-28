@@ -91,7 +91,6 @@ export const createSyncSlice: StateCreator<SharedSlice, [], [], SyncSlice> = (
         .gt('updated_at', lastSync);
 
       if (habitsError) throw habitsError;
-
       // Sync completions
       const { data: serverCompletions, error: completionsError } =
         await supabase

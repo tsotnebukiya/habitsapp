@@ -27,8 +27,8 @@ const HabitList = memo(function HabitList({ selectedDate }: HabitListProps) {
     toggleHabitStatus,
   } = useHabitsStore();
 
-  const today = dateUtils.todayUTC();
-  const selectedDay = dateUtils.fromUTC(selectedDate);
+  const today = dateUtils.today();
+  const selectedDay = dayjs(selectedDate);
   const afterToday = selectedDay.startOf('day').isAfter(today.startOf('day'));
   const showIsAfterToast = () => {
     Toast.show({

@@ -1,4 +1,6 @@
 import Foundation
+import React
+import WidgetKit
 
 @objc(WidgetStorage)
 class WidgetStorage: NSObject {
@@ -35,5 +37,16 @@ class WidgetStorage: NSObject {
         } else {
             reject("ERROR", "Failed to access UserDefaults", nil)
         }
+    }
+    
+    @objc(reloadAllTimelines)
+    func reloadAllTimelines() {
+        if #available(iOS 14.0, *) {
+            WidgetCenter.shared.reloadAllTimelines()
+        }
+    }
+    
+    @objc static func requiresMainQueueSetup() -> Bool {
+        return false
     }
 } 

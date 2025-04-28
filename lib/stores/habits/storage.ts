@@ -3,7 +3,7 @@ import { MMKV } from 'react-native-mmkv';
 import { PersistOptions } from 'zustand/middleware';
 import { SharedSlice } from './types';
 import { PersistStorage } from 'zustand/middleware';
-import { syncStoreToWidget } from './widget-storage';
+import { syncStoreToWidget, widgetStorage } from './widget-storage';
 
 const storeName = 'habits-store';
 

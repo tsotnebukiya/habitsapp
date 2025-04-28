@@ -44,7 +44,10 @@ const transformStoreDataForWidget = (state: SharedSlice) => {
     icon: habit.icon,
     completions: completions
       .filter((c) => c.habit_id === habit.id)
-      .map((c) => dateUtils.fromServerDate(c.completion_date).toISOString()), // Store ISO strings
+      .map((c) => ({
+        date: dateUtils.fromServerDate(c.completion_date).toISOString(),
+        status: c.status,
+      })),
   }));
 
   return widgetData;
@@ -104,11 +107,16 @@ export const widgetStorage: WidgetStorageInterface = {
 };
 
 // Main function to sync store data to widget
-export const syncStoreToWidget = (state: SharedSlice) => {
+export const syncStoreToWidget = async (state: SharedSlice) => {
   try {
     const widgetData = transformStoreDataForWidget(state);
     // Fire and forget - don't await the promise
-    widgetStorage.setItem(WIDGET_DATA_KEY, JSON.stringify(widgetData));
+    await widgetStorage.setItem(WIDGET_DATA_KEY, JSON.stringify(widgetData));
+    const data = await widgetStorage.getItem(WIDGET_DATA_KEY);
+    if (WidgetStorage?.reloadAllTimelines) {
+      await WidgetStorage.reloadAllTimelines();
+    }
+    console.log(data, 'widgetData');
     console.log('Attempted to sync data to widget.'); // Added log
     return true;
   } catch (error) {
