@@ -14,7 +14,7 @@ struct InteractiveHabitWidget: Widget {
         .configurationDisplayName("Interactive Habits")
         .description("Tap to complete your habits.")
         // Define supported families (e.g., medium)
-        .supportedFamilies([.systemMedium]) 
+        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge]) 
     }
 }
 

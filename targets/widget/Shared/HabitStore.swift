@@ -52,7 +52,7 @@ struct HabitStore {
                 let dateOnlyFormatter = DateFormatter()
                 dateOnlyFormatter.dateFormat = "yyyy-MM-dd"
                 dateOnlyFormatter.timeZone = TimeZone(secondsFromGMT: 0)
-                let dateKey = dateOnlyFormatter.string(from: date)
+         
                 
                 // Return the formatted string expected by the saving mechanism/used for lookup
                 return (formatter.string(from: date), false) // Assuming ISO8601 is used for storage keys
