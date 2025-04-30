@@ -70,26 +70,29 @@ export const useReconcileWidgetState = () => {
                 continue;
               }
 
-              // Check if this habit was completed in widget for today
-              const isCompletedInWidget = weeklyStatus[todayKey] === true;
+              // Get widget status for today (defaults to false if undefined)
+              const widgetStatusIsCompleted = weeklyStatus[todayKey] === true;
 
-              if (isCompletedInWidget) {
-                // Check current state in store
-                const currentStatus = useHabitsStore
-                  .getState()
-                  .getHabitStatus(id, today);
-                const habit = useHabitsStore.getState().habits.get(id);
+              // Check current state in store
+              const currentStoreStatus = useHabitsStore
+                .getState()
+                .getHabitStatus(id, today);
+              const currentStoreIsCompleted =
+                currentStoreStatus?.status === 'completed';
+              const habit = useHabitsStore.getState().habits.get(id);
 
-                // Only sync if habit exists and isn't already completed
-                if (
-                  habit &&
-                  (!currentStatus || currentStatus.status !== 'completed')
-                ) {
-                  console.log(
-                    `Syncing widget completion for habit: ${habit.name}`
-                  );
-                  await toggleHabitStatus(id, today, 'toggle');
-                }
+              // Sync if habit exists in store and widget status differs from store status
+              if (
+                habit &&
+                widgetStatusIsCompleted !== currentStoreIsCompleted
+              ) {
+                console.log(
+                  `Syncing widget status (${
+                    widgetStatusIsCompleted ? 'completed' : 'not completed'
+                  }) for habit: ${habit.name}`
+                );
+                // Use 'toggle' action which handles both completing and uncompleting
+                toggleHabitStatus(id, today, 'toggle');
               }
             }
 
