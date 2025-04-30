@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, TouchableOpacity, Button } from 'react-native';
 import { ErrorBoundary } from '@sentry/react-native';
-import useHabitsStore from '@/habits-store/store';
+import useHabitsStore from '@/lib/habit-store/store';
 import useUserProfileStore from '@/lib/stores/user_profile';
 import WeekView from '@/components/habits/WeekView';
 import HabitList from '@/components/habits/HabitList';

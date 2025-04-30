@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
-import useHabitsStore from '@/habits-store/store';
-import { widgetStorage } from '@/habits-store/widget-storage';
+import useHabitsStore from '@/lib/habit-store/store';
+import { widgetStorage } from '@/lib/habit-store/widget-storage';
 import { dateUtils } from '@/lib/utils/dayjs';
 import { normalizeDate } from '@/lib/utils/habits';
 

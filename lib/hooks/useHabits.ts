@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
-import useHabitsStore from '@/habits-store/store';
+import useHabitsStore from '@/lib/habit-store/store';
 import { Database } from '@/supabase/types';
 import dayjs from '@/lib/utils/dayjs';
-import { Habit } from '@/habits-store/types';
+import { Habit } from '@/lib/habit-store/types';
 
 export const useAllHabits = () => {
   const habitsMap = useHabitsStore((state) => state.habits);

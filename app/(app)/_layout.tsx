@@ -4,7 +4,7 @@ import { View } from 'react-native';
 import useUserProfileStore from '@/lib/stores/user_profile';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
-import useHabitsStore from '@/habits-store/store';
+import useHabitsStore from '@/lib/habit-store/store';
 import { useNotifications } from '@/lib/hooks/useNotifications';
 import { useReconcileWidgetState } from '@/lib/hooks/useReconcileWidgetState';
 

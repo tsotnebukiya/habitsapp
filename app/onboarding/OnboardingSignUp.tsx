@@ -18,7 +18,7 @@ import useUserProfileStore from '@/lib/stores/user_profile';
 import { GOOGLE_SIGN_IN_IOS_CLIENT_ID } from '@/safe_constants';
 import { ONBOARDING_STEPS } from './OnboardingSteps';
 import dayjs from '@/lib/utils/dayjs';
-import useHabitsStore from '@/habits-store/store';
+import useHabitsStore from '@/lib/habit-store/store';
 import { dateUtils } from '@/lib/utils/dayjs';
 
 const OnboardingSignUp = () => {

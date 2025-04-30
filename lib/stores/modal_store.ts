@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Achievement } from '@/habits-store/types';
+import { Achievement } from '@/lib/habit-store/types';
 
 export type ModalType = 'achievement' | 'confirmation' | 'settings' | null;
 

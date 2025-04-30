@@ -4,8 +4,8 @@ import {
   DisplayedMatrixScore,
   HabitCompletion,
   StreakDays,
-} from '@/habits-store/types';
-import { Habit } from '@/habits-store/types';
+} from '@/lib/habit-store/types';
+import { Habit } from '@/lib/habit-store/types';
 import { dateUtils } from '@/lib/utils/dayjs';
 import { ACHIEVEMENTS } from '@/lib/constants/achievements';
 

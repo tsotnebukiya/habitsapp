@@ -1,5 +1,5 @@
-import { Achievement } from '../../habits-store/types';
-import { StreakDays } from '../../habits-store/types';
+import { Achievement } from '../habit-store/types';
+import { StreakDays } from '../habit-store/types';
 
 export const ACHIEVEMENTS: Record<StreakDays, Achievement> = {
   1: {

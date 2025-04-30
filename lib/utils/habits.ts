@@ -5,7 +5,7 @@ import {
   Habit,
   HabitAction,
   HabitCompletion,
-} from '@/habits-store/types';
+} from '@/lib/habit-store/types';
 import useUserProfileStore from '@/lib/stores/user_profile';
 
 export const STORE_CONSTANTS = {
