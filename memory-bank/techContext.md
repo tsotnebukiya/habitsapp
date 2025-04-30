@@ -688,3 +688,17 @@ EXPO_ACCESS_TOKEN=expo_token
    - Function timeouts
    - High error rates
    - Invalid token spikes
+
+## Native iOS Widgets
+
+- **Framework:** Swift, SwiftUI, WidgetKit, AppIntents
+- **Integration:** `@bacons/expo-apple-targets` library used to generate and manage the native widget target within the Expo project.
+- **Development Environment:** Xcode is required for native Swift/SwiftUI development, debugging (including `os.Logger` output via Console.app), and simulator/device testing.
+- **Data Sharing:** Requires configuration of an **App Group** in both the main application target and the widget extension target within Xcode. Data is shared via `UserDefaults(suiteName: "group.com.vdl.habitapp.widget")`.
+- **Key Dependencies/APIs:**
+  - `WidgetKit`: For defining widgets (`Widget`, `WidgetBundle`), timelines (`TimelineProvider`, `TimelineEntry`), and views (`View`).
+  - `SwiftUI`: For building the widget user interface.
+  - `AppIntents`: Used for the `InteractiveHabitWidget` to define the `ToggleHabitIntent`, allowing background actions triggered from the widget.
+  - `Foundation`: For data handling (JSON encoding/decoding, `Date`, `Calendar`, `UserDefaults`, `ISO8601DateFormatter`).
+  - `os.Logger`: Used for logging within the Swift widget code.
+- **Build Process:** `npx expo prebuild -p ios` generates/updates the Xcode project, incorporating the widget target defined by `targets/widget/expo-target.config.js`.

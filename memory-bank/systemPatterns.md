@@ -750,3 +750,33 @@ Benefits:
      return id;
    };
    ```
+
+## Native Extensions (iOS Widgets)
+
+- **Technology:** Swift, SwiftUI, WidgetKit, AppIntents
+- **Build System:** `@bacons/expo-apple-targets` integrated into the Expo project.
+- **Data Sharing:**
+  - Uses **App Groups** (`group.com.vdl.habitapp.widget`) to enable shared data access.
+  - `UserDefaults` within the App Group container stores habit data as a JSON string.
+  - A shared `HabitStore.swift` module encapsulates loading/saving logic for `UserDefaults`.
+  - **Crucial:** Consistent data structures (`Habit` model in `Models.swift`) and date formatting (ISO8601 UTC with fractional seconds) must be maintained between the React Native app and Swift code.
+- **Widget Types:**
+  - **Calendar Widget (`WeeklyHabitsWidget`):**
+    - Uses `StaticConfiguration`.
+    - Displays weekly habit progress (read-only).
+    - Supports `.systemMedium`, `.systemLarge` families.
+    - UI built with SwiftUI (`CalendarViews.swift`).
+  - **Interactive Widget (`InteractiveHabitWidget`):**
+    - Uses `AppIntentConfiguration` with `ToggleHabitIntent`.
+    - Allows users to toggle habit completion for the current day directly from the widget.
+    - Supports `.systemSmall`, `.systemMedium`, `.systemLarge` families with adaptive SwiftUI layouts (`InteractiveViews.swift`).
+    - `ToggleHabitIntent` handles:
+      - Receiving `habitID`.
+      - Loading data via `HabitStore`.
+      - Modifying `weeklyStatus` for the correct UTC date key.
+      - Saving data via `HabitStore`.
+      - Triggering widget timeline reloads (`WidgetCenter.shared.reloadAllTimelines()`).
+- **Shared Code:** Common Swift code (Models, Utils, DataStore) is placed in a `Shared/` directory within `targets/widget/`.
+- **Configuration:**
+  - Widget registration occurs in `targets/widget/index.swift`.
+  - App Group entitlement is configured in `targets/widget/generated.entitlements`.

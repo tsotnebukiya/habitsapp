@@ -2,52 +2,63 @@
 
 ## Current Focus
 
-We are shifting focus to implementing iOS widgets to enhance user engagement and provide quick access to habit tracking. This involves using the `@bacons/expo-apple-targets` library to create native widget extensions.
+The primary focus has been the implementation of iOS widgets using `@bacons/expo-apple-targets`. Two distinct widgets have been developed: a **Calendar Widget** for weekly overview and an **Interactive Widget** for daily completion toggling.
 
-### Widget Specifications
+### Widget Implementation Details
 
-Based on the provided design descriptions:
+#### Data Sharing
 
-#### Medium Widget (2x1)
+- ✅ Implemented data sharing between the React Native app and the Swift widgets using **App Groups** (`group.com.vdl.habitapp.widget`) and `UserDefaults`.
+- ✅ Created a shared `HabitStore.swift` to handle loading (`loadHabits`) and saving (`saveHabits`) of habit data, including mock data generation (`mockHabits`).
+- ✅ Standardized date key format (ISO8601 UTC with fractional seconds) across `HabitStore`, `Intents`, and `Views` for reliable data lookup.
 
-- **Purpose**: Today's habits with completion tracking
-- **Components**:
-  - Date display
-  - List of today's habits (3-4)
-  - Completion toggles
-  - Overall progress indicator
-- **Key Interactions**:
-  - Mark habits complete
-  - Tap to open app to that day
+#### Shared Code
 
-#### Large Widget (4x2)
+- ✅ Created `Shared/Models.swift` for the `Habit` struct (Codable, Identifiable) and `Color` hex extension.
+- ✅ Created `Shared/DateUtils.swift` for shared date manipulation logic (getting week dates, ranges).
+- ✅ Defined a shared `SimpleEntry: TimelineEntry` in `HabitStore.swift`.
 
-- **Purpose**: Weekly overview with completion tracking
-- **Components**:
-  - 7-day grid
-  - Top habits for each day
-  - Completion status indicators
-  - Weekly progress bar
-- **Key Interactions**:
-  - Complete habits directly
-  - Tap day to open app to that day
-  - View weekly progress at a glance
+#### Calendar Widget (Weekly Overview - Medium/Large)
 
-### Technology Choice
+- ✅ Implemented `targets/widget/CalendarWidget/` structure.
+- ✅ Created `CalendarProvider.swift` (StaticConfiguration provider).
+- ✅ Created `CalendarViews.swift` containing:
+  - `WeekHeaderView`: Displays weekday symbols and date range.
+  - `HabitRowView`: Displays habit icon, name, and weekly completion circles.
+  - `WeeklyHabitsWidgetEntryView`: Main view assembling the header and rows, supporting `.systemMedium` and `.systemLarge`.
+- ✅ Defined `WeeklyHabitsWidget.swift` for widget configuration.
+- ✅ Uses `DateUtils.datesOfWeek` and checks `habit.weeklyStatus` for completion display.
 
-- `@bacons/expo-apple-targets` for generating and managing native Apple targets.
-- SwiftUI for widget UI development.
-- App Groups and `UserDefaults` for data sharing between the main app and the widget extension (initial approach).
+#### Interactive Widget (Daily Toggle - Small/Medium/Large)
+
+- ✅ Implemented `targets/widget/InteractiveWidget/` structure.
+- ✅ Created `Intents.swift` defining:
+  - `ToggleHabitIntent`: An `AppIntent` (WidgetConfigurationIntent) to toggle habit completion for today. Takes `habitID` parameter. Runs in the background (`openAppWhenRun: false`).
+  - Handles loading habits via `HabitStore`, finding the habit, toggling `weeklyStatus` for the _normalized_ current day (UTC start of day), saving via `HabitStore`, and reloading widget timelines (`WidgetCenter.shared.reloadAllTimelines()`).
+  - Includes basic error handling (`IntentError.habitNotFound`).
+- ✅ Created `InteractiveProvider.swift` (AppIntentTimelineProvider for `ToggleHabitIntent`).
+- ✅ Created `InteractiveViews.swift` containing:
+  - `InteractiveWidgetEntryView`: Adapts layout based on `widgetFamily` (.systemSmall VStack, .systemMedium LazyVGrid, .systemLarge VStack).
+  - `HabitToggleButton`: A `Button` triggering `ToggleHabitIntent`. Displays habit icon/name with conditional background/foreground based on `isCompletedToday`. Uses the standardized `todayDateKey`.
+- ✅ Defined `InteractiveHabitWidget.swift` for widget configuration (AppIntentConfiguration).
+- ✅ Added logging using `os.Logger` in Intents, Provider, and Views.
+
+#### Configuration & Build
+
+- ✅ Updated `targets/widget/index.swift` to register `WeeklyHabitsWidget` and `InteractiveHabitWidget`.
+- ✅ Added App Group entitlement `group.com.vdl.habitapp.widget` to `targets/widget/generated.entitlements`.
+- ✅ Cleaned up old/unused widget files (`WidgetControl.swift`, `WidgetLiveActivity.swift`, `widgets.swift`).
 
 ### Next Steps
 
-1. Verify the initial setup of `@bacons/expo-apple-targets` and the `targets/widget` directory.
-2. Investigate and confirm the data sharing mechanism between the React Native app (using Zustand) and the Swift widget extension, focusing initially on App Groups/UserDefaults.
-3. Implement the Medium Widget UI and functionality.
-4. Implement the Large Widget UI and functionality.
-5. Test and refine both widgets.
+1.  **React Native Integration:** Modify the React Native app (Zustand store) to write habit data to the shared `UserDefaults` using the defined App Group ID and matching data structure/date format.
+2.  **Testing:** Thoroughly test data synchronization, widget updates, interactions (especially the `ToggleHabitIntent`), and different widget sizes/families on a physical device.
+3.  **Refinement:** Refine UI/UX based on testing. Consider error handling improvements (e.g., making `HabitStore.saveHabits` throw).
+4.  **Statistics View:** Continue development of the Statistics View in the main app.
 
-## Current Focus
+---
+
+_Previous Context (Pre-Widget Implementation):_
 
 We are focusing on optimizing the store implementation and integrating the notification system.
 

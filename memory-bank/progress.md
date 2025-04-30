@@ -79,6 +79,7 @@
    - ✅ Custom hooks pattern for data selection (`useHabits.ts`)
 
 4. **UI/Components**
+
    - ✅ Basic component structure
    - ⚠️ Theme system (partial)
    - ❌ Component library
@@ -88,6 +89,23 @@
    - ✅ `AddHabit` modal implemented
    - ✅ Modal system implemented
    - ✅ Achievement display UI
+
+5. **iOS Widgets** ✅
+   - ✅ Setup with `@bacons/expo-apple-targets`.
+   - ✅ App Group (`group.com.vdl.habitapp.widget`) configured for data sharing.
+   - ✅ Shared `HabitStore` for loading/saving/mocking habit data via `UserDefaults`.
+   - ✅ Shared `Models.swift` (Habit struct) and `DateUtils.swift`.
+   - ✅ **Calendar Widget (Weekly View)** implemented:
+     - ✅ Supports Medium and Large sizes.
+     - ✅ Displays week header and habit rows with completion status.
+     - ✅ Uses `StaticConfiguration`.
+   - ✅ **Interactive Widget (Daily Toggle)** implemented:
+     - ✅ Supports Small, Medium, and Large sizes with adaptive layouts.
+     - ✅ Uses `AppIntentConfiguration` with `ToggleHabitIntent`.
+     - ✅ Allows toggling habit completion for today directly from the widget.
+     - ✅ Reloads widget timelines after interaction.
+   - ✅ Logging implemented using `os.Logger`.
+   - ✅ Unused/old widget files removed.
 
 ## Completed Features
 
@@ -489,3 +507,23 @@
 1. Calendar update fails after habit deletion due to timing issue with updateAffectedDates
 2. Push notification types need to be properly integrated with the app
 3. Need to implement proper error handling for notification delivery
+
+### High Priority
+
+1. **Widget Integration & Testing** ⏳
+
+   - [ ] **React Native -> Swift Data Flow:** Implement writing habit data from Zustand store to shared `UserDefaults` using the App Group.
+     - [ ] Ensure data format and date key consistency (ISO8601 UTC).
+   - [ ] **Thorough Testing:**
+     - [ ] Data synchronization between app and widgets.
+     - [ ] Widget timeline updates (manual and after intent).
+     - [ ] `ToggleHabitIntent` functionality and edge cases.
+     - [ ] UI/Layout across all supported widget sizes/families.
+     - [ ] Performance and battery usage.
+   - [ ] **UI/UX Refinement:** Address any issues found during testing.
+
+2. **Statistics View** ⏳
+   - [ ] Implement key charts (e.g., weekly completion, streak history).
+   - [ ] Create habit comparison view.
+   - [ ] Connect charts to `useHabitsStore` data.
+   - [ ] Add matrix score history display.
