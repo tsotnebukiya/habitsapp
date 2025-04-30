@@ -6,7 +6,7 @@ struct Habit: Codable, Identifiable {
     let name: String
     let icon: String
     let color: String
-    let weeklyStatus: [String: Bool]
+    var weeklyStatus: [String: Bool]
     var colorValue: Color {
         Color(hex: color) ?? .gray
     }
@@ -30,8 +30,3 @@ extension Color {
         self.init(red: red, green: green, blue: blue)
     }
 } 
-
-struct SimpleEntry: TimelineEntry {
-    let date: Date
-    let habits: [Habit]
-}

@@ -1,11 +1,14 @@
 import WidgetKit
 import SwiftUI
 
-
+// Use a more conventional name like MainWidgetBundle or AppWidgetBundle
 @main
-struct exportWidgets: WidgetBundle {
+struct MainWidgetBundle: WidgetBundle {
     var body: some Widget {
+        // Register the Calendar Widget
         WeeklyHabitsWidget()
-        InteractiveHabitsWidget()
+        
+        // Register the Interactive Widget
+        InteractiveHabitWidget()
     }
 }
