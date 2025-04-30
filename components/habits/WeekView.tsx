@@ -9,9 +9,9 @@ import {
 } from 'react-native';
 import dayjs from 'dayjs';
 import Colors from '@/lib/constants/Colors';
-import useHabitsStore from '@/lib/stores/habits/store';
+import useHabitsStore from '@/habits-store/store';
 import { dateUtils } from '@/lib/utils/dayjs';
-import type { CompletionStatus } from '@/lib/stores/habits/types';
+import type { CompletionStatus } from '@/habits-store/types';
 
 interface WeekViewProps {
   selectedDate: Date;

@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { ACHIEVEMENTS } from '@/lib/constants/achievements'; // Import achievements
-import useHabitsStore from '@/lib/stores/habits/store';
+import useHabitsStore from '@/habits-store/store';
 
 // Helper to get the first achievement's icon (emoji) or a default
 const getStreakIcon = (): string => {

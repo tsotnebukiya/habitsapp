@@ -11,7 +11,7 @@ import {
   Switch,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import useHabitsStore from '@/lib/stores/habits/store';
+import useHabitsStore from '@/habits-store/store';
 import { useAddHabitStore } from '@/lib/stores/add_habit_store';
 import useUserProfileStore from '@/lib/stores/user_profile';
 import { Ionicons, FontAwesome6 } from '@expo/vector-icons';

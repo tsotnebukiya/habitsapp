@@ -8,8 +8,8 @@ import {
 } from 'react-native';
 import { AchievementItem } from './AchievementItem';
 import { ACHIEVEMENTS } from '@/lib/constants/achievements';
-import useHabitsStore from '@/lib/stores/habits/store';
-import { Achievement } from '@/lib/stores/habits/types';
+import useHabitsStore from '@/habits-store/store';
+import { Achievement } from '@/habits-store/types';
 
 export const AchievementsList = () => {
   const userAchievements = useHabitsStore((state) => state.streakAchievements);

@@ -7,12 +7,12 @@ import {
   Dimensions,
 } from 'react-native';
 import { BottomSheetModal, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
-import useHabitsStore from '@/lib/stores/habits/store';
+import useHabitsStore from '@/habits-store/store';
 import Colors from '@/lib/constants/Colors';
 import { FontAwesome6 } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import CircularCounter from '../shared/CircularCounter';
-import { Habit } from '@/lib/stores/habits/types';
+import { Habit } from '@/habits-store/types';
 
 interface HabitDetailsSheetProps {
   habit: Habit | null;

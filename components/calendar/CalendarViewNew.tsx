@@ -1,8 +1,8 @@
 import React, { useCallback } from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { Calendar } from 'react-native-calendars';
-import useHabitsStore from '@/lib/stores/habits/store';
-import type { CompletionStatus } from '@/lib/stores/habits/types';
+import useHabitsStore from '@/habits-store/store';
+import type { CompletionStatus } from '@/habits-store/types';
 import Colors from '@/lib/constants/Colors';
 import dayjs from '@/lib/utils/dayjs';
 import { dateUtils } from '@/lib/utils/dayjs';

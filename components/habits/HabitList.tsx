@@ -4,11 +4,11 @@ import { useHabitsForDate } from '@/lib/hooks/useHabits';
 import HabitItem from './HabitItem';
 import HabitDetailsSheet from './HabitDetailsSheet';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import useHabitsStore from '@/lib/stores/habits/store';
+import useHabitsStore from '@/habits-store/store';
 import Toast from 'react-native-toast-message';
 import Colors from '@/lib/constants/Colors';
 import dayjs from 'dayjs';
-import { Habit } from '@/lib/stores/habits/types';
+import { Habit } from '@/habits-store/types';
 import { dateUtils } from '@/lib/utils/dayjs';
 import { after } from 'node:test';
 

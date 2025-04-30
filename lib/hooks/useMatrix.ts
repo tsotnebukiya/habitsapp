@@ -1,9 +1,9 @@
 import { useMemo, useEffect, useRef } from 'react';
 import { useUserProfileStore } from '@/lib/stores/user_profile';
-import { DisplayedMatrixScore } from '@/lib/stores/habits/types';
+import { DisplayedMatrixScore } from '@/habits-store/types';
 import { CATEGORIES, CATEGORY_IDS } from '@/lib/constants/HabitTemplates';
 import dayjs from '@/lib/utils/dayjs';
-import useHabitsStore from '@/lib/stores/habits/store';
+import useHabitsStore from '@/habits-store/store';
 
 export interface MatrixCategory {
   id: (typeof CATEGORY_IDS)[number] | 'total';

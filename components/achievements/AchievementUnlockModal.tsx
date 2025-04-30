@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useMemo, useCallback } from 'react';
 import { View, Text, StyleSheet, Dimensions, Platform } from 'react-native';
 import { BottomSheetModal, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
 import ConfettiCannon from 'react-native-confetti-cannon';
-import { Achievement } from '@/lib/stores/habits/types';
+import { Achievement } from '@/habits-store/types';
 
 const { height } = Dimensions.get('window');
 
