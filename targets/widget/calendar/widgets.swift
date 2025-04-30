@@ -20,9 +20,9 @@ struct Provider: TimelineProvider {
     
     func getTimeline(in context: Context, completion: @escaping (Timeline<SimpleEntry>) -> ()) {
         var entries: [SimpleEntry] = []
-        let currentDate = Date()
-        let habits = loadHabits()
-        
+        let currentDate: Date = Date()
+        let habits: [Habit] = loadHabits()
+
         // Create an entry for the current time
         let entry = SimpleEntry(date: currentDate, habits: habits)
         entries.append(entry)
@@ -64,18 +64,7 @@ struct Provider: TimelineProvider {
     }
 }
 
-struct SimpleEntry: TimelineEntry {
-    let date: Date
-    let habits: [Habit]
-}
 
-struct Habit: Codable, Identifiable {
-    let id: String
-    let name: String
-    let icon: String
-    let color: String
-    let weeklyStatus: [String: Bool]
-}
 
 struct WeekHeaderView: View {
     let currentDate: Date

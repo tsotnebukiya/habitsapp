@@ -6,11 +6,14 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import useHabitsStore from '@/lib/stores/habits/store';
 import { useNotifications } from '@/lib/hooks/useNotifications';
+import { useReconcileWidgetState } from '@/lib/hooks/useReconcileWidgetState';
 
 function StackLayout() {
   const { profile } = useUserProfileStore();
   const [isInitializing, setIsInitializing] = useState(true);
   useNotifications();
+  useReconcileWidgetState();
+
   useEffect(() => {
     async function initializeApp() {
       try {

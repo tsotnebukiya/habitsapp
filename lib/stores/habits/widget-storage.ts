@@ -5,17 +5,9 @@ import dayjs, { OpUnitType } from 'dayjs';
 
 const { WidgetStorage } = NativeModules;
 
-// ---> ADDED: Check if the native module exists
-if (WidgetStorage) {
-  console.log('WidgetStorage native module found.');
-} else {
-  console.error(
-    'WidgetStorage native module is NOT available. Check linking/compilation.'
-  );
-}
-// <--- END ADDED
-
-const WIDGET_DATA_KEY = 'habits'; // Use 'habits' as the key to match widget code
+// App Group name - must match the widget's app group
+const APP_GROUP = 'group.com.vdl.habitapp';
+const WIDGET_DATA_KEY = 'habits';
 
 interface WidgetStorageInterface {
   setItem(key: string, value: string): Promise<boolean>;
@@ -44,6 +36,7 @@ const transformStoreDataForWidget = (state: SharedSlice) => {
 
     for (let i = 0; i < 7; i++) {
       const date = dayjs(startOfWeek).add(i, 'day').utc().startOf('day');
+      // Format date to match widget's format
       const dateKey = date.toISOString();
 
       const isCompleted = completions.some((c) => {
@@ -67,56 +60,59 @@ const transformStoreDataForWidget = (state: SharedSlice) => {
   return widgetData;
 };
 
+// Helper to access UserDefaults through native module
+const UserDefaults = {
+  async setItem(key: string, value: string): Promise<boolean> {
+    try {
+      if (!WidgetStorage?.setUserDefault) {
+        console.error('WidgetStorage.setUserDefault is not available');
+        return false;
+      }
+      return await WidgetStorage.setUserDefault(key, value, APP_GROUP);
+    } catch (error) {
+      console.error('Failed to set UserDefaults:', error);
+      return false;
+    }
+  },
+
+  async getItem(key: string): Promise<string | null> {
+    try {
+      if (!WidgetStorage?.getUserDefault) {
+        console.error('WidgetStorage.getUserDefault is not available');
+        return null;
+      }
+      return await WidgetStorage.getUserDefault(key, APP_GROUP);
+    } catch (error) {
+      console.error('Failed to get UserDefaults:', error);
+      return null;
+    }
+  },
+
+  async removeItem(key: string): Promise<boolean> {
+    try {
+      if (!WidgetStorage?.removeUserDefault) {
+        console.error('WidgetStorage.removeUserDefault is not available');
+        return false;
+      }
+      return await WidgetStorage.removeUserDefault(key, APP_GROUP);
+    } catch (error) {
+      console.error('Failed to remove UserDefaults:', error);
+      return false;
+    }
+  },
+};
+
 export const widgetStorage: WidgetStorageInterface = {
   async setItem(key: string, value: string) {
-    // ---> ADDED: Check before calling
-    if (!WidgetStorage) {
-      console.error(
-        'Cannot setItem: WidgetStorage native module is not available.'
-      );
-      return false;
-    }
-    // <--- END ADDED
-    try {
-      return await WidgetStorage.setItem(key, value);
-    } catch (error) {
-      console.error('Failed to set widget data:', error);
-      return false;
-    }
+    return await UserDefaults.setItem(key, value);
   },
 
   async getItem(key: string) {
-    // ---> ADDED: Check before calling
-    if (!WidgetStorage) {
-      console.error(
-        'Cannot getItem: WidgetStorage native module is not available.'
-      );
-      return null;
-    }
-    // <--- END ADDED
-    try {
-      return await WidgetStorage.getItem(key);
-    } catch (error) {
-      console.error('Failed to get widget data:', error);
-      return null;
-    }
+    return await UserDefaults.getItem(key);
   },
 
   async removeItem(key: string) {
-    // ---> ADDED: Check before calling
-    if (!WidgetStorage) {
-      console.error(
-        'Cannot removeItem: WidgetStorage native module is not available.'
-      );
-      return false;
-    }
-    // <--- END ADDED
-    try {
-      return await WidgetStorage.removeItem(key);
-    } catch (error) {
-      console.error('Failed to remove widget data:', error);
-      return false;
-    }
+    return await UserDefaults.removeItem(key);
   },
 };
 
@@ -124,14 +120,19 @@ export const widgetStorage: WidgetStorageInterface = {
 export const syncStoreToWidget = async (state: SharedSlice) => {
   try {
     const widgetData = transformStoreDataForWidget(state);
-    await widgetStorage.setItem(WIDGET_DATA_KEY, JSON.stringify(widgetData));
-    const data = await widgetStorage.getItem(WIDGET_DATA_KEY);
-    console.log(data, 'data');
-    if (WidgetStorage?.reloadAllTimelines) {
-      await WidgetStorage.reloadAllTimelines();
+    const jsonString = JSON.stringify(widgetData);
+    const success = await widgetStorage.setItem(WIDGET_DATA_KEY, jsonString);
+
+    if (success) {
+      console.log('Successfully synced data to widget');
+      if (WidgetStorage?.reloadAllTimelines) {
+        await WidgetStorage.reloadAllTimelines();
+      }
+    } else {
+      console.error('Failed to sync data to widget');
     }
-    console.log('Attempted to sync data to widget.');
-    return true;
+
+    return success;
   } catch (error) {
     console.error('Failed to sync store to widget:', error);
     return false;
