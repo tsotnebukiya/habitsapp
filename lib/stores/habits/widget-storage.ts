@@ -5,8 +5,8 @@ import dayjs, { OpUnitType } from 'dayjs';
 
 const { WidgetStorage } = NativeModules;
 
-// App Group name - must match the widget's app group
-const APP_GROUP = 'group.com.vdl.habitapp';
+// App Group name is defined and used ONLY in the native Swift code.
+// const APP_GROUP = 'group.com.vdl.habitapp'; // This is NOT used by the JS calls
 const WIDGET_DATA_KEY = 'habits';
 
 interface WidgetStorageInterface {
@@ -18,9 +18,7 @@ interface WidgetStorageInterface {
 // Transform store data into widget format
 const transformStoreDataForWidget = (state: SharedSlice) => {
   const now = dateUtils.nowUTC();
-  const startOfWeek = dayjs(now)
-    .startOf('isoWeek' as OpUnitType)
-    .startOf('day');
+  const startOfWeek = dayjs(now).startOf('isoWeek').startOf('day');
 
   const habits = Array.from(state.habits.values());
   const completions = Array.from(state.completions.values()).filter((c) => {
@@ -64,39 +62,57 @@ const transformStoreDataForWidget = (state: SharedSlice) => {
 const UserDefaults = {
   async setItem(key: string, value: string): Promise<boolean> {
     try {
-      if (!WidgetStorage?.setUserDefault) {
-        console.error('WidgetStorage.setUserDefault is not available');
+      if (!WidgetStorage) {
+        console.error('Native module WidgetStorage is not available!!');
         return false;
       }
-      return await WidgetStorage.setUserDefault(key, value, APP_GROUP);
+      if (typeof WidgetStorage.setItem !== 'function') {
+        console.error(
+          'WidgetStorage.setItem method is not available on the native module.'
+        );
+        return false;
+      }
+      return await WidgetStorage.setItem(key, value);
     } catch (error) {
-      console.error('Failed to set UserDefaults:', error);
+      console.error('Failed to set UserDefaults via native module:', error);
       return false;
     }
   },
 
   async getItem(key: string): Promise<string | null> {
     try {
-      if (!WidgetStorage?.getUserDefault) {
-        console.error('WidgetStorage.getUserDefault is not available');
+      if (!WidgetStorage) {
+        console.error('Native module WidgetStorage is not available!');
         return null;
       }
-      return await WidgetStorage.getUserDefault(key, APP_GROUP);
+      if (typeof WidgetStorage.getItem !== 'function') {
+        console.error(
+          'WidgetStorage.getItem method is not available on the native module.'
+        );
+        return null;
+      }
+      return await WidgetStorage.getItem(key);
     } catch (error) {
-      console.error('Failed to get UserDefaults:', error);
+      console.error('Failed to get UserDefaults via native module:', error);
       return null;
     }
   },
 
   async removeItem(key: string): Promise<boolean> {
     try {
-      if (!WidgetStorage?.removeUserDefault) {
-        console.error('WidgetStorage.removeUserDefault is not available');
+      if (!WidgetStorage) {
+        console.error('Native module WidgetStorage is not available!');
         return false;
       }
-      return await WidgetStorage.removeUserDefault(key, APP_GROUP);
+      if (typeof WidgetStorage.removeItem !== 'function') {
+        console.error(
+          'WidgetStorage.removeItem method is not available on the native module.'
+        );
+        return false;
+      }
+      return await WidgetStorage.removeItem(key);
     } catch (error) {
-      console.error('Failed to remove UserDefaults:', error);
+      console.error('Failed to remove UserDefaults via native module:', error);
       return false;
     }
   },
@@ -122,14 +138,20 @@ export const syncStoreToWidget = async (state: SharedSlice) => {
     const widgetData = transformStoreDataForWidget(state);
     const jsonString = JSON.stringify(widgetData);
     const success = await widgetStorage.setItem(WIDGET_DATA_KEY, jsonString);
-
     if (success) {
-      console.log('Successfully synced data to widget');
-      if (WidgetStorage?.reloadAllTimelines) {
-        await WidgetStorage.reloadAllTimelines();
+      console.log('Successfully synced data to widget UserDefaults');
+      if (
+        WidgetStorage &&
+        typeof WidgetStorage.reloadAllTimelines === 'function'
+      ) {
+        WidgetStorage.reloadAllTimelines();
+      } else {
+        console.warn(
+          'WidgetStorage.reloadAllTimelines method is not available on the native module.'
+        );
       }
     } else {
-      console.error('Failed to sync data to widget');
+      console.error('Failed to sync data to widget UserDefaults');
     }
 
     return success;

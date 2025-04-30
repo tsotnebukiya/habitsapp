@@ -6,6 +6,7 @@ import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import isBetween from 'dayjs/plugin/isBetween';
 import isToday from 'dayjs/plugin/isToday';
+import isoWeek from 'dayjs/plugin/isoWeek';
 
 // Extend dayjs with plugins
 dayjs.extend(isSameOrBefore);
@@ -15,7 +16,7 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(isBetween);
 dayjs.extend(isToday);
-
+dayjs.extend(isoWeek);
 // Set default timezone to local
 dayjs.tz.setDefault(dayjs.tz.guess());
 
