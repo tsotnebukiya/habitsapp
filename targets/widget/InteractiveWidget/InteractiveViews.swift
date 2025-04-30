@@ -1,6 +1,9 @@
 import SwiftUI
 import WidgetKit
 import AppIntents
+import os // Import OSLog
+
+private let viewLogger = Logger(subsystem: "com.vdl.habitapp.widget", category: "InteractiveViews") // Define logger
 
 struct InteractiveWidgetEntryView : View {
     var entry: InteractiveProvider.Entry
@@ -18,6 +21,8 @@ struct InteractiveWidgetEntryView : View {
     }
 
     var body: some View {
+        // Corrected logging: Map habits to a description string first
+      let habitsDescription = entry.habits.map { "\($0.name)(\($0.id))" }.joined(separator: ", ")
         VStack(alignment: .leading, spacing: 8) {
             Text("Complete Today:")
                 .font(.headline)
@@ -39,6 +44,7 @@ struct InteractiveWidgetEntryView : View {
 
 struct HabitToggleButton: View {
     let habit: Habit
+
     
     // Get today's date string key (important to match the logic in the Intent)
     private var todayDateKey: String {
@@ -46,7 +52,11 @@ struct HabitToggleButton: View {
         // IMPORTANT: Must match the formatter settings used in ToggleHabitIntent and HabitStore
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         formatter.timeZone = TimeZone(secondsFromGMT: 0) // Consistent timezone
-        return formatter.string(from: Date()) // Use current date for toggle
+        let now = Date()
+        var calendar = Calendar.current
+        calendar.timeZone = TimeZone(secondsFromGMT: 0)! // Ensure UTC
+        let startOfDay = calendar.startOfDay(for: now)
+        return formatter.string(from: startOfDay) // Use current date for toggle
     }
     
     // Determine if the habit is completed today based on the key
@@ -55,6 +65,9 @@ struct HabitToggleButton: View {
     }
 
     var body: some View {
+        // Log button creation and initial state
+        // Log computed state right before rendering UI element
+
         // Use Button with the AppIntent
         Button(intent: ToggleHabitIntent(habitID: habit.id)) {
              HStack {
@@ -70,5 +83,15 @@ struct HabitToggleButton: View {
         }
         .buttonStyle(.plain) // Use plain style to make the whole row tappable like a button
         .padding(.horizontal)
+        .onAppear {
+                viewLogger.info("TodayDateKey: \(todayDateKey, privacy: .public)")
+viewLogger.info("""
+HabitToggleButton:
+- Name: \(habit.name, privacy: .public)
+- ID: \(habit.id, privacy: .public)
+- WeeklyStatus: \(String(describing: habit.weeklyStatus), privacy: .public) 
+- IsCompletedToday: \(isCompletedToday, privacy: .public)
+""")
+            }
     }
 } 

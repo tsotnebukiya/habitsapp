@@ -46,6 +46,7 @@ export const useReconcileWidgetState = () => {
 
             // Get widget data from UserDefaults
             const widgetDataStr = await widgetStorage.getItem('habits');
+            console.log('Widget data:', widgetDataStr);
             if (!widgetDataStr) {
               console.log('No widget data found during reconciliation');
               return;
@@ -59,7 +60,7 @@ export const useReconcileWidgetState = () => {
 
             // Get today's normalized date key
             const today = dateUtils.nowUTC().startOf('day').toDate();
-            const todayKey = normalizeDate(today);
+            const todayKey = today.toISOString();
 
             // Process each habit from widget data
             for (const widgetHabit of widgetData) {

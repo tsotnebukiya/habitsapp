@@ -11,18 +11,14 @@ struct HabitStore {
 
     // Method to load habits from UserDefaults
     func loadHabits() -> [Habit] {
-        widgetLogger.info("Attempting to load habits from UserDefaults.")
         if let userDefaults = UserDefaults(suiteName: HabitStore.appGroup),
            let habitsDataString = userDefaults.string(forKey: "habits") {
-            widgetLogger.debug("Found habits string in UserDefaults: \(habitsDataString)")
             // Parse JSON string to [Habit]
             if let data = habitsDataString.data(using: .utf8) {
                 do {
                     let habits = try JSONDecoder().decode([Habit].self, from: data)
-                    widgetLogger.info("Successfully decoded \(habits.count) habits.")
                     return habits
                 } catch {
-                    widgetLogger.error("Failed to decode habits JSON: \(error.localizedDescription)")
                 }
             } else {
                  widgetLogger.warning("Could not convert habits string to Data.")
@@ -87,7 +83,7 @@ struct HabitStore {
                 userDefaults.set(jsonString, forKey: "habits")
                 widgetLogger.info("Successfully saved habits.")
                 // Optional: Synchronize UserDefaults if needed immediately, though often not required.
-                // userDefaults.synchronize()
+                userDefaults.synchronize()
             } else {
                 widgetLogger.error("Failed to convert encoded habits data to String.")
             }

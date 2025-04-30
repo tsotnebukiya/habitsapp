@@ -1,6 +1,7 @@
 import AppIntents
 import SwiftUI // For @EnvironmentObject if needed, maybe not here
 import os
+import WidgetKit
 
 // Logger specific to intents
 private let intentLogger = Logger(subsystem: "com.vdl.habitapp.widget", category: "Intents")
@@ -41,44 +42,47 @@ struct ToggleHabitIntent: WidgetConfigurationIntent {
         self.habitID = nil
     }
 
+    
+
     // The core logic when the intent is performed
     @MainActor // Ensure UI-related updates (if any indirectly caused) are on main thread
     func perform() async throws -> some IntentResult {
         // Ensure we have a valid habit ID
         guard let targetHabitID = self.habitID, !targetHabitID.isEmpty else {
-            intentLogger.error("Attempted to perform ToggleHabitIntent with a nil or empty habitID.")
             throw IntentError.habitNotFound // Throw error if ID is missing
         }
         
-        intentLogger.info("Performing ToggleHabitIntent for habit ID: \(targetHabitID)")
         let habitStore = HabitStore()
         var currentHabits = habitStore.loadHabits()
 
-        // Find the index of the habit to modify
-        guard let habitIndex = currentHabits.firstIndex(where: { $0.id == targetHabitID }) else {
-            intentLogger.warning("Habit ID \(targetHabitID) not found. Cannot toggle.")
-            throw IntentError.habitNotFound // Throw error if habit not found
-        }
-
-        // IMPORTANT: This modification relies on `Habit.weeklyStatus` being declared with `var` in Models.swift
         // Get today's date key using the same logic as the view
         let formatter = ISO8601DateFormatter()
-        // IMPORTANT: Must match the formatter settings used in HabitToggleButton and HabitStore
-        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        formatter.timeZone = TimeZone(secondsFromGMT: 0) // Use consistent UTC timezone
-        let todayKey = formatter.string(from: Date()) // Use current date
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds] // Match view/store
+        formatter.timeZone = TimeZone(secondsFromGMT: 0) // Consistent UTC
+        
+        // --- Normalize date to start of day (UTC) ---
+        let now = Date()
+        var calendar = Calendar.current
+        calendar.timeZone = TimeZone(secondsFromGMT: 0)! // Ensure UTC
+        let startOfDay = calendar.startOfDay(for: now)
+        let todayKey = formatter.string(from: startOfDay) 
+        // --- End normalization ---
+
+        // Find the index of the habit to modify
+        guard let habitIndex = currentHabits.firstIndex(where: { $0.id == targetHabitID }) else {
+            throw IntentError.habitNotFound // Throw error if habit not found
+        }
 
         // Toggle the completion status for today
         let currentState = currentHabits[habitIndex].weeklyStatus[todayKey] ?? false
         currentHabits[habitIndex].weeklyStatus[todayKey] = !currentState
-        intentLogger.debug("Toggled habit '\(currentHabits[habitIndex].name)' (\(targetHabitID)) for date key \(todayKey) to \(!currentState)")
-
-        // Save the updated habits list
+intentLogger.info("Toggled habit '\(currentHabits[habitIndex].name, privacy: .public)' '\(String(describing: currentHabits[habitIndex].weeklyStatus), privacy: .public)' (\(targetHabitID, privacy: .public)) for date key \(todayKey, privacy: .public) to \(!currentState, privacy: .public)")        // Save the updated habits list
         // Note: HabitStore.saveHabits currently logs errors but doesn't throw.
         // Consider updating HabitStore to throw errors for better handling here.
         habitStore.saveHabits(currentHabits)
-        intentLogger.info("Saved updated habits after toggle.")
 
+        // Explicitly reload all widget timelines after saving data
+        WidgetCenter.shared.reloadAllTimelines()
         // Indicate success
         // You can return values or confirmation dialogs if needed
         // return .result(value: "Toggled \(currentHabits[habitIndex].name)")
@@ -86,9 +90,3 @@ struct ToggleHabitIntent: WidgetConfigurationIntent {
         // No need for the 'else' block anymore due to the guard statements above
     }
 }
-
-// Optional: Define custom errors
-// enum ToggleHabitError: Error { // Replaced with IntentError above
-//     case habitNotFound
-//     case saveDataFailed
-// }
