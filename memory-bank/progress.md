@@ -49,63 +49,165 @@
    - [ ] Connect to habit data
    - [ ] Add matrix score history
 
-## What Works
+## What Works / Completed Features ✅
 
-1. **Project Setup**
+1. Homepage with WeekView & HabitList
+   • Toggle logic implementation
+   • Date selection and handling
+   • Performance optimized rendering
 
-   - ✅ Basic project structure
-   - ✅ Core dependencies
-   - ✅ Development environment
-   - ✅ TypeScript configuration
+2. Habit Creation & Detail Modals
+   • Add-Habit form with template support
+   • Edit / delete / un-complete controls
+   • Increment/decrement functionality
 
-2. **Navigation**
+3. Stats – First Release
+   • Calendar heat-map visualization
+   • Achievements grid view
+   • Matrix score visualization
 
-   - ✅ Expo Router integration
-   - ✅ Basic routing structure
-   - ✅ Bottom tab navigation
-   - ✅ Home and Stats tabs
-   - ⚠️ Deep linking (partial)
-   - ✅ Navigation type definitions
+4. Full Achievement System
+   • Unlock logic implementation
+   • Achievement notifications
+   • AchievementsModal with confetti
+   • Pagination for multiple achievements
 
-3. **State Management & Hooks**
+5. Notifications Infrastructure
+   • Supabase Edge functions setup
+   • Expo Push notification integration
+   • Local notification fallback
+   • Scheduling utilities
 
-   - ✅ Zustand setup
-   - ✅ MMKV integration (replacing AsyncStorage)
-   - ✅ Store type definitions
-   - ✅ Offline sync
-   - ✅ Habits interface with sync (`habits_store.ts`)
-   - ✅ Optimistic updates
-   - ✅ Pending operations system
-   - ✅ Custom hooks pattern for data selection (`useHabits.ts`)
+6. iOS Widgets
+   • Calendar Widget (weekly overview)
+   • Interactive Widget (daily toggle)
+   • Shared App-Group data layer in Swift
+   • Timeline reload optimization
 
-4. **UI/Components**
+7. HabitStore Implementation
+   • Zustand + MMKV integration
+   • Offline-first sync system
+   • Score & streak calculations
+   • Performance optimizations
 
-   - ✅ Basic component structure
-   - ⚠️ Theme system (partial)
-   - ❌ Component library
-   - ✅ Basic animation system (confetti)
-   - ✅ `WeekView` implemented
-   - ✅ `HabitList` implemented (using `useHabitsForDate`)
-   - ✅ `AddHabit` modal implemented
-   - ✅ Modal system implemented
-   - ✅ Achievement display UI
+8. Modal Infrastructure
+   • Centralized modal store
+   • ConfirmationModal component
+   • Achievement display system
+   • Modal state management
 
-5. **iOS Widgets** ✅
-   - ✅ Setup with `@bacons/expo-apple-targets`.
-   - ✅ App Group (`group.com.vdl.habitapp.widget`) configured for data sharing.
-   - ✅ Shared `HabitStore` for loading/saving/mocking habit data via `UserDefaults`.
-   - ✅ Shared `Models.swift` (Habit struct) and `DateUtils.swift`.
-   - ✅ **Calendar Widget (Weekly View)** implemented:
-     - ✅ Supports Medium and Large sizes.
-     - ✅ Displays week header and habit rows with completion status.
-     - ✅ Uses `StaticConfiguration`.
-   - ✅ **Interactive Widget (Daily Toggle)** implemented:
-     - ✅ Supports Small, Medium, and Large sizes with adaptive layouts.
-     - ✅ Uses `AppIntentConfiguration` with `ToggleHabitIntent`.
-     - ✅ Allows toggling habit completion for today directly from the widget.
-     - ✅ Reloads widget timelines after interaction.
-   - ✅ Logging implemented using `os.Logger`.
-   - ✅ Unused/old widget files removed.
+9. Matrix Score System
+   • Category definitions
+   • Score calculations
+   • Visual representation
+   • Category mapping logic
+
+10. Navigation Setup
+    • Expo Router v3 integration
+    • Bottom tabs implementation
+    • Deep-link skeleton
+
+11. Performance Optimizations
+    • Migration to MMKV
+    • Store subscription optimization
+    • UI rendering improvements
+    • Shadow rendering fixes
+
+12. Basic Settings Infrastructure
+    • Modal system integration
+    • UI scaffold implementation
+    • State management preparation
+
+## What's Left to Build 🛠️
+
+1. Update Habit Functionality
+   • Complete edit flow implementation
+   • History modification controls
+   • Batch update capabilities
+
+2. Stats Enhancement
+   • Additional chart implementation
+   • Habit comparison view
+   • Matrix score history
+   • Performance optimization
+
+3. Settings Page Development
+   • Full page implementation
+   • Preference management
+   • Profile customization
+   • Data management
+
+4. Onboarding Flow
+   • Question screen design
+   • Initial matrix score calculation
+   • First-time user experience
+   • Tutorial implementation
+
+5. Custom Notifications Modal
+   • Replace native alert
+   • Enhanced UI/UX
+   • Preference management
+   • Schedule configuration
+
+6. HabitStore Optimization
+   • Supabase live subscriptions
+   • Widget data synchronization
+   • Date-handling audit
+   • Edge case handling
+
+7. Notification System Enhancement
+   • Text template refinement
+   • Send/retry logic optimization
+   • Channel management
+   • Preference controls
+
+8. Superwall Integration
+   • Paywall implementation
+   • Remote configuration
+   • A/B testing setup
+   • Analytics integration
+
+9. UI Rebuild (Post-11 May)
+   • New design implementation
+   • Component modernization
+   • Animation enhancement
+   • Accessibility improvements
+
+10. Theme System
+    • Component library finalization
+    • Dark mode support
+    • Custom theming
+    • Design system documentation
+
+11. Authentication Flow
+    • Apple Sign-in
+    • Google Sign-in
+    • Secure token storage
+    • Session management
+
+12. Deep-linking Polish
+    • Route handling
+    • State restoration
+    • Universal links
+    • App clips support
+
+13. Error Handling
+    • Advanced error tracking
+    • Logging improvements
+    • Recovery mechanisms
+    • User feedback
+
+14. Widget Quality Assurance
+    • Device testing
+    • Size variations
+    • Timeline reload testing
+    • Edge case validation
+
+15. Testing & Documentation
+    • Comprehensive test suite
+    • Documentation updates
+    • Performance benchmarks
+    • Deployment guides
 
 ## Completed Features
 
@@ -527,3 +629,5 @@
    - [ ] Create habit comparison view.
    - [ ] Connect charts to `useHabitsStore` data.
    - [ ] Add matrix score history display.
+
+_Lists refreshed on April 24, 2024 to align with current roadmap and Memory Bank discussion._
