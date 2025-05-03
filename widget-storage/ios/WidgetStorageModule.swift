@@ -17,36 +17,39 @@ public class WidgetStorageModule: Module {
     // Defines an async function `setItem`.
     AsyncFunction("setItem") { (key: String, value: String) in
       guard let userDefaults = getUserDefaults() else {
-        throw Exceptions.WriteError(message: "Failed to get UserDefaults for app group \(appGroup)")
+        throw Exception(name: "UserDefaultsError", description: "Failed to get UserDefaults for app group \(appGroup)")
       }
       userDefaults.set(value, forKey: key)
-    }.runOnQueue(.main)
+    }.runOnQueue(DispatchQueue.main)
 
     // Defines an async function `getItem`.
     AsyncFunction("getItem") { (key: String) -> String? in
       guard let userDefaults = getUserDefaults() else {
-        throw Exceptions.ReadError(message: "Failed to get UserDefaults for app group \(appGroup)")
+        throw Exception(name: "UserDefaultsError", description: "Failed to get UserDefaults for app group \(appGroup)")
       }
       return userDefaults.string(forKey: key)
-    }.runOnQueue(.main)
+    }.runOnQueue(DispatchQueue.main)
 
     // Defines an async function `removeItem`.
     AsyncFunction("removeItem") { (key: String) in
        guard let userDefaults = getUserDefaults() else {
-        throw Exceptions.DeleteError(message: "Failed to get UserDefaults for app group \(appGroup)")
+        throw Exception(name: "UserDefaultsError", description: "Failed to get UserDefaults for app group \(appGroup)")
       }
       userDefaults.removeObject(forKey: key)
-    }.runOnQueue(.main)
+    }.runOnQueue(DispatchQueue.main)
 
 
     // Defines a synchronous function `reloadAllTimelines`.
     Function("reloadAllTimelines") {
-      if #available(iOS 14.0, *) {
-          WidgetCenter.shared.reloadAllTimelines()
-      } else {
-          // Fallback on earlier versions
-          print("WidgetCenter is not available before iOS 14.0")
+      // Dispatch the WidgetCenter call to the main queue
+      DispatchQueue.main.async {
+        if #available(iOS 14.0, *) {
+            WidgetCenter.shared.reloadAllTimelines()
+        } else {
+            // Fallback on earlier versions
+            print("WidgetCenter is not available before iOS 14.0")
+        }
       }
-    }.runOnQueue(.main) // Ensure UI-related tasks run on the main queue
+    } // Removed .runOnQueue here
   }
 } 
