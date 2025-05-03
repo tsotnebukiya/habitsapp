@@ -16,6 +16,7 @@ import {
   getNewlyUnlockedAchievements,
 } from '@/lib/utils/achievements';
 import { useMemo } from 'react';
+import { dateUtils } from '@/lib/utils/dayjs';
 
 export interface AchievementSlice {
   streakAchievements: StreakAchievements;
@@ -52,7 +53,7 @@ export const createAchievementSlice: StateCreator<
   pendingOperations: [],
 
   setAchievements: (achievements) => {
-    const now = dayjs();
+    const now = dateUtils.nowUTC();
 
     // Update local state immediately
     set({
@@ -110,7 +111,7 @@ export const createAchievementSlice: StateCreator<
     );
 
     const userId = getUserIdOrThrow();
-    const now = dayjs();
+    const now = dateUtils.nowUTC();
 
     const userAchievement: UserAchievement = {
       id: userId,
@@ -123,8 +124,8 @@ export const createAchievementSlice: StateCreator<
       streak_achievements: newAchievements,
       current_streak: currentStreak,
       max_streak: Math.max(currentStreak, get().maxStreak),
-      created_at: now.toISOString(),
-      updated_at: now.toISOString(),
+      created_at: dateUtils.toServerDateTime(now),
+      updated_at: dateUtils.toServerDateTime(now),
     };
     // Update local state
     set({
@@ -168,7 +169,7 @@ export const createAchievementSlice: StateCreator<
 
   resetAchievements: () => {
     const userId = getUserIdOrThrow();
-    const now = dayjs();
+    const now = dateUtils.nowUTC();
 
     // Update local state immediately
     set({

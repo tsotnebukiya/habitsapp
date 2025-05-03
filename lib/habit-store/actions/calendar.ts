@@ -4,8 +4,9 @@ import {
   calculateDateStatus,
   getAffectedDates,
   getMonthKey,
+  normalizeDate,
 } from '@/lib/utils/habits';
-import dayjs from '@/lib/utils/dayjs';
+import { dateUtils } from '@/lib/utils/dayjs';
 
 // Optimized cache type that only stores non-none_completed statuses
 type OptimizedMonthCache = {
@@ -33,30 +34,20 @@ export const createCalendarSlice: StateCreator<
   getDayStatus: (date: Date) => {
     const monthKey = getMonthKey(date);
     const cache = get().monthCache.get(monthKey) || {};
-    const dateString = dayjs(date).format('YYYY-MM-DD');
+    const dateString = dateUtils.toServerDateString(date);
     return cache[dateString] || 'none_completed';
   },
 
   getMonthStatuses: (month: Date) => {
     const monthKey = getMonthKey(month);
     const optimizedCache = get().monthCache.get(monthKey) || {};
-
-    const fullCache: MonthCache = {};
-    const startOfMonth = dayjs(month).startOf('month');
-    const daysInMonth = startOfMonth.daysInMonth();
-
-    for (let i = 0; i < daysInMonth; i++) {
-      const currentDate = startOfMonth.add(i, 'days');
-      const dateString = currentDate.format('YYYY-MM-DD');
-
-      fullCache[dateString] = optimizedCache[dateString] || 'none_completed';
-    }
-
-    return fullCache;
+    return optimizedCache;
   },
+
   updateDayStatus: (date: Date) => {
     get().batchUpdateDayStatuses([date]);
   },
+
   updateAffectedDates: (habitId: string, dates?: Date[]) => {
     let datesToUpdate = dates;
     if (dates) {
@@ -68,11 +59,12 @@ export const createCalendarSlice: StateCreator<
     }
     get().batchUpdateDayStatuses(datesToUpdate);
   },
+
   batchUpdateDayStatuses: (dates: Date[]) => {
     const updates = new Map<string, OptimizedMonthCache>();
     dates.forEach((date) => {
       const monthKey = getMonthKey(date);
-      const dateString = dayjs(date).format('YYYY-MM-DD');
+      const dateString = dateUtils.toServerDateString(date);
 
       if (!updates.has(monthKey)) {
         updates.set(monthKey, {

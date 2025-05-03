@@ -1,12 +1,19 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
-import { Calendar } from 'react-native-calendars';
+import { Calendar, CalendarUtils, CalendarList } from 'react-native-calendars';
 import useHabitsStore from '@/lib/habit-store/store';
 import type { CompletionStatus } from '@/lib/habit-store/types';
 import Colors from '@/lib/constants/Colors';
 import dayjs from '@/lib/utils/dayjs';
 import { dateUtils } from '@/lib/utils/dayjs';
-// import type { CompletionStatus\ }
+// Define DateObject type locally based on expected structure
+interface DateObject {
+  dateString: string;
+  day: number;
+  month: number;
+  year: number;
+  timestamp: number;
+}
 
 // Get screen width to ensure responsive sizing
 const screenWidth = Dimensions.get('window').width;
@@ -22,30 +29,47 @@ const CalendarViewNew: React.FC<CalendarViewProps> = ({
   selectedDate = new Date(),
 }) => {
   const { getMonthStatuses, currentStreak } = useHabitsStore();
-  // Get current month stats
-  const monthDate = dateUtils.fromUTC(selectedDate);
-  const monthStatuses = getMonthStatuses(selectedDate);
-  const daysInMonth = monthDate.daysInMonth();
 
+  const [currentMonth, setCurrentMonth] = useState(
+    dayjs(selectedDate).toDate()
+  );
+
+  const selectedDayjs = dayjs(selectedDate);
+  const monthStatusesForSelected = getMonthStatuses(selectedDayjs.toDate());
+
+  const daysInSelectedMonth = selectedDayjs.daysInMonth();
   let completedDays = 0;
-  for (let i = 1; i <= daysInMonth; i++) {
-    const dateStr = monthDate.date(i).format('YYYY-MM-DD');
-    if (monthStatuses[dateStr] === 'all_completed') {
+  for (let i = 1; i <= daysInSelectedMonth; i++) {
+    const dateStr = dateUtils.toServerDateString(selectedDayjs.date(i)); // Use UTC string
+    if (monthStatusesForSelected[dateStr] === 'all_completed') {
       completedDays++;
     }
   }
-  const completionRate = Math.round((completedDays / daysInMonth) * 100);
+  const completionRate = Math.round(
+    (completedDays / daysInSelectedMonth) * 100
+  );
 
-  // Format current date for the Calendar component
-  const currentDateStr = dayjs(selectedDate).format('YYYY-MM-DD');
+  const targetMonth = dayjs(currentMonth);
+  const prevMonthDate = targetMonth.subtract(1, 'month').toDate();
+  const nextMonthDate = targetMonth.add(1, 'month').toDate();
 
-  // Prepare marked dates
-  const markedDates = Object.entries(monthStatuses).reduce(
+  const monthStatusesForPrev = getMonthStatuses(prevMonthDate);
+  const monthStatusesForCurrent = getMonthStatuses(currentMonth);
+  const monthStatusesForNext = getMonthStatuses(nextMonthDate);
+
+  const allStatusesForView = {
+    ...monthStatusesForPrev,
+    ...monthStatusesForCurrent,
+    ...monthStatusesForNext,
+  };
+
+  const markedDates = Object.entries(allStatusesForView).reduce(
     (
       acc: Record<string, any>,
       [dateStr, status]: [string, CompletionStatus]
     ) => {
-      const currentDateStr = dateUtils.toServerDateString(selectedDate);
+      // Use the passed selectedDate prop to determine the visual selection style
+      const selectedDateStr = dateUtils.toServerDateString(selectedDate);
       let customStyles = {};
 
       switch (status) {
@@ -75,7 +99,7 @@ const CalendarViewNew: React.FC<CalendarViewProps> = ({
       }
 
       acc[dateStr] = {
-        selected: currentDateStr === dateStr,
+        selected: selectedDateStr === dateStr,
         selectedColor: Colors.shared.primary[100],
         customStyles,
       };
@@ -84,13 +108,28 @@ const CalendarViewNew: React.FC<CalendarViewProps> = ({
     {}
   );
 
-  // Handle date selection
   const handleDayPress = useCallback(
-    (day: any) => {
-      const selectedDate = dateUtils.fromServerDate(day.dateString);
-      onSelectDate?.(selectedDate.toDate());
+    (day: DateObject) => {
+      const newSelectedDate = dateUtils.fromServerDate(day.dateString).toDate();
+      onSelectDate?.(newSelectedDate);
     },
     [onSelectDate]
+  );
+
+  const handleMonthChange = useCallback(
+    (month: DateObject) => {
+      const newCurrentMonth = dayjs(month.dateString).toDate();
+      setCurrentMonth(newCurrentMonth);
+
+      const targetMonth = dayjs(newCurrentMonth);
+      const prevMonth = targetMonth.subtract(1, 'month').toDate();
+      const nextMonth = targetMonth.add(1, 'month').toDate();
+
+      getMonthStatuses(prevMonth);
+      getMonthStatuses(targetMonth.toDate());
+      getMonthStatuses(nextMonth);
+    },
+    [getMonthStatuses]
   );
 
   return (
@@ -115,8 +154,10 @@ const CalendarViewNew: React.FC<CalendarViewProps> = ({
 
       {/* Calendar */}
       <Calendar
-        current={currentDateStr}
+        // Use currentMonth state to control the displayed month initially
+        current={dayjs(currentMonth).format('YYYY-MM-DD')}
         onDayPress={handleDayPress}
+        onMonthChange={handleMonthChange}
         markedDates={markedDates}
         enableSwipeMonths={true}
         style={styles.calendar}

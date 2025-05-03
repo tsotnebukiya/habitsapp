@@ -3,6 +3,7 @@ import { PendingOperation, SharedSlice, StreakAchievements } from '../types';
 import { dateUtils } from '@/lib/utils/dayjs';
 import { supabase } from '@/supabase/client';
 import { getUserIdOrThrow, STORE_CONSTANTS } from '@/lib/utils/habits';
+import dayjs from 'dayjs';
 
 export interface SyncSlice {
   pendingOperations: PendingOperation[];
@@ -119,10 +120,10 @@ export const createSyncSlice: StateCreator<SharedSlice, [], [], SyncSlice> = (
           const localHabit = localHabits.get(serverHabit.id);
           if (
             !localHabit ||
-            dateUtils.isAfterDay(
-              dateUtils.fromServerDate(serverHabit.updated_at),
-              dateUtils.fromServerDate(localHabit.updated_at)
-            )
+            // Compare timestamps directly, ensuring UTC context
+            dayjs
+              .utc(serverHabit.updated_at)
+              .isAfter(dayjs.utc(localHabit.updated_at))
           ) {
             set((state) => {
               const newHabits = new Map(state.habits);
@@ -145,6 +146,7 @@ export const createSyncSlice: StateCreator<SharedSlice, [], [], SyncSlice> = (
               newCompletions.set(serverCompletion.id, serverCompletion);
               return { completions: newCompletions };
             });
+            // Ensure the date used for cache update is consistent (UTC string -> local Date)
             affectedDates.add(serverCompletion.completion_date);
             affectedHabits.add(serverCompletion.habit_id);
           }
@@ -152,6 +154,7 @@ export const createSyncSlice: StateCreator<SharedSlice, [], [], SyncSlice> = (
 
         // Update cache for affected dates
         affectedDates.forEach((dateString) => {
+          // Convert UTC date string back to local Date object for updateDayStatus
           const date = dateUtils.fromServerDate(dateString).toDate();
           get().updateDayStatus(date);
         });
