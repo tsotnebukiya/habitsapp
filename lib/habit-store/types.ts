@@ -72,7 +72,7 @@ export interface PendingOperation extends BasePendingOperation {
 }
 
 interface BaseState {
-  lastSyncTime: Date;
+  lastSyncTime: Date | null;
   isLoading: boolean;
   error: string | null;
 }

@@ -42,15 +42,11 @@ export function useNotifications() {
 
     // Set up notification handlers
     const notificationListener = Notifications.addNotificationReceivedListener(
-      (notification) => {
-        console.log('Notification received:', notification);
-      }
+      (notification) => {}
     );
 
     const responseListener =
-      Notifications.addNotificationResponseReceivedListener((response) => {
-        console.log('Notification response:', response);
-      });
+      Notifications.addNotificationResponseReceivedListener((response) => {});
 
     setupNotifications();
 

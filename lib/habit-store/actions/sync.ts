@@ -78,29 +78,36 @@ export const createSyncSlice: StateCreator<SharedSlice, [], [], SyncSlice> = (
 
   syncWithServer: async () => {
     set({ isLoading: true });
-
     try {
       // Process any pending operations first
       await get().processPendingOperations();
 
-      const lastSync = dateUtils.toServerDateTime(get().lastSyncTime);
+      const lastSyncTimeValue = get().lastSyncTime; // Type: Date | null
+      const isInitialSync = lastSyncTimeValue === null; // Direct check for null
 
-      // Sync habits
-      const { data: serverHabits, error: habitsError } = await supabase
+      let habitsQuery = supabase
         .from('habits')
         .select('*')
-        .eq('user_id', getUserIdOrThrow())
-        .gt('updated_at', lastSync);
+        .eq('user_id', getUserIdOrThrow());
 
+      let completionsQuery = supabase
+        .from('habit_completions')
+        .select('*')
+        .eq('user_id', getUserIdOrThrow());
+
+      if (!isInitialSync) {
+        // We are sure lastSyncTimeValue is a Date here
+        const lastSyncFormatted = dateUtils.toServerDateTime(lastSyncTimeValue); // Format the Date
+        habitsQuery = habitsQuery.gt('updated_at', lastSyncFormatted);
+        completionsQuery = completionsQuery.gt('created_at', lastSyncFormatted);
+      }
+
+      // Execute the constructed queries
+      const { data: serverHabits, error: habitsError } = await habitsQuery;
       if (habitsError) throw habitsError;
-      // Sync completions
-      const { data: serverCompletions, error: completionsError } =
-        await supabase
-          .from('habit_completions')
-          .select('*')
-          .eq('user_id', getUserIdOrThrow())
-          .gt('created_at', lastSync);
 
+      const { data: serverCompletions, error: completionsError } =
+        await completionsQuery;
       if (completionsError) throw completionsError;
 
       // Add achievements sync

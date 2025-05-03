@@ -30,9 +30,9 @@ export interface AchievementSlice {
 
   resetAchievements: () => void;
   setAchievements: (achievements: UserAchievement) => void;
+  getCurrentStreak: () => number;
   calculateAndUpdate: () => {
     unlockedAchievements: StreakDays[];
-    currentStreak: number;
   };
 }
 
@@ -89,9 +89,15 @@ export const createAchievementSlice: StateCreator<
         }
       });
   },
+  getCurrentStreak: () => {
+    const currentStreak = calculateCurrentStreak(
+      get().completions,
+      get().habits
+    );
+    return currentStreak;
+  },
 
   calculateAndUpdate: () => {
-    const perfomanceStart = performance.now();
     const { profile } = useUserProfileStore.getState();
     if (!profile) {
       return { unlockedAchievements: [], currentStreak: 0 };
@@ -100,6 +106,7 @@ export const createAchievementSlice: StateCreator<
       get().completions,
       get().habits
     );
+
     const newAchievements = calculateNewAchievements(
       currentStreak,
       get().streakAchievements
@@ -164,9 +171,8 @@ export const createAchievementSlice: StateCreator<
       get().streakAchievements,
       newAchievements
     );
-    const perfomanceEnd = performance.now();
-    console.log(`Time taken: ${perfomanceEnd - perfomanceStart} milliseconds`);
-    return { unlockedAchievements, currentStreak };
+
+    return { unlockedAchievements };
   },
 
   resetAchievements: () => {

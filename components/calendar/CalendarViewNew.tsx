@@ -6,6 +6,7 @@ import type { CompletionStatus } from '@/lib/habit-store/types';
 import Colors from '@/lib/constants/Colors';
 import dayjs from '@/lib/utils/dayjs';
 import { dateUtils } from '@/lib/utils/dayjs';
+import { useCurrentStreak } from '@/lib/hooks/useAchievements';
 // Define DateObject type locally based on expected structure
 interface DateObject {
   dateString: string;
@@ -28,8 +29,8 @@ const CalendarViewNew: React.FC<CalendarViewProps> = ({
   onSelectDate,
   selectedDate = new Date(),
 }) => {
-  const { getMonthStatuses, currentStreak } = useHabitsStore();
-
+  const { getMonthStatuses } = useHabitsStore();
+  const currentStreak = useCurrentStreak();
   const [currentMonth, setCurrentMonth] = useState(
     dayjs(selectedDate).toDate()
   );

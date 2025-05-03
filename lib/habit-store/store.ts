@@ -12,7 +12,7 @@ import { createAchievementSlice } from './actions/achievements';
 const useHabitsStore = create<SharedSlice>()(
   persist(
     (...a) => ({
-      lastSyncTime: dateUtils.nowUTC().toDate(),
+      lastSyncTime: null,
       isLoading: false,
       error: null,
       ...createHabitSlice(...a),

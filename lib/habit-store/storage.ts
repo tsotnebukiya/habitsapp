@@ -14,6 +14,8 @@ const storage: PersistStorage<SharedSlice> = {
     if (!value) return null;
 
     const parsed = JSON.parse(value);
+    const parsedLastSyncTime = parsed.state.lastSyncTime;
+
     return {
       ...parsed,
       state: {
@@ -21,9 +23,9 @@ const storage: PersistStorage<SharedSlice> = {
         habits: new Map(parsed.state.habits),
         completions: new Map(parsed.state.completions),
         monthCache: new Map(Object.entries(parsed.state.monthCache || {})),
-        lastSyncTime: dateUtils
-          .fromServerDate(parsed.state.lastSyncTime)
-          .toDate(),
+        lastSyncTime: parsedLastSyncTime
+          ? dateUtils.fromServerDate(parsedLastSyncTime).toDate()
+          : null,
         streakAchievements: parsed.state.streakAchievements || {},
         currentStreak: parsed.state.currentStreak || 0,
         maxStreak: parsed.state.maxStreak || 0,
@@ -43,7 +45,9 @@ const storage: PersistStorage<SharedSlice> = {
         habits: Array.from(value.state.habits.entries()),
         completions: Array.from(value.state.completions.entries()),
         monthCache: Object.fromEntries(value.state.monthCache),
-        lastSyncTime: dateUtils.toServerDateTime(value.state.lastSyncTime),
+        lastSyncTime: value.state.lastSyncTime
+          ? dateUtils.toServerDateTime(value.state.lastSyncTime)
+          : null,
         streakAchievements: value.state.streakAchievements,
         currentStreak: value.state.currentStreak,
         maxStreak: value.state.maxStreak,

@@ -27,6 +27,7 @@
 **Focus Area 2: Notification Backend (Est. ~2 days)**
 
 - **2.1. Edge Function Refinement:**
+  - CalculateCurrentStreak on demand
   - Review and refine notification text templates for clarity and engagement.
   - Optimize sending logic: scheduling accuracy, batching (if applicable), error handling (retries, logging failures).
   - Ensure idempotency for scheduled notifications.

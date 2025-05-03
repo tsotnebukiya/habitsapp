@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { ACHIEVEMENTS } from '@/lib/constants/achievements'; // Import achievements
-import useHabitsStore from '@/lib/habit-store/store';
+import { useCurrentStreak } from '@/lib/hooks/useAchievements';
 
 // Helper to get the first achievement's icon (emoji) or a default
 const getStreakIcon = (): string => {
@@ -13,7 +13,7 @@ const getStreakIcon = (): string => {
 };
 
 export const StreakDisplay = () => {
-  const currentStreak = useHabitsStore((state) => state.currentStreak);
+  const currentStreak = useCurrentStreak();
   const streakIcon = getStreakIcon();
 
   // Handle null or undefined streak value
