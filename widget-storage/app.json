@@ -1,0 +1,8 @@
+{
+  "android": {
+    "package": "com.tsotnebukiya.widgetstorage"
+  },
+  "ios": {
+    "bundleIdentifier": "com.tsotnebukiya.widgetstorage"
+  }
+}

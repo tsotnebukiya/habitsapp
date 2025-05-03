@@ -95,7 +95,8 @@
     "uuid": "^10.0.0",
     "victory-native": "^41.16.2",
     "zeego": "^2.0.3",
-    "zustand": "^5.0.1"
+    "zustand": "^5.0.1",
+    "widget-storage": "file:./widget-storage"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0",
