@@ -132,9 +132,6 @@ export const widgetStorage: WidgetStorageInterface = {
 
 // Main function to sync store data to widget
 export const syncStoreToWidget = async (state: SharedSlice) => {
-  if (WidgetStorage) {
-    console.log('exists', WidgetStorage);
-  }
   if (!WidgetStorage) {
     console.error('Native module WidgetStorage is not available!');
     return;
@@ -147,7 +144,6 @@ export const syncStoreToWidget = async (state: SharedSlice) => {
     await widgetStorage.setItem(WIDGET_DATA_KEY, jsonString);
 
     syncSuccess = true;
-    console.log('Successfully synced data to widget UserDefaults');
 
     if (
       WidgetStorage &&
