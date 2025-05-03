@@ -27,28 +27,19 @@ export const useReconcileWidgetState = () => {
               now.getTime() - lastReconcileTime.current.getTime() <
                 RECONCILIATION_DEBOUNCE
             ) {
-              console.log(
-                'Skipping reconciliation - too soon since last attempt'
-              );
               return;
             }
 
-            // Prevent concurrent reconciliations
             if (isReconciling.current) {
-              console.log('Skipping reconciliation - already in progress');
               return;
             }
 
             isReconciling.current = true;
             lastReconcileTime.current = now;
 
-            console.log('Starting widget state reconciliation');
-
             // Get widget data from UserDefaults
             const widgetDataStr = await widgetStorage.getItem('habits');
-            console.log('Widget data:', widgetDataStr);
             if (!widgetDataStr) {
-              console.log('No widget data found during reconciliation');
               return;
             }
 
@@ -81,22 +72,13 @@ export const useReconcileWidgetState = () => {
                 currentStoreStatus?.status === 'completed';
               const habit = useHabitsStore.getState().habits.get(id);
 
-              // Sync if habit exists in store and widget status differs from store status
               if (
                 habit &&
                 widgetStatusIsCompleted !== currentStoreIsCompleted
               ) {
-                console.log(
-                  `Syncing widget status (${
-                    widgetStatusIsCompleted ? 'completed' : 'not completed'
-                  }) for habit: ${habit.name}`
-                );
-                // Use 'toggle' action which handles both completing and uncompleting
                 toggleHabitStatus(id, today, 'toggle');
               }
             }
-
-            console.log('Widget state reconciliation completed');
           } catch (error) {
             console.error('Error reconciling widget state:', error);
           } finally {

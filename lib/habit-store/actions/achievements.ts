@@ -91,6 +91,7 @@ export const createAchievementSlice: StateCreator<
   },
 
   calculateAndUpdate: () => {
+    const perfomanceStart = performance.now();
     const { profile } = useUserProfileStore.getState();
     if (!profile) {
       return { unlockedAchievements: [], currentStreak: 0 };
@@ -163,7 +164,8 @@ export const createAchievementSlice: StateCreator<
       get().streakAchievements,
       newAchievements
     );
-
+    const perfomanceEnd = performance.now();
+    console.log(`Time taken: ${perfomanceEnd - perfomanceStart} milliseconds`);
     return { unlockedAchievements, currentStreak };
   },
 
