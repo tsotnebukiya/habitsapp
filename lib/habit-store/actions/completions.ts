@@ -6,6 +6,7 @@ import { dateUtils } from '@/lib/utils/dayjs';
 import { v4 as uuidv4 } from 'uuid';
 import { supabase } from '@/supabase/client';
 import { getUserIdOrThrow } from '@/lib/utils/habits';
+import { syncStoreToWidget } from '../widget-storage';
 
 export interface CompletionSlice {
   completions: Map<string, HabitCompletion>;
@@ -160,6 +161,7 @@ export const createCompletionSlice: StateCreator<
 
     // Actions
     get().updateDayStatus(date);
+    syncStoreToWidget(get().habits, get().completions);
     setTimeout(() => {
       get().calculateAndUpdate();
     }, 100);

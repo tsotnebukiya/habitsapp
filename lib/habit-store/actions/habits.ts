@@ -12,6 +12,7 @@ import {
 } from '@/lib/utils/habits';
 import { HabitCompletion, type Habit } from '../types';
 import { SharedSlice } from '../types';
+import { syncStoreToWidget } from '../widget-storage';
 
 export interface HabitSlice {
   habits: Map<string, Habit>;
@@ -56,6 +57,7 @@ export const createHabitSlice: StateCreator<SharedSlice, [], [], HabitSlice> = (
 
     // Actions
     get().updateAffectedDates(newHabit.id);
+    syncStoreToWidget(get().habits, get().completions);
     setTimeout(() => {
       get().calculateAndUpdate();
     }, 100);
@@ -102,6 +104,7 @@ export const createHabitSlice: StateCreator<SharedSlice, [], [], HabitSlice> = (
 
     // Actions
     get().updateAffectedDates(habit.id);
+    syncStoreToWidget(get().habits, get().completions);
     setTimeout(() => {
       get().calculateAndUpdate();
     }, 100);
@@ -157,6 +160,7 @@ export const createHabitSlice: StateCreator<SharedSlice, [], [], HabitSlice> = (
     const dates = getAffectedDates(habit);
     // Actions
     get().updateAffectedDates(habit.id, dates);
+    syncStoreToWidget(get().habits, get().completions);
     setTimeout(() => {
       get().calculateAndUpdate();
     }, 100);

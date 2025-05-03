@@ -4,6 +4,7 @@ import { dateUtils } from '@/lib/utils/dayjs';
 import { supabase } from '@/supabase/client';
 import { getUserIdOrThrow, STORE_CONSTANTS } from '@/lib/utils/habits';
 import dayjs from 'dayjs';
+import { syncStoreToWidget } from '../widget-storage';
 
 export interface SyncSlice {
   pendingOperations: PendingOperation[];
@@ -174,6 +175,10 @@ export const createSyncSlice: StateCreator<SharedSlice, [], [], SyncSlice> = (
           cat5: serverAchievements.cat5 || 50,
         });
       }
+
+      // Trigger widget sync AFTER merging server data
+      const { habits, completions } = get();
+      syncStoreToWidget(habits, completions);
 
       set({
         lastSyncTime: dateUtils.nowUTC().toDate(),

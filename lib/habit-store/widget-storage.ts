@@ -1,12 +1,8 @@
 import * as WidgetStorage from 'widget-storage';
 import { dateUtils } from '@/lib/utils/dayjs';
-import { SharedSlice } from './types';
-import dayjs, { OpUnitType } from 'dayjs';
+import { Habit, HabitCompletion } from './types';
+import dayjs from 'dayjs';
 
-// const { WidgetStorage } = NativeModules;
-
-// App Group name is defined and used ONLY in the native Swift code.
-// const APP_GROUP = 'group.com.vdl.habitapp'; // This is NOT used by the JS calls
 const WIDGET_DATA_KEY = 'habits';
 
 interface WidgetStorageInterface {
@@ -16,12 +12,15 @@ interface WidgetStorageInterface {
 }
 
 // Transform store data into widget format
-const transformStoreDataForWidget = (state: SharedSlice) => {
+const transformStoreDataForWidget = (
+  habitsMap: Map<string, Habit>,
+  completionsMap: Map<string, HabitCompletion>
+) => {
   const now = dateUtils.nowUTC();
   const startOfWeek = dayjs(now).startOf('isoWeek').startOf('day');
 
-  const habits = Array.from(state.habits.values());
-  const completions = Array.from(state.completions.values()).filter((c) => {
+  const habits = Array.from(habitsMap.values());
+  const completions = Array.from(completionsMap.values()).filter((c) => {
     const completionDate = dateUtils
       .fromServerDate(c.completion_date)
       .startOf('day');
@@ -131,7 +130,10 @@ export const widgetStorage: WidgetStorageInterface = {
 };
 
 // Main function to sync store data to widget
-export const syncStoreToWidget = async (state: SharedSlice) => {
+export const syncStoreToWidget = async (
+  habits: Map<string, Habit>,
+  completions: Map<string, HabitCompletion>
+) => {
   if (!WidgetStorage) {
     console.error('Native module WidgetStorage is not available!');
     return;
@@ -139,7 +141,7 @@ export const syncStoreToWidget = async (state: SharedSlice) => {
 
   let syncSuccess = false;
   try {
-    const widgetData = transformStoreDataForWidget(state);
+    const widgetData = transformStoreDataForWidget(habits, completions);
     const jsonString = JSON.stringify(widgetData);
     await widgetStorage.setItem(WIDGET_DATA_KEY, jsonString);
 
