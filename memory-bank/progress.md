@@ -78,16 +78,21 @@
    • Local notification fallback
    • Scheduling utilities
 
-6. iOS Widgets
-   • Calendar Widget (weekly overview)
-   • Interactive Widget (daily toggle)
-   • Shared App-Group data layer in Swift
-   • Timeline reload optimization
+6. **iOS Widgets (Focus Area 1 Complete)**
+   • **Calendar Widget:** Weekly overview (Medium/Large)
+   • **Interactive Widget:** Daily toggle (Small/Medium/Large) using App Intents
+   • **Data Sharing:** React Native -> Swift via App Groups (`group.com.vdl.habitapp.widget`) and `UserDefaults`
+   • **Shared Swift Code:** `HabitStore.swift` for data load/save, `Models.swift`, `DateUtils.swift`
+   • **Native Module Bridge:** `widget-storage` Expo module for RN access to UserDefaults.
+   • Timeline management and reload logic (`WidgetCenter.shared.reloadAllTimelines()`)
 
-7. HabitStore Implementation
+7. **HabitStore Implementation (Focus Area 1 Complete)**
    • Zustand + MMKV integration
-   • Offline-first sync system
-   • Score & streak calculations
+   • Offline-first sync pattern
+   • Score & streak calculations (audited)
+   • Date handling logic (audited)
+   • State update logic (`subscribeWithSelector`) (audited)
+   • Supabase Real-time integration (basic setup)
    • Performance optimizations
 
 8. Modal Infrastructure
@@ -117,6 +122,10 @@
     • Modal system integration
     • UI scaffold implementation
     • State management preparation
+
+13. Standardized Date Handling
+    • Custom `dayjs` instance used across the app
+    • Consistent date normalization, comparison, and formatting
 
 ## What's Left to Build 🛠️
 

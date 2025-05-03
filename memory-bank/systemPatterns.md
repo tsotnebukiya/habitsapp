@@ -780,3 +780,31 @@ Benefits:
 - **Configuration:**
   - Widget registration occurs in `targets/widget/index.swift`.
   - App Group entitlement is configured in `targets/widget/generated.entitlements`.
+
+### iOS Widget Integration
+
+1.  **Data Sharing: App Group + UserDefaults**
+
+    - React Native app writes data to shared `UserDefaults` within a specific App Group (`group.com.vdl.habitapp.widget`).
+    - Swift widgets read data from the same shared `UserDefaults` using the App Group ID.
+    - Requires configuring App Groups in both the main app target and the widget extension target.
+
+2.  **Native Module Bridge (`widget-storage`)**
+
+    - A custom Expo native module (`widget-storage`) provides React Native access to the App Group's `UserDefaults`.
+    - Exposes methods like `setItem`, `getItem`, `removeItem` for RN code to interact with the shared data store.
+    - Exposes `reloadAllTimelines` to allow the RN app to trigger widget updates.
+
+3.  **Swift Shared Code**
+
+    - Common Swift code (`Shared/Models.swift`, `Shared/DateUtils.swift`, `Shared/HabitStore.swift`) is used by both the Calendar and Interactive widgets.
+    - `HabitStore.swift` centralizes loading/saving logic for the `UserDefaults` data.
+
+4.  **Widget Types & Configuration**
+
+    - **StaticConfiguration (`CalendarWidget`)**: Displays data without user interaction, suitable for periodic timeline updates.
+    - **AppIntentConfiguration (`InteractiveWidget`)**: Uses App Intents (`ToggleHabitIntent`) to handle user interactions directly within the widget, updating data and triggering timeline reloads without opening the main app.
+
+5.  **Timeline Management**
+    - Widgets use `TimelineProvider` (`CalendarProvider`, `InteractiveProvider`) to provide snapshots and timeline entries.
+    - `WidgetCenter.shared.reloadAllTimelines()` is called (from RN via the bridge, or from Swift Intents) to inform iOS that widget data has changed and timelines need refreshing.

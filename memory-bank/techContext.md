@@ -25,10 +25,21 @@
    - AsyncStorage v1.23.1
 
 3. **UI Components**
+
    - React Native Reanimated v3.10.1
    - React Native Gesture Handler v2.16.1
    - React Native Skia v1.2.3
    - Various Expo modules
+
+4. **iOS Widget Specific**
+   - Swift (for widget views, logic, and intents)
+   - SwiftUI (for widget UI)
+   - WidgetKit (Apple framework for building widgets)
+   - App Intents (Apple framework for interactive widgets)
+   - `@bacons/expo-apple-targets` (Expo package for integrating native Swift targets)
+   - App Groups (iOS mechanism for sharing data between app and extensions)
+   - `UserDefaults` (used with App Groups for data storage)
+   - Custom Expo Native Module (`widget-storage`) for RN <-> UserDefaults bridge.
 
 ## Dependencies
 
@@ -46,7 +57,8 @@
   "zustand": "^5.0.1",
   "react-native-calendars": "^1.1311.0",
   "react-native-confetti-cannon": "^1.5.2",
-  "react-native-context-menu-view": "^1.16.0"
+  "react-native-context-menu-view": "^1.16.0",
+  "@bacons/expo-apple-targets": "^0.1.1-beta.1"
 }
 ```
 

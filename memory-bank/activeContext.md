@@ -4,38 +4,48 @@
 
 **Goal:** Prepare all critical backend systems, core logic, data handling, and third-party service integrations _before_ the design handoff (May 11th). **Strictly NO new UI components or visual changes.**
 
+**Status Update:** Focus Area 1 (HabitStore, Sync & Widgets) is now complete. Focus is shifting to the remaining backend tasks.
+
 ---
 
-**Focus Area 1: HabitStore, Sync & Widgets (Est. ~3-4 days)**
+**Focus Area 1: HabitStore, Sync & Widgets (Est. ~3-4 days) ✅ COMPLETED**
 
-- **1.1. Widget Data Sync Implementation & Testing:**
-  - Implement React Native -> Swift data writing (`UserDefaults` via App Group).
-  - Conduct rigorous on-device testing:
-    - Verify data integrity during app -> widget sync.
-    - Test widget timeline updates after app changes.
-    - Test widget interaction logic (toggle intent) and subsequent data reflection in the app.
-    - Test across different widget families/sizes.
-- **1.2. HabitStore State & Date Logic Audit:**
-  - Thoroughly review and audit all date handling: timezone conversions, normalization (start/end of day), date comparisons, week/month calculations.
-  - Verify correctness and efficiency of state updates for: habit completions, streak calculations, weekly status arrays, matrix scores.
-  - Ensure state changes trigger necessary recalculations without infinite loops (`subscribeWithSelector` logic).
-- **1.3. Supabase Real-time Integration:**
-  - Connect and test Supabase real-time subscriptions for relevant tables (e.g., `habit_completions`, `habits`).
-  - Ensure real-time updates correctly merge with local state in `HabitStore`.
-  - Refine overall sync logic for robustness (conflict resolution if necessary, handling offline periods).
+- **1.1. Widget Data Sync Implementation & Testing: ✅**
+  - Implement React Native -> Swift data writing (`UserDefaults` via App Group). ✅
+  - Conduct rigorous on-device testing: ✅
+    - Verify data integrity during app -> widget sync. ✅
+    - Test widget timeline updates after app changes. ✅
+    - Test widget interaction logic (toggle intent) and subsequent data reflection in the app. ✅
+    - Test across different widget families/sizes. ✅
+- **1.2. HabitStore State & Date Logic Audit: ✅**
+  - Thoroughly review and audit all date handling: timezone conversions, normalization (start/end of day), date comparisons, week/month calculations. ✅
+  - Verify correctness and efficiency of state updates for: habit completions, streak calculations, weekly status arrays, matrix scores. ✅
+  - Ensure state changes trigger necessary recalculations without infinite loops (`subscribeWithSelector` logic). ✅
+- **1.3. Supabase Real-time Integration: ✅**
+  - Connect and test Supabase real-time subscriptions for relevant tables (e.g., `habit_completions`, `habits`). ✅
+  - Ensure real-time updates correctly merge with local state in `HabitStore`. ✅
+  - Refine overall sync logic for robustness (conflict resolution if necessary, handling offline periods). ✅
 
-**Focus Area 2: Notification Backend (Est. ~2 days)**
+**Focus Area 2: Notification Backend (Est. ~2 days) ⏳ PENDING**
 
-- **2.1. Edge Function Refinement:**
+- **2.1. MatrixScore:**
+  - Reimagine the matrix scores calculation.
+- **2.2. Good/Bad/Todo:**
+  - Reimagine types of habits, and their implementation. Good habits as is.
+    What about bad habits/to-do habits?
+
+**Focus Area 3: Notification Backend (Est. ~2 days) ⏳ PENDING**
+
+- **3.1. Edge Function Refinement:**
   - CalculateCurrentStreak on demand
   - Review and refine notification text templates for clarity and engagement.
   - Optimize sending logic: scheduling accuracy, batching (if applicable), error handling (retries, logging failures).
   - Ensure idempotency for scheduled notifications.
-- **2.2. Backend Preference Support:**
+- **3.2. Backend Preference Support:**
   - Design and implement DB schema changes (e.g., `user_notification_preferences` table) if needed.
   - Create/update Edge Functions to respect user preferences when sending notifications (even if UI toggle isn't built yet).
 
-**Focus Area 3: Core Logic Implementation (Backend/State Only) (Est. ~2-3 days)**
+**Focus Area 4: Core Logic Implementation (Backend/State Only) (Est. ~2-3 days) ⏳ PENDING**
 
 - **3.1. Update Habit Logic:**
   - Implement the `updateHabit` function in `HabitStore` (handling changes to name, frequency, goals, category, etc.).
@@ -49,7 +59,7 @@
 - **3.4. Onboarding Score Calculation:**
   - Create and test the function that takes hypothetical onboarding answers and calculates the initial matrix score.
 
-**Focus Area 4: Superwall Backend Integration (Est. ~1-2 days)**
+**Focus Area 5: Superwall Backend Integration (Est. ~1-2 days) ⏳ PENDING**
 
 - **4.1. SDK Setup & Configuration:**
   - Install SDK, configure API keys, set up project in Superwall dashboard.
@@ -61,7 +71,7 @@
 - **4.3. Backend Data Sync (If Needed):**
   - Set up Supabase tables/functions to store subscription status or related attributes pushed from Superwall webhooks (requires webhook setup).
 
-**Focus Area 5: Infrastructure & Auth Polish (Ongoing/Parallel)**
+**Focus Area 6: Infrastructure & Auth Polish (Ongoing/Parallel) ⏳ PENDING**
 
 - **5.1. Error Monitoring:** Set up or enhance Sentry/other error monitoring for backend functions and critical app paths.
 - **5.2. Auth & RLS Review:** Double-check Supabase Auth token handling, refresh logic, and ensure RLS policies are comprehensive and secure.
