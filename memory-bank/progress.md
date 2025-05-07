@@ -640,3 +640,71 @@
    - [ ] Add matrix score history display.
 
 _Lists refreshed on April 24, 2024 to align with current roadmap and Memory Bank discussion._
+
+## Completed Focus Areas
+
+### Focus Area 1: Basic Habit Tracking
+
+- **What Works:**
+  - Users can create, edit, and delete habits.
+  - Habit completion can be tracked daily.
+  - Basic UI for listing habits and marking them complete.
+- **What's Left:**
+  - More advanced tracking options (e.g., specific days, frequency).
+
+### Focus Area 2: User Authentication
+
+- **What Works:**
+  - Email/password signup and login.
+  - Google and Apple social logins.
+  - Secure session management.
+- **What's Left:**
+  - Password reset functionality.
+
+### Focus Area 3: Streaks and Achievements
+
+- **What Works:**
+  - Calculation of current and max streaks.
+  - Basic achievement system for hitting streak milestones (e.g., 3-day, 7-day).
+  - `user_achievements` table stores streak data and achievements.
+- **What's Left:**
+  - More diverse achievements beyond just streaks.
+  - UI for displaying achievements to the user.
+
+### Focus Area 4: Notification System (Phase 1 & Edge Function Updates)
+
+- **What Works:**
+  - **User Profile Preferences:**
+    - `users` table in Supabase now has `allow_streak_notifications` and `allow_daily_update_notifications` (both `BOOLEAN DEFAULT TRUE`).
+    - `UserProfile` type in `lib/stores/user_profile.ts` updated to include these fields.
+    - `useUserProfileStore` manages these preferences, with optimistic local updates and background synchronization to Supabase.
+  - **State Management:**
+    - `useAppStore` (`lib/stores/app_state.ts`) simplified to only manage the master `notificationsEnabled` toggle for device-level registration.
+    - Specific notification preferences (`allow_streak_notifications`, `allow_daily_update_notifications`) are handled by `useUserProfileStore`.
+  - **Onboarding Flow:**
+    - `OnboardingSignUp.tsx` correctly initializes new users with default notification preferences in Supabase.
+    - `OnboardingLogin.tsx` uses store methods (`setProfile`, `completeOnboarding`) to ensure user data (including notification preferences) is correctly handled and synced upon login.
+  - **Edge Function Filtering:**
+    - `daily-update-note` Edge Function (`supabase/functions/daily-update-note/`) now filters users based on `allow_daily_update_notifications` being `true`.
+    - `streak-note` Edge Function (`supabase/functions/streak-note/`) now filters users based on `allow_streak_notifications` being `true`.
+    - `streak-note` utils refactored to centralize streak calculation and correctly use notification templates.
+  - **Supabase Types:** `supabase/types.ts` updated to reflect new columns in the `users` table.
+- \*\*What's Left (for full notification system - subsequent phases):
+  - **Phase 2: UI Integration:** Update `app/(app)/(tabs)/settings.tsx` to allow users to toggle these new notification preferences, linking UI switches to `useUserProfileStore` actions.
+  - **Phase 3: Backend Logic Refinement (Post-UI):** Ensure Edge Functions correctly use the preferences when preparing and sending actual push notifications (not just scheduling in DB).
+  - **Phase 4: Data Migration (if needed for existing users):** Decide on and implement a strategy for existing users (e.g., default to `true` or `false`, or prompt them).
+  - Thorough end-to-end testing of the notification lifecycle.
+
+## Current Status
+
+- The core features for habit tracking, user authentication, basic streaks, and foundational notification preferences are in place.
+- The system for managing user-specific notification settings (`allow_streak_notifications`, `allow_daily_update_notifications`) is implemented in the user profile store and Supabase.
+- Edge functions for daily updates and streak notifications now respect these user preferences.
+- Next steps involve integrating these preferences into the settings UI.
+
+## Known Issues
+
+- Password reset is not yet implemented.
+- Achievement system is basic; needs more variety and UI representation.
+- Full end-to-end notification delivery and UI toggles for preferences are pending completion of subsequent phases for the notification system.
+- The `syncWithSupabase` function in `lib/stores/user_profile.ts` had its `Toast.show` call removed from the `catch` block, meaning UI feedback for sync failures is currently not implemented there (this might be intentional, to be handled at the component level, but worth noting).

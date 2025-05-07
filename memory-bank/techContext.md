@@ -714,3 +714,61 @@ EXPO_ACCESS_TOKEN=expo_token
   - `Foundation`: For data handling (JSON encoding/decoding, `Date`, `Calendar`, `UserDefaults`, `ISO8601DateFormatter`).
   - `os.Logger`: Used for logging within the Swift widget code.
 - **Build Process:** `npx expo prebuild -p ios` generates/updates the Xcode project, incorporating the widget target defined by `targets/widget/expo-target.config.js`.
+
+# Tech Context
+
+## Core Technologies
+
+- **React Native (Expo)**: Cross-platform mobile application development using JavaScript/TypeScript and React.
+  - Expo SDK is used for accessing native device features and simplifying the development workflow.
+- **TypeScript**: For static typing, improving code quality and maintainability.
+- **Supabase**: Backend-as-a-Service (BaaS).
+  - **Database (PostgreSQL)**: Storing user data, habits, completions, achievements, and notification schedules.
+    - Key tables: `users`, `habits`, `habit_completions`, `user_achievements`, `notifications`.
+    - The `users` table now includes `allow_streak_notifications` (boolean) and `allow_daily_update_notifications` (boolean) to manage user preferences for these specific notification types. Default value for these is `TRUE`.
+  - **Authentication**: Manages user sign-up, sign-in (email/password, Google, Apple), and session management.
+  - **Edge Functions (Deno)**: Serverless functions for backend logic, written in TypeScript.
+    - `daily-update-note`: Handles scheduling of daily morning/evening summary notifications. Filters users based on their `allow_daily_update_notifications` preference.
+    - `streak-note`: Handles scheduling of streak-related notifications. Filters users based on their `allow_streak_notifications` preference and includes refactored logic for streak calculation.
+    - Other functions for tasks like sending reminder notifications, calculating streaks (potentially to be consolidated or removed if `streak-note` covers all needs).
+  - **Storage**: For user-uploaded content (not heavily used yet).
+- **Zustand**: State management library for React. Used for managing global and feature-specific state (user profile, app settings, habits).
+- **React Native MMKV**: For fast, encrypted on-device storage, used by Zustand middleware for persistence.
+- **Day.js**: Lightweight library for date and time manipulation.
+- **Expo Router**: File-system based routing for React Native apps.
+- **PostHog**: Product analytics and event tracking.
+- **RevenutCat**: Subscription and in-app purchase management (setup pending).
+
+## Development Setup & Workflow
+
+- **IDE**: Visual Studio Code with the Cursor AI pair programmer extension.
+- **Version Control**: Git, with the repository hosted on GitHub (implied).
+- **Package Management**: `npm` or `yarn` (typical for React Native/Expo projects).
+- **Expo CLI**: Used for running the app in development (Expo Go app or simulators/emulators), building, and submitting to app stores.
+- **Supabase CLI**: Used for managing Supabase project, including database migrations, Edge Function deployment, and generating types.
+  - Database schema changes (like adding new columns to `users`) are managed via Supabase migrations, and types are regenerated using `supabase gen types typescript --project-id <PROJECT_ID> --schema public > supabase/types.ts`.
+
+## Technical Constraints & Considerations
+
+- **Offline Support**: `useHabitsStore` has a robust pending operations queue for offline habit tracking. `useUserProfileStore` uses a simpler background sync for profile updates.
+- **Performance**: MMKV is chosen for fast local storage. Edge Functions are used for backend tasks that don't require a full server.
+- **Security**: Supabase handles authentication securely. MMKV provides encryption for local data. Service role keys for Supabase are used in Edge Functions and should be managed securely as environment variables.
+- **Scalability**: Supabase provides a scalable backend infrastructure. Edge Functions can scale independently.
+- **Cross-Platform Consistency**: Expo and React Native help maintain consistency, but platform-specific considerations (e.g., push notification setup) are still relevant.
+
+## Dependencies (Key Libraries)
+
+- `expo`
+- `react`, `react-native`
+- `@supabase/supabase-js`
+- `zustand`
+- `react-native-mmkv`
+- `dayjs`
+- `expo-router`
+- `@react-native-google-signin/google-signin`
+- `expo-apple-authentication`
+- `react-native-toast-message`
+- `posthog-react-native`
+- `@revenuecat/purchases-react-native` (setup pending)
+
+_This document was last updated on April 26, 2024, to reflect the addition of notification preference columns in the `users` table and updated Edge Function filtering logic._

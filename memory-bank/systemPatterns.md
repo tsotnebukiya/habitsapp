@@ -808,3 +808,64 @@ Benefits:
 5.  **Timeline Management**
     - Widgets use `TimelineProvider` (`CalendarProvider`, `InteractiveProvider`) to provide snapshots and timeline entries.
     - `WidgetCenter.shared.reloadAllTimelines()` is called (from RN via the bridge, or from Swift Intents) to inform iOS that widget data has changed and timelines need refreshing.
+
+## State Management (Zustand)
+
+- **`useUserProfileStore` (`lib/stores/user_profile.ts`)**: Manages all user-specific data, including profile details, onboarding status, and notification preferences (`allow_streak_notifications`, `allow_daily_update_notifications`).
+  - Persists data to local device storage using `react-native-mmkv`.
+  - Implements optimistic local updates with background synchronization to the Supabase `users` table for all profile modifications.
+  - The `UserProfile` type is derived directly from Supabase-generated types (`Database['public']['Tables']['users']['Row']`) ensuring consistency.
+- **`useAppStore` (`lib/stores/app_state.ts`)**: Manages global app-level state, primarily the master `notificationsEnabled` toggle. This toggle reflects whether the app has permission and is set up to receive _any_ notifications at the device level.
+  - Persists data to local device storage using `react-native-mmkv`.
+- **`useHabitsStore` (`lib/habit-store/store.ts`)**: Manages all habit-related data, including habits, completions, and achievements.
+  - Implements a more complex synchronization pattern with `pendingOperations` queue for robust offline support and conflict resolution when syncing with Supabase tables (`habits`, `habit_completions`, `user_achievements`).
+
+**General Pattern:**
+
+- Stores are the single source of truth for client-side data.
+- Actions within stores are responsible for both local state updates and backend synchronization.
+- `react-native-mmkv` is used for encrypting and persisting sensitive store data locally.
+- `dayjs` is used for all date/time manipulations, ensuring consistency.
+
+## Supabase Integration
+
+- **Client**: The Supabase client is initialized in `supabase/client.ts` and used across the application for database interactions and authentication.
+- **Authentication**: Handled via Supabase Auth, supporting email/password, Google, and Apple sign-ins. Onboarding flows (`OnboardingSignUp.tsx`, `OnboardingLogin.tsx`) correctly create/update user records in the `users` table and initialize local state via `useUserProfileStore`.
+- **Database**: User profiles, habits, completions, achievements, and scheduled notifications are stored in Supabase tables.
+  - The `users` table includes `allow_streak_notifications` and `allow_daily_update_notifications` columns to store user preferences.
+- **Types**: TypeScript types for Supabase tables and enums are generated and located in `supabase/types.ts`. These are used throughout the app, including for the `UserProfile` type in the store.
+- **Edge Functions**:
+  - **`daily-update-note`**: Sends morning/evening summary notifications.
+    - Fetches users from the `users` table, filtering by those who have `push_token` and `allow_daily_update_notifications` set to `true`.
+    - Logic resides in `supabase/functions/daily-update-note/index.ts` and `utils.ts`.
+  - **`streak-note`**: Sends notifications when a user is close to achieving a streak milestone.
+    - Fetches users from the `users` table, filtering by those who have `push_token` and `allow_streak_notifications` set to `true`.
+    - Contains refactored logic in `utils.ts` to calculate current streaks based on habit completions and determine eligibility for streak notifications.
+    - Logic resides in `supabase/functions/streak-note/index.ts` and `utils.ts`.
+  - **General Pattern for Edge Functions**: Functions are written in TypeScript, use Deno runtime, and interact with the Supabase database using the Supabase JS client.
+
+## Navigation (Expo Router)
+
+- Utilizes Expo Router for file-based routing.
+- Main navigation is tab-based: `(tabs)` layout.
+- Onboarding flow: `(onboarding)` group with modals for email login/signup.
+- Settings and other user-specific screens are within the main app stack.
+
+## UI Components
+
+- Primarily uses React Native core components.
+- Custom components are organized within `components/`.
+- Styling is generally done using StyleSheet, with some inline styles. Constants like `Colors` are defined in `lib/constants/Colors.ts`.
+
+## Error Handling and Logging
+
+- `react-native-toast-message` is used for user-facing error messages (e.g., login failures, Supabase sync issues from stores if not handled at component level).
+- `console.error` is used for logging errors in development, particularly in store synchronization logic and Edge Functions.
+- PostHog is used for analytics and event tracking, including signup events.
+
+## Key Technical Decisions & Patterns
+
+- **Optimistic Updates**: For `useUserProfileStore`, local state is updated immediately, and Supabase sync happens in the background. For `useHabitsStore`, a more robust pending operations queue is used.
+- **Single Source of Truth**: Stores aim to be the single source of truth for client-side data. Supabase is the backend source of truth.
+- **Type Safety**: TypeScript is used throughout, with generated Supabase types ensuring consistency with the backend schema.
+- **Separation of Concerns**: Logic for data fetching, manipulation, and synchronization is largely encapsulated within Zustand stores or specific service/utility files for Edge Functions.
