@@ -36,7 +36,7 @@ function StackLayout() {
     return <View style={{ flex: 1 }} />;
   }
 
-  if (!profile || !profile.onboardingComplete) {
+  if (!profile || !profile.onboarding_complete) {
     return <Redirect href="/onboarding/OnboardingIntro" />;
   }
 

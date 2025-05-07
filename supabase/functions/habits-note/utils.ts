@@ -58,6 +58,35 @@ export interface NotificationData {
   };
 }
 
+const notificationTemplates = [
+  {
+    title: '{habit} Time ✨',
+    body: 'A few minutes now will make your day better!',
+  },
+  {
+    title: 'Time for {habit}! ⏰',
+    body: 'Quick session? Your streak is waiting!',
+  },
+  {
+    title: '{habit} Now! 💪',
+    body: 'Your future self will thank you for this.',
+  },
+  {
+    title: "Don't Miss {habit}! 🔥",
+    body: 'Your streak is on the line. Open now!',
+  },
+  {
+    title: '{habit} Challenge! 🏆',
+    body: "Can you complete this today? You've got this!",
+  },
+  { title: '{habit} Reminder ✓', body: 'Tap to track your progress now.' },
+  { title: '{habit} Time! 🚀', body: "Small steps, big progress. Let's go!" },
+  {
+    title: 'Keep Going with {habit}! 📈',
+    body: 'Consistency wins! Open to continue your streak.',
+  },
+];
+
 export async function getUsersWithPushTokens(
   supabaseClient: SupabaseClient
 ): Promise<User[]> {
@@ -216,11 +245,21 @@ export function prepareNotifications(
           .utc()
           .format();
 
+        // Select random template and replace placeholders
+        const randomIndex = Math.floor(
+          Math.random() * notificationTemplates.length
+        );
+        const template = notificationTemplates[randomIndex];
+
+        const title = template.title.replace(/{habit}/g, habit.name);
+        // No habit name replacement needed in body now
+        const body = template.body;
+
         return {
           user_id: user.id,
           habit_id: habit.id,
-          title: `Hey! ${habit.name} Time ✨`,
-          body: `A few minutes of ${habit.name.toLowerCase()} will make your day better`,
+          title,
+          body,
           notification_type: 'HABIT' as const,
           scheduled_for: scheduledTime,
           processed: false,

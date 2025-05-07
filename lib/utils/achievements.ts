@@ -9,7 +9,7 @@ import { Habit } from '@/lib/habit-store/types';
 import { dateUtils } from '@/lib/utils/dayjs';
 import { ACHIEVEMENTS } from '@/lib/constants/achievements';
 
-const SMOOTHING_FACTOR = 0.02; // Alpha (α) for exponential smoothing
+const SMOOTHING_FACTOR = 0.015; // Alpha (α) for exponential smoothing
 const LOOKBACK_WINDOW = 14; // Number of days to consider for smoothing
 
 // Pre-calculate baseline scores for faster lookup

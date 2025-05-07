@@ -15,7 +15,6 @@ import {
   calculateNewAchievements,
   getNewlyUnlockedAchievements,
 } from '@/lib/utils/achievements';
-import { useMemo } from 'react';
 import { dateUtils } from '@/lib/utils/dayjs';
 
 export interface AchievementSlice {
@@ -111,7 +110,6 @@ export const createAchievementSlice: StateCreator<
       currentStreak,
       get().streakAchievements
     );
-
     const matrixScores = calculateDMS(
       profile,
       Array.from(get().habits.values()),
@@ -137,11 +135,11 @@ export const createAchievementSlice: StateCreator<
     };
     // Update local state
     set({
-      cat1: userAchievement.cat1 || profile.cat1,
-      cat2: userAchievement.cat2 || profile.cat2,
-      cat3: userAchievement.cat3 || profile.cat3,
-      cat4: userAchievement.cat4 || profile.cat4,
-      cat5: userAchievement.cat5 || profile.cat5,
+      cat1: userAchievement.cat1 || profile.cat1 || undefined,
+      cat2: userAchievement.cat2 || profile.cat2 || undefined,
+      cat3: userAchievement.cat3 || profile.cat3 || undefined,
+      cat4: userAchievement.cat4 || profile.cat4 || undefined,
+      cat5: userAchievement.cat5 || profile.cat5 || undefined,
       streakAchievements: newAchievements,
       currentStreak,
       maxStreak: userAchievement.max_streak,

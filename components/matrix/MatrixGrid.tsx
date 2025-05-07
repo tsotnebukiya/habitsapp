@@ -42,8 +42,6 @@ export const MatrixGrid = memo(function MatrixGrid({
       );
     }
 
-    const gridTime = Date.now() - gridStartTime;
-
     return <>{rows}</>;
   }, [categories, balanceCategory, columnCount]);
 

@@ -29,21 +29,18 @@
 **Focus Area 2: Notification Backend (Est. ~2 days) ⏳ PENDING**
 
 - **2.1. MatrixScore:**
-  - Reimagine the matrix scores calculation.
-- **2.2. Good/Bad/Todo:**
-  - Reimagine types of habits, and their implementation. Good habits as is.
-    What about bad habits/to-do habits?
+  - Reimagine the matrix scores calculation. ✅
 
 **Focus Area 3: Notification Backend (Est. ~2 days) ⏳ PENDING**
 
 - **3.1. Edge Function Refinement:**
-  - CalculateCurrentStreak on demand
-  - Review and refine notification text templates for clarity and engagement.
-  - Optimize sending logic: scheduling accuracy, batching (if applicable), error handling (retries, logging failures).
-  - Ensure idempotency for scheduled notifications.
+  - CalculateCurrentStreak on demand ✅
+  - Review and refine notification text templates for clarity and engagement. ✅
+  - Optimize sending logic: scheduling accuracy, batching (if applicable), error handling (retries, logging failures). ✅
+  - Ensure idempotency for scheduled notifications. ✅
 - **3.2. Backend Preference Support:**
-  - Design and implement DB schema changes (e.g., `user_notification_preferences` table) if needed.
-  - Create/update Edge Functions to respect user preferences when sending notifications (even if UI toggle isn't built yet).
+  - Design and implement DB schema changes (e.g., `user_notification_preferences` table) if needed. ✅
+  - Create/update Edge Functions to respect user preferences when sending notifications (even if UI toggle isn't built yet). ✅
 
 **Focus Area 4: Core Logic Implementation (Backend/State Only) (Est. ~2-3 days) ⏳ PENDING**
 

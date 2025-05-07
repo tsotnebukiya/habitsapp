@@ -115,19 +115,25 @@ const OnboardingSignUp = () => {
               text2: 'Please try again.',
             });
           } else {
+            const currentTimezone = dateUtils.getCurrentTimezone();
             // Convert snake_case to camelCase for the application state
             setProfile({
               id: userData.id,
               email: userData.email,
-              displayName: userData.display_name,
-              updatedAt: userData.updated_at,
-              createdAt: userData.created_at,
-              onboardingComplete: true,
+              display_name: userData.display_name,
+              updated_at: userData.updated_at,
+              created_at: userData.created_at,
+              onboarding_complete: true,
               cat1: userData.cat1,
               cat2: userData.cat2,
               cat3: userData.cat3,
               cat4: userData.cat4,
               cat5: userData.cat5,
+              allow_streak_notifications: true,
+              allow_daily_update_notifications: true,
+              date_of_birth: null,
+              push_token: null,
+              timezone: currentTimezone,
             });
 
             // Initialize achievements
@@ -203,19 +209,25 @@ const OnboardingSignUp = () => {
             throw InsertError;
           }
 
+          const currentTimezone = dateUtils.getCurrentTimezone();
           // Convert snake_case to camelCase for the application state
           setProfile({
             id: userData.id,
             email: userData.email,
-            displayName: userData.display_name,
-            updatedAt: userData.updated_at,
-            createdAt: userData.created_at,
-            onboardingComplete: true,
+            display_name: userData.display_name,
+            updated_at: userData.updated_at,
+            created_at: userData.created_at,
+            onboarding_complete: true,
             cat1: userData.cat1,
             cat2: userData.cat2,
             cat3: userData.cat3,
             cat4: userData.cat4,
             cat5: userData.cat5,
+            allow_streak_notifications: true,
+            allow_daily_update_notifications: true,
+            date_of_birth: null,
+            push_token: null,
+            timezone: currentTimezone,
           });
 
           // Initialize achievements

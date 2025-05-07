@@ -15,18 +15,20 @@ import { useAppStore } from '@/lib/stores/app_state';
 
 const SettingsScreen = () => {
   const router = useRouter();
-  const { clearProfile } = useUserProfileStore();
+  const {
+    clearProfile,
+    setDailyUpdateNotificationsEnabled,
+    setStreakNotificationsEnabled,
+    profile,
+  } = useUserProfileStore();
   const { toggleNotifications } = useNotifications();
-  const notificationsEnabled = useAppStore(
-    (state) => state.notificationsEnabled
-  );
+  const { notificationsEnabled } = useAppStore((state) => state);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
     clearProfile();
     router.replace('/onboarding/OnboardingIntro');
   };
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.section}>
@@ -35,6 +37,20 @@ const SettingsScreen = () => {
           <Switch
             value={notificationsEnabled ?? false}
             onValueChange={toggleNotifications}
+          />
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.text}>Daily Update Notifications</Text>
+          <Switch
+            value={profile?.allow_daily_update_notifications ?? false}
+            onValueChange={setDailyUpdateNotificationsEnabled}
+          />
+        </View>
+        <View style={styles.row}>
+          <Text style={styles.text}>Streak Notifications</Text>
+          <Switch
+            value={profile?.allow_streak_notifications ?? false}
+            onValueChange={setStreakNotificationsEnabled}
           />
         </View>
       </View>

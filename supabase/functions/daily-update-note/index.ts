@@ -86,13 +86,11 @@ Deno.serve(async (req) => {
     );
 
     // 6. Prepare notifications
-    console.log('Preparing notifications');
     const scheduledNotifications = prepareNotifications(
       usersWithData,
       MORNING_HOUR,
       EVENING_HOUR
     );
-    console.log(`Prepared ${scheduledNotifications.length} notifications`);
 
     // 7. Insert scheduled notifications into the database
     if (scheduledNotifications.length > 0) {

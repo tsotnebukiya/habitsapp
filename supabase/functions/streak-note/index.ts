@@ -8,6 +8,11 @@ import {
   getUsersWithAchievements,
   prepareNotifications,
   isNextHourTarget,
+  getActiveHabits,
+  getHabitCompletions,
+  groupHabitsAndCompletions,
+  calculateUserStreaks,
+  type UsersWithCurrentStreak,
 } from './utils.ts';
 
 // Configure dayjs with UTC and timezone plugins
@@ -17,6 +22,21 @@ dayjs.extend(timezone);
 const TARGET_HOUR = 14; // 2 PM as specified in plan.md
 
 Deno.serve(async (req) => {
+  // Initialize timing object to track performance
+  const timing = {
+    start: performance.now(),
+    clientCreated: 0,
+    usersFetched: 0,
+    usersFiltered: 0,
+    habitsFetched: 0,
+    completionsFetched: 0,
+    dataGrouped: 0,
+    streaksCalculated: 0,
+    notificationsPrepared: 0,
+    notificationsInserted: 0,
+    end: 0,
+  };
+
   try {
     console.log('Starting streak-note function');
 
@@ -29,10 +49,12 @@ Deno.serve(async (req) => {
 
     console.log('Creating Supabase client');
     const supabaseClient = createClient(supabaseUrl, supabaseKey);
+    timing.clientCreated = performance.now();
 
     // 1. Get all users with push tokens and their achievements
     console.log('Fetching users with achievements');
     const users = await getUsersWithAchievements(supabaseClient);
+    timing.usersFetched = performance.now();
     console.log(
       `Found ${users.length} users with push tokens and achievements`
     );
@@ -42,9 +64,39 @@ Deno.serve(async (req) => {
     const usersInTargetHour = users.filter((user) =>
       isNextHourTarget(user.timezone, TARGET_HOUR)
     );
+    timing.usersFiltered = performance.now();
     console.log(`Found ${usersInTargetHour.length} users in target hour`);
 
+    // 3. Get Habits for users
+    const habits = await getActiveHabits(
+      supabaseClient,
+      usersInTargetHour.map((u) => u.id)
+    );
+    timing.habitsFetched = performance.now();
+
+    // 4. Get completions for habits
+    const completions = await getHabitCompletions(
+      supabaseClient,
+      habits.map((h) => h.id)
+    );
+    timing.completionsFetched = performance.now();
+
+    // 5. Group habits and completions
+    const usersWithHabits = groupHabitsAndCompletions(
+      usersInTargetHour,
+      habits,
+      completions
+    );
+    timing.dataGrouped = performance.now();
+
+    // 6. Calculate streaks
+    const streakResults = calculateUserStreaks(usersWithHabits);
+    timing.streaksCalculated = performance.now();
+
     if (usersInTargetHour.length === 0) {
+      timing.end = performance.now();
+      logTimingResults(timing);
+
       return new Response(
         JSON.stringify({
           success: true,
@@ -55,12 +107,30 @@ Deno.serve(async (req) => {
       );
     }
 
+    // 7. Map streak results back to users for notifications
+    const usersWithCurrentStreak = streakResults
+      .map((result) => {
+        const user = usersInTargetHour.find((u) => u.id === result.userId);
+        if (!user) return null; // Skip if user not found
+
+        // Create a properly typed object with all required fields
+        return {
+          id: user.id,
+          push_token: user.push_token,
+          timezone: user.timezone,
+          streak_achievements: user.streak_achievements,
+          current_streak: result.currentStreak,
+        };
+      })
+      .filter((user): user is UsersWithCurrentStreak => user !== null); // Type predicate
+
     // 3. Prepare notifications for eligible users
     console.log('Preparing notifications');
     const scheduledNotifications = prepareNotifications(
-      usersInTargetHour,
+      usersWithCurrentStreak,
       TARGET_HOUR
     );
+    timing.notificationsPrepared = performance.now();
     console.log(`Prepared ${scheduledNotifications.length} notifications`);
 
     // 4. Insert scheduled notifications into the database
@@ -76,6 +146,10 @@ Deno.serve(async (req) => {
       }
       console.log('Successfully inserted notifications');
     }
+    timing.notificationsInserted = performance.now();
+
+    timing.end = performance.now();
+    logTimingResults(timing);
 
     return new Response(
       JSON.stringify({
@@ -91,6 +165,13 @@ Deno.serve(async (req) => {
     if (error instanceof Error) {
       console.error('Error stack:', error.stack);
     }
+
+    // If we have timing data, log it even on error
+    if (timing.start) {
+      timing.end = performance.now();
+      logTimingResults(timing);
+    }
+
     return new Response(
       JSON.stringify({
         success: false,
@@ -105,3 +186,45 @@ Deno.serve(async (req) => {
     );
   }
 });
+
+// Helper function to log all timing results at once
+function logTimingResults(timing: {
+  start: number;
+  clientCreated: number;
+  usersFetched: number;
+  usersFiltered: number;
+  habitsFetched: number;
+  completionsFetched: number;
+  dataGrouped: number;
+  streaksCalculated: number;
+  notificationsPrepared: number;
+  notificationsInserted: number;
+  end: number;
+}) {
+  const totalTime = (timing.end - timing.start).toFixed(2);
+
+  // Build a single styled log message
+  const logMessage = `
+⏱️ Performance Timing Results ⏱️
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+▶ Total execution time: ${totalTime}ms
+  ├─ Create client: ${(timing.clientCreated - timing.start).toFixed(2)}ms
+  ├─ Fetch users: ${(timing.usersFetched - timing.clientCreated).toFixed(2)}ms
+  ├─ Filter users: ${(timing.usersFiltered - timing.usersFetched).toFixed(2)}ms
+  ├─ Fetch habits: ${(timing.habitsFetched - timing.usersFiltered).toFixed(2)}ms
+  ├─ Fetch completions: ${(timing.completionsFetched - timing.habitsFetched).toFixed(2)}ms
+  ├─ Group data: ${(timing.dataGrouped - timing.completionsFetched).toFixed(2)}ms
+  ├─ Calculate streaks: ${(timing.streaksCalculated - timing.dataGrouped).toFixed(10)}ms${
+    timing.notificationsPrepared > 0
+      ? `\n  ├─ Prepare notifications: ${(timing.notificationsPrepared - timing.streaksCalculated).toFixed(2)}ms`
+      : ''
+  }${
+    timing.notificationsInserted > 0
+      ? `\n  └─ Insert notifications: ${(timing.notificationsInserted - timing.notificationsPrepared).toFixed(2)}ms`
+      : '\n  └─ (No notifications inserted)'
+  }
+`;
+
+  // Log everything in a single call
+  console.log(logMessage);
+}

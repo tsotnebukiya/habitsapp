@@ -50,13 +50,90 @@ export interface NotificationData {
   processed: boolean;
 }
 
+const morningNotificationTemplates = [
+  // For users with NO habits
+  {
+    noHabits: [
+      { title: 'Morning Reminder! ☀️', body: 'Create your first habit today!' },
+      { title: 'Fresh Start! 🌱', body: 'Add a habit to build your routine.' },
+      { title: 'New Day, New Habits! 🌟', body: 'Start your journey today.' },
+      { title: 'Good Morning! ☕', body: 'Ready to add your first habit?' },
+      { title: 'Rise & Shine! 🌞', body: 'Time to create healthy habits.' },
+    ],
+    // For users WITH habits
+    hasHabits: [
+      { title: 'Morning Check-in! ☀️', body: 'Time for your daily habits!' },
+      { title: "Let's Go! 🚀", body: 'Your habits are waiting for you.' },
+      { title: 'Fresh Day Ahead! 💫', body: 'Ready to tackle your habits?' },
+      { title: 'Rise & Thrive! 🌞', body: 'Check off those habits today!' },
+      { title: 'Good Morning! ☕', body: 'Habits build success. Start now!' },
+    ],
+  },
+];
+
+const eveningNotificationTemplates = [
+  // 100% completion
+  {
+    complete: [
+      { title: 'Perfect Day! 🏆', body: 'All habits complete! Amazing work!' },
+      { title: 'Flawless! 🎯', body: 'You finished all your habits today!' },
+      { title: 'Champion! 🥇', body: '100% complete. Incredible job!' },
+      { title: 'Success! ✅', body: 'All habits done. Feel the progress!' },
+      { title: 'Stellar Day! 🌟', body: 'Full completion! Keep it up!' },
+    ],
+    // 50%+ completion
+    mediumProgress: [
+      {
+        title: 'Halfway There! 🚀',
+        body: '{count}/{total} habits done today!',
+      },
+      { title: 'Good Progress! 👍', body: '{count} done, {remaining} to go.' },
+      { title: 'Keep Going! 💯', body: "You've done half your habits!" },
+      { title: 'Mid-Day Check! ⏱️', body: '{count} down, {remaining} to go!' },
+      { title: 'Solid Start! 👊', body: 'Half complete! Finish strong!' },
+    ],
+    // 1-49% completion
+    lowProgress: [
+      {
+        title: 'Started Today! 🌱',
+        body: '{count} habit(s) done, more to go!',
+      },
+      {
+        title: 'Keep Going! 👣',
+        body: '{count} down, {remaining} to complete!',
+      },
+      {
+        title: 'Progress Update! 📊',
+        body: '{count}/{total} habits complete.',
+      },
+      { title: 'Time Check! ⏰', body: 'Still time to complete more habits!' },
+      { title: "You've Begun! 🚀", body: 'Continue your progress today!' },
+    ],
+    // 0% completion
+    noProgress: [
+      {
+        title: 'Habits Waiting! ⏰',
+        body: 'Still time to make progress today!',
+      },
+      { title: 'Check-in Time! 📝', body: "Start a habit before day's end!" },
+      { title: 'Reminder! 🔔', body: 'Your habits need attention today.' },
+      { title: 'Evening Update! 🌙', body: 'Complete a habit before bedtime!' },
+      {
+        title: 'Not Too Late! ✨',
+        body: 'A few minutes can make a difference!',
+      },
+    ],
+  },
+];
+
 export async function getUsersWithPushTokens(
   supabaseClient: SupabaseClient
 ): Promise<User[]> {
   const { data: users, error } = await supabaseClient
     .from('users')
     .select('id, push_token, timezone')
-    .not('push_token', 'is', null);
+    .not('push_token', 'is', null)
+    .is('allow_daily_update_notifications', true);
 
   if (error) throw error;
   return users || [];
@@ -171,26 +248,23 @@ export function prepareNotifications(
       .millisecond(0);
 
     if (isMorningNext) {
-      // Morning notification
-      if (user.habits.length === 0) {
-        scheduledNotifications.push({
-          user_id: user.id,
-          title: 'Start Your Day Right!',
-          body: 'Time to create some healthy habits! Add your first habit to get started. 🌟',
-          notification_type: 'MORNING',
-          scheduled_for: scheduledTime.toISOString(),
-          processed: false,
-        });
-      } else {
-        scheduledNotifications.push({
-          user_id: user.id,
-          title: 'Start Your Day Right!',
-          body: "Time to kickstart your daily habits! You've got this! 💫",
-          notification_type: 'MORNING',
-          scheduled_for: scheduledTime.toISOString(),
-          processed: false,
-        });
-      }
+      // Morning notification - random selection
+      const templates =
+        user.habits.length === 0
+          ? morningNotificationTemplates[0].noHabits
+          : morningNotificationTemplates[0].hasHabits;
+
+      const randomIndex = Math.floor(Math.random() * templates.length);
+      const template = templates[randomIndex];
+
+      scheduledNotifications.push({
+        user_id: user.id,
+        title: template.title,
+        body: template.body,
+        notification_type: 'MORNING',
+        scheduled_for: scheduledTime.toISOString(),
+        processed: false,
+      });
     } else if (isEveningNext && user.habits.length > 0) {
       // Evening notification (only for users with habits)
       const completedHabits = user.habits.filter((habit) =>
@@ -199,31 +273,34 @@ export function prepareNotifications(
 
       const completionRate =
         (completedHabits.length / user.habits.length) * 100;
+      let templates;
 
-      let message;
       if (completionRate === 100) {
-        message = "Amazing job! You've completed all your habits today! 🎉";
-      } else if (completionRate >= 75) {
-        message = `Great progress! You've completed ${completedHabits.length} out of ${user.habits.length} habits. Keep going! 💪`;
+        templates = eveningNotificationTemplates[0].complete;
       } else if (completionRate >= 50) {
-        message = `You're halfway there! ${
-          completedHabits.length
-        } habits done, ${
-          user.habits.length - completedHabits.length
-        } to go. 🎯`;
+        templates = eveningNotificationTemplates[0].mediumProgress;
       } else if (completionRate > 0) {
-        message = `You've made a start with ${completedHabits.length} habit${
-          completedHabits.length === 1 ? '' : 's'
-        }. There's still time to complete more! 🚀`;
+        templates = eveningNotificationTemplates[0].lowProgress;
       } else {
-        message =
-          "Don't forget about your habits! There's still time to make progress today. ✨";
+        templates = eveningNotificationTemplates[0].noProgress;
       }
+
+      const randomIndex = Math.floor(Math.random() * templates.length);
+      const template = templates[randomIndex];
+
+      // Replace placeholders with actual values
+      const body = template.body
+        .replace(/{count}/g, completedHabits.length.toString())
+        .replace(/{total}/g, user.habits.length.toString())
+        .replace(
+          /{remaining}/g,
+          (user.habits.length - completedHabits.length).toString()
+        );
 
       scheduledNotifications.push({
         user_id: user.id,
-        title: 'Daily Habits Update',
-        body: message,
+        title: template.title,
+        body: body,
         notification_type: 'EVENING',
         scheduled_for: scheduledTime.toISOString(),
         processed: false,

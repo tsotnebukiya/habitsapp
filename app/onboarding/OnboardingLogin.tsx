@@ -16,7 +16,7 @@ import dayjs from 'dayjs';
 import { supabase } from '@/supabase/client';
 import { newOnboardingStyles, onboardingGradient } from './newOnboardingStyles';
 import Colors from '@/lib/constants/Colors';
-import { useUserProfileStore } from '@/lib/stores/user_profile';
+import { UserProfile, useUserProfileStore } from '@/lib/stores/user_profile';
 import { dateUtils } from '@/lib/utils/dayjs';
 
 const ONBOARDING_STEPS = [
@@ -27,7 +27,7 @@ const ONBOARDING_STEPS = [
 
 function OnboardingLogin() {
   const router = useRouter();
-  const { setProfile, updateProfile } = useUserProfileStore();
+  const { setProfile, completeOnboarding } = useUserProfileStore();
 
   const currentIndex = ONBOARDING_STEPS.indexOf('/onboarding/OnboardingSignUp');
 
@@ -36,15 +36,11 @@ function OnboardingLogin() {
     iosClientId: '<IOS_CLIENT_ID>.apps.googleusercontent.com',
   });
 
-  const handleLoginSuccess = (userData: any) => {
-    setProfile({
-      ...userData,
-      displayName: userData.display_name,
-      updatedAt: dateUtils.toServerDateTime(dateUtils.nowUTC()),
-      createdAt:
-        userData.created_at || dateUtils.toServerDateTime(dateUtils.nowUTC()),
-      onboardingComplete: true,
-    });
+  const handleLoginSuccess = (userData: UserProfile) => {
+    // Set the profile first
+    setProfile(userData);
+    // Then complete onboarding (this will handle the Supabase sync)
+    completeOnboarding();
     router.replace('/(tabs)');
   };
 
