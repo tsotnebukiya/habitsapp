@@ -77,20 +77,17 @@ export const createCalendarSlice: StateCreator<
         Array.from(get().completions.values()),
         date
       );
-      const currentCache = get().monthCache.get(monthKey) || {};
-      const currentStatus = currentCache[dateString];
-
-      if (status !== currentStatus) {
-        if (status === 'none_completed') {
+      if (status === 'none_completed') {
+        // If the new status is 'none_completed', delete it from the updates map.
+        // We check hasOwnProperty to ensure we only delete if it was actually present.
+        if (updates.get(monthKey)?.hasOwnProperty(dateString)) {
           delete updates.get(monthKey)![dateString];
-        } else {
-          updates.get(monthKey)![dateString] = status;
         }
       } else {
-        delete updates.get(monthKey)![dateString];
+        // If the new status is not 'none_completed', add or update it in the updates map.
+        updates.get(monthKey)![dateString] = status;
       }
     });
-
     set((state) => {
       const newMonthCache = new Map(state.monthCache);
       updates.forEach((monthUpdates, monthKey) => {

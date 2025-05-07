@@ -66,7 +66,6 @@ function RootLayout() {
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
     ...FontAwesome.font,
   });
-  console.log('hey');
   const ref = useNavigationContainerRef();
   React.useEffect(() => {
     if (ref) {
