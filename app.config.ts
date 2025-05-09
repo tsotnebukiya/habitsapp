@@ -23,6 +23,7 @@ export default ({
     usesAppleSignIn: true,
     bundleIdentifier: 'com.vdl.habitapp',
     infoPlist: {
+      ITSAppUsesNonExemptEncryption: false,
       CFBundleURLTypes: [
         {
           CFBundleURLSchemes: [
