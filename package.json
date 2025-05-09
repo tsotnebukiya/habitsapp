@@ -130,5 +130,12 @@
     "transformIgnorePatterns": [
       "node_modules/(?!(@react-native|react-native|@react-native-async-storage)/)"
     ]
+  },
+  "expo": {
+    "autolinking": {
+      "searchPaths": [
+        "./widget-storage"
+      ]
+    }
   }
 }

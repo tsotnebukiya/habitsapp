@@ -2,9 +2,7 @@ expo-env.d.ts
 node_modules
 .env
 .expo
-android
-!widget-storage/android/
-ios
-!widget-storage/ios/
+/android
+/ios
 .cursor
 jsons
