@@ -19,46 +19,26 @@ import { KeyboardProvider } from 'react-native-keyboard-controller';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { PostHogProvider } from 'posthog-react-native';
 import * as Sentry from '@sentry/react-native';
-import Constants, { ExecutionEnvironment } from 'expo-constants';
 import { POSTHOG_API_KEY, SENTRY_DSN } from '../safe_constants';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import ModalContainer from '@/components/modals/ModalContainer';
-// import { RevenueCatProvider } from '../contexts/RevenueCatContext';
+import { isRunningInExpoGo } from 'expo';
 
 const navigationIntegration = Sentry.reactNavigationIntegration({
-  enableTimeToInitialDisplay:
-    Constants?.executionEnvironment === ExecutionEnvironment?.StoreClient, // Only in native builds, not in Expo Go.
+  enableTimeToInitialDisplay: !isRunningInExpoGo(),
 });
+
 Sentry.init({
-  // Only enable in production.
-  dsn:
-    (process?.env?.['NODE_ENV'] ?? 'non-development') === 'development'
-      ? undefined
-      : SENTRY_DSN,
-
-  // uncomment the line below to enable Spotlight (https://spotlightjs.com)
-  // enableSpotlight: __DEV__,
+  dsn: SENTRY_DSN,
   tracesSampleRate: 1.0,
-  integrations: [navigationIntegration],
-  enableNativeFramesTracking:
-    Constants?.executionEnvironment === ExecutionEnvironment?.StoreClient, // Only in native builds, not in Expo Go.
+  enableNativeFramesTracking: !isRunningInExpoGo(),
 });
-
-export const fullWidth = Dimensions.get('screen').width;
-export const marginSpacing = fullWidth * 0.05;
-export const screen90 = fullWidth * 0.9;
-
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from 'expo-router';
 
 export const unstable_settings = {
   // Ensure that reloading on `/modal` keeps a back button present.
   initialRouteName: '(app)',
 };
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 function RootLayout() {
@@ -68,8 +48,8 @@ function RootLayout() {
   });
   const ref = useNavigationContainerRef();
   React.useEffect(() => {
-    if (ref) {
-      navigationIntegration?.registerNavigationContainer(ref);
+    if (ref?.current) {
+      navigationIntegration.registerNavigationContainer(ref);
     }
   }, [ref]);
 
@@ -96,8 +76,6 @@ function RootLayoutNav() {
       <PostHogProvider
         apiKey={POSTHOG_API_KEY}
         options={{
-          disabled:
-            (process?.env?.['NODE_ENV'] ?? 'non-development') === 'development',
           host: 'https://us.i.posthog.com',
         }}
       >
@@ -106,7 +84,6 @@ function RootLayoutNav() {
           <GestureHandlerRootView
             style={{
               flex: 1,
-              // backgroundColor: theme.background.default
             }}
           >
             <BottomSheetModalProvider>
@@ -122,10 +99,10 @@ function RootLayoutNav() {
           </GestureHandlerRootView>
           <Toast />
         </KeyboardProvider>
-        {/* </RevenueCatProvider> */}
       </PostHogProvider>
     </>
   );
 }
 
 export default Sentry.wrap(RootLayout);
+// export default RootLayout; // Temporarily export RootLayout directly

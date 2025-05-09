@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, TouchableOpacity, Button } from 'react-native';
-import { ErrorBoundary } from '@sentry/react-native';
 import useHabitsStore from '@/lib/habit-store/store';
 import useUserProfileStore from '@/lib/stores/user_profile';
 import WeekView from '@/components/habits/WeekView';
@@ -22,9 +21,12 @@ export default function Home() {
       syncData();
 
       // Setup periodic sync every hour
-      const syncInterval = setInterval(() => {
-        syncData();
-      }, 1000 * 60 * 60); // 1 hour
+      const syncInterval = setInterval(
+        () => {
+          syncData();
+        },
+        1000 * 60 * 60
+      ); // 1 hour
 
       return () => {
         clearInterval(syncInterval);

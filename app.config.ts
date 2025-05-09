@@ -83,8 +83,8 @@ export default ({
       '@sentry/react-native/expo',
       {
         url: 'https://sentry.io/',
-        project: 'react-native',
-        organization: 'Viral Development LLC',
+        project: 'habitsapp',
+        organization: 'viral-development-llc',
       },
     ],
   ],
