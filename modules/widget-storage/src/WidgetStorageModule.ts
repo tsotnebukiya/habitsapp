@@ -1,7 +1,6 @@
-import { NativeModule, requireNativeModule } from 'expo';
+import { requireNativeModule } from 'expo';
 
-// Remove the generic type and update the method declarations to match the Swift implementation
-declare class WidgetStorageModule extends NativeModule {
+declare class WidgetStorageModule {
   setItem(key: string, value: string): Promise<void>;
   getItem(key: string): Promise<string | null>;
   removeItem(key: string): Promise<void>;

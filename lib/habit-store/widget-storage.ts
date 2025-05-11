@@ -1,4 +1,4 @@
-import * as WidgetStorage from 'widget-storage';
+import * as WidgetStorage from 'modules/widget-storage';
 import { dateUtils } from '@/lib/utils/dayjs';
 import { Habit, HabitCompletion } from './types';
 import dayjs from 'dayjs';

@@ -1,8 +1,8 @@
 // Reexport the native module. On web, it will be resolved to WidgetStorageModule.web.ts
 // and on native platforms to WidgetStorageModule.ts
-export { default } from './WidgetStorageModule';
+export { default } from './src/WidgetStorageModule';
 
-import WidgetStorageModule from './WidgetStorageModule';
+import WidgetStorageModule from './src/WidgetStorageModule';
 
 /**
  * Stores an item in the widget's shared UserDefaults.
