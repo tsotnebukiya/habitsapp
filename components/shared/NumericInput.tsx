@@ -47,11 +47,7 @@ export function NumericInput({
         <FontAwesome6
           name="minus"
           size={16}
-          color={
-            value <= min
-              ? Colors.light.text.disabled
-              : Colors.light.text.primary
-          }
+          color={value <= min ? Colors.bgDark : Colors.bgDark}
         />
       </TouchableOpacity>
 
@@ -68,11 +64,7 @@ export function NumericInput({
         <FontAwesome6
           name="plus"
           size={16}
-          color={
-            value >= max
-              ? Colors.light.text.disabled
-              : Colors.light.text.primary
-          }
+          color={value >= max ? Colors.bgDark : Colors.bgDark}
         />
       </TouchableOpacity>
     </View>
@@ -84,7 +76,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Colors.light.background.paper,
+    backgroundColor: Colors.bgDark,
     borderRadius: 12,
     padding: 16,
   },
@@ -92,7 +84,7 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: Colors.light.background.default,
+    backgroundColor: Colors.bgDark,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -107,11 +99,11 @@ const styles = StyleSheet.create({
   value: {
     fontSize: 32,
     fontWeight: '600',
-    color: Colors.light.text.primary,
+    color: Colors.bgDark,
   },
   unit: {
     fontSize: 16,
-    color: Colors.light.text.secondary,
+    color: Colors.bgDark,
     marginLeft: 4,
   },
 });

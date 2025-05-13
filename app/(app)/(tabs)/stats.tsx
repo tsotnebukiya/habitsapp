@@ -1,23 +1,22 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { MatrixGrid } from '@/components/matrix/MatrixGrid';
+import React, { useState } from 'react';
 import {
-  StyleSheet,
-  Text,
   SafeAreaView,
   ScrollView,
-  View,
+  StyleSheet,
+  Text,
   TouchableOpacity,
+  View,
 } from 'react-native';
-import { MatrixGrid } from '@/components/matrix/MatrixGrid';
-import { useMatrix } from '@/lib/hooks/useMatrix';
 
 // Import Achievement Components
-import { StreakDisplay } from '@/components/achievements/StreakDisplay';
-import { QuoteDisplay } from '@/components/achievements/QuoteDisplay';
 import { AchievementsList } from '@/components/achievements/AchievementsList';
+import { QuoteDisplay } from '@/components/achievements/QuoteDisplay';
+import { StreakDisplay } from '@/components/achievements/StreakDisplay';
 
 // Import Calendar Component
-import Colors from '@/lib/constants/Colors';
 import CalendarViewNew from '@/components/calendar/CalendarViewNew';
+import Colors from '@/lib/constants/Colors';
 
 // Simple Separator Component
 const Separator = () => <View style={styles.separator} />;
@@ -133,10 +132,10 @@ const styles = StyleSheet.create({
   tabText: {
     fontSize: 16,
     fontWeight: '500',
-    color: Colors.light.text.secondary,
+    color: Colors.bgDark,
   },
   activeTabText: {
-    color: Colors.shared.primary[500],
+    color: Colors.bgDark,
     fontWeight: '600',
   },
   activeIndicator: {
@@ -144,7 +143,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     height: 3,
     width: '40%',
-    backgroundColor: Colors.shared.primary[500],
+    backgroundColor: Colors.bgDark,
     borderRadius: 1.5,
   },
   section: {

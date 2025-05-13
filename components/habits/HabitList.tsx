@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     fontSize: 16,
-    color: Colors.light.text.secondary,
+    color: Colors.bgDark,
     textAlign: 'center',
   },
 });

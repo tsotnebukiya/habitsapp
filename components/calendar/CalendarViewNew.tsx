@@ -1,12 +1,11 @@
-import React, { useCallback, useState } from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
-import { Calendar, CalendarUtils, CalendarList } from 'react-native-calendars';
+import Colors from '@/lib/constants/Colors';
 import useHabitsStore from '@/lib/habit-store/store';
 import type { CompletionStatus } from '@/lib/habit-store/types';
-import Colors from '@/lib/constants/Colors';
-import dayjs from '@/lib/utils/dayjs';
-import { dateUtils } from '@/lib/utils/dayjs';
 import { useCurrentStreak } from '@/lib/hooks/useAchievements';
+import dayjs, { dateUtils } from '@/lib/utils/dayjs';
+import React, { useCallback, useState } from 'react';
+import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import { Calendar } from 'react-native-calendars';
 // Define DateObject type locally based on expected structure
 interface DateObject {
   dateString: string;
@@ -77,7 +76,7 @@ const CalendarViewNew: React.FC<CalendarViewProps> = ({
         case 'all_completed':
           customStyles = {
             container: {
-              backgroundColor: Colors.shared.primary[500],
+              backgroundColor: Colors.bgDark,
               borderRadius: 16,
             },
             text: {
@@ -89,7 +88,7 @@ const CalendarViewNew: React.FC<CalendarViewProps> = ({
           customStyles = {
             container: {
               borderWidth: 1.5,
-              borderColor: Colors.shared.primary[500],
+              borderColor: Colors.bgDark,
               borderRadius: 16,
             },
           };
@@ -101,7 +100,7 @@ const CalendarViewNew: React.FC<CalendarViewProps> = ({
 
       acc[dateStr] = {
         selected: selectedDateStr === dateStr,
-        selectedColor: Colors.shared.primary[100],
+        selectedColor: Colors.bgDark,
         customStyles,
       };
       return acc;
@@ -164,18 +163,18 @@ const CalendarViewNew: React.FC<CalendarViewProps> = ({
         style={styles.calendar}
         markingType="custom"
         theme={{
-          backgroundColor: Colors.light.background.paper,
-          calendarBackground: Colors.light.background.paper,
-          textSectionTitleColor: Colors.light.text.secondary,
-          selectedDayBackgroundColor: Colors.shared.primary[100],
-          selectedDayTextColor: Colors.light.text.primary,
-          todayTextColor: Colors.shared.primary[500],
-          dayTextColor: Colors.light.text.primary,
-          textDisabledColor: Colors.light.text.disabled,
-          monthTextColor: Colors.light.text.primary,
+          backgroundColor: Colors.bgDark,
+          calendarBackground: Colors.bgDark,
+          textSectionTitleColor: Colors.bgDark,
+          selectedDayBackgroundColor: Colors.bgDark,
+          selectedDayTextColor: Colors.bgDark,
+          todayTextColor: Colors.bgDark,
+          dayTextColor: Colors.bgDark,
+          textDisabledColor: Colors.bgDark,
+          monthTextColor: Colors.bgDark,
           textMonthFontSize: 18,
           textMonthFontWeight: '600',
-          arrowColor: Colors.light.text.primary,
+          arrowColor: Colors.bgDark,
           'stylesheet.calendar.header': {
             dayTextAtIndex0: styles.weekdayText,
             dayTextAtIndex1: styles.weekdayText,
@@ -193,7 +192,7 @@ const CalendarViewNew: React.FC<CalendarViewProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Colors.light.background.paper,
+    backgroundColor: Colors.bgDark,
     borderRadius: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -209,9 +208,9 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     marginBottom: 16,
     borderRadius: 12,
-    backgroundColor: Colors.shared.primary[50],
+    backgroundColor: Colors.bgDark,
     borderWidth: 1,
-    borderColor: Colors.shared.primary[100],
+    borderColor: Colors.bgDark,
   },
   statItem: {
     flex: 1,
@@ -220,22 +219,22 @@ const styles = StyleSheet.create({
   statValue: {
     fontSize: 18,
     fontWeight: '700',
-    color: Colors.shared.primary[700],
+    color: Colors.bgDark,
   },
   statLabel: {
     fontSize: 12,
-    color: Colors.light.text.secondary,
+    color: Colors.bgDark,
     marginTop: 2,
   },
   statDivider: {
     width: 1,
     height: '80%',
-    backgroundColor: Colors.shared.primary[200],
+    backgroundColor: Colors.bgDark,
   },
   weekdayText: {
     fontSize: 11,
     fontWeight: '600',
-    color: Colors.light.text.secondary,
+    color: Colors.bgDark,
     textTransform: 'uppercase',
   },
 });

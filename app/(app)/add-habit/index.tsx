@@ -584,7 +584,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 16,
-    backgroundColor: Colors.light.background.paper,
+    backgroundColor: Colors.bgDark,
     borderRadius: 12,
     marginBottom: 24,
   },
@@ -594,12 +594,12 @@ const styles = StyleSheet.create({
   goalValue: {
     fontSize: 16,
     fontWeight: '500',
-    color: Colors.light.text.primary,
+    color: Colors.bgDark,
     marginBottom: 4,
   },
   goalUnit: {
     fontSize: 14,
-    color: Colors.light.text.secondary,
+    color: Colors.bgDark,
   },
   categoryContainer: {
     flexDirection: 'row',

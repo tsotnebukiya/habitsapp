@@ -3,10 +3,10 @@ import { StyleSheet } from 'react-native';
 import Colors from '@/lib/constants/Colors';
 
 export const onboardingGradient = [
-  Colors.shared.primary[50],
-  Colors.shared.secondary[50],
-  Colors.shared.primary[50],
-  Colors.shared.neutral[50],
+  Colors.bgDark,
+  Colors.bgDark,
+  Colors.bgDark,
+  Colors.bgDark,
 ];
 
 export const newOnboardingStyles = StyleSheet.create({
@@ -28,7 +28,7 @@ export const newOnboardingStyles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: '600',
-    color: Colors.light.text.primary,
+    color: Colors.bgDark,
     textAlign: 'center',
     marginBottom: 20,
     textShadowColor: 'rgba(0, 0, 0, 0.1)',
@@ -37,7 +37,7 @@ export const newOnboardingStyles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 18,
-    color: Colors.light.text.secondary,
+    color: Colors.bgDark,
     textAlign: 'center',
     marginBottom: 30,
     lineHeight: 24,
@@ -52,21 +52,21 @@ export const newOnboardingStyles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: Colors.shared.primary[50],
+    backgroundColor: Colors.bgDark,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: Colors.shared.primary[200],
+    borderColor: Colors.bgDark,
   },
   continueButton: {
     flex: 1,
     height: 50,
     borderRadius: 25,
-    backgroundColor: Colors.shared.primary[600],
+    backgroundColor: Colors.bgDark,
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: 10,
-    shadowColor: Colors.shared.neutral[900],
+    shadowColor: Colors.bgDark,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -76,21 +76,21 @@ export const newOnboardingStyles = StyleSheet.create({
     elevation: 5,
   },
   continueButtonText: {
-    color: Colors.light.background.default,
+    color: Colors.bgDark,
     fontSize: 18,
     fontWeight: '600',
   },
   button: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.light.background.default,
+    backgroundColor: Colors.bgDark,
     borderRadius: 25,
     padding: 15,
     marginBottom: 15,
     width: '100%',
     borderWidth: 1,
-    borderColor: Colors.shared.primary[400],
-    shadowColor: Colors.shared.neutral[900],
+    borderColor: Colors.bgDark,
+    shadowColor: Colors.bgDark,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -101,7 +101,7 @@ export const newOnboardingStyles = StyleSheet.create({
   },
   buttonIcon: {
     marginRight: 6,
-    tintColor: Colors.shared.primary[500],
+    tintColor: Colors.bgDark,
   },
   buttonText: {
     color: 'black',
@@ -110,12 +110,12 @@ export const newOnboardingStyles = StyleSheet.create({
   },
   termsText: {
     fontSize: 14,
-    color: Colors.light.text.primary,
+    color: Colors.bgDark,
     textAlign: 'center',
     marginTop: 20,
   },
   termsLink: {
-    color: Colors.shared.primary[500],
+    color: Colors.bgDark,
     fontWeight: '600',
   },
 });

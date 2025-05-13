@@ -88,7 +88,7 @@ const OnboardingCarousel = () => {
           <FontAwesome6
             name={item.icon as any}
             size={80}
-            color={Colors.shared.primary[500]}
+            color={Colors.bgDark}
           />
         </Animated.View>
         <Text style={styles.title}>{item.title}</Text>
@@ -135,9 +135,7 @@ const OnboardingCarousel = () => {
           animatedDotStyle,
           {
             backgroundColor:
-              currentIndex === index
-                ? Colors.shared.primary[500]
-                : Colors.shared.neutral[300],
+              currentIndex === index ? Colors.bgDark : Colors.bgDark,
           },
         ]}
       />
@@ -198,7 +196,7 @@ const styles = StyleSheet.create({
   },
   skipText: {
     fontSize: 16,
-    color: Colors.shared.neutral[500],
+    color: Colors.bgDark,
     fontWeight: '500',
   },
   slide: {
@@ -212,7 +210,7 @@ const styles = StyleSheet.create({
     width: 150,
     height: 150,
     borderRadius: 75,
-    backgroundColor: Colors.shared.primary[50],
+    backgroundColor: Colors.bgDark,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 40,
@@ -220,13 +218,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: Colors.shared.neutral[900],
+    color: Colors.bgDark,
     marginBottom: 10,
     textAlign: 'center',
   },
   description: {
     fontSize: 16,
-    color: Colors.shared.neutral[600],
+    color: Colors.bgDark,
     textAlign: 'center',
     paddingHorizontal: 20,
     lineHeight: 24,
@@ -247,7 +245,7 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
   },
   nextButton: {
-    backgroundColor: Colors.shared.primary[500],
+    backgroundColor: Colors.bgDark,
     paddingVertical: 16,
     borderRadius: 30,
     flexDirection: 'row',

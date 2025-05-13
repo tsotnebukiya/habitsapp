@@ -138,7 +138,7 @@ function OnboardingLogin() {
           <FontAwesome6
             name="envelope"
             size={18}
-            color={Colors.light.text.primary}
+            color={Colors.bgDark}
             style={newOnboardingStyles.buttonIcon}
           />
           <Text style={newOnboardingStyles.buttonText}>
@@ -153,7 +153,7 @@ function OnboardingLogin() {
           <FontAwesome6
             name="google"
             size={18}
-            color={Colors.light.text.primary}
+            color={Colors.bgDark}
             style={newOnboardingStyles.buttonIcon}
           />
           <Text style={newOnboardingStyles.buttonText}>
@@ -179,11 +179,7 @@ function OnboardingLogin() {
           onPress={() => router.back()}
           style={newOnboardingStyles.backButton}
         >
-          <FontAwesome6
-            name="chevron-left"
-            size={20}
-            color={Colors.shared.primary[500]}
-          />
+          <FontAwesome6 name="chevron-left" size={20} color={Colors.bgDark} />
         </TouchableOpacity>
       </View>
     </LinearGradient>

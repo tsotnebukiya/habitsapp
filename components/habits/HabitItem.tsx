@@ -92,7 +92,7 @@ const HabitItem = memo(function HabitItem({
               <FontAwesome6
                 name="forward-step"
                 size={12}
-                color={Colors.light.text.secondary}
+                color={Colors.bgDark}
                 style={styles.skipIcon}
               />
             )}
@@ -180,14 +180,14 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: '600',
     marginBottom: 4,
-    color: Colors.light.text.primary,
+    color: Colors.bgDark,
   },
   habitDescription: {
     fontSize: 14,
-    color: Colors.light.text.secondary,
+    color: Colors.bgDark,
   },
   skippedText: {
-    color: Colors.light.text.secondary,
+    color: Colors.bgDark,
   },
   skippedDescription: {
     opacity: 0.7,
@@ -201,6 +201,6 @@ const styles = StyleSheet.create({
   progressText: {
     fontSize: 14,
     fontWeight: '600',
-    color: Colors.light.text.primary,
+    color: Colors.bgDark,
   },
 });

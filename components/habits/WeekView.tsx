@@ -1,18 +1,13 @@
-import React, { useEffect, useRef, memo, useMemo } from 'react';
-import {
-  View,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Dimensions,
-} from 'react-native';
-import dayjs from 'dayjs';
-import Colors from '@/lib/constants/Colors';
 import useHabitsStore from '@/lib/habit-store/store';
 import { dateUtils } from '@/lib/utils/dayjs';
-import type { CompletionStatus } from '@/lib/habit-store/types';
-
+import React, { memo, useEffect, useMemo, useRef } from 'react';
+import {
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 interface WeekViewProps {
   selectedDate: Date;
   onDateSelect: (date: Date) => void;
@@ -24,7 +19,7 @@ export const WeekView = memo(function WeekView({
   selectedDate,
   onDateSelect,
 }: WeekViewProps) {
-  const scrollViewRef = useRef<ScrollView>(null);
+  const flatListRef = useRef<FlatList<any>>(null);
   const selectedDayjs = dateUtils.fromUTC(selectedDate);
   const { getDayStatus } = useHabitsStore();
 
@@ -41,72 +36,83 @@ export const WeekView = memo(function WeekView({
   );
 
   useEffect(() => {
-    if (todayIndex !== -1 && scrollViewRef.current) {
+    if (todayIndex !== -1 && flatListRef.current) {
       requestAnimationFrame(() => {
-        scrollViewRef.current?.scrollTo({
-          x: todayIndex * DAY_WIDTH,
+        flatListRef.current?.scrollToOffset({
+          offset: todayIndex * DAY_WIDTH,
           animated: false,
         });
       });
     }
-  }, []);
+  }, [todayIndex]);
+
+  const renderDateItem = ({ item: date }: { item: any }) => {
+    const isSelected = date.isSame(selectedDayjs, 'day');
+    const isToday = date.isSame(dateUtils.todayUTC(), 'day');
+    const completionStatus = getDayStatus(date.toDate());
+    return (
+      <TouchableOpacity
+        key={date.format('YYYY-MM-DD')}
+        onPress={() => onDateSelect(date.toDate())}
+        style={[
+          styles.dayContainer,
+          isSelected && styles.selectedDay,
+          isToday && styles.today,
+        ]}
+      >
+        <Text style={[styles.dayName, isToday && styles.todayText]}>
+          {date.format('ddd')}
+        </Text>
+
+        <View
+          style={[
+            styles.numberContainer,
+            completionStatus === 'some_completed' && styles.someCompletedNumber,
+          ]}
+        >
+          <View
+            style={[
+              styles.numberBackground,
+              completionStatus === 'all_completed' && styles.allCompletedNumber,
+            ]}
+          >
+            <Text
+              style={[
+                styles.dayNumber,
+                isToday && styles.todayText,
+                completionStatus === 'all_completed' && styles.allCompletedText,
+              ]}
+            >
+              {date.format('D')}
+            </Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+    );
+  };
+
+  const keyExtractor = (item: any) => item.format('YYYY-MM-DD');
+
+  const getItemLayout = (data: any, index: number) => ({
+    length: DAY_WIDTH,
+    offset: DAY_WIDTH * index,
+    index,
+  });
 
   return (
     <View style={styles.container}>
-      <ScrollView
-        ref={scrollViewRef}
+      <FlatList
+        ref={flatListRef}
+        data={dates}
+        renderItem={renderDateItem}
+        keyExtractor={keyExtractor}
+        getItemLayout={getItemLayout}
         horizontal
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
-      >
-        {dates.map((date, index) => {
-          const isSelected = date.isSame(selectedDayjs, 'day');
-          const isToday = date.isSame(dateUtils.todayUTC(), 'day');
-          const completionStatus = getDayStatus(date.toDate());
-          return (
-            <TouchableOpacity
-              key={date.format('YYYY-MM-DD')}
-              onPress={() => onDateSelect(date.toDate())}
-              style={[
-                styles.dayContainer,
-                isSelected && styles.selectedDay,
-                isToday && styles.today,
-              ]}
-            >
-              <Text style={[styles.dayName, isToday && styles.todayText]}>
-                {date.format('ddd')}
-              </Text>
-
-              <View
-                style={[
-                  styles.numberContainer,
-                  completionStatus === 'some_completed' &&
-                    styles.someCompletedNumber,
-                ]}
-              >
-                <View
-                  style={[
-                    styles.numberBackground,
-                    completionStatus === 'all_completed' &&
-                      styles.allCompletedNumber,
-                  ]}
-                >
-                  <Text
-                    style={[
-                      styles.dayNumber,
-                      isToday && styles.todayText,
-                      completionStatus === 'all_completed' &&
-                        styles.allCompletedText,
-                    ]}
-                  >
-                    {date.format('D')}
-                  </Text>
-                </View>
-              </View>
-            </TouchableOpacity>
-          );
-        })}
-      </ScrollView>
+        initialNumToRender={DAYS_TO_SHOW}
+        windowSize={DAYS_TO_SHOW + 6}
+      />
     </View>
   );
 });
@@ -116,7 +122,7 @@ export default WeekView;
 const styles = StyleSheet.create({
   container: {
     height: 80,
-    backgroundColor: Colors.light.background.paper,
+    // backgroundColor: Colors.bgDark,
     borderRadius: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -137,12 +143,12 @@ const styles = StyleSheet.create({
     marginHorizontal: 2,
   },
   selectedDay: {
-    backgroundColor: Colors.shared.primary[50],
+    // backgroundColor: Colors.bgDark,
     borderRadius: 12,
   },
   dayName: {
     fontSize: 13,
-    color: Colors.light.text.secondary,
+    // color: Colors.bgDark,
     marginBottom: 4,
   },
   numberContainer: {
@@ -154,7 +160,7 @@ const styles = StyleSheet.create({
   },
   someCompletedNumber: {
     borderWidth: 1.5,
-    borderColor: Colors.shared.primary[500],
+    // borderColor: Colors.bgDark,
   },
   numberBackground: {
     width: '100%',
@@ -164,20 +170,20 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   allCompletedNumber: {
-    backgroundColor: Colors.shared.primary[500],
+    // backgroundColor: Colors.bgDark,
   },
   dayNumber: {
     fontSize: 17,
     fontWeight: '600',
-    color: Colors.light.text.primary,
+    // color: Colors.bgDark,
   },
   allCompletedText: {
-    color: Colors.light.background.paper,
+    // color: Colors.bgDark,
   },
   todayText: {
-    color: Colors.shared.primary[500],
+    // color: Colors.bgDark,
   },
   today: {
-    backgroundColor: Colors.shared.primary[50],
+    // backgroundColor: Colors.bgDark,
   },
 });

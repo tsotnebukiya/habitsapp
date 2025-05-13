@@ -66,11 +66,7 @@ export default function GoalChoosing() {
                 </Text>
               </View>
               {unit.id === formData.goal.unit.id && (
-                <FontAwesome6
-                  name="check"
-                  size={16}
-                  color={Colors.light.brand.primary[500]}
-                />
+                <FontAwesome6 name="check" size={16} color={Colors.bgDark} />
               )}
             </TouchableOpacity>
           ))}
@@ -118,12 +114,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: 16,
-    backgroundColor: Colors.light.background.paper,
+    backgroundColor: Colors.bgDark,
     borderRadius: 12,
     marginBottom: 8,
   },
   selectedUnit: {
-    backgroundColor: Colors.light.brand.primary[50],
+    backgroundColor: Colors.bgDark,
   },
   unitInfo: {
     flex: 1,
@@ -131,11 +127,11 @@ const styles = StyleSheet.create({
   unitName: {
     fontSize: 16,
     fontWeight: '500',
-    color: Colors.light.text.primary,
+    color: Colors.bgDark,
     marginBottom: 4,
   },
   unitExample: {
     fontSize: 14,
-    color: Colors.light.text.secondary,
+    color: Colors.bgDark,
   },
 });

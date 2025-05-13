@@ -164,9 +164,7 @@ export default function HabitDetailsSheet({
                   <FontAwesome6
                     name={isCompleted ? 'rotate-left' : 'check'}
                     size={16}
-                    color={
-                      isCompleted ? Colors.light.text.primary : habit.color
-                    }
+                    color={isCompleted ? Colors.bgDark : habit.color}
                     style={styles.buttonIcon}
                   />
                   <Text
@@ -196,7 +194,7 @@ export default function HabitDetailsSheet({
                 <FontAwesome6
                   name="forward-step"
                   size={20}
-                  color={isSkipped ? '#FFFFFF' : Colors.light.text.primary}
+                  color={isSkipped ? '#FFFFFF' : Colors.bgDark}
                 />
                 <Text
                   style={[
@@ -212,11 +210,7 @@ export default function HabitDetailsSheet({
                 style={styles.actionButton}
                 onPress={handleEdit}
               >
-                <FontAwesome6
-                  name="pen"
-                  size={18}
-                  color={Colors.light.text.primary}
-                />
+                <FontAwesome6 name="pen" size={18} color={Colors.bgDark} />
                 <Text style={styles.actionText}>Edit</Text>
               </TouchableOpacity>
 
@@ -239,10 +233,10 @@ export default function HabitDetailsSheet({
 
 const styles = StyleSheet.create({
   sheetBackground: {
-    backgroundColor: Colors.light.background.default,
+    backgroundColor: Colors.bgDark,
   },
   indicator: {
-    backgroundColor: Colors.light.text.secondary,
+    backgroundColor: Colors.bgDark,
     width: 40,
   },
   container: {
@@ -274,17 +268,17 @@ const styles = StyleSheet.create({
     fontSize: 18, // Smaller font
     fontWeight: '600',
     marginBottom: 4,
-    color: Colors.light.text.primary,
+    color: Colors.bgDark,
   },
   habitDescription: {
     fontSize: 14, // Smaller font
-    color: Colors.light.text.secondary,
+    color: Colors.bgDark,
   },
   progressSection: {
     alignItems: 'center',
     marginBottom: 20, // Reduced margin
     padding: 14, // Reduced padding
-    backgroundColor: Colors.light.background.paper,
+    backgroundColor: Colors.bgDark,
     borderRadius: 12,
   },
   progressHeader: {
@@ -297,34 +291,34 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16, // Smaller font
     fontWeight: '600',
-    color: Colors.light.text.primary,
+    color: Colors.bgDark,
   },
   statusBadge: {
     paddingHorizontal: 8, // Reduced padding
     paddingVertical: 2, // Reduced padding
     borderRadius: 12,
-    backgroundColor: Colors.light.background.default,
+    backgroundColor: Colors.bgDark,
   },
   completedBadge: {
-    backgroundColor: Colors.shared.success.light,
+    backgroundColor: Colors.bgDark,
   },
   progressBadge: {
-    backgroundColor: Colors.shared.primary[100],
+    backgroundColor: Colors.bgDark,
   },
   statusText: {
     fontSize: 13, // Smaller font
     fontWeight: '500',
-    color: Colors.light.text.secondary,
+    color: Colors.bgDark,
   },
   completedStatusText: {
     fontSize: 13, // Smaller font
     fontWeight: '500',
-    color: Colors.shared.success.main,
+    color: Colors.bgDark,
   },
   progressStatusText: {
     fontSize: 13, // Smaller font
     fontWeight: '500',
-    color: Colors.shared.primary[500],
+    color: Colors.bgDark,
   },
   completionButtonsContainer: {
     flexDirection: 'row',
@@ -347,7 +341,7 @@ const styles = StyleSheet.create({
   },
   uncompleteButton: {
     backgroundColor: 'transparent',
-    borderColor: Colors.light.text.disabled,
+    borderColor: Colors.bgDark,
   },
   buttonIcon: {
     marginRight: 6,
@@ -357,11 +351,11 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   uncompleteButtonText: {
-    color: Colors.light.text.primary,
+    color: Colors.bgDark,
   },
   separator: {
     height: 1,
-    backgroundColor: Colors.light.text.disabled,
+    backgroundColor: Colors.bgDark,
     opacity: 0.2,
     marginBottom: 16, // Reduced margin
   },
@@ -377,19 +371,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 10, // Reduced padding
     borderRadius: 12,
-    backgroundColor: Colors.light.background.paper,
+    backgroundColor: Colors.bgDark,
     gap: 6, // Reduced gap
   },
   activeActionButton: {
-    backgroundColor: Colors.shared.primary[500],
+    backgroundColor: Colors.bgDark,
   },
   deleteButton: {
-    backgroundColor: Colors.shared.error.main,
+    backgroundColor: Colors.bgDark,
   },
   actionText: {
     fontSize: 13, // Smaller font
     fontWeight: '500',
-    color: Colors.light.text.primary,
+    color: Colors.bgDark,
   },
   activeActionText: {
     color: '#FFFFFF',

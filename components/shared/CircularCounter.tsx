@@ -80,8 +80,8 @@ const CircularCounter = memo(function CircularCounter({
   onChange,
   size = 200,
   step = 1,
-  progressColor = Colors.shared.primary[500],
-  buttonColor = Colors.shared.primary[500],
+  progressColor = Colors.bgDark,
+  buttonColor = Colors.bgDark,
   label = 'Completions',
   disabled = false,
   animationDuration = 300,
@@ -142,7 +142,7 @@ const CircularCounter = memo(function CircularCounter({
           cy={size / 2}
           r={radius}
           strokeWidth={strokeWidth}
-          stroke={Colors.light.background.default}
+          stroke={Colors.bgDark}
           fill="transparent"
         />
 
@@ -210,15 +210,15 @@ const styles = StyleSheet.create({
   value: {
     fontSize: 40,
     fontWeight: '600',
-    color: Colors.light.text.primary,
+    color: Colors.bgDark,
   },
   maxValue: {
     fontSize: 20,
-    color: Colors.light.text.secondary,
+    color: Colors.bgDark,
   },
   label: {
     fontSize: 14,
-    color: Colors.light.text.secondary,
+    color: Colors.bgDark,
     marginTop: 4,
   },
   buttonsContainer: {

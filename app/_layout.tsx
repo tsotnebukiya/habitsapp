@@ -1,28 +1,25 @@
 // app/_layout.tsx
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import {
-  Slot,
-  SplashScreen,
-  Stack,
-  useNavigationContainerRef,
-} from 'expo-router';
-import React from 'react';
-import { useEffect } from 'react';
-import { Dimensions } from 'react-native';
-import Toast from 'react-native-toast-message';
-import 'react-native-get-random-values';
-import 'react-native-reanimated';
-import 'react-native-gesture-handler';
-import { KeyboardProvider } from 'react-native-keyboard-controller';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { PostHogProvider } from 'posthog-react-native';
-import * as Sentry from '@sentry/react-native';
-import { POSTHOG_API_KEY, SENTRY_DSN } from '../safe_constants';
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import ModalContainer from '@/components/modals/ModalContainer';
+import {
+  Poppins_400Regular,
+  Poppins_500Medium,
+  Poppins_600SemiBold,
+  Poppins_700Bold,
+  useFonts,
+} from '@expo-google-fonts/poppins';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import * as Sentry from '@sentry/react-native';
 import { isRunningInExpoGo } from 'expo';
+import { SplashScreen, Stack, useNavigationContainerRef } from 'expo-router';
+import { PostHogProvider } from 'posthog-react-native';
+import React, { useEffect } from 'react';
+import 'react-native-gesture-handler';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import 'react-native-get-random-values';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
+import 'react-native-reanimated';
+import Toast from 'react-native-toast-message';
+import { POSTHOG_API_KEY, SENTRY_DSN } from '../safe_constants';
 
 const navigationIntegration = Sentry.reactNavigationIntegration({
   enableTimeToInitialDisplay: !isRunningInExpoGo(),
@@ -42,9 +39,11 @@ export const unstable_settings = {
 SplashScreen.preventAutoHideAsync();
 
 function RootLayout() {
-  const [loaded, error] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-    ...FontAwesome.font,
+  const [loadedPoppins, errorPoppins] = useFonts({
+    Poppins_400Regular,
+    Poppins_500Medium,
+    Poppins_600SemiBold,
+    Poppins_700Bold,
   });
   const ref = useNavigationContainerRef();
   React.useEffect(() => {
@@ -54,16 +53,16 @@ function RootLayout() {
   }, [ref]);
 
   useEffect(() => {
-    if (error) throw error;
-  }, [error]);
+    if (errorPoppins) throw errorPoppins;
+  }, [errorPoppins]);
 
   useEffect(() => {
-    if (loaded) {
+    if (loadedPoppins) {
       SplashScreen.hideAsync();
     }
-  }, [loaded]);
+  }, [loadedPoppins]);
 
-  if (!loaded) {
+  if (!loadedPoppins) {
     return null;
   }
 

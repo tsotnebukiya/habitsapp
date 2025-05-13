@@ -1,12 +1,11 @@
-import { Redirect, Stack } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { View } from 'react-native';
-import useUserProfileStore from '@/lib/stores/user_profile';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import useHabitsStore from '@/lib/habit-store/store';
 import { useNotifications } from '@/lib/hooks/useNotifications';
 import { useReconcileWidgetState } from '@/lib/hooks/useReconcileWidgetState';
+import useUserProfileStore from '@/lib/stores/user_profile';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
+import { Redirect, Stack } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { View } from 'react-native';
 
 function StackLayout() {
   const { profile } = useUserProfileStore();
@@ -41,21 +40,19 @@ function StackLayout() {
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <BottomSheetModalProvider>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen
-            name="add-habit"
-            options={{
-              presentation: 'modal',
-              headerShown: false,
-              animation: 'slide_from_bottom',
-            }}
-          />
-        </Stack>
-      </BottomSheetModalProvider>
-    </GestureHandlerRootView>
+    <BottomSheetModalProvider>
+      <Stack>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen
+          name="add-habit"
+          options={{
+            presentation: 'modal',
+            headerShown: false,
+            animation: 'slide_from_bottom',
+          }}
+        />
+      </Stack>
+    </BottomSheetModalProvider>
   );
 }
 
