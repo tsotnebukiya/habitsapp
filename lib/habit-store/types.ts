@@ -1,9 +1,9 @@
 import { Database } from '@/supabase/types';
-import { HabitSlice } from './actions/habits';
 import { AchievementSlice } from './actions/achievements';
 import { CalendarSlice } from './actions/calendar';
-import { SyncSlice } from './actions/sync';
 import { CompletionSlice } from './actions/completions';
+import { HabitSlice } from './actions/habits';
+import { SyncSlice } from './actions/sync';
 
 export type HabitFrequency = 'daily' | 'weekly';
 
@@ -81,10 +81,6 @@ export interface HabitsState extends BaseState {
   habits: Map<string, Habit>;
   completions: Map<string, HabitCompletion>;
   pendingOperations: PendingOperation[];
-}
-
-export interface MonthCache {
-  [dateString: string]: CompletionStatus;
 }
 
 export type StreakAchievements = {

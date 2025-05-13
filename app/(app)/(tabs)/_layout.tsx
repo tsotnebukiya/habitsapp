@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     bottom: 45,
     zIndex: 1,
     left: '50%',
-    transform: [{ translateX: -27.5 }],
+    transform: [{ translateX: -30 }],
     width: 60,
     height: 60,
     borderRadius: 30,

@@ -1,26 +1,26 @@
-import { StateCreator } from 'zustand';
-import { SharedSlice, CompletionStatus, MonthCache } from '../types';
+import { dateUtils } from '@/lib/utils/dayjs';
 import {
   calculateDateStatus,
   getAffectedDates,
   getMonthKey,
-  normalizeDate,
 } from '@/lib/utils/habits';
-import { dateUtils } from '@/lib/utils/dayjs';
+import { StateCreator } from 'zustand';
+import { SharedSlice } from '../types';
 
 // Optimized cache type that only stores non-none_completed statuses
 type OptimizedMonthCache = {
-  [dateString: string]: CompletionStatus;
+  [dateString: string]: number;
 };
 
 export interface CalendarSlice {
   monthCache: Map<string, OptimizedMonthCache>;
 
-  getMonthStatuses: (month: Date) => MonthCache;
+  getMonthStatuses: (month: Date) => OptimizedMonthCache;
   updateDayStatus: (date: Date) => void;
-  getDayStatus: (date: Date) => CompletionStatus;
+  getDayStatus: (date: Date) => number;
   updateAffectedDates: (habitId: string, dates?: Date[]) => void;
   batchUpdateDayStatuses: (dates: Date[]) => void;
+  recalcAllStatuses: () => void;
 }
 
 export const createCalendarSlice: StateCreator<
@@ -35,7 +35,7 @@ export const createCalendarSlice: StateCreator<
     const monthKey = getMonthKey(date);
     const cache = get().monthCache.get(monthKey) || {};
     const dateString = dateUtils.toServerDateString(date);
-    return cache[dateString] || 'none_completed';
+    return cache[dateString] || 0;
   },
 
   getMonthStatuses: (month: Date) => {
@@ -60,6 +60,13 @@ export const createCalendarSlice: StateCreator<
     get().batchUpdateDayStatuses(datesToUpdate);
   },
 
+  recalcAllStatuses: () => {
+    const dates = Array.from(get().habits.values()).flatMap((habit) =>
+      getAffectedDates(habit)
+    );
+    get().batchUpdateDayStatuses(dates);
+  },
+
   batchUpdateDayStatuses: (dates: Date[]) => {
     const updates = new Map<string, OptimizedMonthCache>();
     dates.forEach((date) => {
@@ -77,7 +84,7 @@ export const createCalendarSlice: StateCreator<
         Array.from(get().completions.values()),
         date
       );
-      if (status === 'none_completed') {
+      if (status === 0) {
         // If the new status is 'none_completed', delete it from the updates map.
         // We check hasOwnProperty to ensure we only delete if it was actually present.
         if (updates.get(monthKey)?.hasOwnProperty(dateString)) {

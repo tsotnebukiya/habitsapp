@@ -1,20 +1,22 @@
+import { DATE_ITEM_WIDTH, WEEK_VIEW_ITEM_GAP } from '@/lib/constants/layouts';
 import useHabitsStore from '@/lib/habit-store/store';
 import { dateUtils } from '@/lib/utils/dayjs';
-import React, { memo, useEffect, useMemo, useRef } from 'react';
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { Dayjs } from 'dayjs';
+import React, { memo, useCallback, useEffect, useMemo, useRef } from 'react';
+import { FlatList, StyleSheet, View } from 'react-native';
+import DateItem from './DateItem';
+
 interface WeekViewProps {
   selectedDate: Date;
   onDateSelect: (date: Date) => void;
 }
 
-const DAY_WIDTH = 60;
-const DAYS_TO_SHOW = 14; // Show 2 weeks
+type DateItem = {
+  date: Dayjs;
+  dateWeek: string;
+  dateNumber: string;
+};
+
 export const WeekView = memo(function WeekView({
   selectedDate,
   onDateSelect,
@@ -24,80 +26,71 @@ export const WeekView = memo(function WeekView({
   const { getDayStatus } = useHabitsStore();
 
   const dates = useMemo(() => {
-    const result = [];
-    for (let i = 0; i < 14; i++) {
-      result.push(dateUtils.todayUTC().subtract(7, 'day').add(i, 'day'));
+    const result: DateItem[] = [];
+
+    const startOfPrevMonth = dateUtils
+      .todayUTC()
+      .subtract(1, 'month')
+      .startOf('month');
+    const endOfNextMonth = dateUtils.todayUTC().add(1, 'month').endOf('month');
+
+    let currentDate = startOfPrevMonth.clone();
+
+    while (
+      currentDate.isBefore(endOfNextMonth) ||
+      currentDate.isSame(endOfNextMonth, 'day')
+    ) {
+      result.push({
+        date: currentDate.clone(),
+        dateWeek: currentDate.format('ddd'),
+        dateNumber: currentDate.format('D'),
+      });
+      currentDate = currentDate.add(1, 'day');
     }
+
     return result;
   }, []);
 
-  const todayIndex = dates.findIndex((date) =>
-    date.isSame(dateUtils.todayUTC(), 'day')
+  const selectedIndex = dates.findIndex((item) =>
+    item.date.isSame(selectedDayjs, 'day')
   );
 
   useEffect(() => {
-    if (todayIndex !== -1 && flatListRef.current) {
-      requestAnimationFrame(() => {
-        flatListRef.current?.scrollToOffset({
-          offset: todayIndex * DAY_WIDTH,
-          animated: false,
-        });
+    if (selectedIndex !== -1 && flatListRef.current) {
+      flatListRef.current?.scrollToIndex({
+        index: selectedIndex,
+        animated: true, // No animation on first mount
+        viewPosition: 0.5,
       });
     }
-  }, [todayIndex]);
+  }, [selectedIndex]);
 
-  const renderDateItem = ({ item: date }: { item: any }) => {
+  const renderDateItem = ({ item }: { item: DateItem }) => {
+    const { date, dateWeek, dateNumber } = item;
     const isSelected = date.isSame(selectedDayjs, 'day');
-    const isToday = date.isSame(dateUtils.todayUTC(), 'day');
     const completionStatus = getDayStatus(date.toDate());
     return (
-      <TouchableOpacity
+      <DateItem
         key={date.format('YYYY-MM-DD')}
         onPress={() => onDateSelect(date.toDate())}
-        style={[
-          styles.dayContainer,
-          isSelected && styles.selectedDay,
-          isToday && styles.today,
-        ]}
-      >
-        <Text style={[styles.dayName, isToday && styles.todayText]}>
-          {date.format('ddd')}
-        </Text>
-
-        <View
-          style={[
-            styles.numberContainer,
-            completionStatus === 'some_completed' && styles.someCompletedNumber,
-          ]}
-        >
-          <View
-            style={[
-              styles.numberBackground,
-              completionStatus === 'all_completed' && styles.allCompletedNumber,
-            ]}
-          >
-            <Text
-              style={[
-                styles.dayNumber,
-                isToday && styles.todayText,
-                completionStatus === 'all_completed' && styles.allCompletedText,
-              ]}
-            >
-              {date.format('D')}
-            </Text>
-          </View>
-        </View>
-      </TouchableOpacity>
+        isSelected={isSelected}
+        dateWeek={dateWeek}
+        dateNumber={dateNumber}
+        completionStatus={completionStatus}
+      />
     );
   };
 
-  const keyExtractor = (item: any) => item.format('YYYY-MM-DD');
+  const keyExtractor = (item: DateItem) => item.date.format('YYYY-MM-DD');
 
-  const getItemLayout = (data: any, index: number) => ({
-    length: DAY_WIDTH,
-    offset: DAY_WIDTH * index,
-    index,
-  });
+  const getItemLayout = useCallback(
+    (data: any, index: number) => ({
+      length: DATE_ITEM_WIDTH + WEEK_VIEW_ITEM_GAP,
+      offset: (DATE_ITEM_WIDTH + WEEK_VIEW_ITEM_GAP) * index,
+      index,
+    }),
+    []
+  );
 
   return (
     <View style={styles.container}>
@@ -109,9 +102,11 @@ export const WeekView = memo(function WeekView({
         getItemLayout={getItemLayout}
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-        initialNumToRender={DAYS_TO_SHOW}
-        windowSize={DAYS_TO_SHOW + 6}
+        snapToInterval={DATE_ITEM_WIDTH + WEEK_VIEW_ITEM_GAP}
+        decelerationRate="fast"
+        initialNumToRender={7}
+        windowSize={11}
+        initialScrollIndex={selectedIndex - 3}
       />
     </View>
   );
@@ -121,69 +116,9 @@ export default WeekView;
 
 const styles = StyleSheet.create({
   container: {
-    height: 80,
-    // backgroundColor: Colors.bgDark,
-    borderRadius: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
-    marginHorizontal: 16,
-    marginVertical: 8,
+    height: 77,
   },
   scrollContent: {
-    paddingHorizontal: 10,
-  },
-  dayContainer: {
-    width: DAY_WIDTH,
-    height: 70,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginHorizontal: 2,
-  },
-  selectedDay: {
-    // backgroundColor: Colors.bgDark,
-    borderRadius: 12,
-  },
-  dayName: {
-    fontSize: 13,
-    // color: Colors.bgDark,
-    marginBottom: 4,
-  },
-  numberContainer: {
-    width: 32,
-    height: 32,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 16,
-  },
-  someCompletedNumber: {
-    borderWidth: 1.5,
-    // borderColor: Colors.bgDark,
-  },
-  numberBackground: {
-    width: '100%',
-    height: '100%',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 16,
-  },
-  allCompletedNumber: {
-    // backgroundColor: Colors.bgDark,
-  },
-  dayNumber: {
-    fontSize: 17,
-    fontWeight: '600',
-    // color: Colors.bgDark,
-  },
-  allCompletedText: {
-    // color: Colors.bgDark,
-  },
-  todayText: {
-    // color: Colors.bgDark,
-  },
-  today: {
-    // backgroundColor: Colors.bgDark,
+    paddingHorizontal: WEEK_VIEW_ITEM_GAP,
   },
 });

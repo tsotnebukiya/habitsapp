@@ -1,12 +1,7 @@
-import { dateUtils } from './dayjs';
-import { Database } from '@/supabase/types';
-import {
-  CompletionStatus,
-  Habit,
-  HabitAction,
-  HabitCompletion,
-} from '@/lib/habit-store/types';
+import { Habit, HabitAction, HabitCompletion } from '@/lib/habit-store/types';
 import useUserProfileStore from '@/lib/stores/user_profile';
+import { Database } from '@/supabase/types';
+import { dateUtils } from './dayjs';
 
 export const STORE_CONSTANTS = {
   MAX_RETRY_ATTEMPTS: 3,
@@ -110,8 +105,8 @@ export const calculateDateStatus = (
   allHabits: Habit[],
   allCompletions: HabitCompletion[],
   date: Date
-): CompletionStatus => {
-  if (!allHabits || !allCompletions) return 'none_completed';
+): number => {
+  if (!allHabits || allHabits.length === 0) return 0;
 
   const targetDateNormalized = dateUtils.normalize(date);
   const targetDayOfWeek = targetDateNormalized.day();
@@ -137,36 +132,34 @@ export const calculateDateStatus = (
     activeHabitsForDate.push(habit);
   }
 
-  if (activeHabitsForDate.length === 0) return 'none_completed';
+  if (activeHabitsForDate.length === 0) return 0;
 
-  const completionsForDateMap = new Map<string, HabitCompletion['status']>();
-
-  for (const completion of allCompletions) {
-    if (completion.completion_date === targetDateString) {
-      completionsForDateMap.set(completion.habit_id, completion.status);
-    }
-  }
-
-  let completedCount = 0;
-  let inProgressCount = 0;
+  let sumOfIndividualRates = 0;
 
   for (const habit of activeHabitsForDate) {
-    const status = completionsForDateMap.get(habit.id);
+    const maxGoalValue = habit.goal_value || habit.completions_per_day || 1;
 
-    if (status === 'completed' || status === 'skipped') {
-      completedCount++;
-    } else if (status === 'in_progress') {
-      inProgressCount++;
+    const completionRecord = allCompletions.find(
+      (comp) =>
+        comp.habit_id === habit.id && comp.completion_date === targetDateString
+    );
+
+    const achievedValue = completionRecord?.value || 0;
+
+    // Ensure achievedValue is not negative, though it should be handled by input.
+    const normalizedAchievedValue = Math.max(0, achievedValue);
+
+    let individualRate = 0;
+    if (maxGoalValue > 0) {
+      individualRate = Math.min(1, normalizedAchievedValue / maxGoalValue);
+    } else if (normalizedAchievedValue > 0) {
+      // If maxGoalValue is 0 or undefined but there's an achieved value, consider it completed.
+      individualRate = 1;
     }
+    sumOfIndividualRates += individualRate;
   }
 
-  if (completedCount === activeHabitsForDate.length) {
-    return 'all_completed';
-  } else if (completedCount > 0 || inProgressCount > 0) {
-    return 'some_completed';
-  }
-
-  return 'none_completed';
+  return sumOfIndividualRates / activeHabitsForDate.length;
 };
 
 export const getUserIdOrThrow = () => {
@@ -245,10 +238,10 @@ export function calculateHabitToggle({
         ? 'not_started'
         : 'skipped'
       : newValue >= maxValue
-      ? 'completed'
-      : newValue > 0
-      ? 'in_progress'
-      : 'not_started';
+        ? 'completed'
+        : newValue > 0
+          ? 'in_progress'
+          : 'not_started';
 
   return { newValue, newStatus };
 }
