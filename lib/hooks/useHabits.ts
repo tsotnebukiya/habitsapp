@@ -1,13 +1,30 @@
-import { useMemo } from 'react';
 import useHabitsStore from '@/lib/habit-store/store';
-import { Database } from '@/supabase/types';
-import dayjs from '@/lib/utils/dayjs';
 import { Habit } from '@/lib/habit-store/types';
+import dayjs, { dateUtils } from '@/lib/utils/dayjs';
+import { useMemo } from 'react';
+import { getMonthKey } from '../utils/habits';
+
+export function useThreeMonthsStatuses() {
+  const monthCache = useHabitsStore((state) => state.monthCache);
+  const returnObj = useMemo(() => {
+    const currentMonth = dateUtils.todayUTC().toDate();
+    const prevMonth = dateUtils.todayUTC().subtract(1, 'month').toDate();
+    const nextMonth = dateUtils.todayUTC().add(1, 'month').toDate();
+    const currentMonthKey = getMonthKey(currentMonth);
+    const prevMonthKey = getMonthKey(prevMonth);
+    const nextMonthKey = getMonthKey(nextMonth);
+    return {
+      ...(monthCache.get(prevMonthKey) || {}),
+      ...(monthCache.get(currentMonthKey) || {}),
+      ...(monthCache.get(nextMonthKey) || {}),
+    };
+  }, [monthCache]);
+  return returnObj;
+}
 
 export const useAllHabits = () => {
   const habitsMap = useHabitsStore((state) => state.habits);
 
-  // Only recompute when the habits Map changes
   return useMemo(() => {
     return Array.from(habitsMap.values());
   }, [habitsMap]);

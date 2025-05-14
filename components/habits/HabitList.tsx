@@ -1,16 +1,15 @@
-import React, { useRef, useState, memo } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { useHabitsForDate } from '@/lib/hooks/useHabits';
-import HabitItem from './HabitItem';
-import HabitDetailsSheet from './HabitDetailsSheet';
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import useHabitsStore from '@/lib/habit-store/store';
-import Toast from 'react-native-toast-message';
 import Colors from '@/lib/constants/Colors';
-import dayjs from 'dayjs';
+import useHabitsStore from '@/lib/habit-store/store';
 import { Habit } from '@/lib/habit-store/types';
+import { useHabitsForDate } from '@/lib/hooks/useHabits';
 import { dateUtils } from '@/lib/utils/dayjs';
-import { after } from 'node:test';
+import { BottomSheetModal } from '@gorhom/bottom-sheet';
+import dayjs from 'dayjs';
+import React, { memo, useRef, useState } from 'react';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import Toast from 'react-native-toast-message';
+import HabitDetailsSheet from './HabitDetailsSheet';
+import HabitItem from './HabitItem';
 
 interface HabitListProps {
   selectedDate: Date;
@@ -49,7 +48,7 @@ const HabitList = memo(function HabitList({ selectedDate }: HabitListProps) {
     });
     return;
   };
-  const handleHabitLongPress = (habit: Habit) => {
+  const handleHabitPress = (habit: Habit) => {
     if (afterToday) {
       showIsAfterToast();
       return;
@@ -59,7 +58,7 @@ const HabitList = memo(function HabitList({ selectedDate }: HabitListProps) {
     bottomSheetModalRef.current?.present();
   };
 
-  const handleHabitPress = (habit: Habit) => {
+  const handlePlusPress = (habit: Habit) => {
     if (afterToday) {
       showIsAfterToast();
       return;
@@ -86,7 +85,10 @@ const HabitList = memo(function HabitList({ selectedDate }: HabitListProps) {
 
   return (
     <>
-      <ScrollView style={styles.container}>
+      <ScrollView
+        style={styles.container}
+        contentContainerStyle={styles.contentContainer}
+      >
         {habitsForDate.map((habit: Habit) => (
           <HabitItem
             key={habit.id}
@@ -97,7 +99,8 @@ const HabitList = memo(function HabitList({ selectedDate }: HabitListProps) {
             progress={getCurrentProgress(habit.id, selectedDate)}
             progressText={getProgressText(habit.id, selectedDate)}
             selectedDate={selectedDate}
-            onLongPress={handleHabitLongPress}
+            onLongPress={() => {}}
+            onPlusPress={handlePlusPress}
             onPress={handleHabitPress}
           />
         ))}
@@ -117,7 +120,10 @@ export default HabitList;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 16,
+    paddingHorizontal: 18,
+  },
+  contentContainer: {
+    gap: 9,
   },
   emptyContainer: {
     flex: 1,

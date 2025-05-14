@@ -1,7 +1,8 @@
 import Colors from '@/lib/constants/Colors';
 import { DATE_ITEM_WIDTH, WEEK_VIEW_ITEM_GAP } from '@/lib/constants/layouts';
 import { fontWeights } from '@/lib/constants/Typography';
-import React, { memo, useEffect, useMemo, useRef } from 'react';
+import { Dayjs } from 'dayjs';
+import React, { memo, useCallback, useEffect, useMemo, useRef } from 'react';
 import {
   Animated,
   StyleSheet,
@@ -12,10 +13,10 @@ import {
 import Svg, { Circle } from 'react-native-svg';
 
 interface DateItemProps {
-  onPress: () => void;
+  onPress: (date: Date) => void;
   isSelected: boolean;
-  dateWeek: string;
-  dateNumber: string;
+  date: Dayjs;
+  itemIndex?: number;
   completionStatus: number;
 }
 
@@ -29,22 +30,31 @@ const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 const DateItem = memo(function DateItem({
   onPress,
   isSelected,
-  dateWeek,
-  dateNumber,
+  date,
+  itemIndex,
   completionStatus,
 }: DateItemProps) {
-  const radius = useMemo(() => (CIRCLE_SIZE - STROKE_WIDTH) / 2, []);
-  const circumference = useMemo(() => 2 * Math.PI * radius, [radius]);
-
   const animatedProgress = useRef(new Animated.Value(completionStatus)).current;
+  const prevCompletionStatus = useRef(completionStatus);
+
+  const handlePress = useCallback(() => {
+    onPress(date.toDate());
+  }, [date, onPress]);
 
   useEffect(() => {
-    Animated.timing(animatedProgress, {
-      toValue: completionStatus,
-      duration: ANIMATION_DURATION,
-      useNativeDriver: true,
-    }).start();
-  }, [completionStatus]);
+    // Only animate if the completionStatus has actually changed
+    if (prevCompletionStatus.current !== completionStatus) {
+      Animated.timing(animatedProgress, {
+        toValue: completionStatus,
+        duration: ANIMATION_DURATION,
+        useNativeDriver: true,
+      }).start(() => {});
+      prevCompletionStatus.current = completionStatus;
+    }
+  }, [completionStatus, itemIndex, animatedProgress]);
+
+  const radius = useMemo(() => (CIRCLE_SIZE - STROKE_WIDTH) / 2, []);
+  const circumference = useMemo(() => 2 * Math.PI * radius, [radius]);
 
   const strokeDashoffset = useMemo(
     () =>
@@ -52,9 +62,12 @@ const DateItem = memo(function DateItem({
     [animatedProgress, circumference]
   );
 
+  const dateWeek = useMemo(() => date.format('ddd'), [date]);
+  const dateNumber = useMemo(() => date.format('D'), [date]);
+
   return (
     <TouchableOpacity
-      onPress={onPress}
+      onPress={handlePress}
       style={[
         styles.dayContainer,
         isSelected && styles.selectedDay,
@@ -103,6 +116,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 4,
     borderRadius: 13,
+    // borderWidth: 1,
   },
   selectedDay: {
     backgroundColor: Colors.primary,
@@ -124,6 +138,14 @@ const styles = StyleSheet.create({
   },
   outerBoxSelected: {
     backgroundColor: 'white',
+    shadowColor: '#000000',
+    shadowOffset: {
+      width: 0,
+      height: 4.24,
+    },
+    shadowRadius: 12.71,
+    shadowOpacity: 0.12,
+    elevation: 8,
   },
   innerBox: {
     width: CIRCLE_SIZE,
@@ -139,11 +161,11 @@ const styles = StyleSheet.create({
     color: Colors.secondary,
     opacity: 0.5,
     fontSize: 14,
-    fontFamily: fontWeights.medium,
+    fontFamily: fontWeights.interMedium,
   },
   dayNumberSelected: {
     color: 'black',
-    opacity: 0.5,
-    fontFamily: fontWeights.semibold,
+    opacity: 1,
+    fontFamily: fontWeights.interSemiBold,
   },
 });

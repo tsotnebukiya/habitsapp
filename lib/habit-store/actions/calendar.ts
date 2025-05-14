@@ -16,6 +16,7 @@ export interface CalendarSlice {
   monthCache: Map<string, OptimizedMonthCache>;
 
   getMonthStatuses: (month: Date) => OptimizedMonthCache;
+  getCurrentThreeMonthsStatuses: () => OptimizedMonthCache;
   updateDayStatus: (date: Date) => void;
   getDayStatus: (date: Date) => number;
   updateAffectedDates: (habitId: string, dates?: Date[]) => void;
@@ -30,6 +31,16 @@ export const createCalendarSlice: StateCreator<
   CalendarSlice
 > = (set, get) => ({
   monthCache: new Map(),
+  getCurrentThreeMonthsStatuses: () => {
+    const currentMonth = dateUtils.todayUTC().toDate();
+    const prevMonth = dateUtils.todayUTC().subtract(1, 'month').toDate();
+    const nextMonth = dateUtils.todayUTC().add(1, 'month').toDate();
+    return {
+      ...get().getMonthStatuses(currentMonth),
+      ...get().getMonthStatuses(prevMonth),
+      ...get().getMonthStatuses(nextMonth),
+    };
+  },
 
   getDayStatus: (date: Date) => {
     const monthKey = getMonthKey(date);

@@ -1,5 +1,3 @@
-import { MeasurementUnits } from './MeasurementUnits';
-
 export const CATEGORY_IDS = ['cat1', 'cat2', 'cat3', 'cat4', 'cat5'] as const;
 
 export type HabitCategory = (typeof CATEGORY_IDS)[number];
@@ -21,37 +19,37 @@ export const CATEGORIES = [
   {
     id: 'cat1',
     name: 'Vitality',
-    icon: '💪',
+    icon: require('@/assets/icons/vitality.png'),
     description: 'Physical health and energy',
-    color: '#FF5E5B',
+    color: '#FF6B6B',
   },
   {
     id: 'cat2',
     name: 'Wisdom',
-    icon: '🧠',
+    icon: require('@/assets/icons/wisdom.png'),
     description: 'Mental growth and learning',
-    color: '#5E97F7',
+    color: '#4A90E2',
   },
   {
     id: 'cat3',
     name: 'Harmony',
-    icon: '🌟',
+    icon: require('@/assets/icons/harmony.png'),
     description: 'Balance and relationships',
-    color: '#FF9AA2',
+    color: '#7ED6A7',
   },
   {
     id: 'cat4',
     name: 'Spirit',
-    icon: '✨',
+    icon: require('@/assets/icons/spirit.png'),
     description: 'Inner peace and mindfulness',
-    color: '#A78BFA',
+    color: '#A974F8',
   },
   {
     id: 'cat5',
     name: 'Ambition',
-    icon: '💼',
+    icon: require('@/assets/icons/ambition.png'),
     description: 'Career and personal goals',
-    color: '#5BBAA9',
+    color: '#FFA726',
   },
 ] as const;
 

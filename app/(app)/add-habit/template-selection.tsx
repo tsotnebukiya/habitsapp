@@ -1,18 +1,18 @@
+import { HABIT_TEMPLATES } from '@/lib/constants/HabitTemplates';
+import { useAddHabitStore } from '@/lib/stores/add_habit_store';
+import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
   ScrollView,
-  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import { useAddHabitStore } from '@/lib/stores/add_habit_store';
-import { HABIT_TEMPLATES } from '@/lib/constants/HabitTemplates';
-import { Ionicons } from '@expo/vector-icons';
 
 export default function TemplateSelection() {
-  const { formData, setCurrentStep, applyTemplate } = useAddHabitStore();
+  const { formData, setCurrentStep, applyTemplate, currentStep } =
+    useAddHabitStore();
 
   // Filter templates by selected category
   const templates = HABIT_TEMPLATES.filter(

@@ -1,9 +1,17 @@
-import React, { memo } from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
-import { Database } from '@/supabase/types';
 import Colors from '@/lib/constants/Colors';
-import * as Haptics from 'expo-haptics';
+import { ACTIVE_OPACITY } from '@/lib/constants/layouts';
+import { Database } from '@/supabase/types';
 import { FontAwesome6 } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
+import React, { memo } from 'react';
+import {
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { Icon } from 'react-native-paper';
 import Animated, {
   useAnimatedStyle,
   withSpring,
@@ -21,6 +29,7 @@ interface HabitItemProps {
   selectedDate: Date;
   onLongPress: (habit: Habit) => void;
   onPress: (habit: Habit) => void;
+  onPlusPress: (habit: Habit) => void;
 }
 
 const HabitItem = memo(function HabitItem({
@@ -29,12 +38,18 @@ const HabitItem = memo(function HabitItem({
   progress,
   progressText,
   selectedDate,
+  onPlusPress,
   onLongPress,
   onPress,
 }: HabitItemProps) {
   const handleLongPress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     onLongPress(habit);
+  };
+
+  const handlePlusPress = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    onPlusPress(habit);
   };
 
   const handlePress = () => {
@@ -104,16 +119,37 @@ const HabitItem = memo(function HabitItem({
                 isSkipped && styles.skippedDescription,
               ]}
             >
-              {habit.description}
+              {progressText}
             </Text>
           )}
         </View>
-
-        <View style={styles.progressContainer}>
-          <Text style={[styles.progressText, isSkipped && styles.skippedText]}>
-            {progressText}
-          </Text>
-        </View>
+        <TouchableOpacity
+          activeOpacity={ACTIVE_OPACITY}
+          onPress={handlePlusPress}
+          style={{
+            position: 'relative',
+            width: 46,
+            height: 46,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <View
+            style={{
+              position: 'absolute',
+              width: '100%',
+              height: '100%',
+              backgroundColor: 'black',
+              opacity: 0.4,
+              borderRadius: 12,
+            }}
+          />
+          <Icon
+            source={require('@/assets/icons/plus.png')}
+            size={24}
+            color="white"
+          />
+        </TouchableOpacity>
       </View>
     </Pressable>
   );
@@ -124,16 +160,18 @@ export default HabitItem;
 const styles = StyleSheet.create({
   habitCard: {
     position: 'relative',
-    borderRadius: 12,
-    marginVertical: 8,
+    borderRadius: 16,
     overflow: 'hidden',
     backgroundColor: 'transparent',
+    height: 74,
   },
   content: {
     flexDirection: 'row',
-    padding: 16,
     alignItems: 'center',
+    height: '100%',
     zIndex: 2,
+    paddingLeft: 20,
+    paddingRight: 14,
   },
   baseProgress: {
     position: 'absolute',
@@ -195,9 +233,7 @@ const styles = StyleSheet.create({
   skipIcon: {
     marginBottom: 4,
   },
-  progressContainer: {
-    marginLeft: 12,
-  },
+  progressContainer: {},
   progressText: {
     fontSize: 14,
     fontWeight: '600',

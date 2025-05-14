@@ -1,6 +1,12 @@
 // app/_layout.tsx
 import ModalContainer from '@/components/modals/ModalContainer';
 import {
+  Inter_400Regular,
+  Inter_500Medium,
+  Inter_600SemiBold,
+  Inter_700Bold,
+} from '@expo-google-fonts/inter';
+import {
   Poppins_400Regular,
   Poppins_500Medium,
   Poppins_600SemiBold,
@@ -45,6 +51,12 @@ function RootLayout() {
     Poppins_600SemiBold,
     Poppins_700Bold,
   });
+  const [loadedInter, errorInter] = useFonts({
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+    Inter_700Bold,
+  });
   const ref = useNavigationContainerRef();
   React.useEffect(() => {
     if (ref?.current) {
@@ -54,15 +66,16 @@ function RootLayout() {
 
   useEffect(() => {
     if (errorPoppins) throw errorPoppins;
-  }, [errorPoppins]);
+    if (errorInter) throw errorInter;
+  }, [errorPoppins, errorInter]);
 
   useEffect(() => {
-    if (loadedPoppins) {
+    if (loadedPoppins && loadedInter) {
       SplashScreen.hideAsync();
     }
-  }, [loadedPoppins]);
+  }, [loadedPoppins, loadedInter]);
 
-  if (!loadedPoppins) {
+  if (!loadedPoppins || !loadedInter) {
     return null;
   }
 

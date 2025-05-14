@@ -1,5 +1,7 @@
 import { Dimensions } from 'react-native';
 
+export const ACTIVE_OPACITY = 0.7;
+
 // WeekView
 
 export const SCREEN_WIDTH = Dimensions.get('window').width;
