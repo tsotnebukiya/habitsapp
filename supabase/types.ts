@@ -74,6 +74,7 @@ export type Database = {
           reminder_time: string | null;
           start_date: string;
           streak_goal: number | null;
+          type: Database['public']['Enums']['habit_type'];
           updated_at: string;
           user_id: string;
         };
@@ -96,6 +97,7 @@ export type Database = {
           reminder_time?: string | null;
           start_date: string;
           streak_goal?: number | null;
+          type?: Database['public']['Enums']['habit_type'];
           updated_at?: string;
           user_id: string;
         };
@@ -118,6 +120,7 @@ export type Database = {
           reminder_time?: string | null;
           start_date?: string;
           streak_goal?: number | null;
+          type?: Database['public']['Enums']['habit_type'];
           updated_at?: string;
           user_id?: string;
         };
@@ -317,6 +320,7 @@ export type Database = {
         | 'skipped'
         | 'completed'
         | 'in_progress';
+      habit_type: 'GOOD' | 'BAD';
       notification_type: 'HABIT' | 'MORNING' | 'EVENING' | 'STREAK' | 'GENERAL';
     };
     CompositeTypes: {
@@ -439,6 +443,7 @@ export const Constants = {
         'completed',
         'in_progress',
       ],
+      habit_type: ['GOOD', 'BAD'],
       notification_type: ['HABIT', 'MORNING', 'EVENING', 'STREAK', 'GENERAL'],
     },
   },

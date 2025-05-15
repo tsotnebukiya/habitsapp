@@ -2,7 +2,7 @@ import Colors from '@/lib/constants/Colors';
 import { ACTIVE_OPACITY } from '@/lib/constants/layouts';
 import { fontWeights } from '@/lib/constants/Typography';
 import { router, Tabs } from 'expo-router';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Icon } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -43,7 +43,11 @@ function TabBarLabel(props: { children: React.ReactNode; focused: boolean }) {
 
 export default function TabLayout() {
   const insets = useSafeAreaInsets();
+  const time = performance.now();
   console.log(insets.bottom);
+  useEffect(() => {
+    console.log(performance.now() - time);
+  }, []);
   return (
     <>
       <Tabs

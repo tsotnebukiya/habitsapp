@@ -81,14 +81,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 79,
     backgroundColor: 'white',
-    shadowColor: '#0A0D12',
-    shadowOffset: {
-      width: 0,
-      height: 8,
-    },
-    shadowOpacity: 0.03,
-    shadowRadius: 8,
-    elevation: 5,
+    ...Colors.dropShadow,
   },
   categoryIconContainer: {
     width: 44,

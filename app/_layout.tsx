@@ -1,4 +1,11 @@
 // app/_layout.tsx
+
+// Declare appStartTime on globalThis for wider compatibility
+declare global {
+  var appStartTime: number | undefined;
+}
+
+globalThis.appStartTime = performance.now();
 import ModalContainer from '@/components/modals/ModalContainer';
 import {
   Inter_400Regular,
@@ -72,6 +79,12 @@ function RootLayout() {
   useEffect(() => {
     if (loadedPoppins && loadedInter) {
       SplashScreen.hideAsync();
+      if (globalThis.appStartTime) {
+        const appLoadTime = performance.now() - globalThis.appStartTime;
+        console.log(`App loaded in: ${appLoadTime.toFixed(2)} ms`);
+      } else {
+        console.log('App loaded (start time not recorded).');
+      }
     }
   }, [loadedPoppins, loadedInter]);
 

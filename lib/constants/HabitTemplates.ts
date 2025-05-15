@@ -13,6 +13,7 @@ export interface HabitTemplate {
   defaultGoalUnit?: string;
   icon: string;
   color?: string;
+  type: 'GOOD' | 'BAD';
 }
 
 export const CATEGORIES = [
@@ -66,6 +67,7 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
     defaultGoalUnit: 'min',
     icon: '🏃‍♂️',
     color: '#FF6B6B',
+    type: 'GOOD',
   },
   {
     id: 'drink_water',
@@ -76,8 +78,9 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
     goalType: 'count',
     defaultGoalValue: 8,
     defaultGoalUnit: 'glasses',
-    icon: '💧',
+    icon: 'water-drop',
     color: '#45B7D1',
+    type: 'GOOD',
   },
   {
     id: 'sleep_early',
@@ -88,6 +91,7 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
     goalType: 'time',
     icon: '😴',
     color: '#9B59B6',
+    type: 'GOOD',
   },
   {
     id: 'vitamins',
@@ -96,8 +100,9 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
     category: 'cat1',
     frequency: 'daily',
     goalType: 'completion',
-    icon: '💊',
+    icon: 'pill',
     color: '#96CEB4',
+    type: 'GOOD',
   },
   {
     id: 'healthy_meal',
@@ -109,6 +114,7 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
     defaultGoalValue: 3,
     icon: '🥗',
     color: '#FFEEAD',
+    type: 'GOOD',
   },
 
   // Mind Habits
@@ -123,6 +129,7 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
     defaultGoalUnit: 'min',
     icon: '📚',
     color: '#4ECDC4',
+    type: 'GOOD',
   },
   {
     id: 'learn_skill',
@@ -135,6 +142,7 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
     defaultGoalUnit: 'min',
     icon: '🎯',
     color: '#FF6B6B',
+    type: 'GOOD',
   },
   {
     id: 'brain_training',
@@ -145,6 +153,7 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
     goalType: 'completion',
     icon: '🧩',
     color: '#3498DB',
+    type: 'GOOD',
   },
   {
     id: 'language',
@@ -157,6 +166,7 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
     defaultGoalUnit: 'min',
     icon: '🗣️',
     color: '#45B7D1',
+    type: 'GOOD',
   },
   {
     id: 'digital_detox',
@@ -169,6 +179,7 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
     defaultGoalUnit: 'min',
     icon: '📱',
     color: '#D4A5A5',
+    type: 'BAD',
   },
 
   // Heart Habits
@@ -181,6 +192,7 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
     goalType: 'completion',
     icon: '👋',
     color: '#FF6B6B',
+    type: 'GOOD',
   },
   {
     id: 'quality_time',
@@ -193,6 +205,7 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
     defaultGoalUnit: 'min',
     icon: '💝',
     color: '#D4A5A5',
+    type: 'GOOD',
   },
   {
     id: 'kindness',
@@ -205,6 +218,7 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
     defaultGoalUnit: 'act',
     icon: '🤝',
     color: '#96CEB4',
+    type: 'GOOD',
   },
   {
     id: 'gratitude',
@@ -215,6 +229,7 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
     goalType: 'completion',
     icon: '🙏',
     color: '#FFEEAD',
+    type: 'GOOD',
   },
   {
     id: 'active_listening',
@@ -225,6 +240,7 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
     goalType: 'completion',
     icon: '👂',
     color: '#D4A5A5',
+    type: 'GOOD',
   },
 
   // Spirit Habits
@@ -239,6 +255,7 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
     defaultGoalUnit: 'min',
     icon: '🧘‍♀️',
     color: '#9B59B6',
+    type: 'GOOD',
   },
   {
     id: 'journal',
@@ -251,6 +268,7 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
     defaultGoalUnit: 'min',
     icon: '📔',
     color: '#4ECDC4',
+    type: 'GOOD',
   },
   {
     id: 'nature',
@@ -263,6 +281,7 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
     defaultGoalUnit: 'min',
     icon: '🌳',
     color: '#96CEB4',
+    type: 'GOOD',
   },
   {
     id: 'affirmations',
@@ -274,6 +293,7 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
     defaultGoalValue: 3,
     icon: '✨',
     color: '#FFEEAD',
+    type: 'GOOD',
   },
   {
     id: 'mindful_break',
@@ -285,6 +305,7 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
     defaultGoalValue: 3,
     icon: '🌅',
     color: '#9B59B6',
+    type: 'GOOD',
   },
 
   // Work Habits
@@ -297,6 +318,7 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
     goalType: 'completion',
     icon: '⭐',
     color: '#3498DB',
+    type: 'GOOD',
   },
   {
     id: 'time_blocking',
@@ -309,6 +331,7 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
     defaultGoalUnit: 'min',
     icon: '⏰',
     color: '#FF6B6B',
+    type: 'GOOD',
   },
   {
     id: 'inbox_zero',
@@ -319,6 +342,7 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
     goalType: 'completion',
     icon: '📧',
     color: '#4ECDC4',
+    type: 'GOOD',
   },
   {
     id: 'skill_development',
@@ -331,6 +355,7 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
     defaultGoalUnit: 'min',
     icon: '📈',
     color: '#96CEB4',
+    type: 'GOOD',
   },
   {
     id: 'plan_tomorrow',
@@ -341,5 +366,6 @@ export const HABIT_TEMPLATES: HabitTemplate[] = [
     goalType: 'completion',
     icon: '📋',
     color: '#D4A5A5',
+    type: 'GOOD',
   },
 ];

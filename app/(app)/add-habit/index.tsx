@@ -1,5 +1,6 @@
 import CategorySelection from '@/components/addHabit/CategorySelection';
 import CreateHabbit from '@/components/addHabit/CreateHabit';
+import TemplateSelection from '@/components/addHabit/TemplateSelection';
 import { ACTIVE_OPACITY } from '@/lib/constants/layouts';
 import { fontWeights } from '@/lib/constants/Typography';
 import { useAddHabitStore } from '@/lib/stores/add_habit_store';
@@ -14,7 +15,6 @@ import {
 } from 'react-native';
 import { Icon } from 'react-native-paper';
 import { Colors } from 'react-native/Libraries/NewAppScreen';
-import TemplateSelection from './template-selection';
 
 export default function AddHabit() {
   const resetForm = useAddHabitStore((state) => state.resetForm);
@@ -89,7 +89,7 @@ export default function AddHabit() {
 const styles = StyleSheet.create({
   container: {
     padding: 18,
-    gap: 30,
+    gap: 24,
   },
   header: {
     flexDirection: 'row',

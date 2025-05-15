@@ -1,17 +1,16 @@
-import { StateCreator } from 'zustand';
-import { supabase } from '@/supabase/client';
-import { v4 as uuidv4 } from 'uuid';
 import { dateUtils } from '@/lib/utils/dayjs';
 import {
-  getUserIdOrThrow,
-  getCurrentProgress,
-  getProgressText,
-  getHabitStatus,
-  getCurrentValue,
   getAffectedDates,
+  getCurrentProgress,
+  getCurrentValue,
+  getHabitStatus,
+  getProgressText,
+  getUserIdOrThrow,
 } from '@/lib/utils/habits';
-import { HabitCompletion, type Habit } from '../types';
-import { SharedSlice } from '../types';
+import { supabase } from '@/supabase/client';
+import { v4 as uuidv4 } from 'uuid';
+import { StateCreator } from 'zustand';
+import { HabitCompletion, SharedSlice, type Habit } from '../types';
 import { syncStoreToWidget } from '../widget-storage';
 
 export interface HabitSlice {
