@@ -66,12 +66,6 @@ function RootLayout() {
   useEffect(() => {
     if (loadedPoppins) {
       SplashScreen.hideAsync();
-      if (globalThis.appStartTime) {
-        const appLoadTime = performance.now() - globalThis.appStartTime;
-        console.log(`App loaded in: ${appLoadTime.toFixed(2)} ms`);
-      } else {
-        console.log('App loaded (start time not recorded).');
-      }
     }
   }, [loadedPoppins]);
 
@@ -91,7 +85,6 @@ function RootLayoutNav() {
           host: 'https://us.i.posthog.com',
         }}
       >
-        {/* <RevenueCatProvider> */}
         <KeyboardProvider>
           <GestureHandlerRootView
             style={{
@@ -117,4 +110,3 @@ function RootLayoutNav() {
 }
 
 export default Sentry.wrap(RootLayout);
-// export default RootLayout; // Temporarily export RootLayout directly

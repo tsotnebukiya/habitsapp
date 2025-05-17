@@ -4,7 +4,7 @@
 
 **Goal:** Prepare all critical backend systems, core logic, data handling, and third-party service integrations _before_ the design handoff (May 11th). **Strictly NO new UI components or visual changes.**
 
-**Status Update:** Focus Area 1 (HabitStore, Sync & Widgets) is now complete. Focus is shifting to the remaining backend tasks.
+**Status Update:** Focus Area 1 (HabitStore, Sync & Widgets) is now complete. Focus is shifting to the remaining backend tasks. The widget-storage module has been removed in favor of direct UserDefaults integration.
 
 ---
 
@@ -88,7 +88,7 @@ The primary focus has been the implementation of iOS widgets using `@bacons/expo
 
 #### Data Sharing
 
-- ✅ Implemented data sharing between the React Native app and the Swift widgets using **App Groups** (`group.com.vdl.habitapp.widget`) and `UserDefaults`.
+- ✅ Implemented data sharing between the React Native app and the Swift widgets using **App Groups** (`group.com.vdl.habitapp.widget`) and direct `UserDefaults` integration.
 - ✅ Created a shared `HabitStore.swift` to handle loading (`loadHabits`) and saving (`saveHabits`) of habit data, including mock data generation (`mockHabits`).
 - ✅ Standardized date key format (ISO8601 UTC with fractional seconds) across `HabitStore`, `Intents`, and `Views` for reliable data lookup.
 

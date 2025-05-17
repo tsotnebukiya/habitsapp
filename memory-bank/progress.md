@@ -81,9 +81,8 @@
 6. **iOS Widgets (Focus Area 1 Complete)**
    • **Calendar Widget:** Weekly overview (Medium/Large)
    • **Interactive Widget:** Daily toggle (Small/Medium/Large) using App Intents
-   • **Data Sharing:** React Native -> Swift via App Groups (`group.com.vdl.habitapp.widget`) and `UserDefaults`
+   • **Data Sharing:** React Native -> Swift via App Groups (`group.com.vdl.habitapp.widget`) and direct `UserDefaults` integration
    • **Shared Swift Code:** `HabitStore.swift` for data load/save, `Models.swift`, `DateUtils.swift`
-   • **Native Module Bridge:** `widget-storage` Expo module for RN access to UserDefaults.
    • Timeline management and reload logic (`WidgetCenter.shared.reloadAllTimelines()`)
 
 7. **HabitStore Implementation (Focus Area 1 Complete)**

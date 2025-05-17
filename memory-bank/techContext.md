@@ -39,7 +39,6 @@
    - `@bacons/expo-apple-targets` (Expo package for integrating native Swift targets)
    - App Groups (iOS mechanism for sharing data between app and extensions)
    - `UserDefaults` (used with App Groups for data storage)
-   - Custom Expo Native Module (`widget-storage`) for RN <-> UserDefaults bridge.
 
 ## Dependencies
 
