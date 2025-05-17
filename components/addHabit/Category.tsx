@@ -3,22 +3,22 @@ import { CATEGORIES } from '@/lib/constants/HabitTemplates';
 import { ACTIVE_OPACITY } from '@/lib/constants/layouts';
 import { fontWeights } from '@/lib/constants/Typography';
 import { useAddHabitStore } from '@/lib/stores/add_habit_store';
+import { router } from 'expo-router';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { Icon } from 'react-native-paper';
+import { Icon, RadioButton } from 'react-native-paper';
 
-export default function CategorySelection() {
+export default function CategoryChoosing() {
   const setFormField = useAddHabitStore((state) => state.setFormField);
-  const setCurrentStep = useAddHabitStore((state) => state.setCurrentStep);
+  const selectedCategory = useAddHabitStore((state) => state.formData.category);
 
   const handleCategorySelect = (categoryId: string) => {
     setFormField('category', categoryId as any);
-    setCurrentStep('templates');
+    router.back();
   };
 
   return (
     <View style={styles.contentContainer}>
-      <Text style={styles.subheading}>Select category</Text>
       <View style={styles.categoriesContainer}>
         {CATEGORIES.map((category, i) => (
           <TouchableOpacity
@@ -42,10 +42,13 @@ export default function CategorySelection() {
                 {category.description}
               </Text>
             </View>
-            <Icon
-              source={require('@/assets/icons/chevron-right.png')}
-              size={18}
-              color={Colors.text}
+            <RadioButton
+              value={category.id}
+              status={
+                category.id === selectedCategory ? 'checked' : 'unchecked'
+              }
+              color={Colors.primary}
+              onPress={() => handleCategorySelect(category.id)}
             />
           </TouchableOpacity>
         ))}
@@ -56,14 +59,7 @@ export default function CategorySelection() {
 
 const styles = StyleSheet.create({
   contentContainer: {
-    flex: 1,
-    gap: 23,
-  },
-
-  subheading: {
-    fontFamily: fontWeights.interBold,
-    fontSize: 20,
-    color: Colors.text,
+    paddingTop: 24,
   },
   categoriesContainer: {
     flexDirection: 'column',

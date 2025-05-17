@@ -1,12 +1,12 @@
 import dayjs from 'dayjs';
-import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
-import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
 import isBetween from 'dayjs/plugin/isBetween';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 import isToday from 'dayjs/plugin/isToday';
 import isoWeek from 'dayjs/plugin/isoWeek';
+import timezone from 'dayjs/plugin/timezone';
+import utc from 'dayjs/plugin/utc';
 
 // Extend dayjs with plugins
 dayjs.extend(isSameOrBefore);
@@ -74,6 +74,9 @@ export const dateUtils = {
   toTimeString: (date: DateInput) => dayjs(date).format('HH:mm'),
   toFullDateTime: (date: DateInput) => dayjs(date).format('MMMM D, YYYY HH:mm'),
 
+  // New utility: format as hh:mm (24-hour, zero-padded)
+  toHHMMString: (date: DateInput) => dayjs(date).format('HH:mm'),
+
   // Common operations (preserving timezone)
   startOfDay: (date: DateInput) => dayjs(date).startOf('day'),
   endOfDay: (date: DateInput) => dayjs(date).endOf('day'),
@@ -97,4 +100,11 @@ export const dateUtils = {
     dayjs.utc().year(year).month(month).date(day).startOf('day'),
 };
 
+const getPickerDate = (timeString: string | null): Date => {
+  if (!timeString) return dayjs().hour(9).minute(0).toDate(); // Default to 9 AM if null
+  const [hour, minute] = timeString.split(':').map(Number);
+  return dayjs().hour(hour).minute(minute).toDate();
+};
+
+export { getPickerDate };
 export default dayjs;

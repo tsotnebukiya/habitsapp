@@ -1,0 +1,671 @@
+import { DetailChoosingType } from '@/app/(app)/add-habit/detail-choosing';
+import ItemIcon from '@/components/shared/Icon';
+import Colors from '@/lib/constants/Colors';
+import { CATEGORIES_MAP } from '@/lib/constants/HabitTemplates';
+import { ACTIVE_OPACITY } from '@/lib/constants/layouts';
+import { fontWeights } from '@/lib/constants/Typography';
+import useHabitsStore from '@/lib/habit-store/store';
+import { useAddHabitStore } from '@/lib/stores/add_habit_store';
+import { useAppStore } from '@/lib/stores/app_state';
+import useUserProfileStore from '@/lib/stores/user_profile';
+import dayjs, { dateUtils } from '@/lib/utils/dayjs';
+import { MaterialIcons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import {
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import { Icon } from 'react-native-paper';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
+
+export default function CreateHabbit() {
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
+  const profile = useUserProfileStore((state) => state.profile);
+  const notificationsEnabled = useAppStore(
+    (state) => state.notificationsEnabled
+  );
+  const [showStartPicker, setShowStartPicker] = useState(false);
+  const [enableEndDate, setEnableEndDate] = useState(false);
+  const [showEndPicker, setShowEndPicker] = useState(false);
+  const addHabit = useHabitsStore((state) => state.addHabit);
+  const formData = useAddHabitStore((state) => state.formData);
+  const setFormField = useAddHabitStore((state) => state.setFormField);
+  const resetForm = useAddHabitStore((state) => state.resetForm);
+  const [showReminderPicker, setShowReminderPicker] = useState(false);
+
+  const openReminderPicker = () => {
+    setShowReminderPicker(true);
+  };
+
+  const handleConfirmReminder = (date: Date) => {
+    setFormField('reminderTime', date);
+    setShowReminderPicker(false);
+  };
+
+  const handleCancelReminder = () => {
+    setShowReminderPicker(false);
+  };
+
+  const openStartPicker = () => {
+    setShowStartPicker(true);
+  };
+
+  const openEndPicker = () => {
+    setShowEndPicker(true);
+  };
+
+  const handleConfirmStart = (date: Date) => {
+    setFormField('startDate', date);
+    setShowStartPicker(false);
+  };
+
+  const handleConfirmEnd = (date: Date) => {
+    setFormField('endDate', date);
+    setShowEndPicker(false);
+  };
+
+  const handleCancelStart = () => {
+    setShowStartPicker(false);
+  };
+
+  const handleCancelEnd = () => {
+    setShowEndPicker(false);
+  };
+
+  const toggleSwitch = () => {
+    if (enableEndDate) {
+      setFormField('endDate', null);
+      setEnableEndDate(false);
+    } else {
+      // +3months
+      const endDate = new Date(formData.startDate);
+      endDate.setMonth(endDate.getMonth() + 3);
+      setFormField('endDate', endDate);
+      setEnableEndDate(true);
+    }
+  };
+
+  const chooseDetail = (type: DetailChoosingType) => {
+    router.push({ pathname: '/add-habit/detail-choosing', params: { type } });
+  };
+
+  const toggleReminder = () => {
+    if (formData.hasReminder) {
+      setFormField('reminderTime', null);
+      setFormField('hasReminder', false);
+    } else {
+      setFormField('hasReminder', true);
+      setFormField('reminderTime', new Date());
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!formData.name) {
+      console.log('Habit name is required');
+      Toast.show({
+        type: 'error',
+        text1: 'Habit name is required',
+      });
+      return;
+    }
+    if (formData.goal.value === 0) {
+      Toast.show({
+        type: 'error',
+        text1: 'Goal must be greater than 0',
+      });
+      return;
+    }
+    if (!profile?.id) return;
+
+    try {
+      const habit = {
+        name: formData.name,
+        description: formData.description,
+        color: formData.color,
+        icon: formData.icon,
+        frequency_type: formData.frequencyType,
+        start_date: dateUtils.toServerDateString(formData.startDate),
+        user_id: profile.id,
+        is_active: true,
+        category_name: formData.category,
+
+        // Updated or new fields
+        days_of_week:
+          formData.frequencyType === 'weekly' ? formData.daysOfWeek : null,
+        end_date:
+          formData.hasEndDate && formData.endDate
+            ? dateUtils.toServerDateString(formData.endDate)
+            : null,
+        gamification_attributes: null,
+        reminder_time:
+          formData.hasReminder && formData.reminderTime
+            ? dateUtils.toHHMMString(formData.reminderTime)
+            : null,
+        streak_goal: formData.streakGoal,
+
+        // Existing fields
+        completions_per_day: formData.goal.value,
+        goal_unit: formData.goal.unit.id,
+        goal_value: formData.goal.value,
+        type: formData.type,
+      };
+
+      addHabit(habit);
+
+      router.replace('/');
+    } catch (error) {
+      // ... error handling ...
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      const categoryId = formData.category;
+      resetForm();
+      setFormField('category', categoryId as any);
+    };
+  }, []);
+
+  return (
+    <>
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.select({ ios: 'padding', android: undefined })}
+      >
+        <ScrollView
+          contentContainerStyle={[
+            styles.scrollView,
+            { paddingBottom: insets.bottom + 80 },
+          ]}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={[styles.container, { paddingBottom: insets.bottom }]}>
+            <TouchableOpacity
+              activeOpacity={ACTIVE_OPACITY}
+              style={[styles.header, { backgroundColor: formData.color }]}
+              onPress={() => chooseDetail('name')}
+            >
+              <ItemIcon icon={formData.icon} color={'white'} />
+              <View style={styles.headerContent}>
+                {formData.name && (
+                  <Text style={styles.habitFieldText}>Habit name</Text>
+                )}
+
+                <Text style={styles.headerTitle}>
+                  {formData.name || 'Habit name'}
+                </Text>
+              </View>
+              <View style={styles.nameButton}>
+                <Icon
+                  source={require('@/assets/icons/edit-02.png')}
+                  color="white"
+                  size={18}
+                />
+              </View>
+            </TouchableOpacity>
+            <Text style={styles.subTitle}>Appearance</Text>
+            <View
+              style={[styles.subContainer, styles.subContainerMarginBottom]}
+            >
+              <TouchableOpacity
+                activeOpacity={ACTIVE_OPACITY}
+                style={styles.item}
+                onPress={() => chooseDetail('color')}
+              >
+                <MaterialIcons
+                  name="color-lens"
+                  size={24}
+                  color={Colors.habitColors.grapePurple}
+                />
+                <Text style={styles.itemText}>Color</Text>
+                <View style={styles.containerRight}>
+                  <View
+                    style={[
+                      styles.colorCircle,
+                      { backgroundColor: formData.color },
+                    ]}
+                  />
+                  <Icon
+                    source={require('@/assets/icons/chevron-right.png')}
+                    size={18}
+                    color={Colors.text}
+                  />
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                activeOpacity={ACTIVE_OPACITY}
+                style={styles.item}
+                onPress={() => chooseDetail('icon')}
+              >
+                <MaterialIcons
+                  name="image"
+                  size={24}
+                  color={Colors.habitColors.salmonRed}
+                />
+                <Text style={styles.itemText}>Icon</Text>
+                <View style={styles.containerRight}>
+                  <ItemIcon icon={formData.icon} color={formData.color} />
+                  <Icon
+                    source={require('@/assets/icons/chevron-right.png')}
+                    size={18}
+                    color={Colors.text}
+                  />
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                activeOpacity={ACTIVE_OPACITY}
+                onPress={() => chooseDetail('description')}
+                style={styles.item}
+              >
+                <MaterialIcons
+                  name="description"
+                  size={24}
+                  color={Colors.habitColors.amberYellow}
+                />
+                <Text style={styles.itemText}>Description</Text>
+                <View style={styles.containerRight}>
+                  {formData.description ? (
+                    <Text
+                      ellipsizeMode="tail"
+                      style={styles.descriptionText}
+                      numberOfLines={1}
+                    >
+                      {formData.description}
+                    </Text>
+                  ) : (
+                    <Text style={styles.descriptionTextNone}>None</Text>
+                  )}
+
+                  <Icon
+                    source={require('@/assets/icons/chevron-right.png')}
+                    size={18}
+                    color={Colors.text}
+                  />
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                activeOpacity={ACTIVE_OPACITY}
+                onPress={() => chooseDetail('category')}
+                style={styles.item}
+              >
+                <MaterialIcons
+                  name="label"
+                  size={24}
+                  color={Colors.habitColors.indigoBlue}
+                />
+                <Text style={styles.itemText}>Category</Text>
+                <View style={styles.containerRight}>
+                  <Text style={styles.descriptionText}>
+                    {CATEGORIES_MAP[formData.category].name}
+                  </Text>
+                  <Icon
+                    source={require('@/assets/icons/chevron-right.png')}
+                    size={18}
+                    color={Colors.text}
+                  />
+                </View>
+              </TouchableOpacity>
+            </View>
+            <Text style={styles.subTitle}>General</Text>
+            <View style={styles.subContainer}>
+              <TouchableOpacity
+                activeOpacity={ACTIVE_OPACITY}
+                onPress={() => chooseDetail('type')}
+                style={styles.item}
+              >
+                <MaterialIcons
+                  name="check-circle"
+                  size={24}
+                  color={Colors.habitColors.meadowGreen}
+                />
+                <Text style={styles.itemText}>Type</Text>
+
+                <View style={styles.containerRight}>
+                  <Text style={styles.descriptionText}>
+                    {formData.type === 'GOOD' ? 'Good' : 'Bad'}
+                  </Text>
+                  <Icon
+                    source={require('@/assets/icons/chevron-right.png')}
+                    size={18}
+                    color={Colors.text}
+                  />
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                activeOpacity={ACTIVE_OPACITY}
+                onPress={() => chooseDetail('goal')}
+                style={styles.item}
+              >
+                <MaterialIcons
+                  name="flag"
+                  size={24}
+                  color={Colors.habitColors.skyBlue}
+                />
+                <Text style={styles.itemText}>Goal</Text>
+                <View style={styles.containerRight}>
+                  <Text style={styles.descriptionText}>
+                    {formData.goal.value} {formData.goal.unit.name}
+                  </Text>
+                  <Icon
+                    source={require('@/assets/icons/chevron-right.png')}
+                    size={18}
+                    color={Colors.text}
+                  />
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                activeOpacity={ACTIVE_OPACITY}
+                onPress={() => chooseDetail('repeat')}
+                style={styles.item}
+              >
+                <MaterialIcons
+                  name="sync-lock"
+                  size={24}
+                  color={Colors.habitColors.amethystPurple}
+                />
+                <Text style={styles.itemText}>Repeat</Text>
+                <View style={styles.containerRight}>
+                  <Text style={styles.descriptionText}>
+                    {formData.frequencyType === 'daily'
+                      ? 'Every day'
+                      : formData.daysOfWeek
+                          .map((day) =>
+                            dayjs()
+                              .isoWeekday(day + 1)
+                              .format('ddd')
+                          )
+                          .join(', ')}
+                  </Text>
+
+                  <Icon
+                    source={require('@/assets/icons/chevron-right.png')}
+                    size={18}
+                    color={Colors.text}
+                  />
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                activeOpacity={ACTIVE_OPACITY}
+                style={styles.item}
+                onPress={() => {}}
+                disabled={!!notificationsEnabled}
+              >
+                <MaterialIcons
+                  name="notifications-active"
+                  size={24}
+                  color={Colors.habitColors.salmonRed}
+                />
+                <Text style={styles.itemText}>Notifications</Text>
+                {notificationsEnabled && (
+                  <Switch
+                    trackColor={{ true: '#31C859' }}
+                    thumbColor={'white'}
+                    ios_backgroundColor="#7c7c7c"
+                    onValueChange={toggleReminder}
+                    value={formData.hasReminder}
+                  />
+                )}
+                {notificationsEnabled && (
+                  <View style={styles.containerRight}>
+                    <TouchableOpacity
+                      style={[
+                        styles.dateButton,
+                        !formData.hasReminder && styles.dateButtonDisabled,
+                      ]}
+                      disabled={!formData.hasReminder}
+                      onPress={openReminderPicker}
+                    >
+                      <Text>
+                        {formData.reminderTime?.toLocaleTimeString([], {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        }) || 'hh:mm'}
+                      </Text>
+                    </TouchableOpacity>
+                    <DateTimePickerModal
+                      isVisible={showReminderPicker}
+                      mode="time"
+                      date={formData.reminderTime || new Date()}
+                      onConfirm={handleConfirmReminder}
+                      onCancel={handleCancelReminder}
+                    />
+                  </View>
+                )}
+                {!notificationsEnabled && (
+                  <View style={styles.containerRight}>
+                    <Text style={[styles.descriptionText, styles.errorColor]}>
+                      Enable notifications to use reminders
+                    </Text>
+                    <Icon
+                      source={require('@/assets/icons/chevron-right.png')}
+                      size={18}
+                      color={Colors.text}
+                    />
+                  </View>
+                )}
+              </TouchableOpacity>
+              <View style={styles.item}>
+                <MaterialIcons
+                  name="event-available"
+                  size={24}
+                  color={Colors.habitColors.tealGreen}
+                />
+                <Text style={styles.itemText}>Starts on</Text>
+
+                <View style={styles.containerRight}>
+                  <TouchableOpacity
+                    style={styles.dateButton}
+                    onPress={openStartPicker}
+                  >
+                    <Text>{formData.startDate.toLocaleDateString()}</Text>
+                  </TouchableOpacity>
+
+                  <DateTimePickerModal
+                    isVisible={showStartPicker}
+                    mode="date"
+                    date={formData.startDate}
+                    onConfirm={handleConfirmStart}
+                    onCancel={handleCancelStart}
+                  />
+                </View>
+              </View>
+              <View style={styles.item}>
+                <MaterialIcons
+                  name="calendar-month"
+                  size={24}
+                  color={Colors.habitColors.brown}
+                />
+                <Text style={styles.itemText}>Ends on</Text>
+                <Switch
+                  trackColor={{ true: '#31C859' }}
+                  thumbColor={'white'}
+                  ios_backgroundColor="#7c7c7c"
+                  onValueChange={toggleSwitch}
+                  value={enableEndDate}
+                />
+                <View style={styles.containerRight}>
+                  <TouchableOpacity
+                    style={[
+                      styles.dateButton,
+                      !enableEndDate && styles.dateButtonDisabled,
+                    ]}
+                    onPress={openEndPicker}
+                    disabled={!enableEndDate}
+                  >
+                    <Text>
+                      {formData.endDate?.toLocaleDateString() || 'dd.mm.yyyy'}
+                    </Text>
+                  </TouchableOpacity>
+                  {formData.endDate && (
+                    <DateTimePickerModal
+                      isVisible={showEndPicker}
+                      mode="date"
+                      date={formData.endDate}
+                      onConfirm={handleConfirmEnd}
+                      onCancel={handleCancelEnd}
+                    />
+                  )}
+                </View>
+              </View>
+            </View>
+          </View>
+        </ScrollView>
+        <View style={[styles.footer, { paddingBottom: insets.bottom }]}>
+          <TouchableOpacity style={styles.saveBtn} onPress={handleSubmit}>
+            <Text style={styles.saveLabel}>Save</Text>
+          </TouchableOpacity>
+        </View>
+      </KeyboardAvoidingView>
+    </>
+  );
+}
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+  },
+  flex: {
+    flex: 1,
+  },
+  scrollView: {
+    paddingTop: 24,
+    paddingHorizontal: 18,
+  },
+  container: {
+    flex: 1,
+  },
+  footer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'white',
+    paddingHorizontal: 24,
+    paddingTop: 21,
+  },
+  saveBtn: {
+    backgroundColor: Colors.primary, // your green
+    borderRadius: 16,
+    paddingVertical: 16,
+    alignItems: 'center',
+  },
+  saveLabel: {
+    color: 'white',
+    fontSize: 14,
+    fontFamily: fontWeights.interBold,
+  },
+  button: {
+    backgroundColor: Colors.primary,
+    padding: 16,
+    borderRadius: 16,
+  },
+  header: {
+    height: 72,
+    borderRadius: 16,
+    paddingLeft: 20,
+    paddingRight: 24,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 18,
+  },
+  headerContent: {
+    gap: 2,
+  },
+  habitFieldText: {
+    color: 'white',
+    fontSize: 12,
+    fontFamily: fontWeights.interRegular,
+    opacity: 0.8,
+  },
+  headerTitle: {
+    fontSize: 14,
+    fontFamily: fontWeights.interBold,
+    color: 'white',
+  },
+  nameButton: { marginLeft: 'auto' },
+  subTitle: {
+    fontSize: 12,
+    marginBottom: 16,
+    fontFamily: fontWeights.regular,
+    color: 'black',
+  },
+  subContainer: {
+    backgroundColor: Colors.border,
+    gap: 1,
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
+  subContainerMarginBottom: {
+    marginBottom: 34,
+  },
+  item: {
+    backgroundColor: 'white',
+    height: 50,
+    paddingHorizontal: 16.5,
+    gap: 8.5,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  containerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    gap: 4,
+    flex: 1,
+  },
+  itemText: {
+    fontSize: 12,
+    fontFamily: fontWeights.medium,
+    color: Colors.text,
+    minWidth: 80,
+  },
+  colorCircle: {
+    width: 17,
+    height: 17,
+    borderRadius: 100,
+  },
+  descriptionTextNone: {
+    opacity: 0.5,
+    fontFamily: fontWeights.medium,
+    fontSize: 12,
+    // flex: 1,
+  },
+  descriptionText: {
+    fontFamily: fontWeights.semibold,
+    fontSize: 12,
+    flex: 1,
+    textAlign: 'right',
+  },
+  errorColor: {
+    color: Colors.habitColors.salmonRed,
+  },
+  dateButton: {
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    borderRadius: 7,
+    backgroundColor: 'white',
+    borderWidth: 1,
+    borderColor: Colors.border,
+    // minWidth: 86,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  dateButtonDisabled: {
+    opacity: 0.38, // MD guidance for disabled text
+  },
+  hiddenPointer: {
+    // makes the button ignore taps
+    pointerEvents: 'none',
+  },
+});

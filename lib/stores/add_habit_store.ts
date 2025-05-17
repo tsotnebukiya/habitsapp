@@ -1,38 +1,28 @@
+import dayjs from '@/lib/utils/dayjs';
 import { create } from 'zustand';
+import Colors from '../constants/Colors';
+import { HabitCategory, HabitTemplate } from '../constants/HabitTemplates';
 import {
   MeasurementUnit,
   MeasurementUnits,
 } from '../constants/MeasurementUnits';
-import { HabitCategory, HabitTemplate } from '../constants/HabitTemplates';
-import dayjs from '@/lib/utils/dayjs';
 
 interface HabitFormData {
   name: string;
   description: string;
   color: string;
   icon: string;
-  category: HabitCategory | null;
+  category: HabitCategory;
   frequencyType: 'daily' | 'weekly';
   startDate: Date;
   showDatePicker: boolean;
-
-  // New fields for days of week selection
+  type: 'GOOD' | 'BAD';
   daysOfWeek: number[];
-
-  // New fields for advanced settings
-  showAdvancedSettings: boolean;
-
-  // End date fields
   hasEndDate: boolean;
   endDate: Date | null;
-
-  // Reminder fields
   hasReminder: boolean;
-  reminderTime: string | null;
-
-  // Streak goal
+  reminderTime: Date | null;
   streakGoal: number | null;
-
   goal: {
     value: number;
     unit: MeasurementUnit;
@@ -43,16 +33,12 @@ export type AddHabitStep = 'category' | 'templates' | 'main';
 
 interface AddHabitState {
   formData: HabitFormData;
-  currentStep: AddHabitStep;
-  isValid: boolean;
   selectedTemplate: HabitTemplate | null;
 
   setFormField: <K extends keyof HabitFormData>(
     field: K,
     value: HabitFormData[K]
   ) => void;
-
-  setCurrentStep: (step: AddHabitStep) => void;
 
   applyTemplate: (template: HabitTemplate) => void;
 
@@ -62,26 +48,19 @@ interface AddHabitState {
 const initialFormData: HabitFormData = {
   name: '',
   description: '',
-  color: '#FF6B6B', // First color from your palette
-  icon: '🎯', // First icon from your list
-  category: null,
+  color: Colors.habitColors.cyanBlue,
+  icon: 'lightbulb',
+  category: 'cat1',
   frequencyType: 'daily',
   startDate: dayjs().toDate(),
   showDatePicker: false,
-
-  // Default values for new fields
+  type: 'GOOD',
   daysOfWeek: [0, 1, 2, 3, 4, 5, 6], // Default to all days selected
-
-  showAdvancedSettings: false,
-
   hasEndDate: false,
   endDate: null,
-
   hasReminder: false,
   reminderTime: null,
-
   streakGoal: null,
-
   goal: {
     value: 1,
     unit: MeasurementUnits.count,
@@ -90,36 +69,23 @@ const initialFormData: HabitFormData = {
 
 export const useAddHabitStore = create<AddHabitState>()((set, get) => ({
   formData: { ...initialFormData },
-  currentStep: 'category', // Start with category selection
-  isValid: false,
   selectedTemplate: null,
-
   setFormField: (field, value) => {
     set((state) => ({
       formData: {
         ...state.formData,
         [field]: value,
       },
-      // Basic validation - just checking if name is not empty
-      isValid: field === 'name' ? !!value : !!state.formData.name,
     }));
   },
 
-  setCurrentStep: (step) => {
-    set({ currentStep: step });
-  },
-
   applyTemplate: (template) => {
-    // Set goal based on template type
     let goalValue = 1;
-    let goalUnit = MeasurementUnits.count;
+    let goalUnit: MeasurementUnit = MeasurementUnits.count;
 
-    if (template.goalType === 'duration' && template.defaultGoalValue) {
-      goalValue = template.defaultGoalValue;
-      goalUnit = MeasurementUnits.minutes;
-    } else if (template.goalType === 'count' && template.defaultGoalValue) {
-      goalValue = template.defaultGoalValue;
-      goalUnit = MeasurementUnits.count;
+    if (template.defaultGoalUnit) {
+      goalUnit = MeasurementUnits[template.defaultGoalUnit];
+      goalValue = template.defaultGoalValue || 1;
     }
 
     set({
@@ -135,10 +101,9 @@ export const useAddHabitStore = create<AddHabitState>()((set, get) => ({
           value: goalValue,
           unit: goalUnit,
         },
+        type: template.type,
       },
       selectedTemplate: template,
-      isValid: true,
-      currentStep: 'main',
     });
   },
 
@@ -151,8 +116,6 @@ export const useAddHabitStore = create<AddHabitState>()((set, get) => ({
         endDate: null,
         reminderTime: null, // Ensure reminderTime is reset to null string
       },
-      currentStep: 'category', // Reset to category step
-      isValid: false,
       selectedTemplate: null,
     });
   },

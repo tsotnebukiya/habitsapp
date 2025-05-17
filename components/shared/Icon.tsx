@@ -1,34 +1,25 @@
-import {
-  msBed,
-  msPill,
-  msWaterDropFill,
-} from '@material-symbols-react-native/outlined-400';
+import { IconType } from '@/lib/constants/icons';
+import { MaterialIcons } from '@expo/vector-icons';
+import emojiRegex from 'emoji-regex';
 import React from 'react';
 import { Text } from 'react-native';
-export const iconMap = {
-  msWaterDropFill,
-  msPill,
-  msBed,
-};
 
-type AppIconName = keyof typeof iconMap;
+const pattern = emojiRegex();
 
-const isEmoji = (icon: string) => {
-  return icon.length <= 2 && /\p{Emoji}/u.test(icon);
-};
+export const isEmoji = (icon: IconType): icon is IconType =>
+  /\p{Extended_Pictographic}/u.test(icon);
 
-const ItemIcon = ({
-  icon,
-  color,
-}: {
-  icon: AppIconName | string;
+type ItemIconProps = {
+  icon: IconType;
   color: string;
-}) => {
+};
+
+const ItemIcon = ({ icon, color }: ItemIconProps) => {
   if (isEmoji(icon)) {
     return <Text style={{ fontSize: 24, color }}>{icon}</Text>;
   }
-  const iconData = iconMap[icon as AppIconName];
-  return null;
+
+  return <MaterialIcons name={icon} size={24} color={color} />;
 };
 
 export default ItemIcon;

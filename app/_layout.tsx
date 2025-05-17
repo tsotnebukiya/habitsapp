@@ -8,12 +8,6 @@ declare global {
 globalThis.appStartTime = performance.now();
 import ModalContainer from '@/components/modals/ModalContainer';
 import {
-  Inter_400Regular,
-  Inter_500Medium,
-  Inter_600SemiBold,
-  Inter_700Bold,
-} from '@expo-google-fonts/inter';
-import {
   Poppins_400Regular,
   Poppins_500Medium,
   Poppins_600SemiBold,
@@ -58,12 +52,6 @@ function RootLayout() {
     Poppins_600SemiBold,
     Poppins_700Bold,
   });
-  const [loadedInter, errorInter] = useFonts({
-    Inter_400Regular,
-    Inter_500Medium,
-    Inter_600SemiBold,
-    Inter_700Bold,
-  });
   const ref = useNavigationContainerRef();
   React.useEffect(() => {
     if (ref?.current) {
@@ -73,11 +61,10 @@ function RootLayout() {
 
   useEffect(() => {
     if (errorPoppins) throw errorPoppins;
-    if (errorInter) throw errorInter;
-  }, [errorPoppins, errorInter]);
+  }, [errorPoppins]);
 
   useEffect(() => {
-    if (loadedPoppins && loadedInter) {
+    if (loadedPoppins) {
       SplashScreen.hideAsync();
       if (globalThis.appStartTime) {
         const appLoadTime = performance.now() - globalThis.appStartTime;
@@ -86,9 +73,9 @@ function RootLayout() {
         console.log('App loaded (start time not recorded).');
       }
     }
-  }, [loadedPoppins, loadedInter]);
+  }, [loadedPoppins]);
 
-  if (!loadedPoppins || !loadedInter) {
+  if (!loadedPoppins) {
     return null;
   }
 
@@ -122,9 +109,9 @@ function RootLayoutNav() {
               <ModalContainer />
             </BottomSheetModalProvider>
           </GestureHandlerRootView>
-          <Toast />
         </KeyboardProvider>
       </PostHogProvider>
+      <Toast />
     </>
   );
 }

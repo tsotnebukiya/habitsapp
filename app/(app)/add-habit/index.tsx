@@ -1,11 +1,10 @@
-import CategorySelection from '@/components/addHabit/CategorySelection';
-import CreateHabbit from '@/components/addHabit/CreateHabit';
-import TemplateSelection from '@/components/addHabit/TemplateSelection';
+import Colors from '@/lib/constants/Colors';
+import { CATEGORIES } from '@/lib/constants/HabitTemplates';
 import { ACTIVE_OPACITY } from '@/lib/constants/layouts';
 import { fontWeights } from '@/lib/constants/Typography';
 import { useAddHabitStore } from '@/lib/stores/add_habit_store';
 import { router } from 'expo-router';
-import React, { useEffect } from 'react';
+import React from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -14,111 +13,118 @@ import {
   View,
 } from 'react-native';
 import { Icon } from 'react-native-paper';
-import { Colors } from 'react-native/Libraries/NewAppScreen';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-export default function AddHabit() {
-  const resetForm = useAddHabitStore((state) => state.resetForm);
-  const setCurrentStep = useAddHabitStore((state) => state.setCurrentStep);
-  const currentStep = useAddHabitStore((state) => state.currentStep);
-  const backButton = currentStep !== 'category';
-
-  const handleClose = () => {
-    router.back();
+export default function CategorySelection() {
+  const setFormField = useAddHabitStore((state) => state.setFormField);
+  const insets = useSafeAreaInsets();
+  const handleCategorySelect = (categoryId: string) => {
+    setFormField('category', categoryId as any);
+    router.push('/add-habit/template-selection');
   };
-
-  const handleBack = () => {
-    if (currentStep === 'templates') {
-      setCurrentStep('category');
-    } else if (currentStep === 'main') {
-      setCurrentStep('templates');
-    }
-  };
-
-  const renderContent = () => {
-    if (currentStep === 'category') {
-      return <CategorySelection />;
-    }
-
-    if (currentStep === 'templates') {
-      return <TemplateSelection />;
-    }
-    return <CreateHabbit />;
-  };
-
-  useEffect(() => {
-    resetForm();
-  }, [resetForm]);
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <View style={styles.header}>
-        {backButton ? (
-          <TouchableOpacity
-            onPress={handleBack}
-            activeOpacity={ACTIVE_OPACITY}
-            style={styles.backButton}
-          >
-            <Icon
-              source={require('@/assets/icons/chevron-left.png')}
-              size={18}
-              color="black"
-            />
-          </TouchableOpacity>
-        ) : (
-          <View style={styles.headerSpacing} />
-        )}
-
-        <Text style={styles.heading}>Add New Habit</Text>
-        <TouchableOpacity
-          onPress={handleClose}
-          activeOpacity={ACTIVE_OPACITY}
-          style={styles.closeButton}
-        >
-          <Icon
-            source={require('@/assets/icons/x-close.png')}
-            size={24}
-            color="black"
-          />
-        </TouchableOpacity>
+    <ScrollView
+      contentContainerStyle={[
+        styles.scrollView,
+        { paddingBottom: insets.bottom },
+      ]}
+    >
+      <View style={styles.contentContainer}>
+        <Text style={styles.subheading}>Select category</Text>
+        <View style={styles.categoriesContainer}>
+          {CATEGORIES.map((category, i) => (
+            <TouchableOpacity
+              key={i}
+              style={styles.categoryCard}
+              activeOpacity={ACTIVE_OPACITY}
+              onPress={() => handleCategorySelect(category.id)}
+            >
+              <View style={styles.categoryIconContainer}>
+                <View
+                  style={[
+                    styles.categoryIconBackground,
+                    { backgroundColor: category.color },
+                  ]}
+                />
+                <Icon source={category.icon} size={24} color={category.color} />
+              </View>
+              <View style={styles.categoryTextContainer}>
+                <Text style={styles.categoryName}>{category.name}</Text>
+                <Text style={styles.categoryDescription}>
+                  {category.description}
+                </Text>
+              </View>
+              <Icon
+                source={require('@/assets/icons/chevron-right.png')}
+                size={18}
+                color={Colors.text}
+              />
+            </TouchableOpacity>
+          ))}
+        </View>
       </View>
-      {renderContent()}
     </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 18,
-    gap: 24,
+  scrollView: {
+    paddingTop: 24,
+    paddingHorizontal: 18,
   },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+  contentContainer: {
+    gap: 23,
   },
-  headerSpacing: {
-    width: 34,
-  },
-  closeButton: {
-    backgroundColor: 'white',
-    borderRadius: 100,
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 34,
-    height: 34,
-  },
-  heading: {
-    fontSize: 14,
-    fontFamily: fontWeights.semibold,
-    textAlign: 'center',
+  subheading: {
+    fontFamily: fontWeights.interBold,
+    fontSize: 20,
     color: Colors.text,
   },
-  backButton: {
+  categoriesContainer: {
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    gap: 7,
+  },
+  categoryCard: {
+    padding: 18,
+    gap: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderRadius: 16,
+    paddingLeft: 20,
+    paddingRight: 24,
+    width: '100%',
+    height: 79,
     backgroundColor: 'white',
-    borderRadius: 100,
-    width: 34,
-    height: 34,
+    ...Colors.dropShadow,
+  },
+  categoryIconContainer: {
+    width: 44,
+    height: 44,
     alignItems: 'center',
     justifyContent: 'center',
+    borderRadius: 12,
+  },
+  categoryIconBackground: {
+    width: 44,
+    height: 44,
+    opacity: 0.1,
+    borderRadius: 12,
+    position: 'absolute',
+  },
+  categoryTextContainer: {
+    flex: 1,
+    gap: 3,
+  },
+  categoryName: {
+    fontSize: 15,
+    fontFamily: fontWeights.semibold,
+    color: Colors.text,
+  },
+  categoryDescription: {
+    fontSize: 11,
+    color: Colors.text,
+    fontFamily: fontWeights.regular,
   },
 });
