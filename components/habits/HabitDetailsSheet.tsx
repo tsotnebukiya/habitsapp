@@ -2,7 +2,7 @@ import { colors } from '@/lib/constants/ui';
 import useHabitsStore from '@/lib/habit-store/store';
 import { Habit } from '@/lib/habit-store/types';
 import { FontAwesome6 } from '@expo/vector-icons';
-import { BottomSheetBackdrop, BottomSheetModal } from '@gorhom/bottom-sheet';
+import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
 import * as Haptics from 'expo-haptics';
 import React, { useCallback, useMemo } from 'react';
 import {
@@ -10,7 +10,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 import CircularCounter from './CircularCounter';
 
@@ -87,20 +87,155 @@ export default function HabitDetailsSheet({
 
   // Get appropriate label for circular counter
   const progressLabel = habit?.goal_unit || 'Completions';
-
+console.log('hey')
   return (
+    // <BottomSheetModal
+    //   ref={bottomSheetModalRef}
+    //   // index={1}
+    //   // snapPoints={snapPoints}
+    //   // backdropComponent={renderBackdrop}
+    //   // onDismiss={onDismiss}
+    //   // enablePanDownToClose
+    //   // backgroundStyle={styles.sheetBackground}
+    //   // handleIndicatorStyle={styles.indicator}
+    // >
+    //   <View style={styles.container}>
+    //     {habit && (
+    //       <>
+    //         <View style={styles.header}>
+    //           <View
+    //             style={[styles.iconContainer, { backgroundColor: habit.color }]}
+    //           >
+    //             <Text style={styles.icon}>{habit.icon}</Text>
+    //           </View>
+    //           <View style={styles.habitInfo}>
+    //             <Text style={styles.habitName}>{habit.name}</Text>
+    //             {habit.description && (
+    //               <Text style={styles.habitDescription}>
+    //                 {habit.description}
+    //               </Text>
+    //             )}
+    //           </View>
+    //         </View>
+
+    //         {/* Progress Section */}
+    //         <View style={styles.progressSection}>
+    //           <View style={styles.progressHeader}>
+    //             <Text style={styles.sectionTitle}>Today's Progress</Text>
+
+    //             {isSkipped ? (
+    //               <View style={styles.statusBadge}>
+    //                 <Text style={styles.statusText}>Skipped</Text>
+    //               </View>
+    //             ) : isCompleted ? (
+    //               <View style={[styles.statusBadge, styles.completedBadge]}>
+    //                 <Text style={styles.completedStatusText}>Completed</Text>
+    //               </View>
+    //             ) : currentValue > 0 ? (
+    //               <View style={[styles.statusBadge, styles.progressBadge]}>
+    //                 <Text style={styles.progressStatusText}>In Progress</Text>
+    //               </View>
+    //             ) : null}
+    //           </View>
+
+    //           <CircularCounter
+    //             value={currentValue}
+    //             onChange={handleProgressChange}
+    //             maxValue={maxValue}
+    //             step={stepSize}
+    //             size={circularCounterSize}
+    //             progressColor={habit.color}
+    //             buttonColor={habit.color}
+    //             label={progressLabel}
+    //             disabled={isSkipped}
+    //           />
+
+    //           <View style={styles.completionButtonsContainer}>
+    //             <TouchableOpacity
+    //               style={[
+    //                 styles.completionButton,
+    //                 isCompleted
+    //                   ? styles.uncompleteButton
+    //                   : styles.completeButton,
+    //                 { borderColor: habit.color },
+    //               ]}
+    //               onPress={handleCompletion}
+    //             >
+    //               <FontAwesome6
+    //                 name={isCompleted ? 'rotate-left' : 'check'}
+    //                 size={16}
+    //                 color={isCompleted ? colors.bgDark : habit.color}
+    //                 style={styles.buttonIcon}
+    //               />
+    //               <Text
+    //                 style={[
+    //                   styles.completionButtonText,
+    //                   isCompleted
+    //                     ? styles.uncompleteButtonText
+    //                     : { color: habit.color },
+    //                 ]}
+    //               >
+    //                 {isCompleted ? 'Uncomplete' : 'Complete'}
+    //               </Text>
+    //             </TouchableOpacity>
+    //           </View>
+    //         </View>
+
+    //         <View style={styles.separator} />
+
+    //         <View style={styles.actionsContainer}>
+    //           <TouchableOpacity
+    //             style={[
+    //               styles.actionButton,
+    //               isSkipped && styles.activeActionButton,
+    //             ]}
+    //             onPress={handleSkip}
+    //           >
+    //             <FontAwesome6
+    //               name="forward-step"
+    //               size={20}
+    //               color={isSkipped ? '#FFFFFF' : colors.bgDark}
+    //             />
+    //             <Text
+    //               style={[
+    //                 styles.actionText,
+    //                 isSkipped && styles.activeActionText,
+    //               ]}
+    //             >
+    //               {isSkipped ? 'Unskip' : 'Skip'}
+    //             </Text>
+    //           </TouchableOpacity>
+
+    //           <TouchableOpacity
+    //             style={styles.actionButton}
+    //             onPress={handleEdit}
+    //           >
+    //             <FontAwesome6 name="pen" size={18} color={colors.bgDark} />
+    //             <Text style={styles.actionText}>Edit</Text>
+    //           </TouchableOpacity>
+
+    //           <TouchableOpacity
+    //             style={[styles.actionButton, styles.deleteButton]}
+    //             onPress={handleDelete}
+    //           >
+    //             <FontAwesome6 name="trash" size={18} color="#FFFFFF" />
+    //             <Text style={[styles.actionText, styles.deleteText]}>
+    //               Delete
+    //             </Text>
+    //           </TouchableOpacity>
+    //         </View>
+    //       </>
+    //     )}
+    //   </View>
+    // </BottomSheetModal>
     <BottomSheetModal
-      ref={bottomSheetModalRef}
-      index={1}
-      snapPoints={snapPoints}
-      backdropComponent={renderBackdrop}
-      onDismiss={onDismiss}
-      enablePanDownToClose
-      backgroundStyle={styles.sheetBackground}
-      handleIndicatorStyle={styles.indicator}
-    >
-      <View style={styles.container}>
-        {habit && (
+    backdropComponent={renderBackdrop}
+            ref={bottomSheetModalRef}
+            // onChange={handleSheetChanges}
+          >
+            <BottomSheetView style={styles.contentContainer}>
+             <View style={styles.container}>
+         {habit && (
           <>
             <View style={styles.header}>
               <View
@@ -223,15 +358,26 @@ export default function HabitDetailsSheet({
                   Delete
                 </Text>
               </TouchableOpacity>
-            </View>
+            </View> 
           </>
         )}
       </View>
-    </BottomSheetModal>
+            </BottomSheetView>
+        </BottomSheetModal>
   );
 }
 
 const styles = StyleSheet.create({
+  // container: {
+  //   flex: 1,
+  //   padding: 24,
+  //   justifyContent: 'center',
+  //   backgroundColor: 'grey',
+  // },
+  contentContainer: {
+    flex: 1,
+    alignItems: 'center',
+  },
   sheetBackground: {
     backgroundColor: 'white',
   },
@@ -392,3 +538,4 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
   },
 });
+

@@ -45,7 +45,9 @@ const HabitList = function HabitList({ selectedDate }: HabitListProps) {
         return;
       }
       setSelectedHabit(habit);
+
       bottomSheetModalRef.current?.present();
+      console.log(bottomSheetModalRef.current)
     },
     [afterToday, showIsAfterToast]
   );

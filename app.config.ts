@@ -1,4 +1,4 @@
-import { ExpoConfig, ConfigContext } from 'expo/config';
+import { ConfigContext, ExpoConfig } from 'expo/config';
 
 export default ({
   config,
@@ -69,7 +69,7 @@ export default ({
           minSdkVersion: 26,
         },
         ios: {
-          deploymentTarget: '13.4',
+          deploymentTarget: '15.1',
         },
       },
     ],
