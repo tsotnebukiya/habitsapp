@@ -771,3 +771,75 @@ EXPO_ACCESS_TOKEN=expo_token
 - `@revenuecat/purchases-react-native` (setup pending)
 
 _This document was last updated on April 26, 2024, to reflect the addition of notification preference columns in the `users` table and updated Edge Function filtering logic._
+
+## UI Constants & Styling
+
+The project now uses a centralized approach to UI constants and styling:
+
+```typescript
+// lib/constants/ui.ts
+export const colors = {
+  primary: '#3BAA74',
+  secondary: '#3978B7',
+  text: '#1A1A1A',
+  bgLight: '#FFFFFF',
+  border: '#E5E5E5',
+  // ... other colors
+
+  habitColors: {
+    cyanBlue: '#2F80ED',
+    salmonRed: '#EB5757',
+    // ... other habit colors
+  },
+
+  dropShadow: {
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+};
+
+export const fontWeights = {
+  regular: 'Poppins_400Regular',
+  medium: 'Poppins_500Medium',
+  semibold: 'Poppins_600SemiBold',
+  bold: 'Poppins_700Bold',
+  interRegular: 'Poppins_400Regular',
+  interMedium: 'Poppins_500Medium',
+  interSemiBold: 'Poppins_600SemiBold',
+  interBold: 'Poppins_700Bold',
+};
+```
+
+## Component Patterns
+
+### Shared Components
+
+1. **Button Component**
+
+   - Primary/Secondary variants
+   - Consistent styling and touch feedback
+   - Type-safe props interface
+
+2. **Icon Component**
+
+   - Automatic tint calculation based on background
+   - Support for emoji and MaterialIcons
+   - Consistent sizing and color handling
+
+3. **Toast Configuration**
+   - Standardized toast appearance
+   - Custom styling for different types (info, success, error)
+   - Consistent font family usage
+
+### Modal System
+
+The modal system has been enhanced with:
+
+- Centralized modal store
+- Type-safe modal types
+- Consistent layout patterns
+- Standardized animations
+- Proper backdrop handling

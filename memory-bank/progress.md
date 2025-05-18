@@ -55,37 +55,48 @@
    • Toggle logic implementation
    • Date selection and handling
    • Performance optimized rendering
+   • Return to Today functionality
+   • Habit reordering via SortModal
 
 2. Habit Creation & Detail Modals
    • Add-Habit form with template support
    • Edit / delete / un-complete controls
    • Increment/decrement functionality
+   • Optimistic UI updates
+   • Offline support with pending operations
 
-3. Stats – First Release
+3. Shared Components
+   • Reusable Button component
+   • Enhanced Icon with auto-tinting
+   • Toast configuration
+   • Standardized styling patterns
+   • Consistent modal layouts
+
+4. Stats – First Release
    • Calendar heat-map visualization
    • Achievements grid view
    • Matrix score visualization
 
-4. Full Achievement System
+5. Full Achievement System
    • Unlock logic implementation
    • Achievement notifications
    • AchievementsModal with confetti
    • Pagination for multiple achievements
 
-5. Notifications Infrastructure
+6. Notifications Infrastructure
    • Supabase Edge functions setup
    • Expo Push notification integration
    • Local notification fallback
    • Scheduling utilities
 
-6. **iOS Widgets (Focus Area 1 Complete)**
+7. **iOS Widgets (Focus Area 1 Complete)**
    • **Calendar Widget:** Weekly overview (Medium/Large)
    • **Interactive Widget:** Daily toggle (Small/Medium/Large) using App Intents
    • **Data Sharing:** React Native -> Swift via App Groups (`group.com.vdl.habitapp.widget`) and direct `UserDefaults` integration
    • **Shared Swift Code:** `HabitStore.swift` for data load/save, `Models.swift`, `DateUtils.swift`
    • Timeline management and reload logic (`WidgetCenter.shared.reloadAllTimelines()`)
 
-7. **HabitStore Implementation (Focus Area 1 Complete)**
+8. **HabitStore Implementation (Focus Area 1 Complete)**
    • Zustand + MMKV integration
    • Offline-first sync pattern
    • Score & streak calculations (audited)
@@ -94,50 +105,52 @@
    • Supabase Real-time integration (basic setup)
    • Performance optimizations
 
-8. Modal Infrastructure
+9. Modal Infrastructure
    • Centralized modal store
    • ConfirmationModal component
    • Achievement display system
    • Modal state management
 
-9. Matrix Score System
-   • Category definitions
-   • Score calculations
-   • Visual representation
-   • Category mapping logic
+10. Matrix Score System
+    • Category definitions
+    • Score calculations
+    • Visual representation
+    • Category mapping logic
 
-10. Navigation Setup
+11. Navigation Setup
     • Expo Router v3 integration
     • Bottom tabs implementation
     • Deep-link skeleton
 
-11. Performance Optimizations
+12. Performance Optimizations
     • Migration to MMKV
     • Store subscription optimization
     • UI rendering improvements
     • Shadow rendering fixes
 
-12. Basic Settings Infrastructure
+13. Basic Settings Infrastructure
     • Modal system integration
     • UI scaffold implementation
     • State management preparation
 
-13. Standardized Date Handling
+14. Standardized Date Handling
     • Custom `dayjs` instance used across the app
     • Consistent date normalization, comparison, and formatting
 
 ## What's Left to Build 🛠️
 
-1. Update Habit Functionality
-   • Complete edit flow implementation
-   • History modification controls
+1. Habit Organization Enhancement
+   • Drag-and-drop reordering
    • Batch update capabilities
+   • Visual feedback improvements
+   • Enhanced offline support
 
-2. Stats Enhancement
-   • Additional chart implementation
-   • Habit comparison view
-   • Matrix score history
-   • Performance optimization
+2. UI Polish & Standardization
+   • Modal animation system
+   • Loading state components
+   • Error state handling
+   • Accessibility improvements
+   • Consistent feedback patterns
 
 3. Settings Page Development
    • Full page implementation
@@ -622,88 +635,4 @@
 
 1. **Widget Integration & Testing** ⏳
 
-   - [ ] **React Native -> Swift Data Flow:** Implement writing habit data from Zustand store to shared `UserDefaults` using the App Group.
-     - [ ] Ensure data format and date key consistency (ISO8601 UTC).
-   - [ ] **Thorough Testing:**
-     - [ ] Data synchronization between app and widgets.
-     - [ ] Widget timeline updates (manual and after intent).
-     - [ ] `ToggleHabitIntent` functionality and edge cases.
-     - [ ] UI/Layout across all supported widget sizes/families.
-     - [ ] Performance and battery usage.
-   - [ ] **UI/UX Refinement:** Address any issues found during testing.
-
-2. **Statistics View** ⏳
-   - [ ] Implement key charts (e.g., weekly completion, streak history).
-   - [ ] Create habit comparison view.
-   - [ ] Connect charts to `useHabitsStore` data.
-   - [ ] Add matrix score history display.
-
-_Lists refreshed on April 24, 2024 to align with current roadmap and Memory Bank discussion._
-
-## Completed Focus Areas
-
-### Focus Area 1: Basic Habit Tracking
-
-- **What Works:**
-  - Users can create, edit, and delete habits.
-  - Habit completion can be tracked daily.
-  - Basic UI for listing habits and marking them complete.
-- **What's Left:**
-  - More advanced tracking options (e.g., specific days, frequency).
-
-### Focus Area 2: User Authentication
-
-- **What Works:**
-  - Email/password signup and login.
-  - Google and Apple social logins.
-  - Secure session management.
-- **What's Left:**
-  - Password reset functionality.
-
-### Focus Area 3: Streaks and Achievements
-
-- **What Works:**
-  - Calculation of current and max streaks.
-  - Basic achievement system for hitting streak milestones (e.g., 3-day, 7-day).
-  - `user_achievements` table stores streak data and achievements.
-- **What's Left:**
-  - More diverse achievements beyond just streaks.
-  - UI for displaying achievements to the user.
-
-### Focus Area 4: Notification System (Phase 1 & Edge Function Updates)
-
-- **What Works:**
-  - **User Profile Preferences:**
-    - `users` table in Supabase now has `allow_streak_notifications` and `allow_daily_update_notifications` (both `BOOLEAN DEFAULT TRUE`).
-    - `UserProfile` type in `lib/stores/user_profile.ts` updated to include these fields.
-    - `useUserProfileStore` manages these preferences, with optimistic local updates and background synchronization to Supabase.
-  - **State Management:**
-    - `useAppStore` (`lib/stores/app_state.ts`) simplified to only manage the master `notificationsEnabled` toggle for device-level registration.
-    - Specific notification preferences (`allow_streak_notifications`, `allow_daily_update_notifications`) are handled by `useUserProfileStore`.
-  - **Onboarding Flow:**
-    - `OnboardingSignUp.tsx` correctly initializes new users with default notification preferences in Supabase.
-    - `OnboardingLogin.tsx` uses store methods (`setProfile`, `completeOnboarding`) to ensure user data (including notification preferences) is correctly handled and synced upon login.
-  - **Edge Function Filtering:**
-    - `daily-update-note` Edge Function (`supabase/functions/daily-update-note/`) now filters users based on `allow_daily_update_notifications` being `true`.
-    - `streak-note` Edge Function (`supabase/functions/streak-note/`) now filters users based on `allow_streak_notifications` being `true`.
-    - `streak-note` utils refactored to centralize streak calculation and correctly use notification templates.
-  - **Supabase Types:** `supabase/types.ts` updated to reflect new columns in the `users` table.
-- \*\*What's Left (for full notification system - subsequent phases):
-  - **Phase 2: UI Integration:** Update `app/(app)/(tabs)/settings.tsx` to allow users to toggle these new notification preferences, linking UI switches to `useUserProfileStore` actions.
-  - **Phase 3: Backend Logic Refinement (Post-UI):** Ensure Edge Functions correctly use the preferences when preparing and sending actual push notifications (not just scheduling in DB).
-  - **Phase 4: Data Migration (if needed for existing users):** Decide on and implement a strategy for existing users (e.g., default to `true` or `false`, or prompt them).
-  - Thorough end-to-end testing of the notification lifecycle.
-
-## Current Status
-
-- The core features for habit tracking, user authentication, basic streaks, and foundational notification preferences are in place.
-- The system for managing user-specific notification settings (`allow_streak_notifications`, `allow_daily_update_notifications`) is implemented in the user profile store and Supabase.
-- Edge functions for daily updates and streak notifications now respect these user preferences.
-- Next steps involve integrating these preferences into the settings UI.
-
-## Known Issues
-
-- Password reset is not yet implemented.
-- Achievement system is basic; needs more variety and UI representation.
-- Full end-to-end notification delivery and UI toggles for preferences are pending completion of subsequent phases for the notification system.
-- The `syncWithSupabase` function in `lib/stores/user_profile.ts` had its `Toast.show` call removed from the `catch` block, meaning UI feedback for sync failures is currently not implemented there (this might be intentional, to be handled at the component level, but worth noting).
+   - [ ] **React Native -> Swift Data Flow:** Implement writing habit data from Zustand store to shared `

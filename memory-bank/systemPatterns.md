@@ -869,3 +869,125 @@ Benefits:
 - **Single Source of Truth**: Stores aim to be the single source of truth for client-side data. Supabase is the backend source of truth.
 - **Type Safety**: TypeScript is used throughout, with generated Supabase types ensuring consistency with the backend schema.
 - **Separation of Concerns**: Logic for data fetching, manipulation, and synchronization is largely encapsulated within Zustand stores or specific service/utility files for Edge Functions.
+
+### State Management
+
+1. **Habit Sorting Pattern**
+
+   ```typescript
+   // Store slice with sort_id support
+   export const createHabitSlice: StateCreator<
+     SharedSlice,
+     [],
+     [],
+     HabitSlice
+   > = (set, get) => ({
+     updateHabitOrder: async (habitIds: string[]) => {
+       // Optimistic local update
+       set((state) => {
+         const newHabits = new Map(state.habits);
+         habitIds.forEach((id, index) => {
+           const habit = newHabits.get(id);
+           if (habit) {
+             newHabits.set(id, {
+               ...habit,
+               sort_id: index + 1,
+               updated_at: dateUtils.toServerDateTime(new Date()),
+             });
+           }
+         });
+         return { habits: newHabits };
+       });
+
+       try {
+         // Server sync
+         for (let i = 0; i < habitIds.length; i++) {
+           await supabase
+             .from('habits')
+             .update({
+               sort_id: i + 1,
+               updated_at: dateUtils.toServerDateTime(new Date()),
+             })
+             .eq('id', habitIds[i]);
+         }
+       } catch (error) {
+         // Add to pending operations for offline support
+         const pendingOp = createPendingOperation('update', 'habits', data);
+         set((state) => ({
+           pendingOperations: [...state.pendingOperations, pendingOp],
+         }));
+       }
+     },
+   });
+
+   // Sorting utility
+   export function sortHabits<
+     T extends { sort_id: number | null; created_at: string },
+   >(habits: T[]): T[] {
+     return [...habits].sort((a, b) => {
+       if (a.sort_id !== null && b.sort_id !== null)
+         return a.sort_id - b.sort_id;
+       if (a.sort_id !== null) return -1;
+       if (b.sort_id !== null) return 1;
+       return (
+         new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+       );
+     });
+   }
+   ```
+
+2. **UI Component Patterns**
+
+   ```typescript
+   // Reusable Button Pattern
+   export function Button({
+     onPress,
+     label,
+     type = 'primary',
+   }: {
+     onPress: () => void;
+     label: string;
+     type: 'primary' | 'secondary';
+   }) {
+     return (
+       <TouchableOpacity
+         style={[styles.button, type === 'secondary' && styles.secondary]}
+         activeOpacity={ACTIVE_OPACITY}
+         onPress={onPress}
+       >
+         <Text style={styles.label}>{label}</Text>
+       </TouchableOpacity>
+     );
+   }
+
+   // Automatic Icon Tinting
+   export const getIconTint = (hex: string) => {
+     const [r, g, b] = hex.match(/\w\w/g)!.map((v) => parseInt(v, 16));
+     const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+     return yiq > 150 ? colors.text : '#FFFFFF';
+   };
+   ```
+
+3. **Modal Pattern**
+
+   ```typescript
+   // Modal Type Definition
+   export type ModalType =
+     | 'achievement'
+     | 'confirmation'
+     | 'settings'
+     | 'sort'
+     | null;
+
+   // Modal Container Pattern
+   const ModalContainer = () => {
+     const { currentModal, hideModal } = useModalStore();
+
+     return (
+       <>
+         {currentModal === 'sort' && <SortModal onDismiss={hideModal} />}
+         {/* Other modal types */}
+       </>
+     );
+   };
+   ```
