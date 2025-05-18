@@ -1,4 +1,4 @@
-import { MeasurementUnits } from '@/lib/constants/measurementUnits';
+import { MeasurementUnits } from '@/lib/constants/MeasurementUnits';
 import { Habit, HabitAction, HabitCompletion } from '@/lib/habit-store/types';
 import useUserProfileStore from '@/lib/stores/user_profile';
 import { Database } from '@/supabase/types';
@@ -310,4 +310,24 @@ export function getProgressText(habit: Habit, currentValue: number): string {
   }
 
   return `${currentValue}/1`;
+}
+
+/**
+ * Sorts habits by their sort_id in ascending order
+ * If sort_id is not available, falls back to creation date
+ */
+export function sortHabits<
+  T extends { sort_id: number | null; created_at: string },
+>(habits: T[]): T[] {
+  return [...habits].sort((a, b) => {
+    // If both have sort_id, use that
+    if (a.sort_id !== null && b.sort_id !== null) {
+      return a.sort_id - b.sort_id;
+    }
+    // If one has sort_id and other doesn't, prioritize the one with sort_id
+    if (a.sort_id !== null) return -1;
+    if (b.sort_id !== null) return 1;
+    // If neither has sort_id, fall back to creation date
+    return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
+  });
 }

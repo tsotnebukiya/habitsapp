@@ -1,10 +1,11 @@
 import dayjs from '@/lib/utils/dayjs';
 import { create } from 'zustand';
-import { HabitCategory, HabitTemplate } from '../constants/32';
+
+import { HabitCategory, HabitTemplate } from '../constants/HabitTemplates';
 import {
   MeasurementUnit,
   MeasurementUnits,
-} from '../constants/measurementUnits';
+} from '../constants/MeasurementUnits';
 import { colors } from '../constants/ui';
 
 interface HabitFormData {

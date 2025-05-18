@@ -2,7 +2,13 @@
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import { FlashList } from '@shopify/flash-list';
 import { useCallback, useMemo, useState } from 'react';
-import { Dimensions, StyleSheet, TouchableOpacity, View } from 'react-native';
+import {
+  Dimensions,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
 import { ACTIVE_OPACITY } from '@/components/shared/config';
 import ItemIcon from '@/components/shared/Icon';
@@ -17,6 +23,8 @@ import { colors } from '@/lib/constants/ui';
 import { useAddHabitStore } from '@/lib/stores/add_habit_store';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Button from '../shared/Button';
+import { sharedStyles } from './styles';
 
 /* ──────────── layout constants ──────────── */
 const NUM_COLUMNS = 8; // 8 icons per row
@@ -31,10 +39,12 @@ const CELL_SIZE =
 export default function IconChoosing() {
   const insets = useSafeAreaInsets();
   /* 0 = Icons, 1 = Emojis */
-  const [tabIndex, setTabIndex] = useState<0 | 1>(0);
-  const [query, setQuery] = useState('');
   const selectedIcon = useAddHabitStore((s) => s.formData.icon);
   const setFormField = useAddHabitStore((s) => s.setFormField);
+  const [tempIcon, setTempIcon] = useState<string>(selectedIcon);
+  const [tabIndex, setTabIndex] = useState<0 | 1>(0);
+  const [query, setQuery] = useState('');
+
   /* derive filtered dataset */
   const data = useMemo(() => {
     const all =
@@ -50,29 +60,32 @@ export default function IconChoosing() {
   /* tap handler */
   const handleSelect = useCallback(
     (value: string) => {
-      setFormField('icon', value);
-      router.back();
+      setTempIcon(value);
     },
     [setFormField]
   );
 
+  const handleSubmit = () => {
+    setFormField('icon', tempIcon);
+    router.back();
+  };
   /* item renderer */
   const renderItem = useCallback(
     ({ item }: { item: string }) => (
       <TouchableOpacity
         onPress={() => handleSelect(item)}
         activeOpacity={ACTIVE_OPACITY}
-        style={[styles.cell, item === selectedIcon && styles.selected]}
+        style={[styles.cell, item === tempIcon && styles.selected]}
       >
         <ItemIcon icon={item} color={colors.text} />
         {/* <Text>{item}</Text> */}
       </TouchableOpacity>
     ),
-    [tabIndex, selectedIcon, handleSelect]
+    [tabIndex, selectedIcon, handleSelect, tempIcon]
   );
 
   const ListHeader = (
-    <View style={styles.header}>
+    <View style={styles.listHeader}>
       <SearchInput searchQuery={query} setSearchQuery={setQuery} />
       <SegmentedControl
         values={['Icons', 'Emojis']}
@@ -84,34 +97,45 @@ export default function IconChoosing() {
       />
     </View>
   );
-
   return (
-    <FlashList
-      data={data}
-      keyExtractor={(item) => item}
-      renderItem={renderItem}
-      extraData={selectedIcon}
-      numColumns={NUM_COLUMNS}
-      estimatedItemSize={CELL_SIZE + GAP} // height ≈ glyph + top/bottom gap
-      ListHeaderComponent={ListHeader}
-      contentContainerStyle={{
-        ...styles.content,
-        paddingBottom: insets.bottom,
-      }}
-      showsVerticalScrollIndicator={false}
-    />
+    <View style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.heading}>Select icon</Text>
+      </View>
+      <FlashList
+        data={data}
+        keyExtractor={(item) => item}
+        renderItem={renderItem}
+        extraData={tempIcon}
+        numColumns={NUM_COLUMNS}
+        estimatedItemSize={CELL_SIZE + GAP} // height ≈ glyph + top/bottom gap
+        ListHeaderComponent={ListHeader}
+        contentContainerStyle={{
+          ...styles.content,
+          paddingBottom: insets.bottom + 80,
+        }}
+        showsVerticalScrollIndicator={false}
+      />
+      <View style={[styles.footer, { paddingBottom: insets.bottom }]}>
+        <Button onPress={handleSubmit} label="Done" type="primary" />
+      </View>
+    </View>
   );
 }
 
 /* ──────────── styles ──────────── */
 const styles = StyleSheet.create({
+  container: sharedStyles.container,
+  header: sharedStyles.header,
+  heading: sharedStyles.heading,
+  footer: sharedStyles.footer,
   root: {
     flex: 1,
   },
   content: {
     paddingTop: 24,
   },
-  header: {
+  listHeader: {
     paddingBottom: 12,
   },
   segmentedControl: {

@@ -1,99 +1,131 @@
 import { ACTIVE_OPACITY } from '@/components/shared/config';
-import { MeasurementUnits } from '@/lib/constants/measurementUnits';
+import {
+  MeasurementUnit,
+  MeasurementUnits,
+} from '@/lib/constants/MeasurementUnits';
 import { colors, fontWeights } from '@/lib/constants/ui';
 import { useAddHabitStore } from '@/lib/stores/add_habit_store';
 import { MaterialIcons } from '@expo/vector-icons';
-import React, { useRef } from 'react';
+import { router } from 'expo-router';
+import React, { useRef, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import ModalSelector from 'react-native-modal-selector';
 import { Icon, TextInput } from 'react-native-paper';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Button from '../shared/Button';
+import { sharedStyles } from './styles';
+
+const data = Object.values(MeasurementUnits).map((unit, i) => ({
+  key: i,
+  label: unit.name,
+  value: unit,
+}));
+
+type UnitType = (typeof data)[number];
 
 export default function GoalChoosing() {
-  type UnitType = (typeof data)[number];
+  const insets = useSafeAreaInsets();
   const modalSelectorRef = useRef<any>(null);
   const formData = useAddHabitStore((state) => state.formData);
   const setFormData = useAddHabitStore((state) => state.setFormField);
-  const data = Object.values(MeasurementUnits).map((unit, i) => ({
-    key: i,
-    label: unit.name,
-    value: unit,
-  }));
+  const [tempData, setTempData] = useState<{
+    value: number;
+    unit: MeasurementUnit;
+  }>({
+    value: formData.goal.value,
+    unit: formData.goal.unit,
+  });
 
   const handleSelectUnit = (option: UnitType) => {
-    setFormData('goal', {
-      ...formData.goal,
+    setTempData({
+      value: tempData.value,
       unit: option.value,
     });
   };
 
+  const handleSubmit = () => {
+    setFormData('goal', tempData);
+    router.back();
+  };
+
   const goalText =
-    formData.goal.value === 1
-      ? formData.goal.unit.oneName
-      : formData.goal.unit.name;
+    tempData.value === 1 ? tempData.unit.oneName : tempData.unit.name;
   return (
     <View style={styles.container}>
-      <View style={styles.itemContainer}>
-        <View style={styles.item}>
-          <MaterialIcons name="flag" size={24} color={'#42A5F5'} />
-          <Text style={styles.itemText}>Goal</Text>
-          <View style={styles.itemRight}>
-            <View>
-              <TextInput
-                style={styles.searchInput}
-                outlineStyle={styles.searchOutline}
-                mode="outlined"
-                value={formData.goal.value.toString()}
-                inputMode="numeric"
-                keyboardType="numeric"
-                onChangeText={(text) => {
-                  setFormData('goal', {
-                    ...formData.goal,
-                    value: Number(text),
-                  });
-                }}
-              />
-            </View>
-            <Text style={styles.goalText}>{goalText.toLowerCase()}</Text>
-          </View>
-        </View>
-        <ModalSelector
-          data={data}
-          cancelText="Cancel"
-          animationType="fade"
-          ref={modalSelectorRef}
-          onChange={(option: UnitType) => handleSelectUnit(option)}
-          customSelector={
-            <TouchableOpacity
-              activeOpacity={ACTIVE_OPACITY}
-              style={[styles.item]}
-              onPress={() =>
-                modalSelectorRef.current && modalSelectorRef.current.open()
-              }
-            >
-              <MaterialIcons
-                name="layers"
-                size={24}
-                color={colors.habitColors.salmonRed}
-              />
-              <Text style={styles.itemText}>Goal</Text>
-              <View style={[styles.itemRight]}>
-                <Text style={styles.itemUnit}>{formData.goal.unit.name}</Text>
-                <Icon
-                  source={require('@/assets/icons/chevron-right.png')}
-                  size={24}
-                  color={colors.text}
+      <View style={styles.header}>
+        <Text style={styles.heading}>Select goal</Text>
+      </View>
+      <View style={styles.goalContainer}>
+        <View style={styles.itemContainer}>
+          <View style={styles.item}>
+            <MaterialIcons name="flag" size={24} color={'#42A5F5'} />
+            <Text style={styles.itemText}>Goal</Text>
+            <View style={styles.itemRight}>
+              <View>
+                <TextInput
+                  style={styles.searchInput}
+                  outlineStyle={styles.searchOutline}
+                  mode="outlined"
+                  value={tempData.value.toString()}
+                  inputMode="numeric"
+                  keyboardType="numeric"
+                  onChangeText={(text) => {
+                    setTempData({
+                      value: Number(text),
+                      unit: tempData.unit,
+                    });
+                  }}
                 />
               </View>
-            </TouchableOpacity>
-          }
-        />
+              <Text style={styles.goalText}>{goalText.toLowerCase()}</Text>
+            </View>
+          </View>
+          <ModalSelector
+            data={data}
+            cancelText="Cancel"
+            animationType="fade"
+            ref={modalSelectorRef}
+            onChange={(option: UnitType) => handleSelectUnit(option)}
+            customSelector={
+              <TouchableOpacity
+                activeOpacity={ACTIVE_OPACITY}
+                style={[styles.item]}
+                onPress={() =>
+                  modalSelectorRef.current && modalSelectorRef.current.open()
+                }
+              >
+                <MaterialIcons
+                  name="layers"
+                  size={24}
+                  color={colors.habitColors.salmonRed}
+                />
+                <Text style={styles.itemText}>Goal</Text>
+                <View style={[styles.itemRight]}>
+                  <Text style={styles.itemUnit}>{tempData.unit.name}</Text>
+                  <Icon
+                    source={require('@/assets/icons/chevron-right.png')}
+                    size={24}
+                    color={colors.text}
+                  />
+                </View>
+              </TouchableOpacity>
+            }
+          />
+        </View>
+      </View>
+      <View style={[styles.footer, { paddingBottom: insets.bottom }]}>
+        <Button onPress={handleSubmit} label="Done" type="primary" />
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  container: sharedStyles.container,
+  header: sharedStyles.header,
+  heading: sharedStyles.heading,
+  footer: sharedStyles.footer,
+  goalContainer: {
     paddingTop: 24,
   },
   itemContainer: {

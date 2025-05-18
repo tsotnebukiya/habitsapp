@@ -3,60 +3,82 @@ import { colors, fontWeights } from '@/lib/constants/ui';
 import { useAddHabitStore } from '@/lib/stores/add_habit_store';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Icon, RadioButton } from 'react-native-paper';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Button from '../shared/Button';
+import { sharedStyles } from './styles';
 
 export default function TypeChoosing() {
+  const insets = useSafeAreaInsets();
+
   const selectedType = useAddHabitStore((state) => state.formData.type);
   const setFormField = useAddHabitStore((state) => state.setFormField);
+  const [tempType, setTempType] = useState<'GOOD' | 'BAD'>(selectedType);
   const handleTypeSelect = (type: 'GOOD' | 'BAD') => {
-    setFormField('type', type);
+    setTempType(type);
+  };
+  const handleSubmit = () => {
+    setFormField('type', tempType);
     router.back();
   };
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        activeOpacity={ACTIVE_OPACITY}
-        style={styles.itemContainer}
-        onPress={() => handleTypeSelect('GOOD')}
-      >
-        <MaterialIcons
-          name="check-circle"
-          size={24}
-          color={colors.habitColors.meadowGreen}
-        />
-        <Text style={styles.itemText}>Good</Text>
-        <View style={styles.radioButtonContainer}>
-          <RadioButton
-            value={selectedType}
-            status={selectedType === 'GOOD' ? 'checked' : 'unchecked'}
-            color={colors.primary}
-            onPress={() => handleTypeSelect('GOOD')}
+      <View style={styles.header}>
+        <Text style={styles.heading}>Select habit type</Text>
+      </View>
+      <View style={styles.typeContainer}>
+        <TouchableOpacity
+          activeOpacity={ACTIVE_OPACITY}
+          style={styles.itemContainer}
+          onPress={() => handleTypeSelect('GOOD')}
+        >
+          <MaterialIcons
+            name="check-circle"
+            size={24}
+            color={colors.habitColors.meadowGreen}
           />
-        </View>
-      </TouchableOpacity>
-      <TouchableOpacity
-        activeOpacity={ACTIVE_OPACITY}
-        style={styles.itemContainer}
-        onPress={() => handleTypeSelect('BAD')}
-      >
-        <Icon source={require('@/assets/icons/badhabbit.png')} size={24} />
-        <Text style={styles.itemText}>Bad</Text>
-        <View style={styles.radioButtonContainer}>
-          <RadioButton
-            value={selectedType}
-            status={selectedType === 'BAD' ? 'checked' : 'unchecked'}
-            color={colors.primary}
-            onPress={() => handleTypeSelect('BAD')}
-          />
-        </View>
-      </TouchableOpacity>
+          <Text style={styles.itemText}>Good</Text>
+          <View style={styles.radioButtonContainer}>
+            <RadioButton
+              value={tempType}
+              status={tempType === 'GOOD' ? 'checked' : 'unchecked'}
+              color={colors.primary}
+              onPress={() => handleTypeSelect('GOOD')}
+            />
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity
+          activeOpacity={ACTIVE_OPACITY}
+          style={styles.itemContainer}
+          onPress={() => handleTypeSelect('BAD')}
+        >
+          <Icon source={require('@/assets/icons/badhabbit.png')} size={24} />
+          <Text style={styles.itemText}>Bad</Text>
+          <View style={styles.radioButtonContainer}>
+            <RadioButton
+              value={tempType}
+              status={tempType === 'BAD' ? 'checked' : 'unchecked'}
+              color={colors.primary}
+              onPress={() => handleTypeSelect('BAD')}
+            />
+          </View>
+        </TouchableOpacity>
+      </View>
+      <View style={[styles.footer, { paddingBottom: insets.bottom }]}>
+        <Button onPress={handleSubmit} label="Done" type="primary" />
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  container: sharedStyles.container,
+  header: sharedStyles.header,
+  heading: sharedStyles.heading,
+  footer: sharedStyles.footer,
+  typeContainer: {
     paddingTop: 24,
   },
   itemContainer: {

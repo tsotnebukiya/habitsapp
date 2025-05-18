@@ -1,7 +1,7 @@
 import { ACTIVE_OPACITY } from '@/components/shared/config';
 import ItemIcon from '@/components/shared/Icon';
 import SearchInput from '@/components/shared/SearchInput';
-import { HABIT_TEMPLATES, HabitTemplate } from '@/lib/constants/32';
+import { HABIT_TEMPLATES, HabitTemplate } from '@/lib/constants/HabitTemplates';
 import { colors, fontWeights } from '@/lib/constants/ui';
 import { useAddHabitStore } from '@/lib/stores/add_habit_store';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';

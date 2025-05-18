@@ -159,17 +159,13 @@ function HabitItem({
         <ItemIcon icon={habit.icon} color={getIconTint(habit.color)} />
         <View style={styles.habitInfo}>
           <View style={styles.nameContainer}>
-            <Text style={[styles.habitName, isSkipped && styles.skippedText]}>
+            <Text
+              numberOfLines={1}
+              ellipsizeMode="tail"
+              style={[styles.habitName, isSkipped && styles.skippedText]}
+            >
               {habit.name}
             </Text>
-            {isSkipped && (
-              <MaterialIcons
-                name="skip-next"
-                size={18}
-                color={colors.bgDark}
-                style={styles.skipIcon}
-              />
-            )}
           </View>
           {habit.description && (
             <Text
@@ -281,6 +277,7 @@ const styles = StyleSheet.create({
     fontFamily: fontWeights.bold,
     marginBottom: 4,
     color: colors.text,
+    flex: 1,
   },
   habitDescription: {
     fontSize: 11,

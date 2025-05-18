@@ -1,7 +1,8 @@
 import { DetailChoosingType } from '@/app/(app)/add-habit/detail-choosing';
+import Button from '@/components/shared/Button';
 import { ACTIVE_OPACITY } from '@/components/shared/config';
 import ItemIcon from '@/components/shared/Icon';
-import { CATEGORIES_MAP } from '@/lib/constants/32';
+import { CATEGORIES_MAP } from '@/lib/constants/HabitTemplates';
 import { colors, fontWeights } from '@/lib/constants/ui';
 import useHabitsStore from '@/lib/habit-store/store';
 import { useAddHabitStore } from '@/lib/stores/add_habit_store';
@@ -12,8 +13,6 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
-  KeyboardAvoidingView,
-  Platform,
   ScrollView,
   StyleSheet,
   Switch,
@@ -41,6 +40,10 @@ export default function CreateHabbit() {
   const setFormField = useAddHabitStore((state) => state.setFormField);
   const resetForm = useAddHabitStore((state) => state.resetForm);
   const [showReminderPicker, setShowReminderPicker] = useState(false);
+  const goalText =
+    formData.goal.value === 1
+      ? formData.goal.unit.oneName
+      : formData.goal.unit.name;
 
   const openReminderPicker = () => {
     setShowReminderPicker(true);
@@ -157,6 +160,7 @@ export default function CreateHabbit() {
         goal_unit: formData.goal.unit.id,
         goal_value: formData.goal.value,
         type: formData.type,
+        sort_id: 0,
       };
 
       addHabit(habit);
@@ -177,10 +181,7 @@ export default function CreateHabbit() {
 
   return (
     <>
-      <KeyboardAvoidingView
-        style={styles.flex}
-        behavior={Platform.select({ ios: 'padding', android: undefined })}
-      >
+      <View style={styles.flex}>
         <ScrollView
           contentContainerStyle={[
             styles.scrollView,
@@ -353,7 +354,7 @@ export default function CreateHabbit() {
                 <Text style={styles.itemText}>Goal</Text>
                 <View style={styles.containerRight}>
                   <Text style={styles.descriptionText}>
-                    {formData.goal.value} {formData.goal.unit.name}
+                    {formData.goal.value} {goalText}
                   </Text>
                   <Icon
                     source={require('@/assets/icons/chevron-right.png')}
@@ -520,11 +521,9 @@ export default function CreateHabbit() {
           </View>
         </ScrollView>
         <View style={[styles.footer, { paddingBottom: insets.bottom }]}>
-          <TouchableOpacity style={styles.saveBtn} onPress={handleSubmit}>
-            <Text style={styles.saveLabel}>Save</Text>
-          </TouchableOpacity>
+          <Button onPress={handleSubmit} label="Save" type="primary" />
         </View>
-      </KeyboardAvoidingView>
+      </View>
     </>
   );
 }
@@ -551,17 +550,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     paddingHorizontal: 24,
     paddingTop: 21,
-  },
-  saveBtn: {
-    backgroundColor: colors.primary, // your green
-    borderRadius: 16,
-    paddingVertical: 16,
-    alignItems: 'center',
-  },
-  saveLabel: {
-    color: 'white',
-    fontSize: 14,
-    fontFamily: fontWeights.interBold,
   },
   button: {
     backgroundColor: colors.primary,

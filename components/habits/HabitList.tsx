@@ -1,6 +1,7 @@
 import { Habit } from '@/lib/habit-store/types';
 import { useHabitsForDate } from '@/lib/hooks/useHabits';
 import { dateUtils } from '@/lib/utils/dayjs';
+import { sortHabits } from '@/lib/utils/habits';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { FlashList } from '@shopify/flash-list';
 import dayjs from 'dayjs';
@@ -17,6 +18,10 @@ interface HabitListProps {
 
 const HabitList = function HabitList({ selectedDate }: HabitListProps) {
   const habitsForDate = useHabitsForDate(selectedDate);
+  const sortedHabits = useMemo(
+    () => sortHabits(habitsForDate),
+    [habitsForDate]
+  );
   const [selectedHabit, setSelectedHabit] = useState<Habit | null>(null);
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
   const afterToday = useMemo(() => {
@@ -73,7 +78,7 @@ const HabitList = function HabitList({ selectedDate }: HabitListProps) {
     <>
       <View style={styles.container}>
         <FlashList
-          data={habitsForDate}
+          data={sortedHabits}
           renderItem={renderItem}
           keyExtractor={keyExtractor}
           estimatedItemSize={83}

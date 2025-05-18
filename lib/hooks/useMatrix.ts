@@ -1,4 +1,4 @@
-import { CATEGORIES, CATEGORY_IDS } from '@/lib/constants/32';
+import { CATEGORIES, CATEGORY_IDS } from '@/lib/constants/HabitTemplates';
 import useHabitsStore from '@/lib/habit-store/store';
 import { DisplayedMatrixScore } from '@/lib/habit-store/types';
 import { useUserProfileStore } from '@/lib/stores/user_profile';

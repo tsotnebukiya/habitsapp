@@ -72,6 +72,7 @@ export type Database = {
           is_active: boolean;
           name: string;
           reminder_time: string | null;
+          sort_id: number | null;
           start_date: string;
           streak_goal: number | null;
           type: Database['public']['Enums']['habit_type'];
@@ -95,6 +96,7 @@ export type Database = {
           is_active?: boolean;
           name: string;
           reminder_time?: string | null;
+          sort_id?: number | null;
           start_date: string;
           streak_goal?: number | null;
           type?: Database['public']['Enums']['habit_type'];
@@ -118,6 +120,7 @@ export type Database = {
           is_active?: boolean;
           name?: string;
           reminder_time?: string | null;
+          sort_id?: number | null;
           start_date?: string;
           streak_goal?: number | null;
           type?: Database['public']['Enums']['habit_type'];

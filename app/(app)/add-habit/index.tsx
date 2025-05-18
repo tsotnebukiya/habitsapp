@@ -1,5 +1,5 @@
 import { ACTIVE_OPACITY } from '@/components/shared/config';
-import { CATEGORIES } from '@/lib/constants/32';
+import { CATEGORIES } from '@/lib/constants/HabitTemplates';
 import { colors, fontWeights } from '@/lib/constants/ui';
 import { useAddHabitStore } from '@/lib/stores/add_habit_store';
 import { router } from 'expo-router';

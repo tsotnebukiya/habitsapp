@@ -21,6 +21,7 @@ export interface HabitSlice {
   ) => Promise<string>;
   updateHabit: (id: string, updates: Partial<Habit>) => Promise<void>;
   deleteHabit: (id: string) => Promise<void>;
+  updateHabitOrder: (habitIds: string[]) => Promise<void>;
 
   getHabitStatus: (habitId: string, date: Date) => HabitCompletion | null;
   getCurrentValue: (habitId: string, date: Date) => number;
@@ -35,16 +36,24 @@ export const createHabitSlice: StateCreator<SharedSlice, [], [], HabitSlice> = (
   habits: new Map(),
 
   addHabit: async (habitData) => {
-    const now = dateUtils.nowUTC();
     const userId = getUserIdOrThrow();
+    const date = new Date();
+    // Get the highest sort_id
+    let maxSortId = 0;
+    Array.from(get().habits.values()).forEach((habit) => {
+      if (habit.sort_id && habit.sort_id > maxSortId) {
+        maxSortId = habit.sort_id;
+      }
+    });
 
     const newHabit: Habit = {
       ...habitData,
       id: uuidv4(),
       user_id: userId,
-      created_at: dateUtils.toServerDateTime(now),
-      updated_at: dateUtils.toServerDateTime(now),
+      created_at: dateUtils.toServerDateTime(date),
+      updated_at: dateUtils.toServerDateTime(date),
       is_active: true,
+      sort_id: maxSortId + 1,
     };
 
     // Update local store first
@@ -70,9 +79,9 @@ export const createHabitSlice: StateCreator<SharedSlice, [], [], HabitSlice> = (
         type: 'create' as const,
         table: 'habits' as const,
         data: newHabit,
-        timestamp: now.toDate(),
+        timestamp: new Date(),
         retryCount: 0,
-        lastAttempt: now.toDate(),
+        lastAttempt: new Date(),
       };
       set((state) => ({
         pendingOperations: [...state.pendingOperations, pendingOp],
@@ -195,6 +204,63 @@ export const createHabitSlice: StateCreator<SharedSlice, [], [], HabitSlice> = (
         ...state,
         pendingOperations: [...state.pendingOperations, pendingOp],
       }));
+    }
+
+    await get().processPendingOperations();
+  },
+
+  updateHabitOrder: async (habitIds: string[]) => {
+    // Update local store first
+    set((state) => {
+      const newHabits = new Map(state.habits);
+      habitIds.forEach((id, index) => {
+        const habit = newHabits.get(id);
+        if (habit) {
+          newHabits.set(id, {
+            ...habit,
+            sort_id: index + 1,
+            updated_at: dateUtils.toServerDateTime(new Date()),
+          });
+        }
+      });
+      return { habits: newHabits };
+    });
+
+    try {
+      // Update each habit's sort_id one by one
+      for (let i = 0; i < habitIds.length; i++) {
+        const { error } = await supabase
+          .from('habits')
+          .update({
+            sort_id: i + 1,
+            updated_at: dateUtils.toServerDateTime(new Date()),
+          })
+          .eq('id', habitIds[i]);
+
+        if (error) throw error;
+      }
+    } catch (error) {
+      // Get the first habit's full data for pending operations
+      const habit = get().habits.get(habitIds[0]);
+      if (habit) {
+        const pendingOp = {
+          id: uuidv4(),
+          type: 'update' as const,
+          table: 'habits' as const,
+          data: {
+            ...habit,
+            sort_id: 1,
+            updated_at: dateUtils.toServerDateTime(new Date()),
+          },
+          timestamp: new Date(),
+          retryCount: 0,
+          lastAttempt: new Date(),
+        };
+
+        set((state) => ({
+          pendingOperations: [...state.pendingOperations, pendingOp],
+        }));
+      }
     }
 
     await get().processPendingOperations();

@@ -1,4 +1,4 @@
-import { CATEGORY_IDS, HabitCategory } from '@/lib/constants/32';
+import { CATEGORY_IDS, HabitCategory } from '@/lib/constants/HabitTemplates';
 import { ACHIEVEMENTS } from '@/lib/constants/achievements';
 import {
   DisplayedMatrixScore,

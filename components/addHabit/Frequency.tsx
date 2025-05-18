@@ -1,97 +1,114 @@
 import { ACTIVE_OPACITY } from '@/components/shared/config';
 import { colors, fontWeights } from '@/lib/constants/ui';
 import { useAddHabitStore } from '@/lib/stores/add_habit_store';
+import { router } from 'expo-router';
+import { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Button from '../shared/Button';
+import { sharedStyles } from './styles';
 
 export default function FrequencyChoosing() {
+  const insets = useSafeAreaInsets();
   const formData = useAddHabitStore((state) => state.formData);
   const setFormField = useAddHabitStore((state) => state.setFormField);
+  const [tempFrequencyType, setTempFrequencyType] = useState<
+    'daily' | 'weekly'
+  >(formData.frequencyType);
+  const [tempDaysOfWeek, setTempDaysOfWeek] = useState<number[]>(
+    formData.daysOfWeek
+  );
 
-  // Toggle day of week for weekly frequency
-  // const toggleDayOfWeek = (index: number) => {
-  //   const days = formData.daysOfWeek.includes(index)
-  //     ? formData.daysOfWeek.filter((d: number) => d !== index)
-  //     : [...formData.daysOfWeek, index];
-  //   setFormField('daysOfWeek', days);
-  // };
   const toggleDayOfWeek = (dayIndex: number) => {
-    const currentDays = [...formData.daysOfWeek];
+    const currentDays = [...tempDaysOfWeek];
 
     if (currentDays.includes(dayIndex)) {
       if (currentDays.length === 1) return;
-      setFormField(
-        'daysOfWeek',
-        currentDays.filter((day) => day !== dayIndex)
-      );
+      setTempDaysOfWeek(currentDays.filter((day) => day !== dayIndex));
     } else {
-      setFormField('daysOfWeek', [...currentDays, dayIndex].sort());
+      setTempDaysOfWeek([...currentDays, dayIndex].sort());
     }
+  };
+
+  const handleSubmit = () => {
+    setFormField('frequencyType', tempFrequencyType as any);
+    setFormField('daysOfWeek', tempDaysOfWeek as any);
+    router.back();
   };
   return (
     <View style={styles.container}>
-      <View style={styles.frequencyOptionsContainer}>
-        <View style={styles.frequencyOptions}>
-          {['daily', 'weekly'].map((type) => (
-            <TouchableOpacity
-              key={type}
-              style={[
-                styles.frequencyOption,
-                formData.frequencyType === type && styles.selectedFrequency,
-              ]}
-              activeOpacity={ACTIVE_OPACITY}
-              onPress={() =>
-                setFormField('frequencyType', type as 'daily' | 'weekly')
-              }
-            >
-              <Text
-                style={[
-                  styles.frequencyText,
-                  formData.frequencyType === type &&
-                    styles.selectedFrequencyText,
-                ]}
-              >
-                {type.charAt(0).toUpperCase() + type.slice(1)}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+      <View style={styles.header}>
+        <Text style={styles.heading}>Select frequency</Text>
       </View>
-      {formData.frequencyType === 'weekly' && (
-        <View style={styles.card}>
-          <Text style={styles.label}>Days of Week</Text>
-          <View style={styles.daysContainer}>
-            {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(
-              (day, index) => (
-                <TouchableOpacity
-                  key={day}
+      <View style={styles.frequencyContainer}>
+        <View style={styles.frequencyOptionsContainer}>
+          <View style={styles.frequencyOptions}>
+            {['daily', 'weekly'].map((type) => (
+              <TouchableOpacity
+                key={type}
+                style={[
+                  styles.frequencyOption,
+                  tempFrequencyType === type && styles.selectedFrequency,
+                ]}
+                activeOpacity={ACTIVE_OPACITY}
+                onPress={() => setTempFrequencyType(type as 'daily' | 'weekly')}
+              >
+                <Text
                   style={[
-                    styles.dayButton,
-                    formData.daysOfWeek.includes(index) && styles.selectedDay,
+                    styles.frequencyText,
+                    tempFrequencyType === type && styles.selectedFrequencyText,
                   ]}
-                  activeOpacity={ACTIVE_OPACITY}
-                  onPress={() => toggleDayOfWeek(index)}
                 >
-                  <Text
-                    style={[
-                      styles.dayText,
-                      formData.daysOfWeek.includes(index) &&
-                        styles.selectedDayText,
-                    ]}
-                  >
-                    {day}
-                  </Text>
-                </TouchableOpacity>
-              )
-            )}
+                  {type.charAt(0).toUpperCase() + type.slice(1)}
+                </Text>
+              </TouchableOpacity>
+            ))}
           </View>
         </View>
-      )}
+        {tempFrequencyType === 'weekly' && (
+          <View style={styles.card}>
+            <Text style={styles.label}>Days of Week</Text>
+            <View style={styles.daysContainer}>
+              {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(
+                (day, index) => (
+                  <TouchableOpacity
+                    key={day}
+                    style={[
+                      styles.dayButton,
+                      tempDaysOfWeek.includes(index) && styles.selectedDay,
+                    ]}
+                    activeOpacity={ACTIVE_OPACITY}
+                    onPress={() => toggleDayOfWeek(index)}
+                  >
+                    <Text
+                      style={[
+                        styles.dayText,
+                        tempDaysOfWeek.includes(index) &&
+                          styles.selectedDayText,
+                      ]}
+                    >
+                      {day}
+                    </Text>
+                  </TouchableOpacity>
+                )
+              )}
+            </View>
+          </View>
+        )}
+      </View>
+      <View style={[styles.footer, { paddingBottom: insets.bottom }]}>
+        <Button onPress={handleSubmit} label="Done" type="primary" />
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  container: sharedStyles.container,
+  header: sharedStyles.header,
+  heading: sharedStyles.heading,
+  footer: sharedStyles.footer,
+  frequencyContainer: {
     paddingTop: 24,
   },
   frequencyOptionsContainer: {
