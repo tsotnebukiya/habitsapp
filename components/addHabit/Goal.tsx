@@ -1,7 +1,6 @@
-import Colors from '@/lib/constants/Colors';
-import { ACTIVE_OPACITY } from '@/lib/constants/layouts';
-import { MeasurementUnits } from '@/lib/constants/MeasurementUnits';
-import { fontWeights } from '@/lib/constants/Typography';
+import { ACTIVE_OPACITY } from '@/components/shared/config';
+import { MeasurementUnits } from '@/lib/constants/measurementUnits';
+import { colors, fontWeights } from '@/lib/constants/ui';
 import { useAddHabitStore } from '@/lib/stores/add_habit_store';
 import { MaterialIcons } from '@expo/vector-icons';
 import React, { useRef } from 'react';
@@ -74,7 +73,7 @@ export default function GoalChoosing() {
               <MaterialIcons
                 name="layers"
                 size={24}
-                color={Colors.habitColors.salmonRed}
+                color={colors.habitColors.salmonRed}
               />
               <Text style={styles.itemText}>Goal</Text>
               <View style={[styles.itemRight]}>
@@ -82,7 +81,7 @@ export default function GoalChoosing() {
                 <Icon
                   source={require('@/assets/icons/chevron-right.png')}
                   size={24}
-                  color={Colors.text}
+                  color={colors.text}
                 />
               </View>
             </TouchableOpacity>
@@ -98,7 +97,7 @@ const styles = StyleSheet.create({
     paddingTop: 24,
   },
   itemContainer: {
-    backgroundColor: Colors.border,
+    backgroundColor: colors.border,
     gap: 1,
     borderRadius: 16,
     overflow: 'hidden',
@@ -114,12 +113,12 @@ const styles = StyleSheet.create({
   itemText: {
     fontSize: 12,
     fontFamily: fontWeights.medium,
-    color: Colors.text,
+    color: colors.text,
   },
   itemUnit: {
     fontSize: 12,
     fontFamily: fontWeights.semibold,
-    color: Colors.text,
+    color: colors.text,
   },
   itemRight: {
     marginLeft: 'auto',
@@ -133,7 +132,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     fontSize: 13,
     fontFamily: fontWeights.regular,
-    color: Colors.text,
+    color: colors.text,
     height: 26,
     width: 50,
     textAlign: 'center',
@@ -141,12 +140,12 @@ const styles = StyleSheet.create({
   searchOutline: {
     borderRadius: 7,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: colors.border,
   },
   goalText: {
     fontSize: 12,
     fontFamily: fontWeights.medium,
-    color: Colors.text,
+    color: colors.text,
     opacity: 0.5,
   },
 });

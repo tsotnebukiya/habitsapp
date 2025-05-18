@@ -1,15 +1,9 @@
-import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  FlatList,
-  ActivityIndicator,
-} from 'react-native';
-import { AchievementItem } from './AchievementItem';
 import { ACHIEVEMENTS } from '@/lib/constants/achievements';
 import useHabitsStore from '@/lib/habit-store/store';
 import { Achievement } from '@/lib/habit-store/types';
+import React from 'react';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { AchievementItem } from './AchievementItem';
 
 export const AchievementsList = () => {
   const userAchievements = useHabitsStore((state) => state.streakAchievements);

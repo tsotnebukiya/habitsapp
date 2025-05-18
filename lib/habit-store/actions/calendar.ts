@@ -95,6 +95,7 @@ export const createCalendarSlice: StateCreator<
         Array.from(get().completions.values()),
         date
       );
+
       if (status === 0) {
         // If the new status is 'none_completed', delete it from the updates map.
         // We check hasOwnProperty to ensure we only delete if it was actually present.

@@ -4,23 +4,22 @@ import { FlashList } from '@shopify/flash-list';
 import { useCallback, useMemo, useState } from 'react';
 import { Dimensions, StyleSheet, TouchableOpacity, View } from 'react-native';
 
+import { ACTIVE_OPACITY } from '@/components/shared/config';
 import ItemIcon from '@/components/shared/Icon';
 import SearchInput from '@/components/shared/SearchInput';
-import Colors from '@/lib/constants/Colors';
 import {
   EXTRA_EMOJIS,
   EXTRA_ICON_NAMES,
   PRIME_EMOJIS,
   PRIME_ICON_NAMES,
 } from '@/lib/constants/icons';
-import { ACTIVE_OPACITY } from '@/lib/constants/layouts';
+import { colors } from '@/lib/constants/ui';
 import { useAddHabitStore } from '@/lib/stores/add_habit_store';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 /* ──────────── layout constants ──────────── */
 const NUM_COLUMNS = 8; // 8 icons per row
-const ICON_SIZE = 24; // glyph fontSize
 const GAP = 24; // figma: 24-px space between icons
 const SIDE_MARGIN = GAP / 2; // 12 px on each side → 24 px total gap
 
@@ -65,7 +64,7 @@ export default function IconChoosing() {
         activeOpacity={ACTIVE_OPACITY}
         style={[styles.cell, item === selectedIcon && styles.selected]}
       >
-        <ItemIcon icon={item} color={Colors.text} />
+        <ItemIcon icon={item} color={colors.text} />
         {/* <Text>{item}</Text> */}
       </TouchableOpacity>
     ),
@@ -129,6 +128,6 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
   selected: {
-    backgroundColor: Colors.primary,
+    backgroundColor: colors.primary,
   },
 });

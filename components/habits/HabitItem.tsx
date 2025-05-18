@@ -1,9 +1,10 @@
-import Colors from '@/lib/constants/Colors';
-import { ACTIVE_OPACITY } from '@/lib/constants/layouts';
+import { ACTIVE_OPACITY } from '@/components/shared/config';
+import { colors, fontWeights } from '@/lib/constants/ui';
+import useHabitsStore from '@/lib/habit-store/store';
 import { Database } from '@/supabase/types';
-import { FontAwesome6 } from '@expo/vector-icons';
+import { MaterialIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import React, { memo } from 'react';
+import React from 'react';
 import {
   Pressable,
   StyleSheet,
@@ -16,40 +17,76 @@ import Animated, {
   useAnimatedStyle,
   withSpring,
 } from 'react-native-reanimated';
+import Toast from 'react-native-toast-message';
+import ItemIcon, { getIconTint } from '../shared/Icon';
 
 type Habit = Database['public']['Tables']['habits']['Row'];
-type HabitCompletionStatus =
-  Database['public']['Enums']['habit_completion_status'];
 
 interface HabitItemProps {
   habit: Habit;
-  status: HabitCompletionStatus;
-  progress: number;
-  progressText: string;
   selectedDate: Date;
   onLongPress: (habit: Habit) => void;
   onPress: (habit: Habit) => void;
-  onPlusPress: (habit: Habit) => void;
+  afterToday: boolean;
 }
 
-const HabitItem = memo(function HabitItem({
+function HabitItem({
   habit,
-  status,
-  progress,
-  progressText,
   selectedDate,
-  onPlusPress,
+  afterToday,
   onLongPress,
   onPress,
 }: HabitItemProps) {
-  const handleLongPress = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    onLongPress(habit);
+  const status = useHabitsStore(
+    (state) =>
+      state.getHabitStatus(habit.id, selectedDate)?.status || 'not_started'
+  );
+
+  const progress = useHabitsStore((state) =>
+    state.getCurrentProgress(habit.id, selectedDate)
+  );
+
+  const progressText = useHabitsStore((state) =>
+    state.getProgressText(habit.id, selectedDate)
+  );
+
+  const toggleHabitStatus = useHabitsStore((state) => state.toggleHabitStatus);
+
+  const isSkipped = status === 'skipped';
+
+  const showIsAfterToast = () => {
+    Toast.show({
+      type: 'error',
+      text1: 'Cannot complete future habits',
+      text2: 'Please wait until the day arrives',
+      position: 'bottom',
+    });
+  };
+
+  const showIsCompletedToast = () => {
+    Toast.show({
+      type: 'info',
+      text1: 'Habit already completed',
+      text2: 'This habit has been completed for today',
+      position: 'bottom',
+    });
   };
 
   const handlePlusPress = () => {
+    if (afterToday) {
+      showIsAfterToast();
+      return;
+    }
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    onPlusPress(habit);
+    if (isSkipped) {
+      onPress(habit);
+      return;
+    }
+    if (status === 'completed') {
+      showIsCompletedToast();
+      return;
+    }
+    toggleHabitStatus(habit.id, selectedDate, 'toggle');
   };
 
   const handlePress = () => {
@@ -57,15 +94,41 @@ const HabitItem = memo(function HabitItem({
     onPress(habit);
   };
 
-  const isSkipped = status === 'skipped';
+  const handleLongPress = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    onLongPress(habit);
+  };
 
   const progressStyle = useAnimatedStyle(() => ({
-    width: withSpring(`${progress * 100.5}%`, {
+    width: withSpring(`${progress * 100}%`, {
       damping: 15,
       stiffness: 90,
     }),
   }));
 
+  const iconRender = () => {
+    if (isSkipped) {
+      return <MaterialIcons name="skip-next" size={24} color="white" />;
+    } else {
+      if (progress === 1) {
+        return (
+          <Icon
+            source={require('@/assets/icons/checklight.png')}
+            size={24}
+            color="white"
+          />
+        );
+      } else {
+        return (
+          <Icon
+            source={require('@/assets/icons/plus.png')}
+            size={24}
+            color="white"
+          />
+        );
+      }
+    }
+  };
   return (
     <Pressable
       onPress={handlePress}
@@ -73,15 +136,12 @@ const HabitItem = memo(function HabitItem({
       delayLongPress={200}
       style={[styles.habitCard, isSkipped && styles.skippedCard]}
     >
-      {/* Base layer - dimmed habit color */}
       <View
         style={[
           styles.baseProgress,
-          { backgroundColor: habit.color || '#FFFFFF', opacity: 0.3 },
+          { backgroundColor: habit.color || '#FFFFFF', opacity: 0.38 },
         ]}
       />
-
-      {/* Animated layer - full habit color */}
       <Animated.View
         style={[
           styles.completedProgress,
@@ -90,24 +150,23 @@ const HabitItem = memo(function HabitItem({
         ]}
       />
 
-      {/* Content */}
       <View style={styles.content}>
-        <View style={[styles.iconContainer, isSkipped && styles.skippedIcon]}>
-          <Text style={[styles.icon, isSkipped && styles.skippedText]}>
-            {habit.icon}
-          </Text>
-        </View>
-
+        {habit.type === 'BAD' && (
+          <View style={styles.badHabbit}>
+            <Icon source={require('@/assets/icons/badhabbit.png')} size={20} />
+          </View>
+        )}
+        <ItemIcon icon={habit.icon} color={getIconTint(habit.color)} />
         <View style={styles.habitInfo}>
           <View style={styles.nameContainer}>
             <Text style={[styles.habitName, isSkipped && styles.skippedText]}>
               {habit.name}
             </Text>
             {isSkipped && (
-              <FontAwesome6
-                name="forward-step"
-                size={12}
-                color={Colors.bgDark}
+              <MaterialIcons
+                name="skip-next"
+                size={18}
+                color={colors.bgDark}
                 style={styles.skipIcon}
               />
             )}
@@ -144,16 +203,12 @@ const HabitItem = memo(function HabitItem({
               borderRadius: 12,
             }}
           />
-          <Icon
-            source={require('@/assets/icons/plus.png')}
-            size={24}
-            color="white"
-          />
+          {iconRender()}
         </TouchableOpacity>
       </View>
     </Pressable>
   );
-});
+}
 
 export default HabitItem;
 
@@ -168,10 +223,17 @@ const styles = StyleSheet.create({
   content: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 15,
     height: '100%',
     zIndex: 2,
     paddingLeft: 20,
     paddingRight: 14,
+  },
+  badHabbit: {
+    position: 'absolute',
+    top: 12,
+    left: 12,
+    zIndex: 1,
   },
   baseProgress: {
     position: 'absolute',
@@ -212,20 +274,21 @@ const styles = StyleSheet.create({
   nameContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 4,
   },
   habitName: {
-    fontSize: 17,
-    fontWeight: '600',
+    fontSize: 14,
+    fontFamily: fontWeights.bold,
     marginBottom: 4,
-    color: Colors.bgDark,
+    color: colors.text,
   },
   habitDescription: {
-    fontSize: 14,
-    color: Colors.bgDark,
+    fontSize: 11,
+    fontFamily: fontWeights.regular,
+    color: colors.text,
   },
   skippedText: {
-    color: Colors.bgDark,
+    color: colors.bgDark,
   },
   skippedDescription: {
     opacity: 0.7,
@@ -237,6 +300,6 @@ const styles = StyleSheet.create({
   progressText: {
     fontSize: 14,
     fontWeight: '600',
-    color: Colors.bgDark,
+    color: colors.bgDark,
   },
 });

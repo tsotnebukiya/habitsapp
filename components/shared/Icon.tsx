@@ -1,10 +1,14 @@
 import { IconType } from '@/lib/constants/icons';
+import { colors } from '@/lib/constants/ui';
 import { MaterialIcons } from '@expo/vector-icons';
-import emojiRegex from 'emoji-regex';
 import React from 'react';
 import { Text } from 'react-native';
 
-const pattern = emojiRegex();
+export const getIconTint = (hex: string) => {
+  const [r, g, b] = hex.match(/\w\w/g)!.map((v) => parseInt(v, 16));
+  const yiq = (r * 299 + g * 587 + b * 114) / 1000;
+  return yiq > 150 ? colors.text : '#FFFFFF';
+};
 
 export const isEmoji = (icon: IconType): icon is IconType =>
   /\p{Extended_Pictographic}/u.test(icon);

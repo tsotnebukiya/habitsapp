@@ -1,11 +1,11 @@
 import dayjs from '@/lib/utils/dayjs';
 import { create } from 'zustand';
-import Colors from '../constants/Colors';
-import { HabitCategory, HabitTemplate } from '../constants/HabitTemplates';
+import { HabitCategory, HabitTemplate } from '../constants/32';
 import {
   MeasurementUnit,
   MeasurementUnits,
-} from '../constants/MeasurementUnits';
+} from '../constants/measurementUnits';
+import { colors } from '../constants/ui';
 
 interface HabitFormData {
   name: string;
@@ -48,7 +48,7 @@ interface AddHabitState {
 const initialFormData: HabitFormData = {
   name: '',
   description: '',
-  color: Colors.habitColors.cyanBlue,
+  color: colors.habitColors.cyanBlue,
   icon: 'lightbulb',
   category: 'cat1',
   frequencyType: 'daily',

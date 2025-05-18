@@ -1,18 +1,18 @@
-import React, { useCallback, useMemo, useRef, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Dimensions,
-} from 'react-native';
-import { BottomSheetModal, BottomSheetBackdrop } from '@gorhom/bottom-sheet';
+import { colors } from '@/lib/constants/ui';
 import useHabitsStore from '@/lib/habit-store/store';
-import Colors from '@/lib/constants/Colors';
-import { FontAwesome6 } from '@expo/vector-icons';
-import * as Haptics from 'expo-haptics';
-import CircularCounter from '../shared/CircularCounter';
 import { Habit } from '@/lib/habit-store/types';
+import { FontAwesome6 } from '@expo/vector-icons';
+import { BottomSheetBackdrop, BottomSheetModal } from '@gorhom/bottom-sheet';
+import * as Haptics from 'expo-haptics';
+import React, { useCallback, useMemo } from 'react';
+import {
+  Dimensions,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import CircularCounter from './CircularCounter';
 
 interface HabitDetailsSheetProps {
   habit: Habit | null;
@@ -164,7 +164,7 @@ export default function HabitDetailsSheet({
                   <FontAwesome6
                     name={isCompleted ? 'rotate-left' : 'check'}
                     size={16}
-                    color={isCompleted ? Colors.bgDark : habit.color}
+                    color={isCompleted ? colors.bgDark : habit.color}
                     style={styles.buttonIcon}
                   />
                   <Text
@@ -194,7 +194,7 @@ export default function HabitDetailsSheet({
                 <FontAwesome6
                   name="forward-step"
                   size={20}
-                  color={isSkipped ? '#FFFFFF' : Colors.bgDark}
+                  color={isSkipped ? '#FFFFFF' : colors.bgDark}
                 />
                 <Text
                   style={[
@@ -210,7 +210,7 @@ export default function HabitDetailsSheet({
                 style={styles.actionButton}
                 onPress={handleEdit}
               >
-                <FontAwesome6 name="pen" size={18} color={Colors.bgDark} />
+                <FontAwesome6 name="pen" size={18} color={colors.bgDark} />
                 <Text style={styles.actionText}>Edit</Text>
               </TouchableOpacity>
 
@@ -233,10 +233,10 @@ export default function HabitDetailsSheet({
 
 const styles = StyleSheet.create({
   sheetBackground: {
-    backgroundColor: Colors.bgDark,
+    backgroundColor: 'white',
   },
   indicator: {
-    backgroundColor: Colors.bgDark,
+    backgroundColor: colors.bgDark,
     width: 40,
   },
   container: {
@@ -268,17 +268,17 @@ const styles = StyleSheet.create({
     fontSize: 18, // Smaller font
     fontWeight: '600',
     marginBottom: 4,
-    color: Colors.bgDark,
+    color: 'white',
   },
   habitDescription: {
     fontSize: 14, // Smaller font
-    color: Colors.bgDark,
+    color: 'red',
   },
   progressSection: {
     alignItems: 'center',
     marginBottom: 20, // Reduced margin
     padding: 14, // Reduced padding
-    backgroundColor: Colors.bgDark,
+    backgroundColor: 'white',
     borderRadius: 12,
   },
   progressHeader: {
@@ -291,34 +291,34 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16, // Smaller font
     fontWeight: '600',
-    color: Colors.bgDark,
+    color: colors.bgDark,
   },
   statusBadge: {
     paddingHorizontal: 8, // Reduced padding
     paddingVertical: 2, // Reduced padding
     borderRadius: 12,
-    backgroundColor: Colors.bgDark,
+    backgroundColor: colors.bgDark,
   },
   completedBadge: {
-    backgroundColor: Colors.bgDark,
+    backgroundColor: colors.bgDark,
   },
   progressBadge: {
-    backgroundColor: Colors.bgDark,
+    backgroundColor: colors.bgDark,
   },
   statusText: {
     fontSize: 13, // Smaller font
     fontWeight: '500',
-    color: Colors.bgDark,
+    color: colors.bgDark,
   },
   completedStatusText: {
     fontSize: 13, // Smaller font
     fontWeight: '500',
-    color: Colors.bgDark,
+    color: colors.bgDark,
   },
   progressStatusText: {
     fontSize: 13, // Smaller font
     fontWeight: '500',
-    color: Colors.bgDark,
+    color: colors.bgDark,
   },
   completionButtonsContainer: {
     flexDirection: 'row',
@@ -341,7 +341,7 @@ const styles = StyleSheet.create({
   },
   uncompleteButton: {
     backgroundColor: 'transparent',
-    borderColor: Colors.bgDark,
+    borderColor: colors.bgDark,
   },
   buttonIcon: {
     marginRight: 6,
@@ -351,11 +351,11 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   uncompleteButtonText: {
-    color: Colors.bgDark,
+    color: colors.bgDark,
   },
   separator: {
     height: 1,
-    backgroundColor: Colors.bgDark,
+    backgroundColor: colors.bgDark,
     opacity: 0.2,
     marginBottom: 16, // Reduced margin
   },
@@ -371,19 +371,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     padding: 10, // Reduced padding
     borderRadius: 12,
-    backgroundColor: Colors.bgDark,
+    backgroundColor: 'white',
     gap: 6, // Reduced gap
   },
   activeActionButton: {
-    backgroundColor: Colors.bgDark,
+    backgroundColor: colors.bgDark,
   },
   deleteButton: {
-    backgroundColor: Colors.bgDark,
+    backgroundColor: colors.bgDark,
   },
   actionText: {
     fontSize: 13, // Smaller font
     fontWeight: '500',
-    color: Colors.bgDark,
+    color: colors.bgDark,
   },
   activeActionText: {
     color: '#FFFFFF',

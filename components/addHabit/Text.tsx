@@ -1,5 +1,4 @@
-import Colors from '@/lib/constants/Colors';
-import { fontWeights } from '@/lib/constants/Typography';
+import { colors, fontWeights } from '@/lib/constants/ui';
 import { useAddHabitStore } from '@/lib/stores/add_habit_store';
 import { StyleSheet, View } from 'react-native';
 import { TextInput } from 'react-native-paper';
@@ -43,7 +42,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     fontSize: 13,
     fontFamily: fontWeights.regular,
-    color: Colors.text,
+    color: colors.text,
   },
   multiline: {
     height: 170,
@@ -51,6 +50,6 @@ const styles = StyleSheet.create({
   searchOutline: {
     borderRadius: 16,
     borderColor: 'white',
-    ...Colors.dropShadow,
+    ...colors.dropShadow,
   },
 });

@@ -1,12 +1,12 @@
 // app/onboarding/newOnboardingStyles.ts
+import { colors } from '@/lib/constants/ui';
 import { StyleSheet } from 'react-native';
-import Colors from '@/lib/constants/Colors';
 
 export const onboardingGradient = [
-  Colors.bgDark,
-  Colors.bgDark,
-  Colors.bgDark,
-  Colors.bgDark,
+  colors.bgDark,
+  colors.bgDark,
+  colors.bgDark,
+  colors.bgDark,
 ];
 
 export const newOnboardingStyles = StyleSheet.create({
@@ -28,7 +28,7 @@ export const newOnboardingStyles = StyleSheet.create({
   title: {
     fontSize: 32,
     fontWeight: '600',
-    color: Colors.bgDark,
+    color: colors.bgDark,
     textAlign: 'center',
     marginBottom: 20,
     textShadowColor: 'rgba(0, 0, 0, 0.1)',
@@ -37,7 +37,7 @@ export const newOnboardingStyles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 18,
-    color: Colors.bgDark,
+    color: colors.bgDark,
     textAlign: 'center',
     marginBottom: 30,
     lineHeight: 24,
@@ -52,21 +52,21 @@ export const newOnboardingStyles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: Colors.bgDark,
+    backgroundColor: colors.bgDark,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: Colors.bgDark,
+    borderColor: colors.bgDark,
   },
   continueButton: {
     flex: 1,
     height: 50,
     borderRadius: 25,
-    backgroundColor: Colors.bgDark,
+    backgroundColor: colors.bgDark,
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: 10,
-    shadowColor: Colors.bgDark,
+    shadowColor: colors.bgDark,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -76,21 +76,21 @@ export const newOnboardingStyles = StyleSheet.create({
     elevation: 5,
   },
   continueButtonText: {
-    color: Colors.bgDark,
+    color: colors.bgDark,
     fontSize: 18,
     fontWeight: '600',
   },
   button: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.bgDark,
+    backgroundColor: colors.bgDark,
     borderRadius: 25,
     padding: 15,
     marginBottom: 15,
     width: '100%',
     borderWidth: 1,
-    borderColor: Colors.bgDark,
-    shadowColor: Colors.bgDark,
+    borderColor: colors.bgDark,
+    shadowColor: colors.bgDark,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -101,7 +101,7 @@ export const newOnboardingStyles = StyleSheet.create({
   },
   buttonIcon: {
     marginRight: 6,
-    tintColor: Colors.bgDark,
+    tintColor: colors.bgDark,
   },
   buttonText: {
     color: 'black',
@@ -110,12 +110,12 @@ export const newOnboardingStyles = StyleSheet.create({
   },
   termsText: {
     fontSize: 14,
-    color: Colors.bgDark,
+    color: colors.bgDark,
     textAlign: 'center',
     marginTop: 20,
   },
   termsLink: {
-    color: Colors.bgDark,
+    color: colors.bgDark,
     fontWeight: '600',
   },
 });

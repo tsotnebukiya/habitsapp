@@ -69,8 +69,3 @@ export const useHabitsForDate = (date: Date) => {
     });
   }, [habitsMap, date]); // Only recalculate if habitsMap or date changes
 };
-
-export const useHabit = (id: string | null) => {
-  const habit = useHabitsStore((state) => (id ? state.habits.get(id) : null));
-  return habit ?? null;
-};

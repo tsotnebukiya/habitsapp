@@ -1,5 +1,5 @@
-import Colors from '@/lib/constants/Colors';
-import { ACTIVE_OPACITY } from '@/lib/constants/layouts';
+import { ACTIVE_OPACITY } from '@/components/shared/config';
+import { colors } from '@/lib/constants/ui';
 import { useAddHabitStore } from '@/lib/stores/add_habit_store';
 import { router } from 'expo-router';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
@@ -16,7 +16,7 @@ export default function ColorChoosing() {
 
   return (
     <View style={styles.colorGrid}>
-      {Object.values(Colors.habitColors).map((color, i) => {
+      {Object.values(colors.habitColors).map((color, i) => {
         const isSelected = color === selectedColor;
         return (
           <TouchableOpacity

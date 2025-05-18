@@ -1,6 +1,6 @@
 import HabitList from '@/components/habits/HabitList';
 import WeekView from '@/components/habits/WeekView';
-import Colors from '@/lib/constants/Colors';
+import { colors } from '@/lib/constants/ui';
 import useHabitsStore from '@/lib/habit-store/store';
 import useUserProfileStore from '@/lib/stores/user_profile';
 import React, { useEffect, useState } from 'react';
@@ -37,6 +37,6 @@ export default function Home() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.bgLight,
+    backgroundColor: colors.bgLight,
   },
 });

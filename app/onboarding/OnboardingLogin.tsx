@@ -1,23 +1,21 @@
 // app/onboarding/OnboardingLogin.tsx
-import React from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
-import { useRouter } from 'expo-router';
 import { FontAwesome6 } from '@expo/vector-icons';
 import {
   GoogleSignin,
   statusCodes,
 } from '@react-native-google-signin/google-signin';
-import Toast from 'react-native-toast-message';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
-import dayjs from 'dayjs';
+import { useRouter } from 'expo-router';
+import React from 'react';
+import { Text, TouchableOpacity, View } from 'react-native';
+import Toast from 'react-native-toast-message';
 
+import { colors } from '@/lib/constants/ui';
+import { UserProfile, useUserProfileStore } from '@/lib/stores/user_profile';
 import { supabase } from '@/supabase/client';
 import { newOnboardingStyles, onboardingGradient } from './newOnboardingStyles';
-import Colors from '@/lib/constants/Colors';
-import { UserProfile, useUserProfileStore } from '@/lib/stores/user_profile';
-import { dateUtils } from '@/lib/utils/dayjs';
 
 const ONBOARDING_STEPS = [
   '/onboarding/OnboardingIntro',
@@ -138,7 +136,7 @@ function OnboardingLogin() {
           <FontAwesome6
             name="envelope"
             size={18}
-            color={Colors.bgDark}
+            color={colors.bgDark}
             style={newOnboardingStyles.buttonIcon}
           />
           <Text style={newOnboardingStyles.buttonText}>
@@ -153,7 +151,7 @@ function OnboardingLogin() {
           <FontAwesome6
             name="google"
             size={18}
-            color={Colors.bgDark}
+            color={colors.bgDark}
             style={newOnboardingStyles.buttonIcon}
           />
           <Text style={newOnboardingStyles.buttonText}>
@@ -179,7 +177,7 @@ function OnboardingLogin() {
           onPress={() => router.back()}
           style={newOnboardingStyles.backButton}
         >
-          <FontAwesome6 name="chevron-left" size={20} color={Colors.bgDark} />
+          <FontAwesome6 name="chevron-left" size={20} color={colors.bgDark} />
         </TouchableOpacity>
       </View>
     </LinearGradient>

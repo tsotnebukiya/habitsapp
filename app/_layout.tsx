@@ -7,6 +7,7 @@ declare global {
 
 globalThis.appStartTime = performance.now();
 import ModalContainer from '@/components/modals/ModalContainer';
+import toastConfig from '@/components/shared/toastConfig';
 import {
   Poppins_400Regular,
   Poppins_500Medium,
@@ -104,7 +105,7 @@ function RootLayoutNav() {
           </GestureHandlerRootView>
         </KeyboardProvider>
       </PostHogProvider>
-      <Toast />
+      <Toast config={toastConfig} />
     </>
   );
 }

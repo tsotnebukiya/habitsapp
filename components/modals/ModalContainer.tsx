@@ -1,8 +1,8 @@
-import React from 'react';
 import { useModalStore } from '@/lib/stores/modal_store';
-import AchievementModal from './Achievements';
-import ConfirmationModal from './Confirmations';
+import React from 'react';
 import AchievementsModal from './Achievements';
+import ConfirmationModal from './Confirmations';
+import SortModal from './SortModal';
 
 const ModalContainer = () => {
   const { currentModal, hideModal } = useModalStore();
@@ -16,6 +16,8 @@ const ModalContainer = () => {
       {currentModal === 'confirmation' && (
         <ConfirmationModal onDismiss={hideModal} />
       )}
+
+      {currentModal === 'sort' && <SortModal onDismiss={hideModal} />}
     </>
   );
 };

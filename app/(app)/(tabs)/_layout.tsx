@@ -1,6 +1,6 @@
-import Colors from '@/lib/constants/Colors';
-import { ACTIVE_OPACITY } from '@/lib/constants/layouts';
-import { fontWeights } from '@/lib/constants/Typography';
+import { ACTIVE_OPACITY } from '@/components/shared/config';
+import { colors, fontWeights } from '@/lib/constants/ui';
+
 import { router, Tabs } from 'expo-router';
 import React, { useEffect } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -13,7 +13,7 @@ function TabBarIcon(props: { source: any; focused: boolean }) {
       <Icon
         size={24}
         source={props.source}
-        color={props.focused ? Colors.primary : Colors.tabBarGrey}
+        color={props.focused ? colors.primary : colors.tabBarGrey}
       />
     </View>
 
@@ -156,11 +156,11 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
   tabBarLabelFocused: {
-    color: Colors.primary,
+    color: colors.primary,
     fontFamily: fontWeights.interBold,
   },
   tabBarLabelUnfocused: {
-    color: Colors.tabBarGrey,
+    color: colors.tabBarGrey,
     fontFamily: fontWeights.interSemiBold,
   },
   addButton: {
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: Colors.primary,
+    backgroundColor: colors.primary,
     alignItems: 'center',
     justifyContent: 'center',
   },

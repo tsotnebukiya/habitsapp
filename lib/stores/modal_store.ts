@@ -1,7 +1,12 @@
-import { create } from 'zustand';
 import { Achievement } from '@/lib/habit-store/types';
+import { create } from 'zustand';
 
-export type ModalType = 'achievement' | 'confirmation' | 'settings' | null;
+export type ModalType =
+  | 'achievement'
+  | 'confirmation'
+  | 'settings'
+  | 'sort'
+  | null;
 
 interface ModalState {
   currentModal: ModalType;
@@ -25,6 +30,7 @@ interface ModalState {
     onCancel?: () => void;
   }) => void;
   showSettingsModal: (initialSection?: string) => void;
+  showSortModal: () => void;
   hideModal: () => void;
   goToNextAchievement: () => void;
   goToPrevAchievement: () => void;
@@ -56,6 +62,8 @@ export const useModalStore = create<ModalState>((set, get) => ({
       currentModal: 'settings',
       settingsData: { initialSection },
     }),
+
+  showSortModal: () => set({ currentModal: 'sort' }),
 
   hideModal: () =>
     set({

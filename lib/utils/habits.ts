@@ -1,3 +1,4 @@
+import { MeasurementUnits } from '@/lib/constants/measurementUnits';
 import { Habit, HabitAction, HabitCompletion } from '@/lib/habit-store/types';
 import useUserProfileStore from '@/lib/stores/user_profile';
 import { Database } from '@/supabase/types';
@@ -111,7 +112,6 @@ export const calculateDateStatus = (
   const targetDateNormalized = dateUtils.normalize(date);
   const targetDayOfWeek = targetDateNormalized.day();
   const targetDateString = dateUtils.toServerDateString(date);
-
   const activeHabitsForDate: Habit[] = [];
 
   for (const habit of allHabits) {
@@ -144,6 +144,9 @@ export const calculateDateStatus = (
         comp.habit_id === habit.id && comp.completion_date === targetDateString
     );
 
+    // Skip this habit if it's marked as skipped
+    if (completionRecord?.status === 'skipped') continue;
+
     const achievedValue = completionRecord?.value || 0;
 
     // Ensure achievedValue is not negative, though it should be handled by input.
@@ -159,7 +162,18 @@ export const calculateDateStatus = (
     sumOfIndividualRates += individualRate;
   }
 
-  return sumOfIndividualRates / activeHabitsForDate.length;
+  // Adjust the denominator to exclude skipped habits
+  const activeNonSkippedHabits = activeHabitsForDate.filter((habit) => {
+    const completionRecord = allCompletions.find(
+      (comp) =>
+        comp.habit_id === habit.id && comp.completion_date === targetDateString
+    );
+    return completionRecord?.status !== 'skipped';
+  });
+
+  return activeNonSkippedHabits.length > 0
+    ? sumOfIndividualRates / activeNonSkippedHabits.length
+    : 0;
 };
 
 export const getUserIdOrThrow = () => {
@@ -285,7 +299,12 @@ export function getProgressText(habit: Habit, currentValue: number): string {
   if (!habit) return '0/1';
 
   if (habit.goal_value && habit.goal_unit) {
-    return `${currentValue}/${habit.goal_value}${habit.goal_unit}`;
+    const unit = MeasurementUnits[habit.goal_unit];
+    const unitName = habit.goal_value === 1 ? unit.oneName : unit.name;
+    if (unit) {
+      return `${currentValue}/${habit.goal_value} ${unitName.toLocaleLowerCase()}`;
+    }
+    return `${currentValue}/${habit.goal_value}`;
   } else if (habit.completions_per_day > 1) {
     return `${currentValue}/${habit.completions_per_day}`;
   }

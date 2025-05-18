@@ -1,8 +1,6 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { StyleSheet, Text, View } from 'react-native';
 
-// Dummy quote
 const quote = {
   text: 'The journey of a thousand miles begins with a single step.',
   author: 'Lao Tzu',

@@ -1,6 +1,6 @@
-import React, { memo } from 'react';
-import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { Achievement } from '@/lib/habit-store/types';
+import React, { memo } from 'react';
+import { Dimensions, StyleSheet, Text, View } from 'react-native';
 
 const { width } = Dimensions.get('window');
 const ITEM_WIDTH = width * 0.35;

@@ -1,13 +1,12 @@
 import { create } from 'zustand';
-import { persist, subscribeWithSelector } from 'zustand/middleware';
-import { SharedSlice } from './types';
+import { persist } from 'zustand/middleware';
+import { createAchievementSlice } from './actions/achievements';
+import { createCalendarSlice } from './actions/calendar';
+import { createCompletionSlice } from './actions/completions';
 import { createHabitSlice } from './actions/habits';
 import { createSyncSlice } from './actions/sync';
-import { createCompletionSlice } from './actions/completions';
-import { createCalendarSlice } from './actions/calendar';
-import { dateUtils } from '@/lib/utils/dayjs';
 import { options } from './storage';
-import { createAchievementSlice } from './actions/achievements';
+import { SharedSlice } from './types';
 
 const useHabitsStore = create<SharedSlice>()(
   persist(

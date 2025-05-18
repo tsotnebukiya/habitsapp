@@ -1,4 +1,4 @@
-const Colors = {
+export const colors = {
   primary: '#3BAA74',
   primaryFaded20: '#D3E9DE',
   secondary: '#3978B7',
@@ -39,4 +39,13 @@ const Colors = {
   },
 };
 
-export default Colors;
+export const fontWeights = {
+  regular: 'Poppins_400Regular',
+  medium: 'Poppins_500Medium',
+  semibold: 'Poppins_600SemiBold',
+  bold: 'Poppins_700Bold',
+  interRegular: 'Poppins_400Regular',
+  interMedium: 'Poppins_500Medium',
+  interSemiBold: 'Poppins_600SemiBold',
+  interBold: 'Poppins_700Bold',
+};

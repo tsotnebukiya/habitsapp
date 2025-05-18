@@ -1,15 +1,15 @@
-import React, { useEffect, useRef, useMemo, memo } from 'react';
+import { colors } from '@/lib/constants/ui';
+import { FontAwesome6 } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
+import React, { memo, useEffect, useMemo, useRef } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
   Animated,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
-import { FontAwesome6 } from '@expo/vector-icons';
-import Colors from '@/lib/constants/Colors';
-import * as Haptics from 'expo-haptics';
 
 interface CircularCounterProps {
   value: number;
@@ -80,8 +80,8 @@ const CircularCounter = memo(function CircularCounter({
   onChange,
   size = 200,
   step = 1,
-  progressColor = Colors.bgDark,
-  buttonColor = Colors.bgDark,
+  progressColor = colors.bgDark,
+  buttonColor = colors.bgDark,
   label = 'Completions',
   disabled = false,
   animationDuration = 300,
@@ -142,7 +142,7 @@ const CircularCounter = memo(function CircularCounter({
           cy={size / 2}
           r={radius}
           strokeWidth={strokeWidth}
-          stroke={Colors.bgDark}
+          stroke={colors.bgDark}
           fill="transparent"
         />
 
@@ -210,15 +210,15 @@ const styles = StyleSheet.create({
   value: {
     fontSize: 40,
     fontWeight: '600',
-    color: Colors.bgDark,
+    color: colors.bgDark,
   },
   maxValue: {
     fontSize: 20,
-    color: Colors.bgDark,
+    color: colors.bgDark,
   },
   label: {
     fontSize: 14,
-    color: Colors.bgDark,
+    color: colors.bgDark,
     marginTop: 4,
   },
   buttonsContainer: {

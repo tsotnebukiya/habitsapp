@@ -100,11 +100,4 @@ export const dateUtils = {
     dayjs.utc().year(year).month(month).date(day).startOf('day'),
 };
 
-const getPickerDate = (timeString: string | null): Date => {
-  if (!timeString) return dayjs().hour(9).minute(0).toDate(); // Default to 9 AM if null
-  const [hour, minute] = timeString.split(':').map(Number);
-  return dayjs().hour(hour).minute(minute).toDate();
-};
-
-export { getPickerDate };
 export default dayjs;

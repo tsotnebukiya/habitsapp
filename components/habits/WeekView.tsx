@@ -1,12 +1,15 @@
-import { DATE_ITEM_WIDTH, WEEK_VIEW_ITEM_GAP } from '@/lib/constants/layouts';
-import { fontWeights } from '@/lib/constants/Typography';
+import { fontWeights } from '@/lib/constants/ui';
 import { useThreeMonthsStatuses } from '@/lib/hooks/useHabits';
+import { useModalStore } from '@/lib/stores/modal_store';
 import { dateUtils } from '@/lib/utils/dayjs';
+import { getRelativeDateText, isToday } from '@/lib/utils/misc';
+import { MaterialIcons } from '@expo/vector-icons';
 import { FlashList } from '@shopify/flash-list';
 import { Dayjs } from 'dayjs';
 import React, { memo, useCallback, useEffect, useMemo, useRef } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Icon, IconButton } from 'react-native-paper';
+import { DATE_ITEM_WIDTH, WEEK_VIEW_ITEM_GAP } from '../shared/config';
 import DateItem from './DateItem';
 
 interface WeekViewProps {
@@ -19,30 +22,6 @@ type DateItem = {
   type?: 'spacer';
 };
 
-const getRelativeDateText = (date: Date): string => {
-  const today = dateUtils.todayUTC();
-  const targetDate = dateUtils.fromUTC(date);
-
-  if (targetDate.isSame(today, 'day')) {
-    return 'Today';
-  }
-
-  if (targetDate.isSame(today.subtract(1, 'day'), 'day')) {
-    return 'Yesterday';
-  }
-
-  if (targetDate.isSame(today.add(1, 'day'), 'day')) {
-    return 'Tomorrow';
-  }
-
-  // If it's a different year, include the year
-  if (!targetDate.isSame(today, 'year')) {
-    return targetDate.format('D MMMM YYYY');
-  }
-
-  return targetDate.format('D MMMM');
-};
-
 export const WeekView = memo(function WeekView({
   selectedDate,
   onDateSelect,
@@ -50,6 +29,7 @@ export const WeekView = memo(function WeekView({
   const monthStatuses = useThreeMonthsStatuses();
   const flatListRef = useRef<FlashList<any>>(null);
   const selectedDayjs = dateUtils.fromUTC(selectedDate);
+  const showSortModal = useModalStore((state) => state.showSortModal);
 
   const dates = useMemo(() => {
     const result: DateItem[] = [];
@@ -121,6 +101,12 @@ export const WeekView = memo(function WeekView({
     return item.date.format('YYYY-MM-DD');
   }, []);
 
+  const returnToToday = () => {
+    onDateSelect(dateUtils.todayUTC().toDate());
+  };
+  const handleSort = () => {
+    showSortModal();
+  };
   useEffect(() => {
     if (selectedIndex !== -1 && flatListRef.current) {
       flatListRef.current?.scrollToIndex({
@@ -134,11 +120,19 @@ export const WeekView = memo(function WeekView({
   return (
     <View style={styles.container}>
       <View style={styles.topContainer}>
-        <Text style={styles.topText}>{getRelativeDateText(selectedDate)}</Text>
+        <View style={styles.dayContainer}>
+          <Text style={styles.topText}>
+            {getRelativeDateText(selectedDate)}
+          </Text>
+          {!isToday(selectedDate) && (
+            <IconButton
+              onPress={returnToToday}
+              icon={() => <MaterialIcons name="restore" size={24} />}
+            />
+          )}
+        </View>
         <IconButton
-          onPress={() => {
-            console.log('pressed');
-          }}
+          onPress={handleSort}
           icon={() => (
             <Icon source={require('@/assets/icons/sliders-02.png')} size={24} />
           )}
@@ -172,6 +166,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  dayContainer: {
+    flexDirection: 'row',
     alignItems: 'center',
   },
   topText: {

@@ -1,9 +1,8 @@
+import { ACTIVE_OPACITY } from '@/components/shared/config';
 import ItemIcon from '@/components/shared/Icon';
 import SearchInput from '@/components/shared/SearchInput';
-import Colors from '@/lib/constants/Colors';
-import { HABIT_TEMPLATES, HabitTemplate } from '@/lib/constants/HabitTemplates';
-import { ACTIVE_OPACITY } from '@/lib/constants/layouts';
-import { fontWeights } from '@/lib/constants/Typography';
+import { HABIT_TEMPLATES, HabitTemplate } from '@/lib/constants/32';
+import { colors, fontWeights } from '@/lib/constants/ui';
 import { useAddHabitStore } from '@/lib/stores/add_habit_store';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import { router } from 'expo-router';
@@ -79,7 +78,7 @@ export default function TemplateSelection() {
                 <Icon
                   source={require('@/assets/icons/chevron-right.png')}
                   size={18}
-                  color={Colors.text}
+                  color={colors.text}
                 />
               </View>
             </TouchableOpacity>
@@ -104,7 +103,7 @@ const styles = StyleSheet.create({
     height: 38,
   },
   cusstomHabbit: {
-    backgroundColor: Colors.primaryFaded20,
+    backgroundColor: colors.primaryFaded20,
     borderRadius: 16,
     padding: 16,
     minHeight: 52,
@@ -115,10 +114,10 @@ const styles = StyleSheet.create({
   cusstomHabbitText: {
     fontSize: 13,
     fontFamily: fontWeights.bold,
-    color: Colors.primary,
+    color: colors.primary,
   },
   templatesContainer: {
-    backgroundColor: Colors.border,
+    backgroundColor: colors.border,
     gap: 1,
     borderRadius: 16,
     overflow: 'hidden',
@@ -134,7 +133,7 @@ const styles = StyleSheet.create({
   templateName: {
     fontSize: 12,
     fontFamily: fontWeights.medium,
-    color: Colors.text,
+    color: colors.text,
   },
   chevron: {
     marginLeft: 'auto',

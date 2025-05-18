@@ -1,13 +1,13 @@
-import { CATEGORY_IDS, HabitCategory } from '@/lib/constants/HabitTemplates';
-import { UserProfile } from '@/lib/stores/user_profile';
+import { CATEGORY_IDS, HabitCategory } from '@/lib/constants/32';
+import { ACHIEVEMENTS } from '@/lib/constants/achievements';
 import {
   DisplayedMatrixScore,
+  Habit,
   HabitCompletion,
   StreakDays,
 } from '@/lib/habit-store/types';
-import { Habit } from '@/lib/habit-store/types';
+import { UserProfile } from '@/lib/stores/user_profile';
 import { dateUtils } from '@/lib/utils/dayjs';
-import { ACHIEVEMENTS } from '@/lib/constants/achievements';
 
 const SMOOTHING_FACTOR = 0.015; // Alpha (α) for exponential smoothing
 const LOOKBACK_WINDOW = 14; // Number of days to consider for smoothing

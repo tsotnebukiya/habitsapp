@@ -1,7 +1,6 @@
-import Colors from '@/lib/constants/Colors';
-import { CATEGORIES } from '@/lib/constants/HabitTemplates';
-import { ACTIVE_OPACITY } from '@/lib/constants/layouts';
-import { fontWeights } from '@/lib/constants/Typography';
+import { ACTIVE_OPACITY } from '@/components/shared/config';
+import { CATEGORIES } from '@/lib/constants/32';
+import { colors, fontWeights } from '@/lib/constants/ui';
 import { useAddHabitStore } from '@/lib/stores/add_habit_store';
 import { router } from 'expo-router';
 import React from 'react';
@@ -58,7 +57,7 @@ export default function CategorySelection() {
               <Icon
                 source={require('@/assets/icons/chevron-right.png')}
                 size={18}
-                color={Colors.text}
+                color={colors.text}
               />
             </TouchableOpacity>
           ))}
@@ -79,7 +78,7 @@ const styles = StyleSheet.create({
   subheading: {
     fontFamily: fontWeights.interBold,
     fontSize: 20,
-    color: Colors.text,
+    color: colors.text,
   },
   categoriesContainer: {
     flexDirection: 'column',
@@ -97,7 +96,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 79,
     backgroundColor: 'white',
-    ...Colors.dropShadow,
+    ...colors.dropShadow,
   },
   categoryIconContainer: {
     width: 44,
@@ -120,11 +119,11 @@ const styles = StyleSheet.create({
   categoryName: {
     fontSize: 15,
     fontFamily: fontWeights.semibold,
-    color: Colors.text,
+    color: colors.text,
   },
   categoryDescription: {
     fontSize: 11,
-    color: Colors.text,
+    color: colors.text,
     fontFamily: fontWeights.regular,
   },
 });

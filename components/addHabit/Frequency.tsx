@@ -1,6 +1,5 @@
-import Colors from '@/lib/constants/Colors';
-import { ACTIVE_OPACITY } from '@/lib/constants/layouts';
-import { fontWeights } from '@/lib/constants/Typography';
+import { ACTIVE_OPACITY } from '@/components/shared/config';
+import { colors, fontWeights } from '@/lib/constants/ui';
 import { useAddHabitStore } from '@/lib/stores/add_habit_store';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -98,7 +97,7 @@ const styles = StyleSheet.create({
   frequencyOptionsContainer: {
     backgroundColor: 'white',
     borderRadius: 16,
-    ...Colors.dropShadow,
+    ...colors.dropShadow,
     marginBottom: 24,
     padding: 8,
   },
@@ -113,14 +112,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'white',
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: colors.border,
   },
   selectedFrequency: {
-    backgroundColor: Colors.primary,
-    borderColor: Colors.primary,
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   frequencyText: {
-    color: Colors.text,
+    color: colors.text,
     fontSize: 15,
     fontFamily: fontWeights.regular,
   },
@@ -131,14 +130,14 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: 'white',
     borderRadius: 16,
-    ...Colors.dropShadow,
+    ...colors.dropShadow,
     padding: 16,
     marginBottom: 24,
   },
   label: {
     fontSize: 13,
     fontFamily: fontWeights.medium,
-    color: Colors.text,
+    color: colors.text,
     marginBottom: 12,
   },
   daysContainer: {
@@ -151,7 +150,7 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: colors.border,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'white',
@@ -159,11 +158,11 @@ const styles = StyleSheet.create({
   dayText: {
     fontSize: 14,
     fontFamily: fontWeights.regular,
-    color: Colors.text,
+    color: colors.text,
   },
   selectedDay: {
-    backgroundColor: Colors.primary,
-    borderColor: Colors.primary,
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
   },
   selectedDayText: {
     color: 'white',

@@ -1,9 +1,8 @@
 import { DetailChoosingType } from '@/app/(app)/add-habit/detail-choosing';
+import { ACTIVE_OPACITY } from '@/components/shared/config';
 import ItemIcon from '@/components/shared/Icon';
-import Colors from '@/lib/constants/Colors';
-import { CATEGORIES_MAP } from '@/lib/constants/HabitTemplates';
-import { ACTIVE_OPACITY } from '@/lib/constants/layouts';
-import { fontWeights } from '@/lib/constants/Typography';
+import { CATEGORIES_MAP } from '@/lib/constants/32';
+import { colors, fontWeights } from '@/lib/constants/ui';
 import useHabitsStore from '@/lib/habit-store/store';
 import { useAddHabitStore } from '@/lib/stores/add_habit_store';
 import { useAppStore } from '@/lib/stores/app_state';
@@ -225,7 +224,7 @@ export default function CreateHabbit() {
                 <MaterialIcons
                   name="color-lens"
                   size={24}
-                  color={Colors.habitColors.grapePurple}
+                  color={colors.habitColors.grapePurple}
                 />
                 <Text style={styles.itemText}>Color</Text>
                 <View style={styles.containerRight}>
@@ -238,7 +237,7 @@ export default function CreateHabbit() {
                   <Icon
                     source={require('@/assets/icons/chevron-right.png')}
                     size={18}
-                    color={Colors.text}
+                    color={colors.text}
                   />
                 </View>
               </TouchableOpacity>
@@ -250,7 +249,7 @@ export default function CreateHabbit() {
                 <MaterialIcons
                   name="image"
                   size={24}
-                  color={Colors.habitColors.salmonRed}
+                  color={colors.habitColors.salmonRed}
                 />
                 <Text style={styles.itemText}>Icon</Text>
                 <View style={styles.containerRight}>
@@ -258,7 +257,7 @@ export default function CreateHabbit() {
                   <Icon
                     source={require('@/assets/icons/chevron-right.png')}
                     size={18}
-                    color={Colors.text}
+                    color={colors.text}
                   />
                 </View>
               </TouchableOpacity>
@@ -270,7 +269,7 @@ export default function CreateHabbit() {
                 <MaterialIcons
                   name="description"
                   size={24}
-                  color={Colors.habitColors.amberYellow}
+                  color={colors.habitColors.amberYellow}
                 />
                 <Text style={styles.itemText}>Description</Text>
                 <View style={styles.containerRight}>
@@ -289,7 +288,7 @@ export default function CreateHabbit() {
                   <Icon
                     source={require('@/assets/icons/chevron-right.png')}
                     size={18}
-                    color={Colors.text}
+                    color={colors.text}
                   />
                 </View>
               </TouchableOpacity>
@@ -301,7 +300,7 @@ export default function CreateHabbit() {
                 <MaterialIcons
                   name="label"
                   size={24}
-                  color={Colors.habitColors.indigoBlue}
+                  color={colors.habitColors.indigoBlue}
                 />
                 <Text style={styles.itemText}>Category</Text>
                 <View style={styles.containerRight}>
@@ -311,7 +310,7 @@ export default function CreateHabbit() {
                   <Icon
                     source={require('@/assets/icons/chevron-right.png')}
                     size={18}
-                    color={Colors.text}
+                    color={colors.text}
                   />
                 </View>
               </TouchableOpacity>
@@ -326,7 +325,7 @@ export default function CreateHabbit() {
                 <MaterialIcons
                   name="check-circle"
                   size={24}
-                  color={Colors.habitColors.meadowGreen}
+                  color={colors.habitColors.meadowGreen}
                 />
                 <Text style={styles.itemText}>Type</Text>
 
@@ -337,7 +336,7 @@ export default function CreateHabbit() {
                   <Icon
                     source={require('@/assets/icons/chevron-right.png')}
                     size={18}
-                    color={Colors.text}
+                    color={colors.text}
                   />
                 </View>
               </TouchableOpacity>
@@ -349,7 +348,7 @@ export default function CreateHabbit() {
                 <MaterialIcons
                   name="flag"
                   size={24}
-                  color={Colors.habitColors.skyBlue}
+                  color={colors.habitColors.skyBlue}
                 />
                 <Text style={styles.itemText}>Goal</Text>
                 <View style={styles.containerRight}>
@@ -359,7 +358,7 @@ export default function CreateHabbit() {
                   <Icon
                     source={require('@/assets/icons/chevron-right.png')}
                     size={18}
-                    color={Colors.text}
+                    color={colors.text}
                   />
                 </View>
               </TouchableOpacity>
@@ -371,7 +370,7 @@ export default function CreateHabbit() {
                 <MaterialIcons
                   name="sync-lock"
                   size={24}
-                  color={Colors.habitColors.amethystPurple}
+                  color={colors.habitColors.amethystPurple}
                 />
                 <Text style={styles.itemText}>Repeat</Text>
                 <View style={styles.containerRight}>
@@ -390,7 +389,7 @@ export default function CreateHabbit() {
                   <Icon
                     source={require('@/assets/icons/chevron-right.png')}
                     size={18}
-                    color={Colors.text}
+                    color={colors.text}
                   />
                 </View>
               </TouchableOpacity>
@@ -403,7 +402,7 @@ export default function CreateHabbit() {
                 <MaterialIcons
                   name="notifications-active"
                   size={24}
-                  color={Colors.habitColors.salmonRed}
+                  color={colors.habitColors.salmonRed}
                 />
                 <Text style={styles.itemText}>Notifications</Text>
                 {notificationsEnabled && (
@@ -449,7 +448,7 @@ export default function CreateHabbit() {
                     <Icon
                       source={require('@/assets/icons/chevron-right.png')}
                       size={18}
-                      color={Colors.text}
+                      color={colors.text}
                     />
                   </View>
                 )}
@@ -458,7 +457,7 @@ export default function CreateHabbit() {
                 <MaterialIcons
                   name="event-available"
                   size={24}
-                  color={Colors.habitColors.tealGreen}
+                  color={colors.habitColors.tealGreen}
                 />
                 <Text style={styles.itemText}>Starts on</Text>
 
@@ -483,7 +482,7 @@ export default function CreateHabbit() {
                 <MaterialIcons
                   name="calendar-month"
                   size={24}
-                  color={Colors.habitColors.brown}
+                  color={colors.habitColors.brown}
                 />
                 <Text style={styles.itemText}>Ends on</Text>
                 <Switch
@@ -554,7 +553,7 @@ const styles = StyleSheet.create({
     paddingTop: 21,
   },
   saveBtn: {
-    backgroundColor: Colors.primary, // your green
+    backgroundColor: colors.primary, // your green
     borderRadius: 16,
     paddingVertical: 16,
     alignItems: 'center',
@@ -565,7 +564,7 @@ const styles = StyleSheet.create({
     fontFamily: fontWeights.interBold,
   },
   button: {
-    backgroundColor: Colors.primary,
+    backgroundColor: colors.primary,
     padding: 16,
     borderRadius: 16,
   },
@@ -601,7 +600,7 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   subContainer: {
-    backgroundColor: Colors.border,
+    backgroundColor: colors.border,
     gap: 1,
     borderRadius: 16,
     overflow: 'hidden',
@@ -627,7 +626,7 @@ const styles = StyleSheet.create({
   itemText: {
     fontSize: 12,
     fontFamily: fontWeights.medium,
-    color: Colors.text,
+    color: colors.text,
     minWidth: 80,
   },
   colorCircle: {
@@ -648,7 +647,7 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
   errorColor: {
-    color: Colors.habitColors.salmonRed,
+    color: colors.habitColors.salmonRed,
   },
   dateButton: {
     paddingHorizontal: 10,
@@ -656,7 +655,7 @@ const styles = StyleSheet.create({
     borderRadius: 7,
     backgroundColor: 'white',
     borderWidth: 1,
-    borderColor: Colors.border,
+    borderColor: colors.border,
     // minWidth: 86,
     justifyContent: 'center',
     alignItems: 'center',

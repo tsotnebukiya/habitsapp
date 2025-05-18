@@ -1,5 +1,4 @@
-import Colors from '@/lib/constants/Colors';
-import { fontWeights } from '@/lib/constants/Typography';
+import { colors, fontWeights } from '@/lib/constants/ui';
 import { StyleSheet } from 'react-native';
 import { TextInput } from 'react-native-paper';
 
@@ -21,7 +20,7 @@ export default function SearchInput({
         <TextInput.Icon
           icon={require('@/assets/icons/search-lg.png')}
           size={20}
-          color={Colors.text}
+          color={colors.text}
           style={{ marginLeft: 12 }}
           rippleColor={'transparent'}
         />
@@ -38,12 +37,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     fontSize: 13,
     fontFamily: fontWeights.regular,
-    color: Colors.text,
+    color: colors.text,
     marginBottom: 18,
   },
   searchOutline: {
     borderRadius: 16,
     borderColor: 'white',
-    ...Colors.dropShadow,
+    ...colors.dropShadow,
   },
 });

@@ -1,6 +1,5 @@
-import Colors from '@/lib/constants/Colors';
-import { ACTIVE_OPACITY } from '@/lib/constants/layouts';
-import { fontWeights } from '@/lib/constants/Typography';
+import { ACTIVE_OPACITY } from '@/components/shared/config';
+import { colors, fontWeights } from '@/lib/constants/ui';
 import { useAddHabitStore } from '@/lib/stores/add_habit_store';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
@@ -24,14 +23,14 @@ export default function TypeChoosing() {
         <MaterialIcons
           name="check-circle"
           size={24}
-          color={Colors.habitColors.meadowGreen}
+          color={colors.habitColors.meadowGreen}
         />
         <Text style={styles.itemText}>Good</Text>
         <View style={styles.radioButtonContainer}>
           <RadioButton
             value={selectedType}
             status={selectedType === 'GOOD' ? 'checked' : 'unchecked'}
-            color={Colors.primary}
+            color={colors.primary}
             onPress={() => handleTypeSelect('GOOD')}
           />
         </View>
@@ -47,7 +46,7 @@ export default function TypeChoosing() {
           <RadioButton
             value={selectedType}
             status={selectedType === 'BAD' ? 'checked' : 'unchecked'}
-            color={Colors.primary}
+            color={colors.primary}
             onPress={() => handleTypeSelect('BAD')}
           />
         </View>
@@ -65,7 +64,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
     borderRadius: 16,
-    ...Colors.dropShadow,
+    ...colors.dropShadow,
     padding: 16,
     backgroundColor: 'white',
     marginBottom: 24,

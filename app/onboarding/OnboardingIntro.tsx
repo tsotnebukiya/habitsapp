@@ -1,26 +1,26 @@
 // app/onboarding/OnboardingIntro.tsx
 // app/onboarding/OnboardingCarousel.tsx
+import { colors } from '@/lib/constants/ui';
+import { FontAwesome6 } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import {
-  StyleSheet,
-  View,
-  Text,
   Dimensions,
-  TouchableOpacity,
   FlatList,
-  ViewToken,
-  StatusBar,
   SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ViewToken,
 } from 'react-native';
-import { useRouter } from 'expo-router';
 import Animated, {
   interpolate,
   useAnimatedStyle,
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
-import { FontAwesome6 } from '@expo/vector-icons';
-import Colors from '@/lib/constants/Colors';
 
 const { width, height } = Dimensions.get('window');
 
@@ -88,7 +88,7 @@ const OnboardingCarousel = () => {
           <FontAwesome6
             name={item.icon as any}
             size={80}
-            color={Colors.bgDark}
+            color={colors.bgDark}
           />
         </Animated.View>
         <Text style={styles.title}>{item.title}</Text>
@@ -135,7 +135,7 @@ const OnboardingCarousel = () => {
           animatedDotStyle,
           {
             backgroundColor:
-              currentIndex === index ? Colors.bgDark : Colors.bgDark,
+              currentIndex === index ? colors.bgDark : colors.bgDark,
           },
         ]}
       />
@@ -196,7 +196,7 @@ const styles = StyleSheet.create({
   },
   skipText: {
     fontSize: 16,
-    color: Colors.bgDark,
+    color: colors.bgDark,
     fontWeight: '500',
   },
   slide: {
@@ -210,7 +210,7 @@ const styles = StyleSheet.create({
     width: 150,
     height: 150,
     borderRadius: 75,
-    backgroundColor: Colors.bgDark,
+    backgroundColor: colors.bgDark,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 40,
@@ -218,13 +218,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: Colors.bgDark,
+    color: colors.bgDark,
     marginBottom: 10,
     textAlign: 'center',
   },
   description: {
     fontSize: 16,
-    color: Colors.bgDark,
+    color: colors.bgDark,
     textAlign: 'center',
     paddingHorizontal: 20,
     lineHeight: 24,
@@ -245,7 +245,7 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
   },
   nextButton: {
-    backgroundColor: Colors.bgDark,
+    backgroundColor: colors.bgDark,
     paddingVertical: 16,
     borderRadius: 30,
     flexDirection: 'row',

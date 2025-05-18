@@ -5,8 +5,7 @@ import GoalChoosing from '@/components/addHabit/Goal';
 import IconChoosing from '@/components/addHabit/Icon';
 import TextChoosing from '@/components/addHabit/Text';
 import TypeChoosing from '@/components/addHabit/Type';
-import Colors from '@/lib/constants/Colors';
-import { fontWeights } from '@/lib/constants/Typography';
+import { colors, fontWeights } from '@/lib/constants/ui';
 import { useAddHabitStore } from '@/lib/stores/add_habit_store';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
@@ -95,7 +94,7 @@ const styles = StyleSheet.create({
     fontFamily: fontWeights.interBold,
     fontSize: 20,
     textAlign: 'center',
-    color: Colors.text,
+    color: colors.text,
   },
   backButton: {
     backgroundColor: 'white',

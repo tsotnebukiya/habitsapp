@@ -1,5 +1,6 @@
-import { ACTIVE_OPACITY } from '@/lib/constants/layouts';
-import { fontWeights } from '@/lib/constants/Typography';
+import { ACTIVE_OPACITY } from '@/components/shared/config';
+import toastConfig from '@/components/shared/toastConfig';
+import { fontWeights } from '@/lib/constants/ui';
 import { useAddHabitStore } from '@/lib/stores/add_habit_store';
 import { router, Stack, usePathname } from 'expo-router';
 import { useEffect } from 'react';
@@ -84,7 +85,7 @@ export default function AddHabitLayout() {
           }}
         />
       </Stack>
-      <Toast />
+      <Toast config={toastConfig} />
     </View>
   );
 }

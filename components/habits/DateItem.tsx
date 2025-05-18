@@ -1,6 +1,4 @@
-import Colors from '@/lib/constants/Colors';
-import { DATE_ITEM_WIDTH, WEEK_VIEW_ITEM_GAP } from '@/lib/constants/layouts';
-import { fontWeights } from '@/lib/constants/Typography';
+import { colors, fontWeights } from '@/lib/constants/ui';
 import { Dayjs } from 'dayjs';
 import React, { memo, useCallback, useEffect, useMemo, useRef } from 'react';
 import {
@@ -11,7 +9,7 @@ import {
   View,
 } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
-
+import { DATE_ITEM_WIDTH, WEEK_VIEW_ITEM_GAP } from '../shared/config';
 interface DateItemProps {
   onPress: (date: Date) => void;
   isSelected: boolean;
@@ -24,7 +22,6 @@ const CIRCLE_SIZE = 36;
 const STROKE_WIDTH = 4;
 const ANIMATION_DURATION = 300;
 
-// Create AnimatedCircle component
 const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 
 const DateItem = memo(function DateItem({
@@ -87,7 +84,7 @@ const DateItem = memo(function DateItem({
               cy={CIRCLE_SIZE / 2}
               r={radius}
               strokeWidth={STROKE_WIDTH}
-              stroke={Colors.accent}
+              stroke={colors.accent}
               fill="transparent"
               strokeDasharray={circumference}
               strokeDashoffset={strokeDashoffset}
@@ -119,7 +116,7 @@ const styles = StyleSheet.create({
     // borderWidth: 1,
   },
   selectedDay: {
-    backgroundColor: Colors.primary,
+    backgroundColor: colors.primary,
   },
   dayName: {
     fontSize: 14,
@@ -158,7 +155,7 @@ const styles = StyleSheet.create({
     transform: [{ rotate: '-90deg' }],
   },
   dayNumber: {
-    color: Colors.secondary,
+    color: colors.secondary,
     opacity: 0.5,
     fontSize: 14,
     fontFamily: fontWeights.interMedium,

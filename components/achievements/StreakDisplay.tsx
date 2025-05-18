@@ -1,7 +1,7 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
 import { ACHIEVEMENTS } from '@/lib/constants/achievements'; // Import achievements
 import { useCurrentStreak } from '@/lib/hooks/useAchievements';
+import React from 'react';
+import { StyleSheet, Text, View } from 'react-native';
 
 // Helper to get the first achievement's icon (emoji) or a default
 const getStreakIcon = (): string => {

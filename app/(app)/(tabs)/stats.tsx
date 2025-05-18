@@ -16,7 +16,7 @@ import { StreakDisplay } from '@/components/achievements/StreakDisplay';
 
 // Import Calendar Component
 import CalendarViewNew from '@/components/calendar/CalendarViewNew';
-import Colors from '@/lib/constants/Colors';
+import { colors } from '@/lib/constants/ui';
 
 // Simple Separator Component
 const Separator = () => <View style={styles.separator} />;
@@ -132,10 +132,10 @@ const styles = StyleSheet.create({
   tabText: {
     fontSize: 16,
     fontWeight: '500',
-    color: Colors.bgDark,
+    color: colors.bgDark,
   },
   activeTabText: {
-    color: Colors.bgDark,
+    color: colors.bgDark,
     fontWeight: '600',
   },
   activeIndicator: {
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     height: 3,
     width: '40%',
-    backgroundColor: Colors.bgDark,
+    backgroundColor: colors.bgDark,
     borderRadius: 1.5,
   },
   section: {
