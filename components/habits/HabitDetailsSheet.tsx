@@ -1,18 +1,28 @@
-import { colors } from '@/lib/constants/ui';
+import { colors, fontWeights } from '@/lib/constants/ui';
 import useHabitsStore from '@/lib/habit-store/store';
 import { Habit } from '@/lib/habit-store/types';
-import { FontAwesome6 } from '@expo/vector-icons';
-import { BottomSheetBackdrop, BottomSheetModal, BottomSheetView } from '@gorhom/bottom-sheet';
-import * as Haptics from 'expo-haptics';
-import React, { useCallback, useMemo } from 'react';
+import { useHabitStatusInfo } from '@/lib/hooks/useHabits';
+import { MaterialIcons } from '@expo/vector-icons';
 import {
-  Dimensions,
+  BottomSheetBackdrop,
+  BottomSheetModal,
+  BottomSheetView,
+} from '@gorhom/bottom-sheet';
+import * as Haptics from 'expo-haptics';
+import React, { useCallback } from 'react';
+import {
+  LayoutAnimation,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from 'react-native';
-import CircularCounter from './CircularCounter';
+import { Icon, IconButton } from 'react-native-paper';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
+import * as DropdownMenu from 'zeego/dropdown-menu';
+import Button from '../shared/Button';
+import { ACTIVE_OPACITY } from '../shared/config';
 
 interface HabitDetailsSheetProps {
   habit: Habit | null;
@@ -27,11 +37,22 @@ export default function HabitDetailsSheet({
   bottomSheetModalRef,
   onDismiss,
 }: HabitDetailsSheetProps) {
-  const { toggleHabitStatus, deleteHabit, getHabitStatus, getCurrentValue } =
-    useHabitsStore();
-  const snapPoints = useMemo(() => ['1%', '60%'], []);
-  const { width } = Dimensions.get('window');
-  const circularCounterSize = Math.min(width * 0.45, 160);
+  const insets = useSafeAreaInsets();
+
+  const toggleHabitStatus = useHabitsStore((state) => state.toggleHabitStatus);
+  const deleteHabit = useHabitsStore((state) => state.deleteHabit);
+  const { completion, currentValue, progress } = useHabitStatusInfo(
+    habit?.id!,
+    date
+  );
+  const resetHabitHistory = useHabitsStore((state) => state.resetHabitHistory);
+
+  const currentCompletion = completion;
+  const isSkipped = currentCompletion?.status === 'skipped';
+  const isCompleted = currentCompletion?.status === 'completed';
+  const maxValue = habit?.goal_value || habit?.completions_per_day || 1;
+  const stepSize = habit?.goal_value ? Math.max(habit.goal_value * 0.1, 1) : 1;
+
   const renderBackdrop = useCallback(
     (props: any) => (
       <BottomSheetBackdrop
@@ -42,9 +63,18 @@ export default function HabitDetailsSheet({
     ),
     []
   );
+
+  const showIsSkippedToast = () => {
+    Toast.show({
+      type: 'error',
+      text1: 'Cannot complete skipped habits',
+      text2: 'Please unskip the habit first',
+      position: 'bottom',
+    });
+  };
+
   const handleDelete = () => {
     if (!habit) return;
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     deleteHabit(habit.id);
     bottomSheetModalRef.current?.dismiss();
   };
@@ -57,485 +87,291 @@ export default function HabitDetailsSheet({
 
   const handleSkip = () => {
     if (!habit) return;
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     toggleHabitStatus(habit.id, date, 'toggle_skip');
   };
 
   const handleCompletion = () => {
     if (!habit) return;
-
+    if (isSkipped) {
+      showIsSkippedToast();
+      return;
+    }
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     toggleHabitStatus(habit.id, date, 'toggle_complete');
   };
 
-  const handleProgressChange = (newValue: number) => {
+  const handleIncrement = () => {
     if (!habit) return;
-    toggleHabitStatus(habit.id, date, 'set_value', newValue);
+    if (isSkipped) {
+      showIsSkippedToast();
+      return;
+    }
+    if (currentValue < maxValue) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      toggleHabitStatus(habit.id, date, 'set_value', currentValue + stepSize);
+    }
   };
 
-  // Fresh reads of the current status on each render
-  const currentCompletion = habit ? getHabitStatus(habit.id, date) : null;
-  const isSkipped = currentCompletion?.status === 'skipped';
-  const isCompleted = currentCompletion?.status === 'completed';
-  const currentValue = habit ? getCurrentValue(habit.id, date) : 0;
+  const handleDecrement = () => {
+    if (!habit || isSkipped) return;
+    if (currentValue > 0) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      toggleHabitStatus(habit.id, date, 'set_value', currentValue - stepSize);
+    }
+  };
 
-  // Always use CircularCounter regardless of habit type
-  const maxValue = habit?.goal_value || habit?.completions_per_day || 1;
+  const handleResetHistory = () => {
+    if (!habit) return;
+    resetHabitHistory(habit.id);
+  };
 
-  // Step size - 10% of goal for measured habits, 1 for others
-  const stepSize = habit?.goal_value ? Math.max(habit.goal_value * 0.1, 1) : 1;
+  React.useEffect(() => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+  }, [currentValue]);
 
-  // Get appropriate label for circular counter
-  const progressLabel = habit?.goal_unit || 'Completions';
-console.log('hey')
+  if (!habit) return null;
+
   return (
-    // <BottomSheetModal
-    //   ref={bottomSheetModalRef}
-    //   // index={1}
-    //   // snapPoints={snapPoints}
-    //   // backdropComponent={renderBackdrop}
-    //   // onDismiss={onDismiss}
-    //   // enablePanDownToClose
-    //   // backgroundStyle={styles.sheetBackground}
-    //   // handleIndicatorStyle={styles.indicator}
-    // >
-    //   <View style={styles.container}>
-    //     {habit && (
-    //       <>
-    //         <View style={styles.header}>
-    //           <View
-    //             style={[styles.iconContainer, { backgroundColor: habit.color }]}
-    //           >
-    //             <Text style={styles.icon}>{habit.icon}</Text>
-    //           </View>
-    //           <View style={styles.habitInfo}>
-    //             <Text style={styles.habitName}>{habit.name}</Text>
-    //             {habit.description && (
-    //               <Text style={styles.habitDescription}>
-    //                 {habit.description}
-    //               </Text>
-    //             )}
-    //           </View>
-    //         </View>
-
-    //         {/* Progress Section */}
-    //         <View style={styles.progressSection}>
-    //           <View style={styles.progressHeader}>
-    //             <Text style={styles.sectionTitle}>Today's Progress</Text>
-
-    //             {isSkipped ? (
-    //               <View style={styles.statusBadge}>
-    //                 <Text style={styles.statusText}>Skipped</Text>
-    //               </View>
-    //             ) : isCompleted ? (
-    //               <View style={[styles.statusBadge, styles.completedBadge]}>
-    //                 <Text style={styles.completedStatusText}>Completed</Text>
-    //               </View>
-    //             ) : currentValue > 0 ? (
-    //               <View style={[styles.statusBadge, styles.progressBadge]}>
-    //                 <Text style={styles.progressStatusText}>In Progress</Text>
-    //               </View>
-    //             ) : null}
-    //           </View>
-
-    //           <CircularCounter
-    //             value={currentValue}
-    //             onChange={handleProgressChange}
-    //             maxValue={maxValue}
-    //             step={stepSize}
-    //             size={circularCounterSize}
-    //             progressColor={habit.color}
-    //             buttonColor={habit.color}
-    //             label={progressLabel}
-    //             disabled={isSkipped}
-    //           />
-
-    //           <View style={styles.completionButtonsContainer}>
-    //             <TouchableOpacity
-    //               style={[
-    //                 styles.completionButton,
-    //                 isCompleted
-    //                   ? styles.uncompleteButton
-    //                   : styles.completeButton,
-    //                 { borderColor: habit.color },
-    //               ]}
-    //               onPress={handleCompletion}
-    //             >
-    //               <FontAwesome6
-    //                 name={isCompleted ? 'rotate-left' : 'check'}
-    //                 size={16}
-    //                 color={isCompleted ? colors.bgDark : habit.color}
-    //                 style={styles.buttonIcon}
-    //               />
-    //               <Text
-    //                 style={[
-    //                   styles.completionButtonText,
-    //                   isCompleted
-    //                     ? styles.uncompleteButtonText
-    //                     : { color: habit.color },
-    //                 ]}
-    //               >
-    //                 {isCompleted ? 'Uncomplete' : 'Complete'}
-    //               </Text>
-    //             </TouchableOpacity>
-    //           </View>
-    //         </View>
-
-    //         <View style={styles.separator} />
-
-    //         <View style={styles.actionsContainer}>
-    //           <TouchableOpacity
-    //             style={[
-    //               styles.actionButton,
-    //               isSkipped && styles.activeActionButton,
-    //             ]}
-    //             onPress={handleSkip}
-    //           >
-    //             <FontAwesome6
-    //               name="forward-step"
-    //               size={20}
-    //               color={isSkipped ? '#FFFFFF' : colors.bgDark}
-    //             />
-    //             <Text
-    //               style={[
-    //                 styles.actionText,
-    //                 isSkipped && styles.activeActionText,
-    //               ]}
-    //             >
-    //               {isSkipped ? 'Unskip' : 'Skip'}
-    //             </Text>
-    //           </TouchableOpacity>
-
-    //           <TouchableOpacity
-    //             style={styles.actionButton}
-    //             onPress={handleEdit}
-    //           >
-    //             <FontAwesome6 name="pen" size={18} color={colors.bgDark} />
-    //             <Text style={styles.actionText}>Edit</Text>
-    //           </TouchableOpacity>
-
-    //           <TouchableOpacity
-    //             style={[styles.actionButton, styles.deleteButton]}
-    //             onPress={handleDelete}
-    //           >
-    //             <FontAwesome6 name="trash" size={18} color="#FFFFFF" />
-    //             <Text style={[styles.actionText, styles.deleteText]}>
-    //               Delete
-    //             </Text>
-    //           </TouchableOpacity>
-    //         </View>
-    //       </>
-    //     )}
-    //   </View>
-    // </BottomSheetModal>
     <BottomSheetModal
-    backdropComponent={renderBackdrop}
-            ref={bottomSheetModalRef}
-            // onChange={handleSheetChanges}
-          >
-            <BottomSheetView style={styles.contentContainer}>
-             <View style={styles.container}>
-         {habit && (
-          <>
-            <View style={styles.header}>
-              <View
-                style={[styles.iconContainer, { backgroundColor: habit.color }]}
-              >
-                <Text style={styles.icon}>{habit.icon}</Text>
-              </View>
-              <View style={styles.habitInfo}>
-                <Text style={styles.habitName}>{habit.name}</Text>
-                {habit.description && (
-                  <Text style={styles.habitDescription}>
-                    {habit.description}
-                  </Text>
-                )}
-              </View>
-            </View>
+      backdropComponent={renderBackdrop}
+      ref={bottomSheetModalRef}
+      backgroundStyle={styles.modalStyle}
+      enableDynamicSizing={true}
+      onDismiss={onDismiss}
+    >
+      <BottomSheetView>
+        <View style={[styles.container, { paddingBottom: insets.bottom + 7 }]}>
+          <View style={styles.header}>
+            <View style={styles.emptyView} />
+            <Text style={styles.habitName}>{habit.name}</Text>
 
-            {/* Progress Section */}
-            <View style={styles.progressSection}>
-              <View style={styles.progressHeader}>
-                <Text style={styles.sectionTitle}>Today's Progress</Text>
-
-                {isSkipped ? (
-                  <View style={styles.statusBadge}>
-                    <Text style={styles.statusText}>Skipped</Text>
-                  </View>
-                ) : isCompleted ? (
-                  <View style={[styles.statusBadge, styles.completedBadge]}>
-                    <Text style={styles.completedStatusText}>Completed</Text>
-                  </View>
-                ) : currentValue > 0 ? (
-                  <View style={[styles.statusBadge, styles.progressBadge]}>
-                    <Text style={styles.progressStatusText}>In Progress</Text>
-                  </View>
-                ) : null}
-              </View>
-
-              <CircularCounter
-                value={currentValue}
-                onChange={handleProgressChange}
-                maxValue={maxValue}
-                step={stepSize}
-                size={circularCounterSize}
-                progressColor={habit.color}
-                buttonColor={habit.color}
-                label={progressLabel}
-                disabled={isSkipped}
-              />
-
-              <View style={styles.completionButtonsContainer}>
-                <TouchableOpacity
-                  style={[
-                    styles.completionButton,
-                    isCompleted
-                      ? styles.uncompleteButton
-                      : styles.completeButton,
-                    { borderColor: habit.color },
-                  ]}
-                  onPress={handleCompletion}
-                >
-                  <FontAwesome6
-                    name={isCompleted ? 'rotate-left' : 'check'}
-                    size={16}
-                    color={isCompleted ? colors.bgDark : habit.color}
-                    style={styles.buttonIcon}
-                  />
-                  <Text
-                    style={[
-                      styles.completionButtonText,
-                      isCompleted
-                        ? styles.uncompleteButtonText
-                        : { color: habit.color },
-                    ]}
-                  >
-                    {isCompleted ? 'Uncomplete' : 'Complete'}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            <View style={styles.separator} />
-
-            <View style={styles.actionsContainer}>
-              <TouchableOpacity
-                style={[
-                  styles.actionButton,
-                  isSkipped && styles.activeActionButton,
-                ]}
-                onPress={handleSkip}
-              >
-                <FontAwesome6
-                  name="forward-step"
-                  size={20}
-                  color={isSkipped ? '#FFFFFF' : colors.bgDark}
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger>
+                <IconButton
+                  icon="dots-horizontal"
+                  onPress={() => {
+                    console.log('hey');
+                  }}
+                  mode="contained"
+                  style={styles.iconButton}
+                  iconColor="black"
                 />
-                <Text
-                  style={[
-                    styles.actionText,
-                    isSkipped && styles.activeActionText,
-                  ]}
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Content>
+                <DropdownMenu.Label />
+                <DropdownMenu.Item key="edit" onSelect={handleEdit}>
+                  <DropdownMenu.ItemTitle>Edit</DropdownMenu.ItemTitle>
+                  <DropdownMenu.ItemIcon ios={{ name: 'pencil.line' }} />
+                </DropdownMenu.Item>
+
+                {!isSkipped && (
+                  <DropdownMenu.Item key="skip" onSelect={handleSkip}>
+                    <DropdownMenu.ItemTitle>Skip</DropdownMenu.ItemTitle>
+                    <DropdownMenu.ItemIcon
+                      ios={{ name: 'arrow.forward.to.line' }}
+                    />
+                  </DropdownMenu.Item>
+                )}
+                {isSkipped && (
+                  <DropdownMenu.Item key="unskip" onSelect={handleSkip}>
+                    <DropdownMenu.ItemTitle>Unskip</DropdownMenu.ItemTitle>
+                    <DropdownMenu.ItemIcon
+                      ios={{ name: 'arrow.backward.to.line' }}
+                    />
+                  </DropdownMenu.Item>
+                )}
+
+                <DropdownMenu.Item key="reset" onSelect={handleResetHistory}>
+                  <DropdownMenu.ItemTitle>Reset history</DropdownMenu.ItemTitle>
+                  <DropdownMenu.ItemIcon ios={{ name: 'repeat' }} />
+                </DropdownMenu.Item>
+
+                <DropdownMenu.Item
+                  key="delete"
+                  destructive
+                  onSelect={handleDelete}
                 >
-                  {isSkipped ? 'Unskip' : 'Skip'}
-                </Text>
-              </TouchableOpacity>
+                  <DropdownMenu.ItemTitle>Delete Habit</DropdownMenu.ItemTitle>
+                  <DropdownMenu.ItemIcon ios={{ name: 'trash' }} />
+                </DropdownMenu.Item>
+              </DropdownMenu.Content>
+            </DropdownMenu.Root>
+          </View>
 
-              <TouchableOpacity
-                style={styles.actionButton}
-                onPress={handleEdit}
-              >
-                <FontAwesome6 name="pen" size={18} color={colors.bgDark} />
-                <Text style={styles.actionText}>Edit</Text>
-              </TouchableOpacity>
-
-              <TouchableOpacity
-                style={[styles.actionButton, styles.deleteButton]}
-                onPress={handleDelete}
-              >
-                <FontAwesome6 name="trash" size={18} color="#FFFFFF" />
-                <Text style={[styles.actionText, styles.deleteText]}>
-                  Delete
-                </Text>
-              </TouchableOpacity>
-            </View> 
-          </>
-        )}
-      </View>
-            </BottomSheetView>
-        </BottomSheetModal>
+          <View style={styles.counterContainer}>
+            <TouchableOpacity
+              activeOpacity={ACTIVE_OPACITY}
+              onPress={handleDecrement}
+              style={[
+                styles.button,
+                currentValue <= 0 && styles.buttonDisabled,
+              ]}
+              disabled={currentValue <= 0 || isSkipped}
+            >
+              <MaterialIcons name="remove" size={24} color="#FFFFFF" />
+            </TouchableOpacity>
+            <View
+              style={[styles.progressContainer, isSkipped && styles.disabled]}
+            >
+              <View
+                style={[
+                  styles.baseProgress,
+                  { backgroundColor: '#5BADFF', opacity: 0.38 },
+                ]}
+              />
+              <View style={styles.progressWrapper}>
+                <View
+                  style={[
+                    styles.completedProgress,
+                    {
+                      backgroundColor: '#5BADFF',
+                      width: `${progress * 100}%`,
+                    },
+                  ]}
+                />
+              </View>
+              <View style={styles.valueContainer}>
+                <Text style={styles.value}>{currentValue}</Text>
+                <Text style={styles.maxValue}>/{maxValue}</Text>
+              </View>
+            </View>
+            <TouchableOpacity
+              activeOpacity={ACTIVE_OPACITY}
+              onPress={handleIncrement}
+              style={[
+                styles.button,
+                currentValue >= maxValue && styles.buttonDisabled,
+              ]}
+              disabled={currentValue >= maxValue}
+            >
+              <MaterialIcons name="add" size={24} color="#FFFFFF" />
+            </TouchableOpacity>
+          </View>
+          <View style={styles.buttonContainer}>
+            <Button
+              type="secondary"
+              disabled={progress === 0}
+              onPress={handleCompletion}
+              fullWidth={false}
+              icon={
+                <Icon
+                  source={require('@/assets/icons/flip-backward.png')}
+                  size={24}
+                />
+              }
+            />
+            <Button
+              disabled={isCompleted}
+              label="Complete"
+              type="primary"
+              onPress={handleCompletion}
+            />
+          </View>
+        </View>
+      </BottomSheetView>
+    </BottomSheetModal>
   );
 }
 
 const styles = StyleSheet.create({
-  // container: {
-  //   flex: 1,
-  //   padding: 24,
-  //   justifyContent: 'center',
-  //   backgroundColor: 'grey',
-  // },
-  contentContainer: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  sheetBackground: {
-    backgroundColor: 'white',
-  },
-  indicator: {
-    backgroundColor: colors.bgDark,
-    width: 40,
-  },
+  modalStyle: { backgroundColor: '#F9F9F9', borderRadius: 10 },
   container: {
-    flex: 1,
-    padding: 16,
-    paddingBottom: 24, // Reduced bottom padding
+    height: '100%',
     paddingHorizontal: 20,
+    gap: 50,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16, // Reduced margin
+    justifyContent: 'space-between',
   },
-  iconContainer: {
-    width: 45, // Slightly smaller
-    height: 45, // Slightly smaller
-    borderRadius: 23,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 16,
+  iconButton: {
+    backgroundColor: 'white',
+    width: 34,
+    height: 34,
   },
-  icon: {
-    fontSize: 22, // Slightly smaller
+  emptyView: {
+    width: 34,
   },
   habitInfo: {
     flex: 1,
   },
   habitName: {
-    fontSize: 18, // Smaller font
-    fontWeight: '600',
-    marginBottom: 4,
-    color: 'white',
+    fontSize: 20,
+    fontFamily: fontWeights.bold,
+    color: colors.text,
   },
-  habitDescription: {
-    fontSize: 14, // Smaller font
-    color: 'red',
-  },
-  progressSection: {
+  counterContainer: {
     alignItems: 'center',
-    marginBottom: 20, // Reduced margin
-    padding: 14, // Reduced padding
-    backgroundColor: 'white',
-    borderRadius: 12,
-  },
-  progressHeader: {
+    gap: 19,
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    width: '100%',
-    marginBottom: 12, // Reduced margin
   },
-  sectionTitle: {
-    fontSize: 16, // Smaller font
-    fontWeight: '600',
-    color: colors.bgDark,
-  },
-  statusBadge: {
-    paddingHorizontal: 8, // Reduced padding
-    paddingVertical: 2, // Reduced padding
-    borderRadius: 12,
-    backgroundColor: colors.bgDark,
-  },
-  completedBadge: {
-    backgroundColor: colors.bgDark,
-  },
-  progressBadge: {
-    backgroundColor: colors.bgDark,
-  },
-  statusText: {
-    fontSize: 13, // Smaller font
-    fontWeight: '500',
-    color: colors.bgDark,
-  },
-  completedStatusText: {
-    fontSize: 13, // Smaller font
-    fontWeight: '500',
-    color: colors.bgDark,
-  },
-  progressStatusText: {
-    fontSize: 13, // Smaller font
-    fontWeight: '500',
-    color: colors.bgDark,
-  },
-  completionButtonsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 12, // Reduced margin
-    width: '100%',
-  },
-  completionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 7, // Reduced padding
-    paddingHorizontal: 14, // Reduced padding
-    borderRadius: 18,
-    borderWidth: 1,
-    minWidth: 110, // Reduced width
-  },
-  completeButton: {
-    backgroundColor: 'transparent',
-  },
-  uncompleteButton: {
-    backgroundColor: 'transparent',
-    borderColor: colors.bgDark,
-  },
-  buttonIcon: {
-    marginRight: 6,
-  },
-  completionButtonText: {
-    fontSize: 13, // Smaller font
-    fontWeight: '600',
-  },
-  uncompleteButtonText: {
-    color: colors.bgDark,
-  },
-  separator: {
-    height: 1,
-    backgroundColor: colors.bgDark,
-    opacity: 0.2,
-    marginBottom: 16, // Reduced margin
-  },
-  actionsContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 10,
-  },
-  actionButton: {
+  progressContainer: {
+    position: 'relative',
     flex: 1,
-    flexDirection: 'row',
+    height: 172,
+    borderRadius: 16,
+    overflow: 'hidden',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 10, // Reduced padding
+  },
+  disabled: {
+    opacity: 0.5,
+  },
+  baseProgress: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 0,
+  },
+  progressWrapper: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 1,
+    overflow: 'hidden',
+  },
+  completedProgress: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    zIndex: 1,
+  },
+  counterContent: {},
+  button: {
+    width: 46,
+    height: 46,
     borderRadius: 12,
-    backgroundColor: 'white',
-    gap: 6, // Reduced gap
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
   },
-  activeActionButton: {
-    backgroundColor: colors.bgDark,
+  buttonDisabled: {
+    opacity: 0.5,
   },
-  deleteButton: {
-    backgroundColor: colors.bgDark,
+  valueContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    zIndex: 2,
   },
-  actionText: {
-    fontSize: 13, // Smaller font
-    fontWeight: '500',
-    color: colors.bgDark,
+  value: {
+    fontSize: 63,
+    fontFamily: fontWeights.semibold,
+    color: colors.bgLight,
   },
-  activeActionText: {
-    color: '#FFFFFF',
+  maxValue: {
+    fontSize: 33,
+    fontFamily: fontWeights.semibold,
+    color: colors.bgLight,
   },
-  deleteText: {
-    color: '#FFFFFF',
+  buttonContainer: {
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'center',
   },
 });
-

@@ -93,3 +93,10 @@ export type SharedSlice = HabitSlice &
   SyncSlice &
   AchievementSlice &
   BaseState;
+
+export interface HabitStatus {
+  completion: HabitCompletion | null;
+  currentValue: number;
+  progress: number;
+  progressText: string;
+}

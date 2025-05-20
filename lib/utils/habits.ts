@@ -80,25 +80,6 @@ export const normalizeDate = (date: Date | string): string => {
 };
 
 /**
- * Gets the completion status for a specific habit on a specific date
- * Uses UTC for date comparison
- */
-export const getHabitStatus = (
-  completions: HabitCompletion[],
-  habitId: string,
-  date: Date
-): HabitCompletion | null => {
-  const normalizedDate = dateUtils.toServerDateString(date);
-  return (
-    completions.find(
-      (completion) =>
-        completion.habit_id === habitId &&
-        completion.completion_date === normalizedDate
-    ) || null
-  );
-};
-
-/**
  * Calculates the overall completion status for a specific date
  * All date comparisons are done in UTC
  */
@@ -252,30 +233,32 @@ export function calculateHabitToggle({
         ? 'not_started'
         : 'skipped'
       : newValue >= maxValue
-        ? 'completed'
-        : newValue > 0
-          ? 'in_progress'
-          : 'not_started';
+      ? 'completed'
+      : newValue > 0
+      ? 'in_progress'
+      : 'not_started';
 
   return { newValue, newStatus };
 }
 
 /**
- * Gets the current value for a habit on a specific date
+ * Gets the completion status for a specific habit on a specific date
+ * Uses UTC for date comparison
  */
-export function getCurrentValue(
+export const getHabitStatus = (
   completions: HabitCompletion[],
   habitId: string,
   date: Date
-): number {
-  const normalizedDate = normalizeDate(date);
-  const completion = completions.find(
-    (completion) =>
-      completion.habit_id === habitId &&
-      completion.completion_date === normalizedDate
+): HabitCompletion | null => {
+  const normalizedDate = dateUtils.toServerDateString(date);
+  return (
+    completions.find(
+      (completion) =>
+        completion.habit_id === habitId &&
+        completion.completion_date === normalizedDate
+    ) || null
   );
-  return completion?.value || 0;
-}
+};
 
 /**
  * Calculates the progress percentage for a habit on a specific date
@@ -302,7 +285,9 @@ export function getProgressText(habit: Habit, currentValue: number): string {
     const unit = MeasurementUnits[habit.goal_unit];
     const unitName = habit.goal_value === 1 ? unit.oneName : unit.name;
     if (unit) {
-      return `${currentValue}/${habit.goal_value} ${unitName.toLocaleLowerCase()}`;
+      return `${currentValue}/${
+        habit.goal_value
+      } ${unitName.toLocaleLowerCase()}`;
     }
     return `${currentValue}/${habit.goal_value}`;
   } else if (habit.completions_per_day > 1) {
@@ -317,7 +302,7 @@ export function getProgressText(habit: Habit, currentValue: number): string {
  * If sort_id is not available, falls back to creation date
  */
 export function sortHabits<
-  T extends { sort_id: number | null; created_at: string },
+  T extends { sort_id: number | null; created_at: string }
 >(habits: T[]): T[] {
   return [...habits].sort((a, b) => {
     // If both have sort_id, use that

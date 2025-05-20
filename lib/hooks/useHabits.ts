@@ -2,7 +2,12 @@ import useHabitsStore from '@/lib/habit-store/store';
 import { Habit } from '@/lib/habit-store/types';
 import dayjs, { dateUtils } from '@/lib/utils/dayjs';
 import { useMemo } from 'react';
-import { getMonthKey } from '../utils/habits';
+import {
+  getCurrentProgress,
+  getHabitStatus,
+  getMonthKey,
+  getProgressText,
+} from '../utils/habits';
 
 export function useThreeMonthsStatuses() {
   const monthCache = useHabitsStore((state) => state.monthCache);
@@ -68,4 +73,30 @@ export const useHabitsForDate = (date: Date) => {
       return true;
     });
   }, [habitsMap, date]); // Only recalculate if habitsMap or date changes
+};
+
+export const useHabitStatusInfo = (habitId: string, date: Date) => {
+  const habitsMap = useHabitsStore((state) => state.habits);
+  const completionsMap = useHabitsStore((state) => state.completions);
+  return useMemo(() => {
+    const habit = habitsMap.get(habitId);
+    if (!habit) {
+      return {
+        completion: null,
+        currentValue: 0,
+        progress: 0,
+        progressText: '',
+      };
+    }
+    const completion = getHabitStatus(
+      Array.from(completionsMap.values()),
+      habitId,
+      date
+    );
+    const currentValue = completion?.value || 0;
+    const progress = getCurrentProgress(habit, currentValue);
+    const progressText = getProgressText(habit, currentValue);
+
+    return { completion, currentValue, progress, progressText };
+  }, [habitsMap, completionsMap, habitId, date]);
 };

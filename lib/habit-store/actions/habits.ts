@@ -1,16 +1,9 @@
 import { dateUtils } from '@/lib/utils/dayjs';
-import {
-  getAffectedDates,
-  getCurrentProgress,
-  getCurrentValue,
-  getHabitStatus,
-  getProgressText,
-  getUserIdOrThrow,
-} from '@/lib/utils/habits';
+import { getAffectedDates, getUserIdOrThrow } from '@/lib/utils/habits';
 import { supabase } from '@/supabase/client';
 import { v4 as uuidv4 } from 'uuid';
 import { StateCreator } from 'zustand';
-import { HabitCompletion, SharedSlice, type Habit } from '../types';
+import { SharedSlice, type Habit } from '../types';
 import { syncStoreToWidget } from '../widget-storage';
 
 export interface HabitSlice {
@@ -22,11 +15,6 @@ export interface HabitSlice {
   updateHabit: (id: string, updates: Partial<Habit>) => Promise<void>;
   deleteHabit: (id: string) => Promise<void>;
   updateHabitOrder: (habitIds: string[]) => Promise<void>;
-
-  getHabitStatus: (habitId: string, date: Date) => HabitCompletion | null;
-  getCurrentValue: (habitId: string, date: Date) => number;
-  getCurrentProgress: (habitId: string, date: Date) => number;
-  getProgressText: (habitId: string, date: Date) => string;
 }
 
 export const createHabitSlice: StateCreator<SharedSlice, [], [], HabitSlice> = (
@@ -264,37 +252,5 @@ export const createHabitSlice: StateCreator<SharedSlice, [], [], HabitSlice> = (
     }
 
     await get().processPendingOperations();
-  },
-
-  getHabitStatus: (habitId: string, date: Date): HabitCompletion | null => {
-    return getHabitStatus(
-      Array.from(get().completions.values()),
-      habitId,
-      date
-    );
-  },
-
-  getCurrentValue: (habitId: string, date: Date): number => {
-    return getCurrentValue(
-      Array.from(get().completions.values()),
-      habitId,
-      date
-    );
-  },
-
-  getCurrentProgress: (habitId: string, date: Date): number => {
-    const habit = get().habits.get(habitId);
-    if (!habit) return 0;
-
-    const currentValue = get().getCurrentValue(habitId, date);
-    return getCurrentProgress(habit, currentValue);
-  },
-
-  getProgressText: (habitId: string, date: Date): string => {
-    const habit = get().habits.get(habitId);
-    if (!habit) return '0/1';
-
-    const currentValue = get().getCurrentValue(habitId, date);
-    return getProgressText(habit, currentValue);
   },
 });

@@ -1,6 +1,7 @@
-import React from 'react';
-import { Modal, View, Text, StyleSheet, Pressable } from 'react-native';
 import { useModalStore } from '@/lib/stores/modal_store';
+import React from 'react';
+import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ACTIVE_OPACITY } from '../shared/config';
 
 interface Props {
   onDismiss: () => void;
@@ -38,12 +39,20 @@ const ConfirmationModal = ({ onDismiss }: Props) => {
           <Text style={styles.message}>{confirmationData.message}</Text>
 
           <View style={styles.buttons}>
-            <Pressable style={styles.cancelButton} onPress={handleCancel}>
+            <TouchableOpacity
+              style={styles.cancelButton}
+              onPress={handleCancel}
+              activeOpacity={ACTIVE_OPACITY}
+            >
               <Text style={styles.cancelText}>Cancel</Text>
-            </Pressable>
-            <Pressable style={styles.confirmButton} onPress={handleConfirm}>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.confirmButton}
+              onPress={handleConfirm}
+              activeOpacity={ACTIVE_OPACITY}
+            >
               <Text style={styles.confirmText}>Confirm</Text>
-            </Pressable>
+            </TouchableOpacity>
           </View>
         </View>
       </View>

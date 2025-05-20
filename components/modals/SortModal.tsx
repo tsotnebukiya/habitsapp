@@ -1,4 +1,3 @@
-import { MaterialIcons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import React, { useState } from 'react';
 import {
@@ -16,6 +15,7 @@ import { SharedSlice } from '@/lib/habit-store/types';
 import { useAllHabits } from '@/lib/hooks/useHabits';
 import { sortHabits } from '@/lib/utils/habits';
 
+import { IconButton } from 'react-native-paper';
 import Button from '../shared/Button';
 import ItemIcon, { getIconTint } from '../shared/Icon';
 
@@ -88,35 +88,18 @@ const SortModal = ({ onDismiss }: Props) => {
                 </View>
 
                 <View style={styles.buttonsCol}>
-                  <Pressable
-                    style={styles.sortBtn}
-                    disabled={i === 0}
-                    android_ripple={{ borderless: true }}
+                  <IconButton
+                    icon="arrow-up"
                     onPress={() => moveHabit(i, 'up')}
-                  >
-                    <MaterialIcons
-                      name="arrow-upward"
-                      size={24}
-                      color={i === 0 ? colors.border : colors.text}
-                    />
-                  </Pressable>
-
-                  <Pressable
+                    disabled={i === 0}
                     style={styles.sortBtn}
-                    disabled={i === orderedHabits.length - 1}
-                    android_ripple={{ borderless: true }}
+                  />
+                  <IconButton
+                    icon="arrow-down"
                     onPress={() => moveHabit(i, 'down')}
-                  >
-                    <MaterialIcons
-                      name="arrow-downward"
-                      size={24}
-                      color={
-                        i === orderedHabits.length - 1
-                          ? colors.border
-                          : colors.text
-                      }
-                    />
-                  </Pressable>
+                    disabled={i === orderedHabits.length - 1}
+                    style={styles.sortBtn}
+                  />
                 </View>
               </View>
             ))}
@@ -181,7 +164,7 @@ const styles = StyleSheet.create({
     fontFamily: fontWeights.semibold,
     fontSize: 14,
   },
-  buttonsCol: { flexDirection: 'row', gap: 4 },
+  buttonsCol: { flexDirection: 'row', gap: 4, alignItems: 'center' },
 
   sortBtn: {
     height: 50,
@@ -190,8 +173,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
     backgroundColor: 'white',
-    alignItems: 'center',
-    justifyContent: 'center',
+    // alignItems: 'center',
+    // justifyContent: 'center',
+    margin: 0,
   },
 
   footer: {

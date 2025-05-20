@@ -1,9 +1,9 @@
-import { useEffect, useRef } from 'react';
-import { AppState, AppStateStatus } from 'react-native';
 import useHabitsStore from '@/lib/habit-store/store';
 import { widgetStorage } from '@/lib/habit-store/widget-storage';
 import { dateUtils } from '@/lib/utils/dayjs';
-import { normalizeDate } from '@/lib/utils/habits';
+import { useEffect, useRef } from 'react';
+import { AppState, AppStateStatus } from 'react-native';
+import { useHabitStatusInfo } from './useHabits';
 
 const RECONCILIATION_DEBOUNCE = 1000; // 1 second
 
@@ -65,11 +65,10 @@ export const useReconcileWidgetState = () => {
               const widgetStatusIsCompleted = weeklyStatus[todayKey] === true;
 
               // Check current state in store
-              const currentStoreStatus = useHabitsStore
-                .getState()
-                .getHabitStatus(id, today);
+              const currentStoreStatus = useHabitStatusInfo(id, today);
+
               const currentStoreIsCompleted =
-                currentStoreStatus?.status === 'completed';
+                currentStoreStatus?.completion?.status === 'completed';
               const habit = useHabitsStore.getState().habits.get(id);
 
               if (

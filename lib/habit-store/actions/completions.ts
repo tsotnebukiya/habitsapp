@@ -1,11 +1,13 @@
-import { type HabitAction, type HabitCompletion } from '../types';
-import { calculateHabitToggle, normalizeDate } from '@/lib/utils/habits';
-import { StateCreator } from 'zustand';
-import { SharedSlice } from '../types';
 import { dateUtils } from '@/lib/utils/dayjs';
-import { v4 as uuidv4 } from 'uuid';
+import {
+  calculateHabitToggle,
+  getUserIdOrThrow,
+  normalizeDate,
+} from '@/lib/utils/habits';
 import { supabase } from '@/supabase/client';
-import { getUserIdOrThrow } from '@/lib/utils/habits';
+import { v4 as uuidv4 } from 'uuid';
+import { StateCreator } from 'zustand';
+import { SharedSlice, type HabitAction, type HabitCompletion } from '../types';
 import { syncStoreToWidget } from '../widget-storage';
 
 export interface CompletionSlice {
@@ -24,6 +26,7 @@ export interface CompletionSlice {
     action: HabitAction,
     value?: number
   ) => void;
+  resetHabitHistory: (habitId: string) => Promise<void>;
 }
 
 export const createCompletionSlice: StateCreator<
@@ -127,7 +130,6 @@ export const createCompletionSlice: StateCreator<
     if (!habit) {
       throw new Error('Habit not found');
     }
-
     const { newValue, newStatus } = calculateHabitToggle({
       habit,
       date,
@@ -142,8 +144,9 @@ export const createCompletionSlice: StateCreator<
         completion.habit_id === habitId &&
         completion.completion_date === normalizedDate
     );
-
-    // Update or create completion
+    console.log(action, value);
+    console.log(newValue, newStatus);
+    // Update or create completion first
     if (existingCompletion) {
       get().updateCompletion(existingCompletion.id, {
         status: newStatus,
@@ -159,11 +162,72 @@ export const createCompletionSlice: StateCreator<
       });
     }
 
-    // Actions
+    // Then update UI and trigger calculations
     get().updateDayStatus(date);
     syncStoreToWidget(get().habits, get().completions);
     setTimeout(() => {
       get().calculateAndUpdate();
     }, 100);
+  },
+
+  resetHabitHistory: async (habitId: string) => {
+    // Get all completions for this habit
+    const completionsToDelete = Array.from(get().completions.values())
+      .filter((completion) => completion.habit_id === habitId)
+      .map((completion) => completion.id);
+
+    if (completionsToDelete.length === 0) return;
+
+    // Update local store first
+    set((state) => {
+      const newCompletions = new Map(state.completions);
+      completionsToDelete.forEach((id) => newCompletions.delete(id));
+      return { completions: newCompletions };
+    });
+
+    // Update UI and sync
+    get().updateAffectedDates(habitId);
+    syncStoreToWidget(get().habits, get().completions);
+    setTimeout(() => {
+      get().calculateAndUpdate();
+    }, 100);
+
+    try {
+      const { error } = await supabase
+        .from('habit_completions')
+        .delete()
+        .eq('habit_id', habitId);
+
+      if (error) throw error;
+    } catch (error) {
+      const now = dateUtils.nowUTC();
+      const userId = getUserIdOrThrow();
+
+      // Create a dummy completion to satisfy the type system
+      const dummyCompletion: HabitCompletion = {
+        id: uuidv4(),
+        habit_id: habitId,
+        user_id: userId,
+        completion_date: dateUtils.toServerDateString(now),
+        created_at: dateUtils.toServerDateTime(now),
+        status: 'not_started',
+        value: null,
+      };
+
+      const pendingOp = {
+        id: habitId,
+        type: 'delete' as const,
+        table: 'habit_completions' as const,
+        data: dummyCompletion,
+        timestamp: now.toDate(),
+        retryCount: 0,
+        lastAttempt: now.toDate(),
+      };
+      set((state) => ({
+        pendingOperations: [...state.pendingOperations, pendingOp],
+      }));
+    }
+
+    await get().processPendingOperations();
   },
 });

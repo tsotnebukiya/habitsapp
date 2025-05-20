@@ -16,12 +16,9 @@ export default function Home() {
   useEffect(() => {
     if (profile?.id) {
       syncData();
-      const syncInterval = setInterval(
-        () => {
-          syncData();
-        },
-        1000 * 60 * 60
-      );
+      const syncInterval = setInterval(() => {
+        syncData();
+      }, 1000 * 60 * 60);
       return () => clearInterval(syncInterval);
     }
   }, [profile?.id, syncData]);

@@ -5,7 +5,13 @@ import { sortHabits } from '@/lib/utils/habits';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
 import { FlashList } from '@shopify/flash-list';
 import dayjs from 'dayjs';
-import React, { useCallback, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { StyleSheet, View } from 'react-native';
 import Toast from 'react-native-toast-message';
 import EmptyHabits from './EmptyHabits';
@@ -45,13 +51,15 @@ const HabitList = function HabitList({ selectedDate }: HabitListProps) {
         return;
       }
       setSelectedHabit(habit);
-
-      bottomSheetModalRef.current?.present();
-      console.log(bottomSheetModalRef.current)
     },
     [afterToday, showIsAfterToast]
   );
 
+  useEffect(() => {
+    if (selectedHabit) {
+      bottomSheetModalRef.current?.present();
+    }
+  }, [selectedHabit]);
   const handleDismiss = useCallback(() => {
     setSelectedHabit(null);
   }, []);
@@ -61,7 +69,6 @@ const HabitList = function HabitList({ selectedDate }: HabitListProps) {
       <HabitItem
         habit={habit}
         selectedDate={selectedDate}
-        onLongPress={() => {}}
         onPress={handleHabitPress}
         afterToday={afterToday}
       />
@@ -104,11 +111,11 @@ export default HabitList;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 18,
   },
   contentContainer: {
     paddingBottom: 20,
     paddingTop: 29,
+    paddingHorizontal: 18,
   },
   separator: {
     height: 9,

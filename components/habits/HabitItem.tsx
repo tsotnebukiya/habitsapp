@@ -1,12 +1,13 @@
 import { ACTIVE_OPACITY } from '@/components/shared/config';
 import { colors, fontWeights } from '@/lib/constants/ui';
 import useHabitsStore from '@/lib/habit-store/store';
+import { useHabitStatusInfo } from '@/lib/hooks/useHabits';
 import { Database } from '@/supabase/types';
 import { MaterialIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import React from 'react';
 import {
-  Pressable,
+  Dimensions,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -18,14 +19,16 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 import Toast from 'react-native-toast-message';
+import * as ContextMenu from 'zeego/context-menu';
 import ItemIcon, { getIconTint } from '../shared/Icon';
 
 type Habit = Database['public']['Tables']['habits']['Row'];
 
+const SCREEN_WIDTH = Dimensions.get('window').width;
+
 interface HabitItemProps {
   habit: Habit;
   selectedDate: Date;
-  onLongPress: (habit: Habit) => void;
   onPress: (habit: Habit) => void;
   afterToday: boolean;
 }
@@ -34,26 +37,19 @@ function HabitItem({
   habit,
   selectedDate,
   afterToday,
-  onLongPress,
   onPress,
 }: HabitItemProps) {
-  const status = useHabitsStore(
-    (state) =>
-      state.getHabitStatus(habit.id, selectedDate)?.status || 'not_started'
-  );
-
-  const progress = useHabitsStore((state) =>
-    state.getCurrentProgress(habit.id, selectedDate)
-  );
-
-  const progressText = useHabitsStore((state) =>
-    state.getProgressText(habit.id, selectedDate)
+  const { completion, progress, progressText } = useHabitStatusInfo(
+    habit.id,
+    selectedDate
   );
 
   const toggleHabitStatus = useHabitsStore((state) => state.toggleHabitStatus);
+  const deleteHabit = useHabitsStore((state) => state.deleteHabit);
+  const resetHabitHistory = useHabitsStore((state) => state.resetHabitHistory);
 
-  const isSkipped = status === 'skipped';
-
+  const isSkipped = completion?.status === 'skipped';
+  const status = completion?.status || 'not_started';
   const showIsAfterToast = () => {
     Toast.show({
       type: 'error',
@@ -96,7 +92,19 @@ function HabitItem({
 
   const handleLongPress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    onLongPress(habit);
+    // Handle long press
+  };
+
+  const handleDelete = () => {
+    deleteHabit(habit.id);
+  };
+
+  const handleSkip = () => {
+    toggleHabitStatus(habit.id, selectedDate, 'toggle_skip');
+  };
+
+  const handleResetHistory = () => {
+    resetHabitHistory(habit.id);
   };
 
   const progressStyle = useAnimatedStyle(() => ({
@@ -129,12 +137,14 @@ function HabitItem({
       }
     }
   };
-  return (
-    <Pressable
-      onPress={handlePress}
-      onLongPress={handleLongPress}
-      delayLongPress={200}
-      style={[styles.habitCard, isSkipped && styles.skippedCard]}
+
+  const renderHabitContent = () => (
+    <View
+      style={[
+        styles.habitCard,
+        isSkipped && styles.skippedCard,
+        { width: SCREEN_WIDTH - 32 },
+      ]}
     >
       <View
         style={[
@@ -202,7 +212,53 @@ function HabitItem({
           {iconRender()}
         </TouchableOpacity>
       </View>
-    </Pressable>
+    </View>
+  );
+
+  return (
+    <ContextMenu.Root modal={false}>
+      <ContextMenu.Trigger style={{ borderRadius: 16, overflow: 'hidden' }}>
+        <TouchableOpacity
+          activeOpacity={ACTIVE_OPACITY}
+          onPress={handlePress}
+          onLongPress={handleLongPress}
+          delayLongPress={200}
+        >
+          {renderHabitContent()}
+        </TouchableOpacity>
+      </ContextMenu.Trigger>
+      <ContextMenu.Content>
+        <ContextMenu.Preview borderRadius={16}>
+          {renderHabitContent()}
+        </ContextMenu.Preview>
+        <ContextMenu.Item key="edit" onSelect={() => {}}>
+          <ContextMenu.ItemTitle>Edit Habit</ContextMenu.ItemTitle>
+          <ContextMenu.ItemIcon ios={{ name: 'pencil.line' }} />
+        </ContextMenu.Item>
+        {!isSkipped && (
+          <ContextMenu.Item key="skip" onSelect={handleSkip}>
+            <ContextMenu.ItemTitle>Skip</ContextMenu.ItemTitle>
+            <ContextMenu.ItemIcon ios={{ name: 'arrow.forward.to.line' }} />
+          </ContextMenu.Item>
+        )}
+        {isSkipped && (
+          <ContextMenu.Item key="unskip" onSelect={handleSkip}>
+            <ContextMenu.ItemTitle>Unskip</ContextMenu.ItemTitle>
+            <ContextMenu.ItemIcon ios={{ name: 'arrow.backward.to.line' }} />
+          </ContextMenu.Item>
+        )}
+
+        <ContextMenu.Item key="reset" onSelect={handleResetHistory}>
+          <ContextMenu.ItemTitle>Reset history</ContextMenu.ItemTitle>
+          <ContextMenu.ItemIcon ios={{ name: 'repeat' }} />
+        </ContextMenu.Item>
+
+        <ContextMenu.Item key="delete" destructive onSelect={handleDelete}>
+          <ContextMenu.ItemTitle>Delete Habit</ContextMenu.ItemTitle>
+          <ContextMenu.ItemIcon ios={{ name: 'trash' }} />
+        </ContextMenu.Item>
+      </ContextMenu.Content>
+    </ContextMenu.Root>
   );
 }
 

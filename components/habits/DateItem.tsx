@@ -9,7 +9,11 @@ import {
   View,
 } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
-import { DATE_ITEM_WIDTH, WEEK_VIEW_ITEM_GAP } from '../shared/config';
+import {
+  ACTIVE_OPACITY,
+  DATE_ITEM_WIDTH,
+  WEEK_VIEW_ITEM_GAP,
+} from '../shared/config';
 interface DateItemProps {
   onPress: (date: Date) => void;
   isSelected: boolean;
@@ -70,7 +74,7 @@ const DateItem = memo(function DateItem({
         isSelected && styles.selectedDay,
         { marginHorizontal: WEEK_VIEW_ITEM_GAP / 2 },
       ]}
-      activeOpacity={1}
+      activeOpacity={ACTIVE_OPACITY}
     >
       <Text style={[styles.dayName, isSelected && styles.dayNameSelected]}>
         {dateWeek}
