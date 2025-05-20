@@ -6,6 +6,7 @@ export const colors = {
   bgLight: '#F9F9F9',
   bgDark: '#181A1B',
   text: '#293447',
+  textLight: '#8A8A8A',
   border: '#E9EAEB',
   // Grey
   tabBarGrey: '#9499A3',

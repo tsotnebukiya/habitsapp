@@ -5,6 +5,7 @@ import { useHabitStatusInfo } from '@/lib/hooks/useHabits';
 import { Database } from '@/supabase/types';
 import { MaterialIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
+import { router } from 'expo-router';
 import React from 'react';
 import {
   Dimensions,
@@ -105,6 +106,13 @@ function HabitItem({
 
   const handleResetHistory = () => {
     resetHabitHistory(habit.id);
+  };
+
+  const handleEdit = () => {
+    router.push({
+      pathname: '/(app)/update-habit',
+      params: { habitId: habit.id },
+    });
   };
 
   const progressStyle = useAnimatedStyle(() => ({
@@ -231,7 +239,7 @@ function HabitItem({
         <ContextMenu.Preview borderRadius={16}>
           {renderHabitContent()}
         </ContextMenu.Preview>
-        <ContextMenu.Item key="edit" onSelect={() => {}}>
+        <ContextMenu.Item key="edit" onSelect={handleEdit}>
           <ContextMenu.ItemTitle>Edit Habit</ContextMenu.ItemTitle>
           <ContextMenu.ItemIcon ios={{ name: 'pencil.line' }} />
         </ContextMenu.Item>

@@ -1,5 +1,4 @@
 import { colors, fontWeights } from '@/lib/constants/ui';
-import { useAddHabitStore } from '@/lib/stores/add_habit_store';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -8,16 +7,27 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Button from '../shared/Button';
 import { sharedStyles } from './styles';
 
+type TextFormData = {
+  name: string;
+  description: string;
+};
+
 export default function TextChoosing({
+  formData,
+  setFormField,
   type,
 }: {
+  formData: TextFormData;
+  setFormField: <K extends keyof TextFormData>(
+    field: K,
+    value: TextFormData[K]
+  ) => void;
   type: 'name' | 'description';
 }) {
   const insets = useSafeAreaInsets();
-  const formData = useAddHabitStore((state) => state.formData);
-  const setFormField = useAddHabitStore((state) => state.setFormField);
+
   const [tempData, setTempData] = useState<string>(
-    type === 'name' ? formData.name : formData.description
+    type === 'name' ? formData.name || '' : formData.description || ''
   );
   const handleSubmit = () => {
     setFormField(type === 'name' ? 'name' : 'description', tempData);

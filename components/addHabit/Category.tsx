@@ -1,7 +1,6 @@
 import { ACTIVE_OPACITY } from '@/components/shared/config';
-import { CATEGORIES } from '@/lib/constants/HabitTemplates';
+import { CATEGORIES, HabitCategory } from '@/lib/constants/HabitTemplates';
 import { colors, fontWeights } from '@/lib/constants/ui';
-import { useAddHabitStore } from '@/lib/stores/add_habit_store';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -10,10 +9,22 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Button from '../shared/Button';
 import { sharedStyles } from './styles';
 
-export default function CategoryChoosing() {
+type CategoryFormData = {
+  category: HabitCategory;
+};
+
+export default function CategoryChoosing({
+  formData,
+  setFormField,
+}: {
+  formData: CategoryFormData;
+  setFormField: <K extends keyof CategoryFormData>(
+    field: K,
+    value: CategoryFormData[K]
+  ) => void;
+}) {
   const insets = useSafeAreaInsets();
-  const setFormField = useAddHabitStore((state) => state.setFormField);
-  const selectedCategory = useAddHabitStore((state) => state.formData.category);
+  const selectedCategory = formData.category || 'cat1';
   const [tempCategory, setTempCategory] = useState<string>(selectedCategory);
 
   const handleCategorySelect = (categoryId: string) => {

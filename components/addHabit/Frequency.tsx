@@ -1,6 +1,7 @@
 import { ACTIVE_OPACITY } from '@/components/shared/config';
 import { colors, fontWeights } from '@/lib/constants/ui';
-import { useAddHabitStore } from '@/lib/stores/add_habit_store';
+import { HabitFrequency } from '@/lib/habit-store/types';
+import { HabitFormData } from '@/lib/stores/add_habit_store';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -8,13 +9,23 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Button from '../shared/Button';
 import { sharedStyles } from './styles';
 
-export default function FrequencyChoosing() {
+type FrequencyFormData = Pick<HabitFormData, 'frequencyType' | 'daysOfWeek'>;
+
+export default function FrequencyChoosing({
+  formData,
+  setFormField,
+}: {
+  formData: FrequencyFormData;
+  setFormField: <K extends keyof HabitFormData>(
+    field: K,
+    value: HabitFormData[K]
+  ) => void;
+}) {
   const insets = useSafeAreaInsets();
-  const formData = useAddHabitStore((state) => state.formData);
-  const setFormField = useAddHabitStore((state) => state.setFormField);
-  const [tempFrequencyType, setTempFrequencyType] = useState<
-    'daily' | 'weekly'
-  >(formData.frequencyType);
+
+  const [tempFrequencyType, setTempFrequencyType] = useState<HabitFrequency>(
+    formData.frequencyType
+  );
   const [tempDaysOfWeek, setTempDaysOfWeek] = useState<number[]>(
     formData.daysOfWeek
   );
@@ -31,8 +42,11 @@ export default function FrequencyChoosing() {
   };
 
   const handleSubmit = () => {
-    setFormField('frequencyType', tempFrequencyType as any);
-    setFormField('daysOfWeek', tempDaysOfWeek as any);
+    setFormField(
+      'frequencyType',
+      tempFrequencyType as HabitFormData['frequencyType']
+    );
+    setFormField('daysOfWeek', tempDaysOfWeek as HabitFormData['daysOfWeek']);
     router.back();
   };
   return (
@@ -51,7 +65,7 @@ export default function FrequencyChoosing() {
                   tempFrequencyType === type && styles.selectedFrequency,
                 ]}
                 activeOpacity={ACTIVE_OPACITY}
-                onPress={() => setTempFrequencyType(type as 'daily' | 'weekly')}
+                onPress={() => setTempFrequencyType(type as HabitFrequency)}
               >
                 <Text
                   style={[

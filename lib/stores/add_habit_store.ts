@@ -8,7 +8,7 @@ import {
 } from '../constants/MeasurementUnits';
 import { colors } from '../constants/ui';
 
-interface HabitFormData {
+export interface HabitFormData {
   name: string;
   description: string;
   color: string;

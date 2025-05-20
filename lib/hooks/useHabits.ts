@@ -27,6 +27,13 @@ export function useThreeMonthsStatuses() {
   return returnObj;
 }
 
+export const useHabit = (habitId: string) => {
+  const habitsMap = useHabitsStore((state) => state.habits);
+  return useMemo(() => {
+    return habitsMap.get(habitId);
+  }, [habitsMap, habitId]);
+};
+
 export const useAllHabits = () => {
   const habitsMap = useHabitsStore((state) => state.habits);
 

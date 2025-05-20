@@ -4,7 +4,6 @@ import {
   MeasurementUnits,
 } from '@/lib/constants/MeasurementUnits';
 import { colors, fontWeights } from '@/lib/constants/ui';
-import { useAddHabitStore } from '@/lib/stores/add_habit_store';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React, { useRef, useState } from 'react';
@@ -23,11 +22,26 @@ const data = Object.values(MeasurementUnits).map((unit, i) => ({
 
 type UnitType = (typeof data)[number];
 
-export default function GoalChoosing() {
+type GoalFormData = {
+  goal: {
+    value: number;
+    unit: MeasurementUnit;
+  };
+};
+
+export default function GoalChoosing({
+  formData,
+  setFormField,
+}: {
+  formData: GoalFormData;
+  setFormField: <K extends keyof GoalFormData>(
+    field: K,
+    value: GoalFormData[K]
+  ) => void;
+}) {
   const insets = useSafeAreaInsets();
   const modalSelectorRef = useRef<any>(null);
-  const formData = useAddHabitStore((state) => state.formData);
-  const setFormData = useAddHabitStore((state) => state.setFormField);
+
   const [tempData, setTempData] = useState<{
     value: number;
     unit: MeasurementUnit;
@@ -44,7 +58,7 @@ export default function GoalChoosing() {
   };
 
   const handleSubmit = () => {
-    setFormData('goal', tempData);
+    setFormField('goal', tempData);
     router.back();
   };
 

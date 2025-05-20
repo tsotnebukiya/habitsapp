@@ -20,7 +20,6 @@ import {
   PRIME_ICON_NAMES,
 } from '@/lib/constants/icons';
 import { colors } from '@/lib/constants/ui';
-import { useAddHabitStore } from '@/lib/stores/add_habit_store';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Button from '../shared/Button';
@@ -31,16 +30,26 @@ const NUM_COLUMNS = 8; // 8 icons per row
 const GAP = 24; // figma: 24-px space between icons
 const SIDE_MARGIN = GAP / 2; // 12 px on each side → 24 px total gap
 
-/* cell width = (screenWidth - totalHorizontalGap) / columns */
 const SCREEN_WIDTH = Dimensions.get('window').width;
 const CELL_SIZE =
   (SCREEN_WIDTH - NUM_COLUMNS * GAP - GAP) /* outer padding */ / NUM_COLUMNS;
 
-export default function IconChoosing() {
+type IconFormData = {
+  icon: string;
+};
+
+export default function IconChoosing({
+  formData,
+  setFormField,
+}: {
+  formData: IconFormData;
+  setFormField: <K extends keyof IconFormData>(
+    field: K,
+    value: IconFormData[K]
+  ) => void;
+}) {
   const insets = useSafeAreaInsets();
-  /* 0 = Icons, 1 = Emojis */
-  const selectedIcon = useAddHabitStore((s) => s.formData.icon);
-  const setFormField = useAddHabitStore((s) => s.setFormField);
+  const selectedIcon = formData.icon || 'lightbulb';
   const [tempIcon, setTempIcon] = useState<string>(selectedIcon);
   const [tabIndex, setTabIndex] = useState<0 | 1>(0);
   const [query, setQuery] = useState('');

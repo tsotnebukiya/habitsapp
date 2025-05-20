@@ -1,6 +1,5 @@
 import { ACTIVE_OPACITY } from '@/components/shared/config';
 import { colors } from '@/lib/constants/ui';
-import { useAddHabitStore } from '@/lib/stores/add_habit_store';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -9,10 +8,22 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Button from '../shared/Button';
 import { sharedStyles } from './styles';
 
-export default function ColorChoosing() {
+type ColorFormData = {
+  color: string;
+};
+
+export default function ColorChoosing({
+  formData,
+  setFormField,
+}: {
+  formData: ColorFormData;
+  setFormField: <K extends keyof ColorFormData>(
+    field: K,
+    value: ColorFormData[K]
+  ) => void;
+}) {
   const insets = useSafeAreaInsets();
-  const setFormField = useAddHabitStore((state) => state.setFormField);
-  const selectedColor = useAddHabitStore((state) => state.formData.color);
+  const selectedColor = formData.color || colors.habitColors.cyanBlue;
   const [tempColor, setTempColor] = useState<string>(selectedColor);
 
   const handleSelectColor = (color: string) => {

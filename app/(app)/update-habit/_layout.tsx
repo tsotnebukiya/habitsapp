@@ -1,17 +1,18 @@
 import { ACTIVE_OPACITY } from '@/components/shared/config';
-import toastConfig from '@/components/shared/toastConfig';
 import { colors, fontWeights } from '@/lib/constants/ui';
-import { useAddHabitStore } from '@/lib/stores/add_habit_store';
-import { router, Stack, usePathname } from 'expo-router';
+import { useHabit } from '@/lib/hooks/useHabits';
+import { useUpdateHabitStore } from '@/lib/stores/update_habit_store';
+import { router, Stack, useLocalSearchParams, usePathname } from 'expo-router';
 import { useEffect } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Icon } from 'react-native-paper';
-import Toast from 'react-native-toast-message';
 
-export default function AddHabitLayout() {
-  const resetForm = useAddHabitStore((state) => state.resetForm);
+export default function UpdateHabitLayout() {
+  const resetForm = useUpdateHabitStore((state) => state.resetForm);
+  const { habitId } = useLocalSearchParams<{ habitId: string }>();
+  const habit = useHabit(habitId);
   const pathname = usePathname();
-  const backButton = pathname !== '/add-habit';
+  const backButton = pathname !== '/update-habit';
   const handleClose = () => {
     router.replace('/');
   };
@@ -25,7 +26,6 @@ export default function AddHabitLayout() {
       resetForm();
     };
   }, []);
-
   return (
     <View style={{ flex: 1 }}>
       <View style={styles.header}>
@@ -45,7 +45,7 @@ export default function AddHabitLayout() {
           <View style={styles.headerSpacing} />
         )}
 
-        <Text style={styles.heading}>Add New Habit</Text>
+        <Text style={styles.heading}>Edit {habit?.name}</Text>
         <TouchableOpacity
           onPress={handleClose}
           activeOpacity={ACTIVE_OPACITY}
@@ -66,32 +66,18 @@ export default function AddHabitLayout() {
           }}
         />
         <Stack.Screen
-          name="template-selection"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="create-habit"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
           name="detail-choosing"
           options={{
             headerShown: false,
           }}
         />
       </Stack>
-      <Toast config={toastConfig} />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    // padding: 18,
     flex: 1,
   },
   header: {

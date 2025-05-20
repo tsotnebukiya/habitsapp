@@ -1,6 +1,5 @@
 import { ACTIVE_OPACITY } from '@/components/shared/config';
 import { colors, fontWeights } from '@/lib/constants/ui';
-import { useAddHabitStore } from '@/lib/stores/add_habit_store';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useState } from 'react';
@@ -10,11 +9,24 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Button from '../shared/Button';
 import { sharedStyles } from './styles';
 
-export default function TypeChoosing() {
+type TypeFormData = {
+  type: 'GOOD' | 'BAD';
+};
+
+export default function TypeChoosing({
+  formData,
+  setFormField,
+}: {
+  formData: TypeFormData;
+  setFormField: <K extends keyof TypeFormData>(
+    field: K,
+    value: TypeFormData[K]
+  ) => void;
+}) {
   const insets = useSafeAreaInsets();
 
-  const selectedType = useAddHabitStore((state) => state.formData.type);
-  const setFormField = useAddHabitStore((state) => state.setFormField);
+  const selectedType = formData.type;
+
   const [tempType, setTempType] = useState<'GOOD' | 'BAD'>(selectedType);
   const handleTypeSelect = (type: 'GOOD' | 'BAD') => {
     setTempType(type);
