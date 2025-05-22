@@ -5,7 +5,7 @@ import { dateUtils } from '@/lib/utils/dayjs';
 import { getRelativeDateText, isToday } from '@/lib/utils/misc';
 import { MaterialIcons } from '@expo/vector-icons';
 import { FlashList } from '@shopify/flash-list';
-import { Dayjs } from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import React, { memo, useCallback, useEffect, useMemo, useRef } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Icon, IconButton } from 'react-native-paper';
@@ -28,16 +28,16 @@ export const WeekView = memo(function WeekView({
 }: WeekViewProps) {
   const monthStatuses = useThreeMonthsStatuses();
   const flatListRef = useRef<FlashList<any>>(null);
-  const selectedDayjs = dateUtils.fromUTC(selectedDate);
+  const selectedDayjs = dayjs(selectedDate);
   const showSortModal = useModalStore((state) => state.showSortModal);
 
   const dates = useMemo(() => {
     const result: DateItem[] = [];
     const startOfPrevMonth = dateUtils
-      .todayUTC()
+      .today()
       .subtract(1, 'month')
       .startOf('month');
-    const endOfNextMonth = dateUtils.todayUTC().add(1, 'month').endOf('month');
+    const endOfNextMonth = dateUtils.today().add(1, 'month').endOf('month');
 
     // Add start spacer
     result.push({ date: startOfPrevMonth.clone(), type: 'spacer' });
@@ -62,7 +62,7 @@ export const WeekView = memo(function WeekView({
 
   const selectedIndex = useMemo(() => {
     const startOfPrevMonth = dateUtils
-      .todayUTC()
+      .today()
       .subtract(1, 'month')
       .startOf('month');
 
@@ -102,7 +102,7 @@ export const WeekView = memo(function WeekView({
   }, []);
 
   const returnToToday = () => {
-    onDateSelect(dateUtils.todayUTC().toDate());
+    onDateSelect(dateUtils.today().toDate());
   };
   const handleSort = () => {
     showSortModal();

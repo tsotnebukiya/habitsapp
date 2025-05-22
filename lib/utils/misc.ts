@@ -1,14 +1,14 @@
-import { dateUtils } from './dayjs';
+import dayjs, { dateUtils } from './dayjs';
 
 export const isToday = (date: Date) => {
-  const today = dateUtils.todayUTC();
-  const targetDate = dateUtils.fromUTC(date);
+  const today = dateUtils.today();
+  const targetDate = dayjs(date);
   return targetDate.isSame(today, 'day');
 };
 
 export const getRelativeDateText = (date: Date): string => {
-  const today = dateUtils.todayUTC();
-  const targetDate = dateUtils.fromUTC(date);
+  const today = dateUtils.today();
+  const targetDate = dayjs(date);
 
   if (targetDate.isSame(today, 'day')) {
     return 'Today';

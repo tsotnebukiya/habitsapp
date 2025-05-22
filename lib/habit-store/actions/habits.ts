@@ -18,6 +18,7 @@ export interface HabitSlice {
   updateHabit: (id: string, updates: Partial<Habit>) => Promise<void>;
   deleteHabit: (id: string) => Promise<void>;
   updateHabitOrder: (habitIds: string[]) => Promise<void>;
+  deleteAllHabits: () => Promise<void>;
 }
 
 export const createHabitSlice: StateCreator<SharedSlice, [], [], HabitSlice> = (
@@ -243,5 +244,11 @@ export const createHabitSlice: StateCreator<SharedSlice, [], [], HabitSlice> = (
     }
 
     await get().processPendingOperations();
+  },
+  deleteAllHabits: async () => {
+    const habits = Array.from(get().habits.values());
+    for (const habit of habits) {
+      await get().deleteHabit(habit.id);
+    }
   },
 });

@@ -31,10 +31,10 @@ const HabitList = function HabitList({ selectedDate }: HabitListProps) {
   const [selectedHabit, setSelectedHabit] = useState<Habit | null>(null);
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
   const afterToday = useMemo(() => {
-    const today = dateUtils.today().startOf('day');
+    const today = dateUtils.today();
+    console.log(today);
     return dayjs(selectedDate).startOf('day').isAfter(today);
   }, [selectedDate]);
-
   const showIsAfterToast = useCallback(() => {
     Toast.show({
       type: 'error',

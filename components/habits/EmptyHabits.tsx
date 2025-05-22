@@ -8,13 +8,17 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Icon } from 'react-native-paper';
 
 function EmptyHabits({ selectedDate }: { selectedDate: Date }) {
-  const today = dateUtils.today().startOf('day');
-  const selected = dayjs(selectedDate).startOf('day');
-
+  const today = dateUtils.today();
+  const selected = dayjs(selectedDate);
   let title = 'No habits for today yet.';
   let subtitle = 'Add one now to start tracking.';
   let showAddButton = true;
-
+  console.log('today (UTC):', today.toISOString());
+  console.log('today (local):', today.format('YYYY-MM-DD HH:mm:ss'));
+  console.log('selected (UTC):', selected.toISOString());
+  console.log('selected (local):', selected.format('YYYY-MM-DD HH:mm:ss'));
+  console.log(selected);
+  console.log(today);
   if (selected.isBefore(today)) {
     title = `No habits were scheduled on ${selected.format('MMM D')}.`;
     subtitle = '';
