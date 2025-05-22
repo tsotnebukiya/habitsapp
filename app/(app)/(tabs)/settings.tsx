@@ -1,20 +1,15 @@
-import React from 'react';
-import {
-  StyleSheet,
-  SafeAreaView,
-  View,
-  Text,
-  Switch,
-  TouchableOpacity,
-} from 'react-native';
-import useUserProfileStore from '@/lib/stores/user_profile';
-import { useRouter } from 'expo-router';
-import { supabase } from '@/supabase/client';
 import { useNotifications } from '@/lib/hooks/useNotifications';
 import { useAppStore } from '@/lib/stores/app_state';
+import useUserProfileStore from '@/lib/stores/user_profile';
+import { supabase } from '@/supabase/client';
+import { useRouter } from 'expo-router';
+import React from 'react';
+import { StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const SettingsScreen = () => {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const {
     clearProfile,
     setDailyUpdateNotificationsEnabled,
@@ -30,7 +25,7 @@ const SettingsScreen = () => {
     router.replace('/onboarding/OnboardingIntro');
   };
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top + 17 }]}>
       <View style={styles.section}>
         <View style={styles.row}>
           <Text style={styles.text}>Push Notifications</Text>
@@ -58,7 +53,7 @@ const SettingsScreen = () => {
       <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
         <Text style={styles.logoutText}>Log Out</Text>
       </TouchableOpacity>
-    </SafeAreaView>
+    </View>
   );
 };
 

@@ -7,7 +7,6 @@ import React, { useRef, useState } from 'react';
 import {
   Dimensions,
   FlatList,
-  SafeAreaView,
   StatusBar,
   StyleSheet,
   Text,
@@ -21,6 +20,7 @@ import Animated, {
   useSharedValue,
   withSpring,
 } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { width, height } = Dimensions.get('window');
 
@@ -56,6 +56,7 @@ const slides: OnboardingItem[] = [
 ];
 
 const OnboardingCarousel = () => {
+  const insets = useSafeAreaInsets();
   const [currentIndex, setCurrentIndex] = useState(0);
   const router = useRouter();
   const flatListRef = useRef<FlatList>(null);
@@ -143,7 +144,7 @@ const OnboardingCarousel = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={[styles.container, { paddingTop: insets.top + 17 }]}>
       <StatusBar barStyle="dark-content" />
 
       <FlatList
@@ -179,7 +180,7 @@ const OnboardingCarousel = () => {
           />
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </View>
   );
 };
 

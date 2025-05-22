@@ -126,13 +126,16 @@ export const WeekView = memo(function WeekView({
           </Text>
           {!isToday(selectedDate) && (
             <IconButton
+              style={styles.marginNone}
               onPress={returnToToday}
               icon={() => <MaterialIcons name="restore" size={24} />}
             />
           )}
         </View>
+
         <IconButton
           onPress={handleSort}
+          style={styles.marginNone}
           icon={() => (
             <Icon source={require('@/assets/icons/sliders-02.png')} size={24} />
           )}
@@ -181,7 +184,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: WEEK_VIEW_ITEM_GAP,
   },
   spacer: {
-    // width: 24 - WEEK_VIEW_ITEM_GAP / 2,
     width: 24,
+  },
+  marginNone: {
+    margin: 0,
+    marginLeft: 4,
   },
 });

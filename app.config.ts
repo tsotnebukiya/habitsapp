@@ -7,15 +7,10 @@ export default ({
   slug: 'HabitsApp',
   version: '1.0.0',
   orientation: 'portrait',
-  icon: './assets/AppIcons/appstore.png',
+  icon: './assets/icon.png',
   scheme: 'habitsapp',
   userInterfaceStyle: 'automatic',
   owner: 'tsotnebukiya',
-  splash: {
-    image: './assets/react-native-splash.png',
-    resizeMode: 'contain',
-    backgroundColor: '#000',
-  },
   assetBundlePatterns: ['**/*'],
   ios: {
     appleTeamId: '43SWDCX5G6',
@@ -39,10 +34,6 @@ export default ({
     },
   },
   android: {
-    adaptiveIcon: {
-      foregroundImage: './assets/AppIcons/playstore.png',
-      backgroundColor: '#000',
-    },
     package: 'com.vdl.habitapp',
   },
   plugins: [
@@ -52,9 +43,24 @@ export default ({
     'expo-apple-authentication',
     '@bacons/apple-targets',
     [
+      'expo-splash-screen',
+      {
+        android: {
+          image: './assets/splash-icon.png',
+          backgroundColor: '#DCEEFF',
+          imageWidth: 300,
+        },
+        ios: {
+          image: './assets/splash.png',
+          enableFullScreenImage_legacy: true,
+          backgroundColor: 'black',
+        },
+      },
+    ],
+    [
       'expo-notifications',
       {
-        icon: './assets/AppIcons/appstore.png',
+        icon: './assets/icon.png',
         color: '#ffffff',
         defaultChannel: 'default',
         enableBackgroundRemoteNotifications: false,
