@@ -1,10 +1,13 @@
 import { dateUtils } from '@/lib/utils/dayjs';
-import { getAffectedDates, getUserIdOrThrow } from '@/lib/utils/habits';
+import {
+  getAffectedDates,
+  getUserIdOrThrow,
+  handlePostActionOperations,
+} from '@/lib/utils/habits';
 import { supabase } from '@/supabase/client';
 import { v4 as uuidv4 } from 'uuid';
 import { StateCreator } from 'zustand';
 import { SharedSlice, type Habit } from '../types';
-import { syncStoreToWidget } from '../widget-storage';
 
 export interface HabitSlice {
   habits: Map<string, Habit>;
@@ -52,11 +55,7 @@ export const createHabitSlice: StateCreator<SharedSlice, [], [], HabitSlice> = (
     });
 
     // Actions
-    get().updateAffectedDates(newHabit.id);
-    syncStoreToWidget(get().habits, get().completions);
-    setTimeout(() => {
-      get().calculateAndUpdate();
-    }, 100);
+    handlePostActionOperations(get, newHabit.id);
 
     try {
       const { error } = await supabase.from('habits').insert(newHabit);
@@ -99,11 +98,7 @@ export const createHabitSlice: StateCreator<SharedSlice, [], [], HabitSlice> = (
     });
 
     // Actions
-    get().updateAffectedDates(habit.id);
-    syncStoreToWidget(get().habits, get().completions);
-    setTimeout(() => {
-      get().calculateAndUpdate();
-    }, 100);
+    handlePostActionOperations(get, habit.id);
 
     try {
       const { error } = await supabase
@@ -155,11 +150,7 @@ export const createHabitSlice: StateCreator<SharedSlice, [], [], HabitSlice> = (
     });
     const dates = getAffectedDates(habit);
     // Actions
-    get().updateAffectedDates(habit.id, dates);
-    syncStoreToWidget(get().habits, get().completions);
-    setTimeout(() => {
-      get().calculateAndUpdate();
-    }, 100);
+    handlePostActionOperations(get, habit.id, dates);
 
     try {
       // Delete completions from server first

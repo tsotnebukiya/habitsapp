@@ -2,13 +2,13 @@ import { dateUtils } from '@/lib/utils/dayjs';
 import {
   calculateHabitToggle,
   getUserIdOrThrow,
+  handlePostActionOperations,
   normalizeDate,
 } from '@/lib/utils/habits';
 import { supabase } from '@/supabase/client';
 import { v4 as uuidv4 } from 'uuid';
 import { StateCreator } from 'zustand';
 import { SharedSlice, type HabitAction, type HabitCompletion } from '../types';
-import { syncStoreToWidget } from '../widget-storage';
 
 export interface CompletionSlice {
   completions: Map<string, HabitCompletion>;
@@ -161,13 +161,7 @@ export const createCompletionSlice: StateCreator<
         value: newValue,
       });
     }
-
-    // Then update UI and trigger calculations
-    get().updateDayStatus(date);
-    syncStoreToWidget(get().habits, get().completions);
-    setTimeout(() => {
-      get().calculateAndUpdate();
-    }, 100);
+    handlePostActionOperations(get, habitId, [date]);
   },
 
   resetHabitHistory: async (habitId: string) => {
@@ -186,11 +180,7 @@ export const createCompletionSlice: StateCreator<
     });
 
     // Update UI and sync
-    get().updateAffectedDates(habitId);
-    syncStoreToWidget(get().habits, get().completions);
-    setTimeout(() => {
-      get().calculateAndUpdate();
-    }, 100);
+    handlePostActionOperations(get, habitId);
 
     try {
       const { error } = await supabase

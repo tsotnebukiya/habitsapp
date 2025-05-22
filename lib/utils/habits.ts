@@ -1,7 +1,13 @@
 import { MeasurementUnits } from '@/lib/constants/MeasurementUnits';
-import { Habit, HabitAction, HabitCompletion } from '@/lib/habit-store/types';
+import {
+  Habit,
+  HabitAction,
+  HabitCompletion,
+  SharedSlice,
+} from '@/lib/habit-store/types';
 import useUserProfileStore from '@/lib/stores/user_profile';
 import { Database } from '@/supabase/types';
+import { syncStoreToWidget } from '../habit-store/widget-storage';
 import { dateUtils } from './dayjs';
 
 export const STORE_CONSTANTS = {
@@ -316,3 +322,24 @@ export function sortHabits<
     return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
   });
 }
+
+export const handlePostActionOperations = (
+  get: () => SharedSlice,
+  habitId: string,
+  affectedDates?: Date[]
+) => {
+  // Priority 1: Update affected dates (1ms delay - immediate but non-blocking)
+  setTimeout(() => {
+    get().updateAffectedDates(habitId, affectedDates);
+  }, 1);
+
+  // Priority 2: Calculate and update (50ms delay - after UI updates)
+  setTimeout(() => {
+    get().calculateAndUpdate();
+  }, 50);
+
+  // Priority 3: Sync to widget (100ms delay - lowest priority)
+  setTimeout(() => {
+    syncStoreToWidget(get().habits, get().completions);
+  }, 100);
+};
