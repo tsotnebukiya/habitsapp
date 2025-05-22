@@ -113,7 +113,6 @@ export default function CreateHabbit() {
 
   const handleSubmit = async () => {
     if (!formData.name) {
-      console.log('Habit name is required');
       Toast.show({
         type: 'error',
         text1: 'Habit name is required',
@@ -162,7 +161,6 @@ export default function CreateHabbit() {
         type: formData.type,
         sort_id: 0,
       };
-
       addHabit(habit);
 
       router.replace('/');
@@ -173,9 +171,7 @@ export default function CreateHabbit() {
 
   useEffect(() => {
     return () => {
-      const categoryId = formData.category;
       resetForm();
-      setFormField('category', categoryId as any);
     };
   }, []);
 

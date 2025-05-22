@@ -97,7 +97,10 @@ function HabitItem({
   };
 
   const handleDelete = () => {
+    const now = performance.now();
     deleteHabit(habit.id);
+    const end = performance.now();
+    console.log(`Total time taken: ${end - now} milliseconds`);
   };
 
   const handleSkip = () => {
@@ -224,7 +227,14 @@ function HabitItem({
   );
 
   return (
-    <ContextMenu.Root modal={false}>
+    <ContextMenu.Root
+      {...({
+        modal: false,
+        _unsafeIosProps: {
+          shouldWaitForMenuToHideBeforeFiringOnPressMenuItem: false,
+        },
+      } as any)}
+    >
       <ContextMenu.Trigger style={{ borderRadius: 16, overflow: 'hidden' }}>
         <TouchableOpacity
           activeOpacity={ACTIVE_OPACITY}

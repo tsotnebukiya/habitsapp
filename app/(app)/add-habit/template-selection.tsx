@@ -40,6 +40,7 @@ export default function TemplateSelection() {
         styles.scrollView,
         { paddingBottom: insets.bottom },
       ]}
+      showsVerticalScrollIndicator={false}
     >
       <View style={styles.container}>
         <SearchInput

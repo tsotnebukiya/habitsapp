@@ -93,6 +93,7 @@ const HabitList = function HabitList({ selectedDate }: HabitListProps) {
           estimatedItemSize={83}
           ListEmptyComponent={renderEmptyComponent}
           contentContainerStyle={styles.contentContainer}
+          showsVerticalScrollIndicator={false}
           ItemSeparatorComponent={() => <View style={styles.separator} />}
         />
       </View>

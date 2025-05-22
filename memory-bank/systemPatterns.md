@@ -5,22 +5,31 @@
 ### Directory Structure
 
 ```
-react-native-starter/
+HabitsApp/
 ├── app/                   # Expo Router pages
-├── components/            # Reusable components
-├── interfaces/            # Zustand stores
-├── types/                # TypeScript types
-├── utils/                # Helper functions
-├── constants/            # App constants
+│   ├── (app)/            # Main app routes
+│   │   ├── (tabs)/       # Tab navigation (home, stats, achievements, settings)
+│   │   ├── add-habit/    # Add habit modal
+│   │   └── update-habit/ # Edit habit modal
+│   └── onboarding/       # Onboarding flow
+├── components/           # Reusable UI components
+│   ├── habits/          # Habit-specific components
+│   ├── achievements/    # Achievement system components
+│   ├── calendar/        # Calendar and date components
+│   ├── matrix/          # Matrix score visualization
+│   ├── modals/          # Modal components
+│   └── shared/          # Shared UI components
+├── lib/                 # Core application logic
+│   ├── habit-store/     # Main habit store with slices
+│   ├── stores/          # Additional Zustand stores
+│   ├── hooks/           # Custom React hooks
+│   ├── utils/           # Helper functions
+│   └── constants/       # App constants
+├── targets/             # Native iOS widget implementation
+│   └── widget/          # Swift widget code
+├── supabase/            # Backend configuration
 ├── assets/              # Static assets
 └── memory-bank/         # Project documentation
-    ├── projectbrief.md  # Core requirements
-    ├── productContext.md # Product context
-    ├── systemPatterns.md # System architecture
-    ├── techContext.md   # Technical setup
-    ├── activeContext.md # Current state
-    ├── progress.md     # Progress tracking
-    └── App.md          # App-specific documentation
 ```
 
 ## Core Design Patterns
@@ -549,9 +558,60 @@ graph TD
    - Quick habit access
    - Progress visualization
 
-## Other System Patterns
+## iOS Widgets Implementation
 
-[Previous patterns remain unchanged...]
+### Architecture Overview
+
+HabitsApp implements iOS widgets using `@bacons/apple-targets` with two distinct widgets:
+
+- **Calendar Widget**: Weekly overview for medium/large sizes (StaticConfiguration)
+- **Interactive Widget**: Daily completion toggling for all sizes (AppIntentConfiguration)
+
+### Data Sharing Pattern
+
+- **App Group ID**: `group.com.vdl.habitapp.widget`
+- **Storage**: Direct `UserDefaults` integration with JSON serialization
+- **Sync Flow**: React Native app → UserDefaults → Swift widgets → Timeline refresh
+
+### Key Components
+
+1. **Shared Swift Code**
+
+   - `HabitStore.swift`: Core data management (loadHabits, saveHabits)
+   - `Models.swift`: Codable Habit struct with weeklyStatus
+   - `DateUtils.swift`: ISO8601 UTC date formatting consistency
+
+2. **Widget Types**
+
+   - **Calendar Widget**: Read-only weekly progress display
+   - **Interactive Widget**: `ToggleHabitIntent` for direct habit completion
+
+3. **Data Synchronization**
+   - Date keys use ISO8601 UTC format (`2024-01-15T00:00:00.000Z`)
+   - Automatic timeline refresh after interactions
+   - Background execution without app opening
+
+### Implementation Pattern
+
+```swift
+// Widget registration
+@main
+struct HabitsWidgetBundle: WidgetBundle {
+    var body: some Widget {
+        WeeklyHabitsWidget()      // Calendar widget
+        InteractiveHabitWidget()  // Interactive widget
+    }
+}
+```
+
+### Performance Considerations
+
+- Efficient JSON parsing for widget requirements
+- Minimal data structure for performance
+- SwiftUI best practices for widget views
+- Optimized timeline management
+
+## Other System Patterns
 
 ## State Management
 
@@ -922,7 +982,7 @@ Benefits:
 
    // Sorting utility
    export function sortHabits<
-     T extends { sort_id: number | null; created_at: string },
+     T extends { sort_id: number | null; created_at: string }
    >(habits: T[]): T[] {
      return [...habits].sort((a, b) => {
        if (a.sort_id !== null && b.sort_id !== null)

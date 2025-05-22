@@ -1,579 +1,92 @@
 # Active Context
 
-## Current Sprint Plan: May 1st - May 10th (Non-UI Foundation)
+## Current Development Status
 
-**Goal:** Prepare all critical backend systems, core logic, data handling, and third-party service integrations _before_ the design handoff (May 11th). **Strictly NO new UI components or visual changes.**
+HabitsApp is a fully functional habit tracking application with core features implemented and operational.
 
-**Status Update:** Focus Area 1 (HabitStore, Sync & Widgets) is now complete. Focus is shifting to the remaining backend tasks. The widget-storage module has been removed in favor of direct UserDefaults integration.
+## Current Focus Areas
 
----
+### 1. Performance & Optimization
 
-**Focus Area 1: HabitStore, Sync & Widgets (Est. ~3-4 days) ✅ COMPLETED**
+- MMKV storage performance tuning
+- Widget data synchronization optimization
+- App startup time improvements
 
-- **1.1. Widget Data Sync Implementation & Testing: ✅**
-  - Implement React Native -> Swift data writing (`UserDefaults` via App Group). ✅
-  - Conduct rigorous on-device testing: ✅
-    - Verify data integrity during app -> widget sync. ✅
-    - Test widget timeline updates after app changes. ✅
-    - Test widget interaction logic (toggle intent) and subsequent data reflection in the app. ✅
-    - Test across different widget families/sizes. ✅
-- **1.2. HabitStore State & Date Logic Audit: ✅**
-  - Thoroughly review and audit all date handling: timezone conversions, normalization (start/end of day), date comparisons, week/month calculations. ✅
-  - Verify correctness and efficiency of state updates for: habit completions, streak calculations, weekly status arrays, matrix scores. ✅
-  - Ensure state changes trigger necessary recalculations without infinite loops (`subscribeWithSelector` logic). ✅
-- **1.3. Supabase Real-time Integration: ✅**
-  - Connect and test Supabase real-time subscriptions for relevant tables (e.g., `habit_completions`, `habits`). ✅
-  - Ensure real-time updates correctly merge with local state in `HabitStore`. ✅
-  - Refine overall sync logic for robustness (conflict resolution if necessary, handling offline periods). ✅
+### 2. User Experience Polish
 
-**Focus Area 2: Notification Backend (Est. ~2 days) ⏳ PENDING**
+- Animation smoothness enhancements
+- Haptic feedback improvements
+- Accessibility enhancements
 
-- **2.1. MatrixScore:**
-  - Reimagine the matrix scores calculation. ✅
+### 3. Advanced Features
 
-**Focus Area 3: Notification Backend (Est. ~2 days) ⏳ PENDING**
+- AI-powered habit insights
+- Enhanced analytics
+- Social features development
 
-- **3.1. Edge Function Refinement:**
-  - CalculateCurrentStreak on demand ✅
-  - Review and refine notification text templates for clarity and engagement. ✅
-  - Optimize sending logic: scheduling accuracy, batching (if applicable), error handling (retries, logging failures). ✅
-  - Ensure idempotency for scheduled notifications. ✅
-- **3.2. Backend Preference Support:**
-  - Design and implement DB schema changes (e.g., `user_notification_preferences` table) if needed. ✅
-  - Create/update Edge Functions to respect user preferences when sending notifications (even if UI toggle isn't built yet). ✅
+## Recent Achievements ✅
 
-**Focus Area 4: Core Logic Implementation (Backend/State Only) (Est. ~2-3 days) ⏳ PENDING**
+### Core Implementation
 
-- **3.1. Update Habit Logic:**
-  - Implement the `updateHabit` function in `HabitStore` (handling changes to name, frequency, goals, category, etc.).
-  - Ensure all related state (completions, streaks, affected dates) is correctly updated or invalidated.
-- **3.2. Settings Preferences Logic:**
-  - Define state structure for settings in Zustand/MMKV.
-  - Create getter/setter functions within a store or service (e.g., `updateNotificationPreference(type, value)`).
-- **3.3. Stats Chart Data Preparation:**
-  - Implement the data calculation/aggregation logic for the _next_ planned chart (e.g., habit comparison data).
-  - Expose this data via a memoized Zustand selector or custom hook, ready for the UI.
-- **3.4. Onboarding Score Calculation:**
-  - Create and test the function that takes hypothetical onboarding answers and calculates the initial matrix score.
+- **iOS Widgets**: Calendar and interactive widgets with App Groups sync
+- **Habit Management**: Complete CRUD with flexible scheduling
+- **Achievement System**: Streak-based rewards with celebrations
+- **Technical Stack**: Zustand + MMKV + Supabase integration
 
-**Focus Area 5: Superwall Backend Integration (Est. ~1-2 days) ⏳ PENDING**
+## Next Development Priorities
 
-- **4.1. SDK Setup & Configuration:**
-  - Install SDK, configure API keys, set up project in Superwall dashboard.
-  - Implement SDK initialization on app startup.
-  - Implement user identification (`Superwall.shared.identify(userId:)`).
-- **4.2. Event Tracking (No UI Presentation):**
-  - Define key paywall trigger events (e.g., `habit_created`, `feature_X_used`).
-  - Implement tracking calls (`Superwall.shared.track("eventName")`) at appropriate points in the _existing_ codebase.
-- **4.3. Backend Data Sync (If Needed):**
-  - Set up Supabase tables/functions to store subscription status or related attributes pushed from Superwall webhooks (requires webhook setup).
+### High Priority
 
-**Focus Area 6: Infrastructure & Auth Polish (Ongoing/Parallel) ⏳ PENDING**
+1. **UI Polish**: Modal animations, loading states, error handling
+2. **Settings Page**: Full implementation with preference management
+3. **Authentication**: Apple/Google Sign-in integration
+4. **Performance**: Bundle optimization, memory management
 
-- **5.1. Error Monitoring:** Set up or enhance Sentry/other error monitoring for backend functions and critical app paths.
-- **5.2. Auth & RLS Review:** Double-check Supabase Auth token handling, refresh logic, and ensure RLS policies are comprehensive and secure.
-- **5.3. Backend Hooks:** Prepare any necessary Supabase Functions triggered by DB events (e.g., on user creation, on habit deletion) needed for Settings or other features.
+### Medium Priority
 
----
+1. **Advanced Features**: AI insights, enhanced analytics
+2. **Social Features**: Achievement sharing, community challenges
+3. **Platform Expansion**: Android widgets, Apple Watch app
 
-**Outcome by May 10th:** A significantly more stable and feature-ready backend/data layer, poised for rapid UI implementation in Phase 2.
+## Current Architecture Status
 
----
+### Technology Stack
 
-## Current Focus
+- **Frontend**: React Native 0.76.9 with Expo SDK 52
+- **State Management**: Zustand with MMKV persistence
+- **Backend**: Supabase with real-time subscriptions
+- **Widgets**: Native iOS with @bacons/apple-targets
+- **Analytics**: PostHog + Sentry
 
-The primary focus has been the implementation of iOS widgets using `@bacons/expo-apple-targets`. Two distinct widgets have been developed: a **Calendar Widget** for weekly overview and an **Interactive Widget** for daily completion toggling.
+## Current Work Context
 
-### Widget Implementation Details
+### Recent Achievements
 
-#### Data Sharing
-
-- ✅ Implemented data sharing between the React Native app and the Swift widgets using **App Groups** (`group.com.vdl.habitapp.widget`) and direct `UserDefaults` integration.
-- ✅ Created a shared `HabitStore.swift` to handle loading (`loadHabits`) and saving (`saveHabits`) of habit data, including mock data generation (`mockHabits`).
-- ✅ Standardized date key format (ISO8601 UTC with fractional seconds) across `HabitStore`, `Intents`, and `Views` for reliable data lookup.
-
-#### Shared Code
-
-- ✅ Created `Shared/Models.swift` for the `Habit` struct (Codable, Identifiable) and `Color` hex extension.
-- ✅ Created `Shared/DateUtils.swift` for shared date manipulation logic (getting week dates, ranges).
-- ✅ Defined a shared `SimpleEntry: TimelineEntry` in `HabitStore.swift`.
-
-#### Calendar Widget (Weekly Overview - Medium/Large)
-
-- ✅ Implemented `targets/widget/CalendarWidget/` structure.
-- ✅ Created `CalendarProvider.swift` (StaticConfiguration provider).
-- ✅ Created `CalendarViews.swift` containing:
-  - `WeekHeaderView`: Displays weekday symbols and date range.
-  - `HabitRowView`: Displays habit icon, name, and weekly completion circles.
-  - `WeeklyHabitsWidgetEntryView`: Main view assembling the header and rows, supporting `.systemMedium` and `.systemLarge`.
-- ✅ Defined `WeeklyHabitsWidget.swift` for widget configuration.
-- ✅ Uses `DateUtils.datesOfWeek` and checks `habit.weeklyStatus` for completion display.
-
-#### Interactive Widget (Daily Toggle - Small/Medium/Large)
-
-- ✅ Implemented `targets/widget/InteractiveWidget/` structure.
-- ✅ Created `Intents.swift` defining:
-  - `ToggleHabitIntent`: An `AppIntent` (WidgetConfigurationIntent) to toggle habit completion for today. Takes `habitID` parameter. Runs in the background (`openAppWhenRun: false`).
-  - Handles loading habits via `HabitStore`, finding the habit, toggling `weeklyStatus` for the _normalized_ current day (UTC start of day), saving via `HabitStore`, and reloading widget timelines (`WidgetCenter.shared.reloadAllTimelines()`).
-  - Includes basic error handling (`IntentError.habitNotFound`).
-- ✅ Created `InteractiveProvider.swift` (AppIntentTimelineProvider for `ToggleHabitIntent`).
-- ✅ Created `InteractiveViews.swift` containing:
-  - `InteractiveWidgetEntryView`: Adapts layout based on `widgetFamily` (.systemSmall VStack, .systemMedium LazyVGrid, .systemLarge VStack).
-  - `HabitToggleButton`: A `Button` triggering `ToggleHabitIntent`. Displays habit icon/name with conditional background/foreground based on `isCompletedToday`. Uses the standardized `todayDateKey`.
-- ✅ Defined `InteractiveHabitWidget.swift` for widget configuration (AppIntentConfiguration).
-- ✅ Added logging using `os.Logger` in Intents, Provider, and Views.
-
-#### Configuration & Build
-
-- ✅ Updated `targets/widget/index.swift` to register `WeeklyHabitsWidget` and `InteractiveHabitWidget`.
-- ✅ Added App Group entitlement `group.com.vdl.habitapp.widget` to `targets/widget/generated.entitlements`.
-- ✅ Cleaned up old/unused widget files (`WidgetControl.swift`, `WidgetLiveActivity.swift`, `widgets.swift`).
-
-### Next Steps
-
-1.  **React Native Integration:** Modify the React Native app (Zustand store) to write habit data to the shared `UserDefaults` using the defined App Group ID and matching data structure/date format.
-2.  **Testing:** Thoroughly test data synchronization, widget updates, interactions (especially the `ToggleHabitIntent`), and different widget sizes/families on a physical device.
-3.  **Refinement:** Refine UI/UX based on testing. Consider error handling improvements (e.g., making `HabitStore.saveHabits` throw).
-4.  **Statistics View:** Continue development of the Statistics View in the main app.
-
----
-
-_Previous Context (Pre-Widget Implementation):_
-
-We are focusing on optimizing the store implementation and integrating the notification system.
-
-### Recent Implementation Changes
-
-1. **Store Optimization**:
-
-   - ✅ Implemented `subscribeWithSelector` middleware for efficient state tracking
-   - ✅ Combined achievement and date calculations in a single subscription
-   - ✅ Optimized state change detection using Sets and size tracking
-   - ✅ Prevented infinite loops in calculation triggers
-   - ✅ Enhanced performance with efficient collection comparison
-
-2. **Database Schema Updates**:
-
-   - ✅ Updated user achievements table with new fields:
-     - Added category scores (cat1 through cat5)
-     - Added current_streak and max_streak
-     - Implemented one-to-one relationship with users
-   - ✅ Refactored users table:
-     - Renamed specific scores to generic categories
-     - Streamlined user profile structure
-
-3. **Notification System Integration**:
-
-   - ✅ Added notification configuration and handlers
-   - ✅ Implemented platform-specific setup
-   - ✅ Added support for local and push notifications
-   - ✅ Created notification scheduling utilities
-   - ✅ Integrated with backend for push tokens
-
-4. **New Dependencies**:
-   - ✅ Added react-native-calendars for enhanced calendar features
-   - ✅ Integrated related dependencies for improved functionality
-
-### Current Implementation Status
-
-1. **Store Implementation**:
-
-   ```typescript
-   useHabitsStore.subscribe(
-     (state) => ({
-       completions: state.completions,
-       habitIds: new Set(state.habits.keys()),
-       completionsCount: state.completions.size,
-     }),
-     (newState, oldState) => {
-       const state = useHabitsStore.getState();
-       // Defer potentially expensive calculations slightly
-       // Check if achievements need recalculation
-       if (
-         newState.completions !== oldState.completions ||
-         newState.habitIds.size !== oldState.habitIds.size
-       ) {
-         setTimeout(() => {
-           state.calculateAndUpdate();
-         }, 100);
-       }
-       // Check if dates need recalculation
-       if (
-         newState.habitIds.size !== oldState.habitIds.size ||
-         newState.completionsCount !== oldState.completionsCount
-       ) {
-         setTimeout(() => {
-           Array.from(state.habits.values()).forEach((habit) => {
-             state.updateAffectedDates(habit.id);
-           });
-         }, 100);
-       }
-     }
-   );
-   ```
-
-2. **Notification System**:
-   ```typescript
-   // Core notification configuration
-   Notifications.setNotificationHandler({
-     handleNotification: async () => ({
-       shouldShowAlert: true,
-       shouldPlaySound: true,
-       shouldSetBadge: true,
-     }),
-   });
-   ```
-
-### Next Steps
-
-1. **Store Optimization**:
-
-   - Fine-tune subscription triggers
-   - Implement additional performance optimizations
-   - Add comprehensive error handling
-
-2. **Notification System**:
-
-   - Complete push notification integration
-   - Implement notification preferences
-   - Add custom notification channels for Android
-
-3. **Testing and Validation**:
-   - Verify store performance
-   - Test notification delivery
-   - Validate data consistency
-
-### Achievement UI Implementation Progress
-
-- ✅ Achievement cards display similar to the provided design
-  - ✅ Achievement icon/badge
-  - ✅ Achievement name and description
-  - ✅ Unlocked/locked state display
-- ✅ Achievement unlock modal
-  - ✅ Celebration animation with confetti
-  - ✅ Achievement details
-  - ✅ Multi-achievement support with indicators
-- In progress:
-  - Refinements to achievement list view
-  - Additional animations and transitions
-  - Achievement progress indicators
-
-### Recent Changes
-
-1. Added modal system infrastructure:
-
-   - ✅ Created `modal_store.ts` for centralized modal state management
-   - ✅ Implemented `ModalContainer` component for app-wide modals
-   - ✅ Added support for different modal types (achievement, confirmation, settings)
-
-2. Implemented achievement UI components:
-
-   - ✅ Added `AchievementsModal` for displaying unlocked achievements
-   - ✅ Integrated confetti animation for celebrations
-   - ✅ Created confirmation dialog for important actions
-   - ✅ Added pagination for multiple achievements
-
-3. Improved storage performance:
-
-   - ✅ Migrated from AsyncStorage to MMKV for faster data persistence
-   - ✅ Optimized store serialization/deserialization
-   - ✅ Enhanced achievement calculation logic
-   - ✅ Improved UI responsiveness
-
-4. Enhanced habit interaction:
-
-   - ✅ Improved habit toggle logic with action-based API
-   - ✅ Refactored status management for better user experience
-   - ✅ Fixed streak calculation to properly account for active habits
-
-5. UI improvements:
-   - ✅ Updated MatrixGridCell to use text-based icons
-   - ✅ Enhanced visual feedback for habit interactions
-
-### Matrix Score System
-
-- ✅ Matrix categories defined (physical, mental, emotional, spiritual)
-- ✅ Habit-to-matrix mapping implemented
-- ✅ Score calculations working
-- ✅ Matrix visualization with updated icons
-
-### 2-Week Development Plan
-
-#### Week 1: Complete Core Habit System ✅
-
-1. **Enhanced Habit Creation** ✅
-
-   - ✅ Added predefined habit templates by category
-   - ✅ Implemented template selection UI
-   - ✅ Completed custom habit form fields
-   - ✅ Ensured proper matrix category assignment
-
-2. **Habit Interaction System** ✅
-
-   - ✅ Created unified habit detail modal
-   - ✅ Implemented uncomplete functionality
-   - ✅ Added increment/decrement controls
-   - ✅ Added edit and delete options
-
-3. **Matrix Score System** ✅
-   - ✅ Defined matrix categories (physical, mental, emotional, spiritual)
-   - ✅ Created habit-to-matrix mapping
-   - ✅ Implemented score calculations
-   - ✅ Designed matrix visualization
-
-#### Week 2: Analytics & Engagement
-
-1. **Navigation & Structure** ✅
-
-   - ✅ Implemented bottom tab navigation
-   - ✅ Created Home and Stats tabs
-   - ✅ Ensured proper state management
-
-2. **Achievement System** ✅
-
-   - ✅ Designed core achievement types
-   - ✅ Implemented unlocking logic
-   - ✅ Created achievement notifications
-   - ✅ Designed and implemented achievement display UI
-
-3. **Statistics View** ⏳
-   - Implement key charts
-   - Create habit comparison view
-   - Connect to habit data
-   - Add matrix score history
-
-### Market Research Insights
-
-Based on our market analysis of habit tracking apps:
-
-- Users value simplicity combined with powerful tracking
-- AI-powered features are highly desirable
-- Visual design and feedback drive engagement
-- Balance between simplicity and functionality is key
-- Matrix/category organization helps users balance life areas
-- Gamification elements enhance motivation
-
-The project is currently in its initial setup phase with the following areas of focus:
-
-1. **Core Infrastructure**
-
-   - Basic project structure established
-   - Core dependencies installed
-   - Development environment setup
-   - Sync mechanism implemented
-
-2. **Authentication System**
-
-   - Multiple provider integration pending
-   - Token management implementation needed
-   - User flow design in progress
-
-3. **State Management & Hooks**
-
-   - Zustand stores setup
-   - MMKV/AsyncStorage integration complete
-   - Type definitions in progress
-   - Offline-first sync pattern established
-   - Custom hooks for data selection (e.g., `useHabitsForDate`) established as a pattern.
-
-4. **Documentation**
-   - Core files established
-   - App.md added for app-specific documentation
-   - Memory Bank structure maintained
-   - Sync documentation complete
-
-## Recent Changes (Habit Organization & UI Polish)
-
-1. **Habit Sorting Implementation**:
-
-   - ✅ Added new `SortModal` component for reordering habits
-   - ✅ Implemented `sort_id` field in habits table
-   - ✅ Added `updateHabitOrder` function to HabitStore
-   - ✅ Created optimistic UI updates with server sync
-   - ✅ Added pending operations support for offline sorting
-
-2. **WeekView Improvements**:
-
-   - ✅ Added "Return to Today" button with conditional rendering
-   - ✅ Improved date display and layout
-   - ✅ Enhanced UI organization with proper component structure
-
-3. **Code Organization**:
-
-   - ✅ Consolidated UI constants into `lib/constants/ui.ts`
-   - ✅ Improved shared component architecture
-   - ✅ Enhanced type safety across the codebase
-   - ✅ Standardized button and icon implementations
-
-4. **New Shared Components**:
-   - ✅ Added reusable `Button` component with primary/secondary variants
-   - ✅ Enhanced `Icon` component with automatic tint calculation
-   - ✅ Added toast configuration for consistent notifications
-   - ✅ Standardized component styling patterns
-
-### Next Steps
-
-1. **Habit Organization**:
-
-   - [ ] Add drag-and-drop support to SortModal
-   - [ ] Implement batch reordering operations
-   - [ ] Add visual feedback for sorting operations
-   - [ ] Enhance offline support for sorting
-
-2. **UI Polish**:
-   - [ ] Standardize modal animations
-   - [ ] Implement consistent error states
-   - [ ] Add loading states for async operations
-   - [ ] Enhance accessibility support
-
-## Active Decisions
-
-### Authentication Implementation
-
-- Decision to use multiple auth providers (Apple, Google)
-- Token-based authentication approach
-- Secure storage strategy with MMKV
-
-### State Management
-
-- Zustand chosen for global state
-- MMKV for performance-critical data
-- AsyncStorage for larger datasets
-- Offline-first architecture with optimistic updates
-- Sync strategy with pending operations
-- **Pattern:** Use custom hooks (e.g., `useHabitsForDate`) to select and memoize derived data from stores
-- **Performance:** Non-blocking state updates for UI operations
-
-### Navigation
-
-- Expo Router v3 implementation
-- File-based routing structure
-- Deep linking support planning
-
-### Performance Optimizations
-
-1. **State Updates**
-
-   - Identified and removed blocking async operations
-   - Implemented background processing for server sync
-   - Added performance measurement points
-   - Achieved ~2-3ms response time for status updates
-
-2. **UI Responsiveness**
-   - Optimized bottom sheet animations
-   - Immediate visual feedback
-   - Background processing for non-critical operations
-
-## Next Steps
-
-### Immediate Tasks
-
-1. Complete authentication system implementation
-2. Finalize state management type definitions
-3. Set up PostHog analytics
-4. Configure Sentry error tracking
-5. Test sync mechanism with poor network conditions
-6. Implement habit completion tracking UI/logic.
-
-### Upcoming Work
-
-1. UI component library development
-2. Testing infrastructure setup
-3. Documentation expansion
-4. Performance optimization
-
-## Known Issues
-
-1. Environment variable setup pending
-2. Authentication flow incomplete
-3. Type definitions need refinement
-4. Testing infrastructure not configured
-5. `[RemoteTextInput]` logs appearing (considered benign for now).
-
-## Current Considerations
-
-1. **Performance**
-
-   - ✅ Status toggle optimization complete (~2-3ms)
-   - ✅ Bottom sheet animation speed improved
-   - ✅ Non-blocking state updates implemented
-   - Monitoring needed for other operations
-
-2. **Security**
-
-   - Token management implementation
-   - Secure storage setup
-   - API security configuration
-   - Data encryption during sync
-
-3. **Developer Experience**
-   - Documentation improvements needed
-   - Development workflow optimization
-   - Testing strategy implementation
-   - Sync debugging tools needed
-
-## Questions to Resolve
-
-1. ✅ Best practices for offline data sync
-2. Authentication flow edge cases
-3. ✅ State persistence strategy (MMKV/AsyncStorage)
-4. Performance optimization approach
-5. Sync conflict resolution edge cases
-6. ✅ Optimal pattern for selecting/memoizing derived state from Zustand (using custom hooks with `useMemo`).
-
-## Questions Resolved
-
-1. ✅ Best practices for offline data sync
-2. ✅ State persistence strategy (MMKV/AsyncStorage)
-3. ✅ Optimal pattern for selecting/memoizing derived state
-4. ✅ Performance optimization for status updates
-5. ✅ UI responsiveness improvements
-
-## Next Steps
-
-1. Apply similar non-blocking patterns to other operations
-2. Monitor and optimize other UI interactions
-3. Consider adding loading indicators for longer operations
-4. Document performance measurement results
-
-### Next Steps
-
-1. Test calendar visualization with:
-   - Different completion combinations
-   - Multiple days selected
-   - Edge cases (no habits, all completed)
-2. Consider adding:
-   - Haptic feedback for day selection
-   - Smooth transitions between states
-   - Accessibility improvements
+- **Habit Organization**: SortModal with optimistic updates and offline support
+- **UI Components**: Reusable Button and Icon components with standardized styling
+- **Performance**: Optimized state updates achieving ~2-3ms response times
+- **Code Organization**: Consolidated UI constants and improved component architecture
 
 ### Active Decisions
 
-1. Calendar Visualization:
-   - Keep container background white
-   - Use light blue for selected day
-   - Focus completion status on number
-   - Use circles for completion indicators
-   - Blue text for today's date
+- **Authentication**: Multi-provider approach (Apple, Google) with MMKV storage
+- **State Management**: Zustand + MMKV with offline-first architecture
+- **Navigation**: Expo Router v3 with file-based routing
+- **Performance**: Non-blocking state updates with background sync
 
-### Matrix System Refactoring (Latest)
+### Immediate Next Steps
 
-1. **Category Management Centralization**
-
-   - Moved all category definitions to `HabitTemplates.ts`
-   - Created `CATEGORY_IDS` constant as single source of truth
-   - Updated `CATEGORIES` array with complete metadata
-   - Refactored habit templates to use centralized categories
-   - Improved type safety with TypeScript literal types
-
-2. **Matrix Hook Optimization**
+1. **UI Polish**: Modal animations, loading states, error handling
+2. **Authentication**: Complete Apple/Google Sign-in implementation
+3. **Testing**: Set up comprehensive test infrastructure
+4. **Performance**: Monitor and optimize remaining operations
 
    - Updated to use centralized category definitions
    - Improved memoization of category calculations
    - Enhanced type safety with updated interfaces
    - Streamlined data flow from categories to UI
 
-3. **Scoring System Enhancements**
+5. **Scoring System Enhancements**
    - Integrated with centralized category system
    - Maintained exponential smoothing algorithm
    - Preserved configurable parameters

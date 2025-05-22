@@ -2,127 +2,156 @@
 
 ## Core Features
 
-### Habit Tracking
+### Habit Management
 
-- Daily habit tracking
-- Progress visualization
-- Streak tracking
-- Goal setting and monitoring
-- Flexible habit scheduling
-
-### Achievement System
-
-- Streak-based achievements
-- Progress milestones
-- Visual rewards
-- Motivation enhancement
-- Social sharing potential
-
-## User Experience Goals
-
-### Offline First
-
-- Immediate feedback
-- Reliable data persistence
-- Seamless sync
-- Conflict resolution
-- Error recovery
+- Create and customize habits with icons, colors, and categories
+- Flexible scheduling (daily, weekly, specific days)
+- Goal setting with target values and units
+- Habit editing and deletion capabilities
+- Sort and organize habits by priority
 
 ### Progress Tracking
 
-- Clear progress indicators
-- Achievement notifications
-- Streak visualization
-- Goal progress tracking
-- Performance insights
+- Daily habit completion with toggle functionality
+- Streak calculations and maintenance
+- Weekly and monthly progress views
+- Calendar heat map visualization
+- Historical data and trends
 
-### Engagement
+### Achievement System
 
-- Achievement unlocks
-- Streak maintenance
-- Progress visualization
-- Social sharing
-- Milestone celebrations
+- Streak-based achievements (3, 7, 30, 100+ day streaks)
+- Category-based matrix scoring system
+- Visual achievement cards and celebrations
+- Progress milestones and rewards
+- Confetti animations for unlocks
+
+### iOS Widgets
+
+- Calendar widget showing weekly habit overview
+- Interactive widget for direct habit completion
+- Real-time synchronization between app and widgets
+- Multiple widget sizes (small, medium, large)
+- Background data updates
+
+### Statistics & Analytics
+
+- Habit completion heat maps
+- Streak tracking and visualization
+- Category performance metrics
+- Achievement progress tracking
+- Historical data analysis
+
+## User Experience Goals
+
+### Seamless Habit Formation
+
+- Instant feedback for habit completion
+- Visual progress indicators
+- Motivational achievements and celebrations
+- Minimal friction for daily tracking
+- Consistent habit building reinforcement
+
+### Offline-First Reliability
+
+- Immediate local data updates
+- Background sync with Supabase
+- Conflict resolution for multi-device usage
+- Reliable data persistence with MMKV
+- Graceful handling of network issues
+
+### Intuitive Interface
+
+- Clean, modern design with smooth animations
+- Tab-based navigation (Home, Stats, Achievements, Settings)
+- Context menus for quick actions
+- Haptic feedback for interactions
+- Accessibility support
 
 ## Product Decisions
 
 ### Architecture
 
-- Mobile-first design
-- Offline-first approach
-- Real-time sync when online
-- Local-first data management
-- Cross-device sync support
+- React Native with Expo SDK 52
+- Zustand for state management with MMKV persistence
+- Supabase backend for data sync and authentication
+- iOS widgets using @bacons/apple-targets
+- Offline-first with optimistic updates
 
 ### User Flow
 
-1. Daily habit tracking
-2. Progress monitoring
-3. Achievement unlocks
-4. Streak maintenance
-5. Goal completion
+1. **Onboarding**: Create account and set up initial habits
+2. **Daily Use**: Check off habits, view progress, earn achievements
+3. **Widget Interaction**: Complete habits directly from home screen
+4. **Progress Review**: Analyze statistics and celebrate milestones
+5. **Habit Management**: Add, edit, or remove habits as needed
 
 ### Feature Priority
 
-1. Core habit tracking
-2. Achievement system
-3. Offline support
-4. Progress visualization
-5. Social features
+1. **Core Tracking**: Reliable habit completion and streak tracking
+2. **Widget Integration**: Seamless iOS widget functionality
+3. **Achievement System**: Motivational gamification elements
+4. **Statistics**: Progress visualization and insights
+5. **Social Features**: Future sharing and community features
 
 ## Problem Statement
 
-Mobile app developers frequently spend significant time setting up the same foundational elements for new projects. This includes:
+Many people struggle to build and maintain positive habits due to:
 
-- Authentication systems
-- State management
-- Navigation
-- Analytics
-- Error tracking
-- Type safety
-- Cross-platform compatibility
+- Lack of consistent tracking and feedback
+- Insufficient motivation and reward systems
+- Complex interfaces that create friction
+- Poor integration with daily device usage
+- Limited progress visualization and insights
 
-This repetitive setup can lead to inconsistencies, security vulnerabilities, and delayed development timelines.
+Traditional habit tracking apps often fail because they're either too simple (lacking motivation) or too complex (creating barriers to daily use).
 
 ## Solution
 
-The React Native Starter Pack provides a production-ready foundation that solves these common setup challenges:
+HabitsApp addresses these challenges through:
 
-### For Developers
+### For Habit Builders
 
-- Immediate start with production-quality code
-- Built-in best practices
-- Type-safe development environment
-- Comprehensive documentation
-- Modern tooling and patterns
+- **Effortless Tracking**: iOS widgets enable habit completion without opening the app
+- **Motivational Design**: Achievement system and visual progress create positive reinforcement
+- **Flexible Scheduling**: Accommodates different habit types and frequencies
+- **Reliable Sync**: Works offline and syncs across devices seamlessly
+- **Insightful Analytics**: Helps users understand their patterns and progress
 
-### For End Users
+### For Daily Usage
 
-- Smooth onboarding experience
-- Fast, responsive interface
-- Offline capability
-- Cross-platform consistency
-- Reliable performance
+- **Quick Access**: Home screen widgets for instant habit checking
+- **Visual Feedback**: Immediate confirmation and streak updates
+- **Celebration Moments**: Achievement unlocks with confetti animations
+- **Progress Awareness**: Heat maps and statistics show long-term trends
+- **Consistent Experience**: Smooth performance across iOS and Android
 
 ## Success Metrics
 
-1. Developer Adoption
+1. **User Engagement**
 
-   - Number of project forks/clones
-   - GitHub stars
-   - Community contributions
-   - Documentation usage
+   - Daily active users and habit completion rates
+   - Widget interaction frequency
+   - Session duration and frequency
+   - Achievement unlock rates
 
-2. End User Satisfaction
-   - App performance metrics
-   - Crash-free sessions
-   - User engagement
-   - Feature adoption rates
+2. **Habit Formation Success**
+
+   - Average streak lengths across users
+   - Habit retention rates over time
+   - User-reported habit formation success
+   - Long-term user retention (30, 60, 90 days)
+
+3. **Product Performance**
+   - App store ratings and reviews
+   - Crash-free session rates
+   - Widget reliability and sync performance
+   - User satisfaction surveys
 
 ## Roadmap Priorities
 
-1. Core Feature Stability
-2. Documentation Completeness
-3. Testing Coverage
-4. Performance Optimization
-5. Community Growth
+1. **Core Stability**: Ensure reliable tracking and sync functionality
+2. **Widget Enhancement**: Advanced widget features and configurations
+3. **AI Integration**: Personalized insights and habit recommendations
+4. **Social Features**: Sharing achievements and community challenges
+5. **Advanced Analytics**: Deeper insights and habit formation science

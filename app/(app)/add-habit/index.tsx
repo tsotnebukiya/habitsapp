@@ -28,6 +28,7 @@ export default function CategorySelection() {
         styles.scrollView,
         { paddingBottom: insets.bottom },
       ]}
+      showsVerticalScrollIndicator={false}
     >
       <View style={styles.contentContainer}>
         <Text style={styles.subheading}>Select category</Text>

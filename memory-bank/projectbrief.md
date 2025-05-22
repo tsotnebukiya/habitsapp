@@ -1,64 +1,68 @@
-# Project Brief: React Native Starter Pack
+# Project Brief: HabitsApp
 
 ## Project Overview
 
-A modern, scalable React Native starter template designed to provide a robust foundation for mobile app development. The project aims to deliver a production-ready starting point with built-in authentication, state management, and essential tooling.
+HabitsApp is a comprehensive habit tracking mobile application designed to help users build and maintain positive habits through an intuitive interface, gamification, and intelligent insights. The app combines daily habit tracking with achievement systems, statistics, and iOS widgets for seamless habit management.
 
 ## Core Requirements
 
-1. **Authentication System**
+1. **Habit Management System**
 
-   - User management with multiple auth providers
-   - Secure token handling
-   - Complete onboarding flow
+   - Create, edit, and delete habits with customizable properties
+   - Daily habit completion tracking with streak calculations
+   - Flexible scheduling (daily, weekly, custom frequencies)
+   - Category-based organization with matrix scoring
 
-2. **State Management**
+2. **Achievement & Gamification**
 
-   - Zustand for global state
-   - MMKV and AsyncStorage for persistence
-   - Offline-first capabilities
-   - Type-safe stores
+   - Streak-based achievement system
+   - Matrix score calculations across multiple categories
+   - Visual progress indicators and celebrations
+   - Milestone tracking and rewards
 
-3. **Navigation & Routing**
+3. **iOS Widgets Integration**
 
-   - Expo Router (v3) implementation
-   - File-based routing
-   - Type-safe navigation
+   - Calendar widget for weekly habit overview
+   - Interactive widget for direct habit completion
+   - Real-time data synchronization between app and widgets
+   - Multiple widget sizes and configurations
 
-4. **Analytics & Monitoring**
+4. **Analytics & Statistics**
 
-   - PostHog integration
-   - Sentry error tracking
-   - Performance monitoring
+   - Habit completion heat maps and calendars
+   - Streak tracking and historical data
+   - Category-based performance metrics
+   - Progress visualization and insights
 
-5. **UI/UX**
-   - Generic, customizable components
-   - Responsive layouts
-   - Native platform adaptations
+5. **User Experience**
+   - Offline-first functionality with cloud sync
+   - Intuitive navigation with tab-based structure
+   - Responsive design for iOS and Android
+   - Smooth animations and haptic feedback
 
 ## Technical Goals
 
-- Maintain strict type safety throughout the codebase
-- Ensure scalable and maintainable architecture
-- Provide excellent developer experience
-- Enable rapid prototyping while maintaining production quality
-- Support offline-first functionality
+- Maintain excellent performance with MMKV storage and optimized state management
+- Ensure reliable offline functionality with Supabase sync
+- Provide seamless widget integration using native iOS capabilities
+- Support real-time data updates and conflict resolution
+- Maintain type safety throughout the TypeScript codebase
 
 ## Success Criteria
 
-1. All core features are fully implemented and tested
-2. Documentation is comprehensive and up-to-date
-3. Type safety is maintained across the codebase
-4. Performance meets mobile app standards
-5. Security best practices are followed
+1. High user engagement with daily habit completion rates >70%
+2. Positive user retention with >80% 7-day retention rate
+3. Smooth widget functionality with <1s data sync times
+4. Crash-free sessions >99.5%
+5. App Store rating >4.5 stars
 
 ## Constraints
 
-- Must support iOS and Android platforms
-- Must maintain compatibility with latest Expo SDK
-- Must follow React Native best practices
-- Must maintain backward compatibility with existing apps
+- iOS 15.1+ and Android API 26+ support
+- Expo SDK 52 compatibility
+- Supabase backend integration requirements
+- Apple App Store and Google Play Store guidelines compliance
 
 ## Timeline
 
-This is an ongoing project that serves as a foundation for other mobile applications. Regular updates and maintenance are required to keep up with dependency updates and new feature additions.
+HabitsApp is in active development with regular feature updates and improvements. The core functionality is complete, with ongoing work on advanced features, UI polish, and user experience enhancements.
