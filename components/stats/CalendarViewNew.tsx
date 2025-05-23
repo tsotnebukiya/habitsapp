@@ -15,11 +15,9 @@ interface DateObject {
   timestamp: number;
 }
 
-interface CalendarViewProps {
-  selectedHabit: string | null;
-}
+interface CalendarViewProps {}
 
-const CalendarViewNew: React.FC<CalendarViewProps> = ({ selectedHabit }) => {
+const CalendarViewNew: React.FC<CalendarViewProps> = () => {
   const today = new Date();
   const [currentMonth, setCurrentMonth] = useState(dayjs(today).toDate());
 
@@ -79,6 +77,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingBottom: 20,
     backgroundColor: 'white',
+    marginBottom: 30,
   },
 });
 

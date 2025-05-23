@@ -57,13 +57,26 @@ const AnimatedDayComponent = React.memo(
         <View style={[styles.outerBox]}>
           <View style={styles.innerBox}>
             <Svg width={CIRCLE_SIZE} height={CIRCLE_SIZE} style={styles.svg}>
+              {/* Background circle at 20% opacity */}
+              {marking?.progress && marking?.progress > 0 ? (
+                <Circle
+                  cx={CIRCLE_SIZE / 2}
+                  cy={CIRCLE_SIZE / 2}
+                  r={radius}
+                  strokeWidth={STROKE_WIDTH}
+                  stroke={colors.accent}
+                  strokeOpacity={0.2}
+                  fill="transparent"
+                />
+              ) : null}
+              {/* Progress circle at 100% opacity */}
               <AnimatedCircle
                 cx={CIRCLE_SIZE / 2}
                 cy={CIRCLE_SIZE / 2}
                 r={radius}
                 strokeWidth={STROKE_WIDTH}
                 stroke={colors.accent}
-                fill={isSelected ? colors.primary : 'white'}
+                fill={isSelected ? colors.primary : 'transparent'}
                 strokeDasharray={circumference}
                 strokeDashoffset={strokeDashoffset}
                 strokeLinecap="round"

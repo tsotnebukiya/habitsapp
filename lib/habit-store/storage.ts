@@ -1,8 +1,7 @@
 import { dateUtils } from '@/lib/utils/dayjs';
 import { MMKV } from 'react-native-mmkv';
-import { PersistOptions } from 'zustand/middleware';
+import { PersistOptions, PersistStorage } from 'zustand/middleware';
 import { SharedSlice } from './types';
-import { PersistStorage } from 'zustand/middleware';
 
 const storeName = 'habits-store';
 

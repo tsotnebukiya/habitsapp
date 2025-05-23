@@ -1,13 +1,3 @@
-import { StateCreator } from 'zustand';
-import {
-  SharedSlice,
-  StreakAchievements,
-  StreakDays,
-  UserAchievement,
-} from '../types';
-import dayjs from '@/lib/utils/dayjs';
-import { supabase } from '@/supabase/client';
-import { getUserIdOrThrow } from '@/lib/utils/habits';
 import { useUserProfileStore } from '@/lib/stores/user_profile';
 import {
   calculateCurrentStreak,
@@ -16,6 +6,16 @@ import {
   getNewlyUnlockedAchievements,
 } from '@/lib/utils/achievements';
 import { dateUtils } from '@/lib/utils/dayjs';
+import { getUserIdOrThrow } from '@/lib/utils/habits';
+import { supabase } from '@/supabase/client';
+import { StateCreator } from 'zustand';
+import {
+  HabitCompletion,
+  SharedSlice,
+  StreakAchievements,
+  StreakDays,
+  UserAchievement,
+} from '../types';
 
 export interface AchievementSlice {
   streakAchievements: StreakAchievements;
@@ -30,6 +30,8 @@ export interface AchievementSlice {
   resetAchievements: () => void;
   setAchievements: (achievements: UserAchievement) => void;
   getCurrentStreak: () => number;
+  getTotalCompletions: () => number;
+  getSuccessRate: () => number;
   calculateAndUpdate: () => {
     unlockedAchievements: StreakDays[];
   };
@@ -209,5 +211,96 @@ export const createAchievementSlice: StateCreator<
           }));
         }
       });
+  },
+
+  getTotalCompletions: () => {
+    const completions = Array.from(get().completions.values());
+    return completions.filter((completion) => completion.status === 'completed')
+      .length;
+  },
+
+  getSuccessRate: () => {
+    const habits = Array.from(get().habits.values());
+    const completions = Array.from(get().completions.values());
+
+    if (habits.length === 0) {
+      return 0;
+    }
+
+    // Create a map of completions by habit and date for fast lookup
+    const completionsByHabitAndDate = new Map<
+      string,
+      Map<string, HabitCompletion>
+    >();
+    completions.forEach((completion) => {
+      if (!completionsByHabitAndDate.has(completion.habit_id)) {
+        completionsByHabitAndDate.set(completion.habit_id, new Map());
+      }
+      completionsByHabitAndDate
+        .get(completion.habit_id)!
+        .set(completion.completion_date, completion);
+    });
+
+    let totalExpectedDays = 0;
+    let totalSuccessfulDays = 0;
+
+    const today = dateUtils.normalizeLocal(dateUtils.today());
+
+    // Calculate for each habit
+    habits.forEach((habit) => {
+      if (!habit.is_active) return;
+
+      const startDate = dateUtils.normalizeLocal(
+        habit.start_date || habit.created_at
+      );
+      const endDate = habit.end_date
+        ? dateUtils.normalizeLocal(habit.end_date)
+        : today;
+
+      // Don't count future dates
+      const actualEndDate = endDate.isAfter(today) ? today : endDate;
+
+      if (startDate.isAfter(actualEndDate)) return;
+
+      const habitCompletions =
+        completionsByHabitAndDate.get(habit.id) || new Map();
+
+      // Iterate through each day from start to end
+      let currentDate = startDate.clone();
+      while (currentDate.isSameOrBefore(actualEndDate, 'day')) {
+        const dayOfWeek = currentDate.day(); // 0 = Sunday, 1 = Monday, etc.
+        const dateString = currentDate.format('YYYY-MM-DD');
+
+        // Check if this habit should be active on this day
+        let shouldBeActive = true;
+
+        if (habit.frequency_type === 'weekly' && habit.days_of_week) {
+          shouldBeActive = habit.days_of_week.includes(dayOfWeek);
+        }
+
+        if (shouldBeActive) {
+          totalExpectedDays++;
+
+          const completion = habitCompletions.get(dateString);
+
+          // Count as successful if completed or skipped
+          if (
+            completion &&
+            (completion.status === 'completed' ||
+              completion.status === 'skipped')
+          ) {
+            totalSuccessfulDays++;
+          }
+          // If no completion record exists, it's considered a failure (not attempted)
+        }
+
+        currentDate = currentDate.add(1, 'day');
+      }
+    });
+
+    if (totalExpectedDays === 0) {
+      return 0;
+    }
+    return Math.round((totalSuccessfulDays / totalExpectedDays) * 100);
   },
 });

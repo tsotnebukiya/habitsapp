@@ -1,13 +1,13 @@
 import CalendarViewNew from '@/components/stats/CalendarViewNew';
-import HabitsPicker from '@/components/stats/HabitsPicker';
+import Records from '@/components/stats/Records';
+import WeeklyProgress from '@/components/stats/WeeklyProgress';
 import { colors, fontWeights } from '@/lib/constants/ui';
-import React, { useState } from 'react';
+import React from 'react';
 import { ScrollView, StyleSheet, Text } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const StatsScreen = () => {
   const insets = useSafeAreaInsets();
-  const [selectedHabit, setSelectedHabit] = useState<string | null>(null);
   return (
     <ScrollView
       style={styles.container}
@@ -15,17 +15,15 @@ const StatsScreen = () => {
         styles.contentContainerStyle,
         {
           paddingTop: insets.top + 17,
-          paddingBottom: insets.bottom + 20,
+          paddingBottom: 20,
         },
       ]}
-      showsHorizontalScrollIndicator={false}
+      showsVerticalScrollIndicator={false}
     >
       <Text style={styles.title}>Statistics</Text>
-      <HabitsPicker
-        selectedHabit={selectedHabit}
-        setSelectedHabit={setSelectedHabit}
-      />
-      <CalendarViewNew selectedHabit={selectedHabit} />
+      <CalendarViewNew />
+      <Records />
+      <WeeklyProgress />
     </ScrollView>
   );
 };
