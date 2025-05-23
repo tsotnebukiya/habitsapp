@@ -33,10 +33,10 @@ export default function CreateHabbit() {
     (state) => state.notificationsEnabled
   );
   const [showStartPicker, setShowStartPicker] = useState(false);
-  const [enableEndDate, setEnableEndDate] = useState(false);
   const [showEndPicker, setShowEndPicker] = useState(false);
   const addHabit = useHabitsStore((state) => state.addHabit);
   const formData = useAddHabitStore((state) => state.formData);
+  const [enableEndDate, setEnableEndDate] = useState(formData.hasEndDate);
   const setFormField = useAddHabitStore((state) => state.setFormField);
   const resetForm = useAddHabitStore((state) => state.resetForm);
   const [showReminderPicker, setShowReminderPicker] = useState(false);
@@ -87,12 +87,14 @@ export default function CreateHabbit() {
   const toggleSwitch = () => {
     if (enableEndDate) {
       setFormField('endDate', null);
+      setFormField('hasEndDate', false);
       setEnableEndDate(false);
     } else {
       // +3months
       const endDate = new Date(formData.startDate);
       endDate.setMonth(endDate.getMonth() + 3);
       setFormField('endDate', endDate);
+      setFormField('hasEndDate', true);
       setEnableEndDate(true);
     }
   };
@@ -135,7 +137,7 @@ export default function CreateHabbit() {
         color: formData.color,
         icon: formData.icon,
         frequency_type: formData.frequencyType,
-        start_date: dateUtils.toServerDateString(formData.startDate),
+        start_date: dayjs(formData.startDate).format('YYYY-MM-DD'),
         user_id: profile.id,
         is_active: true,
         category_name: formData.category,
@@ -145,7 +147,7 @@ export default function CreateHabbit() {
           formData.frequencyType === 'weekly' ? formData.daysOfWeek : null,
         end_date:
           formData.hasEndDate && formData.endDate
-            ? dateUtils.toServerDateString(formData.endDate)
+            ? dayjs(formData.endDate).format('YYYY-MM-DD')
             : null,
         gamification_attributes: null,
         reminder_time:

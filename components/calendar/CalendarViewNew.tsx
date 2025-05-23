@@ -1,6 +1,5 @@
 import { colors } from '@/lib/constants/ui';
 import useHabitsStore from '@/lib/habit-store/store';
-import type { CompletionStatus } from '@/lib/habit-store/types';
 import { useCurrentStreak } from '@/lib/hooks/useAchievements';
 import dayjs, { dateUtils } from '@/lib/utils/dayjs';
 import React, { useCallback, useState } from 'react';
@@ -40,8 +39,9 @@ const CalendarViewNew: React.FC<CalendarViewProps> = ({
   const daysInSelectedMonth = selectedDayjs.daysInMonth();
   let completedDays = 0;
   for (let i = 1; i <= daysInSelectedMonth; i++) {
-    const dateStr = dateUtils.toServerDateString(selectedDayjs.date(i)); // Use UTC string
-    if (monthStatusesForSelected[dateStr] === 'all_completed') {
+    const dateStr = dateUtils.toLocalDateString(selectedDayjs.date(i)); // Use local string
+    if (monthStatusesForSelected[dateStr] === 2) {
+      // 2 = all_completed
       completedDays++;
     }
   }
@@ -64,16 +64,13 @@ const CalendarViewNew: React.FC<CalendarViewProps> = ({
   };
 
   const markedDates = Object.entries(allStatusesForView).reduce(
-    (
-      acc: Record<string, any>,
-      [dateStr, status]: [string, CompletionStatus]
-    ) => {
+    (acc: Record<string, any>, [dateStr, status]: [string, number]) => {
       // Use the passed selectedDate prop to determine the visual selection style
-      const selectedDateStr = dateUtils.toServerDateString(selectedDate);
+      const selectedDateStr = dateUtils.toLocalDateString(selectedDate);
       let customStyles = {};
 
       switch (status) {
-        case 'all_completed':
+        case 2: // all_completed
           customStyles = {
             container: {
               backgroundColor: colors.bgDark,
@@ -84,7 +81,7 @@ const CalendarViewNew: React.FC<CalendarViewProps> = ({
             },
           };
           break;
-        case 'some_completed':
+        case 1: // some_completed
           customStyles = {
             container: {
               borderWidth: 1.5,
@@ -93,7 +90,7 @@ const CalendarViewNew: React.FC<CalendarViewProps> = ({
             },
           };
           break;
-        case 'none_completed':
+        case 0: // none_completed
           // No special styling for uncompleted days
           break;
       }
@@ -110,7 +107,8 @@ const CalendarViewNew: React.FC<CalendarViewProps> = ({
 
   const handleDayPress = useCallback(
     (day: DateObject) => {
-      const newSelectedDate = dateUtils.fromServerDate(day.dateString).toDate();
+      // day.dateString is already in YYYY-MM-DD format, create local date directly
+      const newSelectedDate = dayjs(day.dateString).toDate();
       onSelectDate?.(newSelectedDate);
     },
     [onSelectDate]

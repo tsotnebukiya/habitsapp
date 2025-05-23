@@ -44,20 +44,36 @@ export const dateUtils = {
   isFutureDate: (date: DateInput) => dayjs(date).isAfter(dayjs(), 'day'),
   isPastDate: (date: DateInput) => dayjs(date).isBefore(dayjs(), 'day'),
 
-  // Normalization for comparison (always in UTC)
+  // Normalization for comparison (always in UTC) - for server operations
   normalize: (date: DateInput) => {
     // First ensure we're in UTC, then normalize to start of day
     const utcDate = dayjs.utc(date);
     return utcDate.startOf('day');
   },
 
-  // Comparisons (always normalized and in UTC)
+  // Local normalization for user-facing operations
+  normalizeLocal: (date: DateInput) => {
+    return dayjs(date).startOf('day');
+  },
+
+  // Local date formatting for user-facing operations
+  toLocalDateString: (date: DateInput) => dayjs(date).format('YYYY-MM-DD'),
+
+  // Comparisons (always normalized and in UTC) - for server operations
   isSameDay: (date1: DateInput, date2: DateInput) =>
     dateUtils.normalize(date1).isSame(dateUtils.normalize(date2)),
   isBeforeDay: (date1: DateInput, date2: DateInput) =>
     dateUtils.normalize(date1).isBefore(dateUtils.normalize(date2)),
   isAfterDay: (date1: DateInput, date2: DateInput) =>
     dateUtils.normalize(date1).isAfter(dateUtils.normalize(date2)),
+
+  // Local comparisons for user-facing operations
+  isSameDayLocal: (date1: DateInput, date2: DateInput) =>
+    dateUtils.normalizeLocal(date1).isSame(dateUtils.normalizeLocal(date2)),
+  isBeforeDayLocal: (date1: DateInput, date2: DateInput) =>
+    dateUtils.normalizeLocal(date1).isBefore(dateUtils.normalizeLocal(date2)),
+  isAfterDayLocal: (date1: DateInput, date2: DateInput) =>
+    dateUtils.normalizeLocal(date1).isAfter(dateUtils.normalizeLocal(date2)),
   isBetweenDays: (date: DateInput, start: DateInput, end: DateInput) =>
     dateUtils
       .normalize(date)

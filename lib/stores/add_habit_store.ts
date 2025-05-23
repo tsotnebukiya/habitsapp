@@ -1,4 +1,4 @@
-import dayjs from '@/lib/utils/dayjs';
+import { dateUtils } from '@/lib/utils/dayjs';
 import { create } from 'zustand';
 
 import { HabitCategory, HabitTemplate } from '../constants/HabitTemplates';
@@ -53,7 +53,7 @@ const initialFormData: HabitFormData = {
   icon: 'lightbulb',
   category: 'cat1',
   frequencyType: 'daily',
-  startDate: dayjs().toDate(),
+  startDate: dateUtils.today().toDate(),
   showDatePicker: false,
   type: 'GOOD',
   daysOfWeek: [0, 1, 2, 3, 4, 5, 6], // Default to all days selected
@@ -113,7 +113,7 @@ export const useAddHabitStore = create<AddHabitState>()((set, get) => ({
       formData: {
         ...initialFormData,
         // Ensure dates are reset properly if needed, though initialFormData handles it
-        startDate: dayjs().toDate(),
+        startDate: dateUtils.today().toDate(),
         endDate: null,
         reminderTime: null, // Ensure reminderTime is reset to null string
       },

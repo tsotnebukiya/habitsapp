@@ -78,7 +78,7 @@ export const WeekView = memo(function WeekView({
       }
 
       const isSelected = item.date.isSame(selectedDayjs, 'day');
-      const dateKey = dateUtils.toServerDateString(item.date.toDate());
+      const dateKey = dateUtils.toLocalDateString(item.date.toDate());
       const status = monthStatuses[dateKey] || 0;
 
       return (

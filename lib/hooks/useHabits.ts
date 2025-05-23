@@ -12,9 +12,9 @@ import {
 export function useThreeMonthsStatuses() {
   const monthCache = useHabitsStore((state) => state.monthCache);
   const returnObj = useMemo(() => {
-    const currentMonth = dateUtils.todayUTC().toDate();
-    const prevMonth = dateUtils.todayUTC().subtract(1, 'month').toDate();
-    const nextMonth = dateUtils.todayUTC().add(1, 'month').toDate();
+    const currentMonth = dateUtils.today().toDate();
+    const prevMonth = dateUtils.today().subtract(1, 'month').toDate();
+    const nextMonth = dateUtils.today().add(1, 'month').toDate();
     const currentMonthKey = getMonthKey(currentMonth);
     const prevMonthKey = getMonthKey(prevMonth);
     const nextMonthKey = getMonthKey(nextMonth);
@@ -65,7 +65,7 @@ export const useHabitsForDate = (date: Date) => {
 
       const isInDateRange =
         startDate.isSameOrBefore(targetDate, 'day') &&
-        (!endDate || endDate.isSameOrAfter(targetDate, 'day')) &&
+        (!endDate || targetDate.isSameOrBefore(endDate, 'day')) &&
         habit.is_active;
 
       if (!isInDateRange) return false;

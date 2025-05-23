@@ -32,9 +32,9 @@ export const createCalendarSlice: StateCreator<
 > = (set, get) => ({
   monthCache: new Map(),
   getCurrentThreeMonthsStatuses: () => {
-    const currentMonth = dateUtils.todayUTC().toDate();
-    const prevMonth = dateUtils.todayUTC().subtract(1, 'month').toDate();
-    const nextMonth = dateUtils.todayUTC().add(1, 'month').toDate();
+    const currentMonth = dateUtils.today().toDate();
+    const prevMonth = dateUtils.today().subtract(1, 'month').toDate();
+    const nextMonth = dateUtils.today().add(1, 'month').toDate();
     return {
       ...get().getMonthStatuses(currentMonth),
       ...get().getMonthStatuses(prevMonth),
@@ -45,7 +45,7 @@ export const createCalendarSlice: StateCreator<
   getDayStatus: (date: Date) => {
     const monthKey = getMonthKey(date);
     const cache = get().monthCache.get(monthKey) || {};
-    const dateString = dateUtils.toServerDateString(date);
+    const dateString = dateUtils.toLocalDateString(date);
     return cache[dateString] || 0;
   },
 
@@ -82,7 +82,7 @@ export const createCalendarSlice: StateCreator<
     const updates = new Map<string, OptimizedMonthCache>();
     dates.forEach((date) => {
       const monthKey = getMonthKey(date);
-      const dateString = dateUtils.toServerDateString(date);
+      const dateString = dateUtils.toLocalDateString(date);
 
       if (!updates.has(monthKey)) {
         updates.set(monthKey, {

@@ -198,7 +198,7 @@ export const createCompletionSlice: StateCreator<
         id: uuidv4(),
         habit_id: habitId,
         user_id: userId,
-        completion_date: dateUtils.toServerDateString(now),
+        completion_date: dateUtils.toLocalDateString(now),
         created_at: dateUtils.toServerDateTime(now),
         status: 'not_started',
         value: null,

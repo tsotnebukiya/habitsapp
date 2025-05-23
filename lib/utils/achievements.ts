@@ -61,15 +61,15 @@ function preprocessData(
   habits: Habit[],
   completions: HabitCompletion[]
 ): ProcessedData {
-  // Pre-calculate dates once using UTC
-  const today = dateUtils.todayUTC();
+  // Pre-calculate dates once using local time for user-facing calculations
+  const today = dateUtils.today();
   const lookbackDates = new Array(LOOKBACK_WINDOW);
   const dateStrings = new Array(LOOKBACK_WINDOW);
 
   for (let i = 0; i < LOOKBACK_WINDOW; i++) {
     const date = dateUtils.subtractDays(today, i).toDate();
     lookbackDates[i] = date;
-    dateStrings[i] = dateUtils.toServerDateString(date);
+    dateStrings[i] = dateUtils.toLocalDateString(date);
   }
 
   // Create completion lookup table
@@ -78,7 +78,7 @@ function preprocessData(
     { isSkipped: boolean; isCompleted: boolean }
   > = {};
   completions.forEach((completion) => {
-    const key = `${completion.habit_id}_${dateUtils.toServerDateString(
+    const key = `${completion.habit_id}_${dateUtils.toLocalDateString(
       completion.completion_date
     )}`;
     completionLookup[key] = {
@@ -94,17 +94,18 @@ function preprocessData(
     )
     .map((habit) => {
       const activeDates = new Array(LOOKBACK_WINDOW).fill(false);
-      const habitStartDate = dateUtils.normalize(habit.start_date);
+      const habitStartDate = dateUtils.normalizeLocal(habit.start_date);
       const habitEndDate = habit.end_date
-        ? dateUtils.normalize(habit.end_date)
+        ? dateUtils.normalizeLocal(habit.end_date)
         : null;
 
       // Calculate active days
       for (let i = 0; i < LOOKBACK_WINDOW; i++) {
         const targetDate = lookbackDates[i];
         const isActive =
-          !dateUtils.isBeforeDay(targetDate, habitStartDate) &&
-          (!habitEndDate || !dateUtils.isAfterDay(targetDate, habitEndDate)) &&
+          !dateUtils.isBeforeDayLocal(targetDate, habitStartDate) &&
+          (!habitEndDate ||
+            !dateUtils.isAfterDayLocal(targetDate, habitEndDate)) &&
           (habit.frequency_type === 'daily' ||
             (habit.frequency_type === 'weekly' &&
               habit.days_of_week?.includes(
@@ -219,7 +220,7 @@ export function calculateCurrentStreak(
   if (completions.size === 0 || habits.size === 0) return 0;
 
   // Pre-process: Normalize dates and create lookup structures
-  const today = dateUtils.normalize(dateUtils.today());
+  const today = dateUtils.normalizeLocal(dateUtils.today());
 
   // Create a map of normalized dates to completions
   const completionsByDate = new Map<string, Set<string>>();
@@ -227,7 +228,7 @@ export function calculateCurrentStreak(
 
   completions.forEach((completion) => {
     const normalizedDate = dateUtils
-      .normalize(completion.completion_date)
+      .normalizeLocal(completion.completion_date)
       .format('YYYY-MM-DD');
     normalizedDates.add(normalizedDate);
 
@@ -246,9 +247,9 @@ export function calculateCurrentStreak(
   const habitPeriods: HabitPeriod[] = Array.from(habits.values()).map(
     (habit) => ({
       id: habit.id,
-      start: dateUtils.normalize(habit.created_at).format('YYYY-MM-DD'),
+      start: dateUtils.normalizeLocal(habit.created_at).format('YYYY-MM-DD'),
       end: habit.end_date
-        ? dateUtils.normalize(habit.end_date).format('YYYY-MM-DD')
+        ? dateUtils.normalizeLocal(habit.end_date).format('YYYY-MM-DD')
         : null,
     })
   );
@@ -265,8 +266,8 @@ export function calculateCurrentStreak(
   for (const date of sortedDates) {
     // Break streak if there's a gap
     const daysDiff = dateUtils
-      .normalize(previousDate)
-      .diff(dateUtils.normalize(date), 'day');
+      .normalizeLocal(previousDate)
+      .diff(dateUtils.normalizeLocal(date), 'day');
 
     if (daysDiff > 1) break;
 

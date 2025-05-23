@@ -8,7 +8,7 @@ import {
 import useUserProfileStore from '@/lib/stores/user_profile';
 import { Database } from '@/supabase/types';
 import { syncStoreToWidget } from '../habit-store/widget-storage';
-import { dateUtils } from './dayjs';
+import dayjs, { dateUtils } from './dayjs';
 
 export const STORE_CONSTANTS = {
   MAX_RETRY_ATTEMPTS: 3,
@@ -28,11 +28,12 @@ export const getMonthKey = (date: Date): string => {
  * All dates are handled in UTC to ensure consistency
  */
 export const getAffectedDates = (habit: Habit): Date[] => {
-  const startDate = dateUtils.normalize(habit.start_date);
-  const today = dateUtils.todayUTC();
+  // Use local time for all date operations to avoid timezone conversion issues
+  const startDate = dayjs(habit.start_date).startOf('day');
+  const today = dateUtils.today();
   const endDate = habit.end_date
-    ? dateUtils.normalize(habit.end_date).isBefore(today)
-      ? dateUtils.normalize(habit.end_date)
+    ? dayjs(habit.end_date).startOf('day').isBefore(today)
+      ? dayjs(habit.end_date).startOf('day')
       : today
     : today;
 
@@ -46,7 +47,7 @@ export const getAffectedDates = (habit: Habit): Date[] => {
       const dayOfWeek = currentDate.day();
 
       if (daysOfWeek.has(dayOfWeek)) {
-        dates.push(dateUtils.toServerDateString(currentDate));
+        dates.push(currentDate.format('YYYY-MM-DD'));
       }
 
       let nextDay = dayOfWeek + 1;
@@ -65,29 +66,29 @@ export const getAffectedDates = (habit: Habit): Date[] => {
         daysToAdd = 7 - dayOfWeek + firstValidDay;
       }
 
-      currentDate = dateUtils.addDays(currentDate, daysToAdd);
+      currentDate = currentDate.add(daysToAdd, 'day');
     }
   } else {
     let currentDate = startDate;
     while (currentDate.isSameOrBefore(endDate)) {
-      dates.push(dateUtils.toServerDateString(currentDate));
-      currentDate = dateUtils.addDays(currentDate, 1);
+      dates.push(currentDate.format('YYYY-MM-DD'));
+      currentDate = currentDate.add(1, 'day');
     }
   }
 
-  return dates.map((dateStr) => dateUtils.fromServerDate(dateStr).toDate());
+  return dates.map((dateStr) => dayjs(dateStr).toDate());
 };
 
 /**
- * Normalizes a date to YYYY-MM-DD format in UTC
+ * Normalizes a date to YYYY-MM-DD format in local time for user-facing operations
  */
 export const normalizeDate = (date: Date | string): string => {
-  return dateUtils.toServerDateString(date);
+  return dateUtils.toLocalDateString(date);
 };
 
 /**
  * Calculates the overall completion status for a specific date
- * All date comparisons are done in UTC
+ * All date comparisons are done in local time for user-facing operations
  */
 export const calculateDateStatus = (
   allHabits: Habit[],
@@ -96,19 +97,19 @@ export const calculateDateStatus = (
 ): number => {
   if (!allHabits || allHabits.length === 0) return 0;
 
-  const targetDateNormalized = dateUtils.normalize(date);
+  const targetDateNormalized = dateUtils.normalizeLocal(date);
   const targetDayOfWeek = targetDateNormalized.day();
-  const targetDateString = dateUtils.toServerDateString(date);
+  const targetDateString = dateUtils.toLocalDateString(date);
   const activeHabitsForDate: Habit[] = [];
 
   for (const habit of allHabits) {
     if (!habit.is_active) continue;
 
-    const startDate = dateUtils.normalize(habit.start_date);
+    const startDate = dateUtils.normalizeLocal(habit.start_date);
     if (targetDateNormalized.isBefore(startDate)) continue;
 
     if (habit.end_date) {
-      const endDate = dateUtils.normalize(habit.end_date);
+      const endDate = dateUtils.normalizeLocal(habit.end_date);
       if (targetDateNormalized.isAfter(endDate)) continue;
     }
 
@@ -249,14 +250,14 @@ export function calculateHabitToggle({
 
 /**
  * Gets the completion status for a specific habit on a specific date
- * Uses UTC for date comparison
+ * Uses local time for date comparison to match stored completion dates
  */
 export const getHabitStatus = (
   completions: HabitCompletion[],
   habitId: string,
   date: Date
 ): HabitCompletion | null => {
-  const normalizedDate = dateUtils.toServerDateString(date);
+  const normalizedDate = normalizeDate(date);
   return (
     completions.find(
       (completion) =>
