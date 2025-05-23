@@ -1,6 +1,6 @@
-import React, { memo, useMemo, useEffect, useRef } from 'react';
-import { View, StyleSheet, Dimensions } from 'react-native';
 import { useMatrix } from '@/lib/hooks/useMatrix';
+import React, { memo, useMemo, useRef } from 'react';
+import { StyleSheet, View } from 'react-native';
 import { MatrixGridCell } from './MatrixGridCell';
 
 interface MatrixGridProps {

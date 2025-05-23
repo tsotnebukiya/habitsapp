@@ -13,10 +13,10 @@
 
 1. **React Native & Expo**
 
-   - React Native v0.74.5
-   - Expo SDK v51
+   - React Native v0.76.9
+   - Expo SDK v52
    - Expo Router v3
-   - TypeScript v5.5.4
+   - TypeScript v5.8.3
 
 2. **State Management**
 
@@ -24,14 +24,25 @@
    - MMKV v2.12.2
    - AsyncStorage v1.23.1
 
-3. **UI Components**
+3. **Testing Framework**
+
+   - Jest v29.2.1
+   - React Native Testing Library v12.9.0
+   - MSW (Mock Service Worker) v2.8.4
+   - Jest Extended v5.0.3
+   - Faker.js v6.6.6
+   - Testing Library User Event v14.6.1
+
+4. **UI Components**
 
    - React Native Reanimated v3.10.1
    - React Native Gesture Handler v2.16.1
    - React Native Skia v1.2.3
+   - React Native Calendars v1.1312.0
+   - @marceloterreiro/flash-calendar v1.3.0
    - Various Expo modules
 
-4. **iOS Widget Specific**
+5. **iOS Widget Specific**
    - Swift (for widget views, logic, and intents)
    - SwiftUI (for widget UI)
    - WidgetKit (Apple framework for building widgets)
@@ -46,15 +57,16 @@
 
 ```json
 {
-  "@expo/vector-icons": "^14.0.4",
-  "@gorhom/bottom-sheet": "^4.6.3",
+  "@expo/vector-icons": "^14.1.0",
+  "@gorhom/bottom-sheet": "^5.1.4",
+  "@marceloterreiro/flash-calendar": "^1.3.0",
   "@supabase/supabase-js": "^2.44.4",
   "expo-router": "^3.5.18",
   "posthog-react-native": "^3.3.9",
   "@sentry/react-native": "^6.1.0",
   "react-native-mmkv": "2.12.2",
   "zustand": "^5.0.1",
-  "react-native-calendars": "^1.1311.0",
+  "react-native-calendars": "^1.1312.0",
   "react-native-confetti-cannon": "^1.5.2",
   "react-native-context-menu-view": "^1.16.0",
   "@bacons/expo-apple-targets": "^0.1.1-beta.1"
@@ -65,12 +77,78 @@
 
 ```json
 {
-  "@babel/core": "^7.24.0",
+  "@babel/core": "^7.25.2",
   "@testing-library/react-native": "^12.9.0",
-  "typescript": "^5.5.4",
-  "jest": "^29.2.1"
+  "@testing-library/user-event": "^14.6.1",
+  "@types/jest": "^29.5.12",
+  "faker": "^6.6.6",
+  "jest": "^29.2.1",
+  "jest-expo": "52.0.6",
+  "jest-extended": "^5.0.3",
+  "msw": "^2.8.4",
+  "typescript": "^5.8.3"
 }
 ```
+
+## Testing Infrastructure
+
+### Jest Configuration
+
+```json
+{
+  "preset": "jest-expo",
+  "setupFiles": ["./jest.setup.js"],
+  "testMatch": ["**/__tests__/**/*.test.{js,jsx,ts,tsx}"],
+  "testPathIgnorePatterns": [
+    "__tests__/utils/test-factories.ts",
+    "__tests__/utils/custom-matchers.ts"
+  ],
+  "transformIgnorePatterns": [
+    "node_modules/(?!(react-native|@react-native|expo|@expo|@supabase|zustand|dayjs)/)"
+  ],
+  "moduleNameMapping": {
+    "^@/(.*)$": "<rootDir>/$1"
+  }
+}
+```
+
+### Test Scripts
+
+```bash
+# Run tests with no-tests-pass flag
+npm run test
+
+# Watch mode for development
+npm run test:watch
+
+# Coverage reporting
+npm run test:coverage
+```
+
+### Testing Tools
+
+1. **MSW (Mock Service Worker)**
+
+   - API mocking for Supabase interactions
+   - Realistic network request/response simulation
+   - Offline testing capabilities
+
+2. **Jest Extended**
+
+   - Enhanced assertion matchers
+   - Better test readability
+   - Additional utility functions
+
+3. **Faker.js**
+
+   - Test data generation
+   - Realistic mock data creation
+   - Consistent test scenarios
+
+4. **Testing Library User Event**
+   - User interaction simulation
+   - Event handling testing
+   - Accessibility testing support
 
 ## External Services
 
@@ -157,19 +235,37 @@ eas build --platform android
 
 ### Test Setup
 
-- Jest
+- Jest with Expo preset
 - React Native Testing Library
-- Mock implementations
-- Test utilities
+- MSW for API mocking
+- Jest Extended for enhanced matchers
+- Faker.js for test data generation
+- Custom test utilities and factories
 
 ### Running Tests
 
 ```bash
-# Run all tests
+# Run all tests (with no-tests-pass flag)
 yarn test
 
+# Run tests in watch mode
+yarn test:watch
+
 # Run with coverage
-yarn test --coverage
+yarn test:coverage
+```
+
+### Test Organization
+
+```
+__tests__/
+├── components/          # Component tests
+├── stores/             # State management tests
+├── utils/              # Utility function tests
+├── integration/        # Integration tests
+└── utils/
+    ├── test-factories.ts    # Test data factories
+    └── custom-matchers.ts   # Custom Jest matchers
 ```
 
 ## Performance Considerations
@@ -198,11 +294,11 @@ yarn test --coverage
    - Flipper
    - Performance Monitor
 
-2. **Code Quality**
-   - ESLint
-   - Prettier
-   - TypeScript
-   - Husky hooks
+2. **Testing**
+   - Jest performance monitoring
+   - Component rendering benchmarks
+   - State update performance tests
+   - Memory usage tracking
 
 ## State Management
 

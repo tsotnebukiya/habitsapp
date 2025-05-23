@@ -1,9 +1,41 @@
-import { Text, View } from 'react-native';
+import { colors, fontWeights } from '@/lib/constants/ui';
+import React from 'react';
+import { ScrollView, StyleSheet, Text } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-export default function Achievements() {
+const AchievementsScreen = () => {
+  const insets = useSafeAreaInsets();
   return (
-    <View>
-      <Text>Achievements</Text>
-    </View>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={[
+        styles.contentContainerStyle,
+        {
+          paddingTop: insets.top + 17,
+          paddingBottom: 20,
+        },
+      ]}
+      showsVerticalScrollIndicator={false}
+    >
+      <Text style={styles.title}>Achievements</Text>
+    </ScrollView>
   );
-}
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: colors.bgLight, // Slightly off-white background for contrast
+  },
+  contentContainerStyle: {
+    paddingHorizontal: 18,
+  },
+  title: {
+    fontSize: 26,
+    fontFamily: fontWeights.bold,
+    color: colors.text,
+    marginBottom: 17,
+  },
+});
+
+export default AchievementsScreen;
