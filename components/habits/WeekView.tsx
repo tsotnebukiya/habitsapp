@@ -35,9 +35,9 @@ export const WeekView = memo(function WeekView({
     const result: DateItem[] = [];
     const startOfPrevMonth = dateUtils
       .today()
-      .subtract(1, 'month')
+      .subtract(3, 'month')
       .startOf('month');
-    const endOfNextMonth = dateUtils.today().add(1, 'month').endOf('month');
+    const endOfNextMonth = dateUtils.today().add(3, 'month').endOf('month');
 
     // Add start spacer
     result.push({ date: startOfPrevMonth.clone(), type: 'spacer' });
@@ -63,7 +63,7 @@ export const WeekView = memo(function WeekView({
   const selectedIndex = useMemo(() => {
     const startOfPrevMonth = dateUtils
       .today()
-      .subtract(1, 'month')
+      .subtract(3, 'month')
       .startOf('month');
 
     // Add 1 to account for the start spacer

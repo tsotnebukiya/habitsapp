@@ -76,15 +76,14 @@ const ChooseHabitModal = ({
               <View style={[styles.habit, styles.allHabitsRow]}>
                 <MaterialIcons name="grid-view" size={20} color={colors.text} />
                 <Text style={styles.habitName}>All habits</Text>
+                {selectedHabit === null && (
+                  <MaterialIcons
+                    name="check-circle"
+                    size={24}
+                    color={colors.text}
+                  />
+                )}
               </View>
-              {selectedHabit === null && (
-                <MaterialIcons
-                  name="check"
-                  size={20}
-                  color={colors.habitColors.meadowGreen}
-                  style={styles.checkIcon}
-                />
-              )}
             </TouchableOpacity>
 
             {/* Individual Habits */}
@@ -107,15 +106,15 @@ const ChooseHabitModal = ({
                   >
                     {habit.name}
                   </Text>
+
+                  {selectedHabit === habit.id && (
+                    <MaterialIcons
+                      name="check-circle"
+                      size={24}
+                      color={colors.text}
+                    />
+                  )}
                 </View>
-                {selectedHabit === habit.id && (
-                  <MaterialIcons
-                    name="check"
-                    size={20}
-                    color={colors.habitColors.meadowGreen}
-                    style={styles.checkIcon}
-                  />
-                )}
               </TouchableOpacity>
             ))}
           </ScrollView>
@@ -184,9 +183,5 @@ const styles = StyleSheet.create({
     color: colors.text,
     fontFamily: fontWeights.semibold,
     fontSize: 14,
-  },
-
-  checkIcon: {
-    marginRight: 8,
   },
 });

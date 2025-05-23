@@ -9,12 +9,13 @@ import {
   getProgressText,
 } from '../utils/habits';
 
-export function useThreeMonthsStatuses() {
+export function useThreeMonthsStatuses(targetMonth?: Date) {
   const monthCache = useHabitsStore((state) => state.monthCache);
   const returnObj = useMemo(() => {
-    const currentMonth = dateUtils.today().toDate();
-    const prevMonth = dateUtils.today().subtract(1, 'month').toDate();
-    const nextMonth = dateUtils.today().add(1, 'month').toDate();
+    const baseMonth = targetMonth ? dayjs(targetMonth) : dateUtils.today();
+    const currentMonth = baseMonth.toDate();
+    const prevMonth = baseMonth.subtract(1, 'month').toDate();
+    const nextMonth = baseMonth.add(1, 'month').toDate();
     const currentMonthKey = getMonthKey(currentMonth);
     const prevMonthKey = getMonthKey(prevMonth);
     const nextMonthKey = getMonthKey(nextMonth);
@@ -23,7 +24,7 @@ export function useThreeMonthsStatuses() {
       ...(monthCache.get(currentMonthKey) || {}),
       ...(monthCache.get(nextMonthKey) || {}),
     };
-  }, [monthCache]);
+  }, [monthCache, targetMonth]);
   return returnObj;
 }
 
