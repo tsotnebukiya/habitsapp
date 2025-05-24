@@ -1,3 +1,4 @@
+import { MatrixGrid } from '@/components/achievements/MatrixGrid';
 import { colors, fontWeights } from '@/lib/constants/ui';
 import React from 'react';
 import { ScrollView, StyleSheet, Text } from 'react-native';
@@ -18,6 +19,7 @@ const AchievementsScreen = () => {
       showsVerticalScrollIndicator={false}
     >
       <Text style={styles.title}>Achievements</Text>
+      <MatrixGrid />
     </ScrollView>
   );
 };

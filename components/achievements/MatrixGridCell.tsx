@@ -1,67 +1,74 @@
-import React, { memo, useEffect, useRef } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import { colors, fontWeights } from '@/lib/constants/ui';
 import { MatrixCategory } from '@/lib/hooks/useMatrix';
+import { MaterialIcons } from '@expo/vector-icons';
+import React, { memo } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import { Icon } from 'react-native-paper';
 
 interface MatrixGridCellProps {
   category: MatrixCategory;
-  size?: 'small' | 'medium' | 'large';
 }
 
 export const MatrixGridCell = memo(function MatrixGridCell({
   category,
-  size = 'medium',
 }: MatrixGridCellProps) {
-  const colorCalcTime = useRef(0);
+  const getDifferenceColor = (difference: number) => {
+    return difference >= 0 ? colors.primary : '#D92D20';
+  };
 
-  // Create a solid background color by mixing with white
-  // Instead of using opacity which causes shadow rendering issues
-  const getBgColor = (color: string, opacity: number = 0.15) => {
-    const calcStart = Date.now();
-
-    // Simple mixing function - assumes color is a hex value
-    const r = parseInt(color.substring(1, 3), 16);
-    const g = parseInt(color.substring(3, 5), 16);
-    const b = parseInt(color.substring(5, 7), 16);
-
-    // Mix with white (255,255,255) based on opacity
-    const mixedR = Math.round(r * opacity + 255 * (1 - opacity));
-    const mixedG = Math.round(g * opacity + 255 * (1 - opacity));
-    const mixedB = Math.round(b * opacity + 255 * (1 - opacity));
-
-    // Convert back to hex
-    const result = `#${mixedR.toString(16).padStart(2, '0')}${mixedG
-      .toString(16)
-      .padStart(2, '0')}${mixedB.toString(16).padStart(2, '0')}`;
-
-    colorCalcTime.current = Date.now() - calcStart;
-    return result;
+  const getDifferenceText = (difference: number) => {
+    const sign = difference >= 0 ? '+' : '';
+    return `${sign}${difference}`;
   };
 
   return (
     <View
       style={[
         styles.container,
-        { backgroundColor: getBgColor(category.color) }, // Solid background instead of opacity
-        styles[size],
+        { backgroundColor: category.display.background },
       ]}
     >
       <View style={styles.header}>
-        <Text>{category.icon}</Text>
-        <Text style={[styles.title, { color: category.color }]}>
+        {category.id === 'total' ? (
+          <MaterialIcons
+            name="balance"
+            size={24}
+            color={category.display.title}
+          />
+        ) : (
+          <Icon
+            source={category.icon}
+            size={24}
+            color={category.display.title}
+          />
+        )}
+        <Text style={[styles.title, { color: category.display.title }]}>
           {category.name}
         </Text>
       </View>
 
       <View style={styles.scoreContainer}>
-        <Text style={[styles.score, { color: category.color }]}>
-          {category.score}
-        </Text>
-        {category.description && (
-          <Text style={styles.description} numberOfLines={2}>
-            {category.description}
+        <View style={styles.numberContainer}>
+          <Text style={[styles.score, { color: category.display.number }]}>
+            {category.score}
           </Text>
-        )}
+
+          {category.difference !== 0 && (
+            <Text
+              style={[
+                styles.difference,
+                { color: getDifferenceColor(category.difference) },
+              ]}
+            >
+              {getDifferenceText(category.difference)}
+            </Text>
+          )}
+        </View>
+
+        {/* Description */}
+        <Text style={styles.description} numberOfLines={2}>
+          {category.description}
+        </Text>
       </View>
     </View>
   );
@@ -69,47 +76,49 @@ export const MatrixGridCell = memo(function MatrixGridCell({
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: 12,
+    borderRadius: 16,
     padding: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  small: {
-    height: 120,
-  },
-  medium: {
-    height: 150,
-  },
-  large: {
-    height: 180,
+    ...colors.dropShadow,
+    height: 174,
+    position: 'relative',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 12,
+    marginBottom: 26,
+    gap: 6,
   },
   title: {
-    fontSize: 16,
-    fontWeight: '600',
-    marginLeft: 8,
+    fontSize: 14,
+    fontFamily: fontWeights.semibold,
   },
   scoreContainer: {
-    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    position: 'relative',
+  },
+  numberContainer: {
+    marginBottom: 14,
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 8,
   },
   score: {
-    fontSize: 36,
-    fontWeight: 'bold',
+    fontSize: 34,
+    fontFamily: fontWeights.bold,
+    textAlign: 'center',
+  },
+  difference: {
+    fontSize: 17,
+    fontFamily: fontWeights.bold,
+    top: 8,
   },
   description: {
     fontSize: 12,
-    color: '#666',
+    color: colors.text,
+    opacity: 0.5,
     textAlign: 'center',
-    marginTop: 8,
-    opacity: 0.8,
+    fontFamily: fontWeights.regular,
+    maxWidth: '80%',
   },
 });

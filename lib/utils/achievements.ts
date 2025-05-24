@@ -21,7 +21,7 @@ const BASELINE_SCORES: Record<HabitCategory, number> = {
   cat5: 50,
 };
 
-function getBaselineScore(
+export function getBaselineScore(
   category: HabitCategory,
   userProfile: UserProfile
 ): number {

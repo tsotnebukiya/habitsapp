@@ -25,6 +25,11 @@ export const CATEGORIES = [
     icon: require('@/assets/icons/vitality.png'),
     description: 'Physical health and energy',
     color: '#FF6B6B',
+    display: {
+      title: '#E47980',
+      number: '#F94B54',
+      background: '#FFE2E1',
+    },
   },
   {
     id: 'cat2',
@@ -32,6 +37,11 @@ export const CATEGORIES = [
     icon: require('@/assets/icons/wisdom.png'),
     description: 'Mental growth and learning',
     color: '#4A90E2',
+    display: {
+      title: '#5D92F2',
+      number: '#4984ED',
+      background: '#DDE7F8',
+    },
   },
   {
     id: 'cat3',
@@ -39,6 +49,11 @@ export const CATEGORIES = [
     icon: require('@/assets/icons/harmony.png'),
     description: 'Balance and relationships',
     color: '#7ED6A7',
+    display: {
+      title: '#E47980',
+      number: '#FB919F',
+      background: '#FEEBED',
+    },
   },
   {
     id: 'cat4',
@@ -46,6 +61,11 @@ export const CATEGORIES = [
     icon: require('@/assets/icons/spirit.png'),
     description: 'Inner peace and mindfulness',
     color: '#A974F8',
+    display: {
+      title: '#9D8DD3',
+      number: '#9680E1',
+      background: '#F0EBFD',
+    },
   },
   {
     id: 'cat5',
@@ -53,17 +73,32 @@ export const CATEGORIES = [
     icon: require('@/assets/icons/ambition.png'),
     description: 'Career and personal goals',
     color: '#FFA726',
+    display: {
+      title: '#75BBA8',
+      number: '#44AF99',
+      background: '#DEF3EE',
+    },
   },
 ] as const;
 
-// categories map
-export const CATEGORIES_MAP = CATEGORIES.reduce(
-  (acc, category) => {
-    acc[category.id] = category;
-    return acc;
+export const TOTAL_CATEGORY = {
+  id: 'total',
+  name: 'Total',
+  icon: require('@/assets/icons/ambition.png'),
+  description: 'Overall life balance',
+  color: '#FFA726',
+  display: {
+    title: '#F6B52F',
+    number: '#F6B52F',
+    background: '#FEF4D3',
   },
-  {} as Record<HabitCategory, (typeof CATEGORIES)[number]>
-);
+} as const;
+
+// categories map
+export const CATEGORIES_MAP = CATEGORIES.reduce((acc, category) => {
+  acc[category.id] = category;
+  return acc;
+}, {} as Record<HabitCategory, (typeof CATEGORIES)[number]>);
 
 export const HABIT_TEMPLATES: HabitTemplate[] = [
   /* ──────────── VITALITY ──────────── */

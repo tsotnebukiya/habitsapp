@@ -1,6 +1,7 @@
+import { colors, fontWeights } from '@/lib/constants/ui';
 import { useMatrix } from '@/lib/hooks/useMatrix';
 import React, { memo, useMemo, useRef } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { MatrixGridCell } from './MatrixGridCell';
 
 interface MatrixGridProps {
@@ -13,9 +14,7 @@ export const MatrixGrid = memo(function MatrixGrid({
   const renderCount = useRef(0);
   const { categories, balanceCategory } = useMatrix();
 
-  // Render grid cells in rows based on columnCount
   const renderGrid = useMemo(() => {
-    const gridStartTime = Date.now();
     renderCount.current++;
 
     // Ensure we have enough categories
@@ -31,10 +30,7 @@ export const MatrixGrid = memo(function MatrixGrid({
       rows.push(
         <View key={`row-${i}`} style={styles.row}>
           {rowItems.map((category, index) => (
-            <View
-              key={category.id || `category-${i + index}`}
-              style={[styles.gridItem, { flex: 1 }]}
-            >
+            <View key={index} style={[styles.gridItem, { flex: 1 }]}>
               <MatrixGridCell category={category} />
             </View>
           ))}
@@ -47,6 +43,8 @@ export const MatrixGrid = memo(function MatrixGrid({
 
   return (
     <View style={styles.container}>
+      <Text style={styles.title}>Life Balance Matrix</Text>
+      <Text style={styles.description}>Your scores across key life areas</Text>
       <View style={styles.gridContainer}>{renderGrid}</View>
     </View>
   );
@@ -54,16 +52,29 @@ export const MatrixGrid = memo(function MatrixGrid({
 
 const styles = StyleSheet.create({
   container: {
-    width: '100%',
+    marginBottom: 26,
   },
   gridContainer: {
     flex: 1,
-    gap: 16,
+    gap: 10,
+  },
+  title: {
+    fontSize: 16,
+    fontFamily: fontWeights.bold,
+    color: colors.text,
+    marginBottom: 2,
+  },
+  description: {
+    fontSize: 12,
+    opacity: 0.5,
+    fontFamily: fontWeights.regular,
+    color: colors.text,
+    marginBottom: 27,
   },
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: 16,
+    gap: 10,
   },
   gridItem: {},
 });

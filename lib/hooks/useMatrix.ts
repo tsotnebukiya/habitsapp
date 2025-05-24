@@ -1,87 +1,133 @@
-import { CATEGORIES, CATEGORY_IDS } from '@/lib/constants/HabitTemplates';
+import {
+  CATEGORIES,
+  CATEGORY_IDS,
+  HabitCategory,
+  TOTAL_CATEGORY,
+} from '@/lib/constants/HabitTemplates';
 import useHabitsStore from '@/lib/habit-store/store';
-import { DisplayedMatrixScore } from '@/lib/habit-store/types';
-import { useUserProfileStore } from '@/lib/stores/user_profile';
-import dayjs from '@/lib/utils/dayjs';
+import { UserProfile, useUserProfileStore } from '@/lib/stores/user_profile';
 import { useMemo } from 'react';
 
 export interface MatrixCategory {
   id: (typeof CATEGORY_IDS)[number] | 'total';
   name: string;
   score: number;
-  color: string;
+  difference: number;
   icon: string;
   description?: string;
+  display: {
+    title: string;
+    number: string;
+    background: string;
+  };
+}
+
+// Helper function to get current score from achievements store
+function getCurrentScore(
+  categoryId: HabitCategory,
+  scores: {
+    cat1?: number;
+    cat2?: number;
+    cat3?: number;
+    cat4?: number;
+    cat5?: number;
+  }
+): number {
+  switch (categoryId) {
+    case 'cat1':
+      return scores.cat1 || 0;
+    case 'cat2':
+      return scores.cat2 || 0;
+    case 'cat3':
+      return scores.cat3 || 0;
+    case 'cat4':
+      return scores.cat4 || 0;
+    case 'cat5':
+      return scores.cat5 || 0;
+    default:
+      return 0;
+  }
+}
+
+// Helper function to get baseline score from user profile
+function getBaselineScore(
+  categoryId: HabitCategory,
+  profile: UserProfile | null
+): number {
+  if (!profile) return 50; // Default baseline
+
+  switch (categoryId) {
+    case 'cat1':
+      return profile.cat1 || 50;
+    case 'cat2':
+      return profile.cat2 || 50;
+    case 'cat3':
+      return profile.cat3 || 50;
+    case 'cat4':
+      return profile.cat4 || 50;
+    case 'cat5':
+      return profile.cat5 || 50;
+    default:
+      return 50;
+  }
 }
 
 export function useMatrix() {
-  // Extract category values directly from the achievements store
+  // Get current scores from achievements store
   const cat1 = useHabitsStore((state) => state.cat1);
   const cat2 = useHabitsStore((state) => state.cat2);
   const cat3 = useHabitsStore((state) => state.cat3);
   const cat4 = useHabitsStore((state) => state.cat4);
   const cat5 = useHabitsStore((state) => state.cat5);
 
-  // Fallback to profile only if needed
+  // Get baseline scores from user profile
   const profile = useUserProfileStore((state) => state.profile);
 
-  // Cache the matrix scores to avoid recalculation
-  const matrixScore = useMemo<DisplayedMatrixScore>(
-    () => ({
-      cat1: cat1 || profile?.cat1 || 50,
-      cat2: cat2 || profile?.cat2 || 50,
-      cat3: cat3 || profile?.cat3 || 50,
-      cat4: cat4 || profile?.cat4 || 50,
-      cat5: cat5 || profile?.cat5 || 50,
-      calculated_at: dayjs().toDate(),
-    }),
-    [cat1, cat2, cat3, cat4, cat5]
-  );
-
-  // Create category objects with metadata - only recompute when matrixScore changes
+  // Calculate differences and create categories
   const categories: MatrixCategory[] = useMemo(() => {
-    const result = CATEGORIES.map((cat) => ({
-      ...cat,
-      score: Math.round(matrixScore[cat.id]),
-    }));
-    return result;
-  }, [matrixScore]);
+    return CATEGORIES.map((cat) => {
+      const currentScore = getCurrentScore(cat.id, {
+        cat1,
+        cat2,
+        cat3,
+        cat4,
+        cat5,
+      });
+      const baselineScore = getBaselineScore(cat.id, profile);
+      const finalScore = currentScore || baselineScore;
 
-  // Calculate overall balance score (average of all categories) - rounded to whole number
-  const balanceScore = useMemo(() => {
-    const sum = categories.reduce((acc, cat) => acc + cat.score, 0);
-    const result = Math.round(sum / categories.length);
-    return result;
+      return {
+        id: cat.id,
+        name: cat.name,
+        score: Math.round(finalScore),
+        difference: Math.round(finalScore - baselineScore),
+        icon: cat.icon,
+        description: cat.description,
+        display: cat.display,
+      };
+    });
+  }, [cat1, cat2, cat3, cat4, cat5, profile]);
+
+  // Calculate total with difference
+  const balanceCategory: MatrixCategory = useMemo(() => {
+    const totalScore = Math.round(
+      categories.reduce((acc, cat) => acc + cat.score, 0) / categories.length
+    );
+    const totalBaseline = Math.round(
+      categories.reduce((acc, cat) => acc + (cat.score - cat.difference), 0) /
+        categories.length
+    );
+
+    return {
+      id: 'total',
+      name: TOTAL_CATEGORY.name,
+      score: totalScore,
+      difference: totalScore - totalBaseline,
+      icon: TOTAL_CATEGORY.icon,
+      description: TOTAL_CATEGORY.description,
+      display: TOTAL_CATEGORY.display,
+    };
   }, [categories]);
 
-  // Create balance category - only recompute when balanceScore changes
-  const balanceCategory: MatrixCategory = useMemo(
-    () => ({
-      id: 'total',
-      name: 'Total',
-      score: balanceScore,
-      color: '#FFBE0B', // Gold/Yellow
-      // emoji for balance
-      icon: '💰',
-      description: 'Overall life balance',
-    }),
-    [balanceScore]
-  );
-
-  // Add lastCalculated using dayjs for consistent date formatting
-  const lastCalculated = useMemo(
-    () => dayjs(matrixScore.calculated_at).format(),
-    [matrixScore.calculated_at]
-  );
-
-  // Return memoized result to prevent unnecessary re-renders
-  return useMemo(
-    () => ({
-      categories,
-      balanceCategory,
-      balanceScore,
-      lastCalculated,
-    }),
-    [categories, balanceCategory, balanceScore, lastCalculated]
-  );
+  return { categories, balanceCategory };
 }
