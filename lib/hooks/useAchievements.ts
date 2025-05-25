@@ -1,6 +1,6 @@
-import { useMemo } from 'react';
 import useHabitsStore from '@/lib/habit-store/store';
 import { calculateCurrentStreak } from '@/lib/utils/achievements'; // Make sure this is exported
+import { useMemo } from 'react';
 
 export function useCurrentStreak(): number {
   // Select the specific state pieces needed for the calculation

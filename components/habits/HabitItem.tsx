@@ -93,14 +93,10 @@ function HabitItem({
 
   const handleLongPress = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    // Handle long press
   };
 
   const handleDelete = () => {
-    const now = performance.now();
     deleteHabit(habit.id);
-    const end = performance.now();
-    console.log(`Total time taken: ${end - now} milliseconds`);
   };
 
   const handleSkip = () => {
@@ -188,16 +184,15 @@ function HabitItem({
               {habit.name}
             </Text>
           </View>
-          {habit.description && (
-            <Text
-              style={[
-                styles.habitDescription,
-                isSkipped && styles.skippedDescription,
-              ]}
-            >
-              {progressText}
-            </Text>
-          )}
+
+          <Text
+            style={[
+              styles.habitDescription,
+              isSkipped && styles.skippedDescription,
+            ]}
+          >
+            {progressText}
+          </Text>
         </View>
         <TouchableOpacity
           activeOpacity={ACTIVE_OPACITY}

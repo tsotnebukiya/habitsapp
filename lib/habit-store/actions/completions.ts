@@ -144,9 +144,6 @@ export const createCompletionSlice: StateCreator<
         completion.habit_id === habitId &&
         completion.completion_date === normalizedDate
     );
-    console.log(action, value);
-    console.log(newValue, newStatus);
-    // Update or create completion first
     if (existingCompletion) {
       get().updateCompletion(existingCompletion.id, {
         status: newStatus,

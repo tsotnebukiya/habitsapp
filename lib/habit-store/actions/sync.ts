@@ -1,9 +1,9 @@
+import { dateUtils } from '@/lib/utils/dayjs';
+import { getUserIdOrThrow, STORE_CONSTANTS } from '@/lib/utils/habits';
+import { supabase } from '@/supabase/client';
+import dayjs from 'dayjs';
 import { StateCreator } from 'zustand';
 import { PendingOperation, SharedSlice, StreakAchievements } from '../types';
-import { dateUtils } from '@/lib/utils/dayjs';
-import { supabase } from '@/supabase/client';
-import { getUserIdOrThrow, STORE_CONSTANTS } from '@/lib/utils/habits';
-import dayjs from 'dayjs';
 import { syncStoreToWidget } from '../widget-storage';
 
 export interface SyncSlice {

@@ -247,7 +247,9 @@ export function calculateCurrentStreak(
   const habitPeriods: HabitPeriod[] = Array.from(habits.values()).map(
     (habit) => ({
       id: habit.id,
-      start: dateUtils.normalizeLocal(habit.created_at).format('YYYY-MM-DD'),
+      start: dateUtils
+        .normalizeLocal(habit.start_date || habit.created_at)
+        .format('YYYY-MM-DD'),
       end: habit.end_date
         ? dateUtils.normalizeLocal(habit.end_date).format('YYYY-MM-DD')
         : null,

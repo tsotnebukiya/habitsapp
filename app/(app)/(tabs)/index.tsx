@@ -24,7 +24,7 @@ export default function Home() {
   }, [profile?.id, syncData]);
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top + 9 }]}>
+    <View style={[styles.container, { paddingTop: insets.top + 17 }]}>
       <WeekView selectedDate={selectedDate} onDateSelect={setSelectedDate} />
       <HabitList selectedDate={selectedDate} />
     </View>

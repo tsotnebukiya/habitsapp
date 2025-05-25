@@ -17,22 +17,23 @@ export type HabitCompletion =
 export type StreakDays =
   | 1
   | 3
+  | 5
   | 7
   | 10
   | 14
   | 21
   | 28
   | 30
+  | 45
   | 60
   | 90
+  | 100
   | 180
-  | 365;
+  | 200;
 
 export interface Achievement {
   id: StreakDays;
   name: string;
-  description: string;
-  icon: string;
   days: number;
 }
 

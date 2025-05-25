@@ -1,18 +1,17 @@
-import React, { useEffect, useRef } from 'react';
-import {
-  Modal,
-  View,
-  StyleSheet,
-  Dimensions,
-  TouchableOpacity,
-  Text,
-  ScrollView,
-  Pressable,
-} from 'react-native';
 import { useModalStore } from '@/lib/stores/modal_store';
-import ConfettiCannon from 'react-native-confetti-cannon';
 import { BlurView } from 'expo-blur';
-import { AchievementItem } from '@/components/achievements/AchievementItem';
+import React, { useRef } from 'react';
+import {
+  Dimensions,
+  Modal,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import ConfettiCannon from 'react-native-confetti-cannon';
 
 const { width } = Dimensions.get('window');
 const MODAL_WIDTH = width * 0.85;
@@ -115,13 +114,7 @@ const AchievementsModal = ({ onDismiss }: Props) => {
                       styles.achievementContainer,
                       { width: MODAL_WIDTH },
                     ]}
-                  >
-                    <AchievementItem
-                      achievement={achievement}
-                      isUnlocked={true}
-                      large={true}
-                    />
-                  </Pressable>
+                  ></Pressable>
                 ))}
               </ScrollView>
             </View>

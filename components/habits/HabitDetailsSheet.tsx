@@ -149,9 +149,6 @@ export default function HabitDetailsSheet({
               <DropdownMenu.Trigger>
                 <IconButton
                   icon="dots-horizontal"
-                  onPress={() => {
-                    console.log('hey');
-                  }}
                   mode="contained"
                   style={styles.iconButton}
                   iconColor="black"

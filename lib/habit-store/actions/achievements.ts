@@ -1,3 +1,4 @@
+import { useModalStore } from '@/lib/stores/modal_store';
 import { useUserProfileStore } from '@/lib/stores/user_profile';
 import {
   calculateCurrentStreak,
@@ -101,8 +102,12 @@ export const createAchievementSlice: StateCreator<
   calculateAndUpdate: () => {
     const { profile } = useUserProfileStore.getState();
     if (!profile) {
-      return { unlockedAchievements: [], currentStreak: 0 };
+      return { unlockedAchievements: [] };
     }
+
+    // Capture old achievements before updating state
+    const oldAchievements = get().streakAchievements;
+
     const currentStreak = calculateCurrentStreak(
       get().completions,
       get().habits
@@ -110,7 +115,7 @@ export const createAchievementSlice: StateCreator<
 
     const newAchievements = calculateNewAchievements(
       currentStreak,
-      get().streakAchievements
+      oldAchievements
     );
     const matrixScores = calculateDMS(
       profile,
@@ -120,7 +125,6 @@ export const createAchievementSlice: StateCreator<
 
     const userId = getUserIdOrThrow();
     const now = dateUtils.nowUTC();
-
     const userAchievement: UserAchievement = {
       id: userId,
       user_id: userId,
@@ -135,6 +139,7 @@ export const createAchievementSlice: StateCreator<
       created_at: dateUtils.toServerDateTime(now),
       updated_at: dateUtils.toServerDateTime(now),
     };
+
     // Update local state
     set({
       cat1: userAchievement.cat1 || profile.cat1 || undefined,
@@ -167,10 +172,16 @@ export const createAchievementSlice: StateCreator<
         }
       });
 
+    // Use the captured old achievements for comparison
     const unlockedAchievements = getNewlyUnlockedAchievements(
-      get().streakAchievements,
+      oldAchievements,
       newAchievements
     );
+
+    // Automatically show modal if there are unlocked achievements
+    if (unlockedAchievements.length > 0) {
+      useModalStore.getState().showAchievementModal(unlockedAchievements);
+    }
 
     return { unlockedAchievements };
   },
@@ -190,7 +201,11 @@ export const createAchievementSlice: StateCreator<
       cat4: 50,
       cat5: 50,
     });
-
+    setTimeout(() => {
+      console.log('currentStreaks', get().streakAchievements);
+      const { unlockedAchievements } = get().calculateAndUpdate();
+      console.log(unlockedAchievements, 'newStreaks');
+    }, 100);
     // Delete from server in the background
     supabase
       .from('user_achievements')

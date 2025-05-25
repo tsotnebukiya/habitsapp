@@ -1,4 +1,5 @@
-import { Achievement } from '@/lib/habit-store/types';
+import { ACHIEVEMENTS } from '@/lib/constants/achievements';
+import { Achievement, StreakDays } from '@/lib/habit-store/types';
 import { create } from 'zustand';
 
 export type ModalType =
@@ -22,7 +23,7 @@ interface ModalState {
     initialSection?: string;
   };
 
-  showAchievementModal: (achievements: Achievement[]) => void;
+  showAchievementModal: (streakDays: StreakDays[]) => void;
   showConfirmationModal: (data: {
     title?: string;
     message: string;
@@ -44,12 +45,16 @@ export const useModalStore = create<ModalState>((set, get) => ({
   confirmationData: {},
   settingsData: {},
 
-  showAchievementModal: (achievements) =>
+  showAchievementModal: (streakDays: StreakDays[]) => {
+    // Convert StreakDays[] to Achievement[]
+    const achievementObjects = streakDays.map((days) => ACHIEVEMENTS[days]);
+
     set({
       currentModal: 'achievement',
-      achievements,
+      achievements: achievementObjects,
       currentAchievementIndex: 0,
-    }),
+    });
+  },
 
   showConfirmationModal: (data) =>
     set({

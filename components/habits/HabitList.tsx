@@ -32,7 +32,6 @@ const HabitList = function HabitList({ selectedDate }: HabitListProps) {
   const bottomSheetModalRef = useRef<BottomSheetModal>(null);
   const afterToday = useMemo(() => {
     const today = dateUtils.today();
-    console.log(today);
     return dayjs(selectedDate).startOf('day').isAfter(today);
   }, [selectedDate]);
   const showIsAfterToast = useCallback(() => {

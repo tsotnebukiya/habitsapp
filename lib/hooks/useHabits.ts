@@ -104,7 +104,6 @@ export const useHabitStatusInfo = (habitId: string, date: Date) => {
     const currentValue = completion?.value || 0;
     const progress = getCurrentProgress(habit, currentValue);
     const progressText = getProgressText(habit, currentValue);
-
     return { completion, currentValue, progress, progressText };
   }, [habitsMap, completionsMap, habitId, date]);
 };

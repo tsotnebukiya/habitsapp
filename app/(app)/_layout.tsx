@@ -59,6 +59,14 @@ function StackLayout() {
             animation: 'slide_from_bottom',
           }}
         />
+        <Stack.Screen
+          name="badges"
+          options={{
+            presentation: 'modal',
+            headerShown: false,
+            animation: 'slide_from_bottom',
+          }}
+        />
       </Stack>
     </BottomSheetModalProvider>
   );
