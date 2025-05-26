@@ -202,9 +202,7 @@ export const createAchievementSlice: StateCreator<
       cat5: 50,
     });
     setTimeout(() => {
-      console.log('currentStreaks', get().streakAchievements);
-      const { unlockedAchievements } = get().calculateAndUpdate();
-      console.log(unlockedAchievements, 'newStreaks');
+      get().calculateAndUpdate();
     }, 100);
     // Delete from server in the background
     supabase

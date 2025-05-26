@@ -1,4 +1,3 @@
-import ChooseHabitModal from '@/components/modals/ChooseHabitModal';
 import { ACTIVE_OPACITY } from '@/components/shared/config';
 import { colors, fontWeights } from '@/lib/constants/ui';
 import useHabitsStore from '@/lib/habit-store/store';
@@ -71,12 +70,6 @@ const HabitsPicker = ({ selectedHabit, setSelectedHabit }: Props) => {
           />
         </View>
       </TouchableOpacity>
-      <ChooseHabitModal
-        visible={showChooseModal}
-        onDismiss={onDismissChooseModal}
-        selectedHabit={selectedHabit}
-        onSelectHabit={onSelectHabit}
-      />
     </>
   );
 };

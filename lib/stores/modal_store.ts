@@ -12,7 +12,6 @@ export type ModalType =
 interface ModalState {
   currentModal: ModalType;
   achievements: Achievement[];
-  currentAchievementIndex: number;
   confirmationData: {
     title?: string;
     message?: string;
@@ -24,43 +23,25 @@ interface ModalState {
   };
 
   showAchievementModal: (streakDays: StreakDays[]) => void;
-  showConfirmationModal: (data: {
-    title?: string;
-    message: string;
-    onConfirm?: () => void;
-    onCancel?: () => void;
-  }) => void;
   showSettingsModal: (initialSection?: string) => void;
   showSortModal: () => void;
   hideModal: () => void;
-  goToNextAchievement: () => void;
-  goToPrevAchievement: () => void;
-  setAchievementIndex: (index: number) => void;
 }
 
 export const useModalStore = create<ModalState>((set, get) => ({
   currentModal: null,
   achievements: [],
-  currentAchievementIndex: 0,
   confirmationData: {},
   settingsData: {},
 
   showAchievementModal: (streakDays: StreakDays[]) => {
-    // Convert StreakDays[] to Achievement[]
     const achievementObjects = streakDays.map((days) => ACHIEVEMENTS[days]);
 
     set({
       currentModal: 'achievement',
       achievements: achievementObjects,
-      currentAchievementIndex: 0,
     });
   },
-
-  showConfirmationModal: (data) =>
-    set({
-      currentModal: 'confirmation',
-      confirmationData: data,
-    }),
 
   showSettingsModal: (initialSection) =>
     set({
@@ -77,25 +58,4 @@ export const useModalStore = create<ModalState>((set, get) => ({
       confirmationData: {},
       settingsData: {},
     }),
-
-  goToNextAchievement: () => {
-    const { achievements, currentAchievementIndex } = get();
-    if (currentAchievementIndex < achievements.length - 1) {
-      set({ currentAchievementIndex: currentAchievementIndex + 1 });
-    }
-  },
-
-  goToPrevAchievement: () => {
-    const { currentAchievementIndex } = get();
-    if (currentAchievementIndex > 0) {
-      set({ currentAchievementIndex: currentAchievementIndex - 1 });
-    }
-  },
-
-  setAchievementIndex: (index) => {
-    const { achievements } = get();
-    if (index >= 0 && index < achievements.length) {
-      set({ currentAchievementIndex: index });
-    }
-  },
 }));

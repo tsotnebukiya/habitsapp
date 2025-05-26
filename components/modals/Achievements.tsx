@@ -1,9 +1,14 @@
+import { colors, fontWeights } from '@/lib/constants/ui';
+import useHabitsStore from '@/lib/habit-store/store';
 import { useModalStore } from '@/lib/stores/modal_store';
 import { BlurView } from 'expo-blur';
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Dimensions,
+  Image,
   Modal,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -12,9 +17,11 @@ import {
   View,
 } from 'react-native';
 import ConfettiCannon from 'react-native-confetti-cannon';
+import { Icon } from 'react-native-paper';
+import { ACTIVE_OPACITY } from '../shared/config';
 
-const { width } = Dimensions.get('window');
-const MODAL_WIDTH = width * 0.85;
+const { width, height } = Dimensions.get('window');
+const MODAL_WIDTH = width * 0.9;
 
 interface AchievementIndicatorsProps {
   count: number;
@@ -47,7 +54,7 @@ const indicatorStyles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 20,
+    marginTop: 24,
   },
   indicator: {
     width: 8,
@@ -57,7 +64,7 @@ const indicatorStyles = StyleSheet.create({
     marginHorizontal: 4,
   },
   activeIndicator: {
-    backgroundColor: '#333',
+    backgroundColor: colors.primary,
     width: 10,
     height: 10,
     borderRadius: 5,
@@ -69,16 +76,41 @@ interface Props {
 }
 
 const AchievementsModal = ({ onDismiss }: Props) => {
-  const { achievements, currentAchievementIndex, setAchievementIndex } =
-    useModalStore();
+  const { achievements } = useModalStore();
   const confettiRef = useRef<ConfettiCannon>(null);
   const scrollViewRef = useRef<ScrollView>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const streakAchievements = useHabitsStore(
+    (state) => state.streakAchievements
+  );
+
+  // Trigger confetti when modal opens
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      confettiRef.current?.start();
+    }, 300);
+    return () => clearTimeout(timer);
+  }, []);
 
   const scrollToIndex = (index: number) => {
     scrollViewRef.current?.scrollTo({
       x: index * MODAL_WIDTH,
       animated: true,
     });
+    setCurrentIndex(index);
+  };
+
+  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const contentOffsetX = event.nativeEvent.contentOffset.x;
+    const newIndex = Math.round(contentOffsetX / MODAL_WIDTH);
+
+    if (
+      newIndex !== currentIndex &&
+      newIndex >= 0 &&
+      newIndex < achievements.length
+    ) {
+      setCurrentIndex(newIndex);
+    }
   };
 
   if (achievements.length === 0) return null;
@@ -89,12 +121,28 @@ const AchievementsModal = ({ onDismiss }: Props) => {
         <Pressable style={styles.overlay} onPress={onDismiss}>
           <Pressable style={[styles.modalContainer, { width: MODAL_WIDTH }]}>
             <TouchableOpacity
-              style={styles.closeButton}
               onPress={onDismiss}
-              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              activeOpacity={ACTIVE_OPACITY}
+              style={styles.closeButton}
             >
-              <Text style={styles.closeButtonText}>✕</Text>
+              <Icon
+                source={require('@/assets/icons/x-close.png')}
+                size={24}
+                color="black"
+              />
             </TouchableOpacity>
+
+            {/* Header with congratulations */}
+            <View style={styles.header}>
+              <Text style={styles.congratsText}>🎉 Congratulations!</Text>
+              <Text style={styles.achievementText}>
+                You've unlocked{' '}
+                {achievements.length > 1
+                  ? 'new achievements'
+                  : 'a new achievement'}
+                !
+              </Text>
+            </View>
 
             <View style={styles.scrollViewWrapper}>
               <ScrollView
@@ -106,16 +154,38 @@ const AchievementsModal = ({ onDismiss }: Props) => {
                 decelerationRate="fast"
                 style={styles.scrollView}
                 contentContainerStyle={styles.scrollContent}
+                onScroll={handleScroll}
+                scrollEnabled={true}
               >
-                {achievements.map((achievement, index) => (
-                  <Pressable
-                    key={index}
-                    style={[
-                      styles.achievementContainer,
-                      { width: MODAL_WIDTH },
-                    ]}
-                  ></Pressable>
-                ))}
+                {achievements.map((achievement, index) => {
+                  const isUnlocked =
+                    streakAchievements[
+                      achievement.days as keyof typeof streakAchievements
+                    ] || false;
+
+                  return (
+                    <View
+                      key={index}
+                      style={styles.achievementContainer}
+                      onStartShouldSetResponder={() => true}
+                    >
+                      <View style={styles.badgeContainer}>
+                        <Image
+                          source={
+                            isUnlocked
+                              ? require('@/assets/icons/unlocked.png')
+                              : require('@/assets/icons/locked.png')
+                          }
+                          style={styles.badgeIcon}
+                        />
+                        <Text style={styles.badgeText}>
+                          {achievement.days}-day streak
+                        </Text>
+                        <Text style={styles.badgeName}>{achievement.name}</Text>
+                      </View>
+                    </View>
+                  );
+                })}
               </ScrollView>
             </View>
 
@@ -123,7 +193,7 @@ const AchievementsModal = ({ onDismiss }: Props) => {
               <View style={styles.indicatorContainer}>
                 <AchievementIndicators
                   count={achievements.length}
-                  activeIndex={currentAchievementIndex}
+                  activeIndex={currentIndex}
                   onPress={scrollToIndex}
                 />
               </View>
@@ -133,10 +203,12 @@ const AchievementsModal = ({ onDismiss }: Props) => {
 
         <ConfettiCannon
           ref={confettiRef}
-          count={200}
-          origin={{ x: width / 2, y: 0 }}
+          count={150}
+          origin={{ x: width / 2, y: -10 }}
           autoStart={false}
           fadeOut
+          explosionSpeed={350}
+          fallSpeed={2500}
         />
       </BlurView>
     </Modal>
@@ -151,30 +223,47 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalContainer: {
-    backgroundColor: 'white',
-    borderRadius: 20,
+    backgroundColor: colors.bgLight,
+    borderRadius: 24,
     overflow: 'hidden',
     position: 'relative',
+    paddingBottom: 24,
+  },
+  header: {
+    paddingTop: 32,
+    paddingHorizontal: 24,
+    paddingBottom: 16,
+    alignItems: 'center',
+  },
+  congratsText: {
+    fontSize: 24,
+    fontFamily: fontWeights.bold,
+    color: colors.text,
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  achievementText: {
+    fontSize: 16,
+    fontFamily: fontWeights.medium,
+    color: colors.textLight,
+    textAlign: 'center',
   },
   scrollViewWrapper: {
     width: MODAL_WIDTH,
+    height: 280,
   },
   closeButton: {
     position: 'absolute',
-    top: 12,
-    right: 12,
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: '#f2f2f2',
+    top: 16,
+    right: 16,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'white',
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 10,
-  },
-  closeButtonText: {
-    fontSize: 14,
-    color: '#555',
-    fontWeight: '600',
+    ...colors.dropShadow,
   },
   scrollView: {
     width: MODAL_WIDTH,
@@ -183,10 +272,34 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   achievementContainer: {
-    paddingHorizontal: 20,
+    width: MODAL_WIDTH,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+  },
+  badgeContainer: {
+    alignItems: 'center',
+  },
+  badgeIcon: {
+    width: 140,
+    height: 140,
+  },
+  badgeText: {
+    fontSize: 18,
+    fontFamily: fontWeights.bold,
+    color: colors.text,
+    textAlign: 'center',
+    marginTop: 16,
+  },
+  badgeName: {
+    fontSize: 16,
+    fontFamily: fontWeights.medium,
+    color: colors.text,
+    textAlign: 'center',
+    marginTop: 8,
   },
   indicatorContainer: {
-    paddingBottom: 20,
+    paddingBottom: 8,
   },
 });
 
