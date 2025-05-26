@@ -48,7 +48,7 @@ export default function UpdateHabitLayout() {
         <Text style={styles.heading}>Edit {habit?.name}</Text>
         <TouchableOpacity
           onPress={handleClose}
-          activeOpacity={ACTIVE_OPACITY}
+          activeOpacity={0.1}
           style={styles.closeButton}
         >
           <Icon

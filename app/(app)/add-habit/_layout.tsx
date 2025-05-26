@@ -48,7 +48,7 @@ export default function AddHabitLayout() {
         <Text style={styles.heading}>Add New Habit</Text>
         <TouchableOpacity
           onPress={handleClose}
-          activeOpacity={ACTIVE_OPACITY}
+          activeOpacity={0.1}
           style={styles.closeButton}
         >
           <Icon

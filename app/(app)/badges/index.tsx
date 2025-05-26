@@ -1,5 +1,4 @@
 import Badges from '@/components/achievements/Badges';
-import { ACTIVE_OPACITY } from '@/components/shared/config';
 import { colors, fontWeights } from '@/lib/constants/ui';
 import { router } from 'expo-router';
 import {
@@ -25,7 +24,7 @@ export default function BadgesScreen() {
         <Text style={styles.heading}>Milestones</Text>
         <TouchableOpacity
           onPress={handleClose}
-          activeOpacity={ACTIVE_OPACITY}
+          activeOpacity={0.1}
           style={styles.closeButton}
         >
           <Icon
@@ -40,7 +39,7 @@ export default function BadgesScreen() {
         contentContainerStyle={[
           styles.contentContainerStyle,
           {
-            paddingBottom: insets.bottom,
+            paddingBottom: insets.bottom + 20,
           },
         ]}
       >

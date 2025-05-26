@@ -16,15 +16,6 @@ function TabBarIcon(props: { source: any; focused: boolean }) {
         color={props.focused ? colors.primary : colors.tabBarGrey}
       />
     </View>
-
-    // <Ionicons
-    //   size={24}
-    //   style={[
-    //     styles.tabBarIcon,
-    //     props.focused ? styles.tabBarLabelFocused : styles.tabBarLabelUnfocused,
-    //   ]}
-    //   {...props}
-    // />
   );
 }
 

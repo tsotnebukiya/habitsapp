@@ -1,3 +1,4 @@
+import { useAppStore } from '@/lib/stores/app_state';
 import { useModalStore } from '@/lib/stores/modal_store';
 import { useUserProfileStore } from '@/lib/stores/user_profile';
 import {
@@ -178,6 +179,41 @@ export const createAchievementSlice: StateCreator<
       newAchievements
     );
 
+    // Check for store review opportunity - only prompt once on first milestone
+    const reviewMilestones = [7, 14, 21];
+    console.log(`[Achievement] Unlocked achievements:`, unlockedAchievements);
+
+    // Find the first milestone that was unlocked
+    const firstMilestoneHit = reviewMilestones.find((milestone) =>
+      unlockedAchievements.includes(milestone as StreakDays)
+    );
+
+    if (firstMilestoneHit) {
+      console.log(
+        `[Achievement] Found first review milestone: ${firstMilestoneHit} days`
+      );
+      // Check if we've ever prompted for any review before
+      const { promptedReviewMilestones } = useAppStore.getState();
+      const hasPromptedBefore = promptedReviewMilestones.length > 0;
+
+      if (!hasPromptedBefore) {
+        console.log(
+          `[Achievement] First time hitting a review milestone, will prompt after delay`
+        );
+        // Delay the review request slightly to let the achievement celebration show first
+        setTimeout(() => {
+          console.log(
+            `[Achievement] Triggering review request for ${firstMilestoneHit} days after delay`
+          );
+          useAppStore.getState().requestReview(firstMilestoneHit);
+        }, 2000);
+      } else {
+        console.log(
+          `[Achievement] Already prompted for review before, skipping`
+        );
+      }
+    }
+
     // Automatically show modal if there are unlocked achievements
     if (unlockedAchievements.length > 0) {
       useModalStore.getState().showAchievementModal(unlockedAchievements);
@@ -190,7 +226,6 @@ export const createAchievementSlice: StateCreator<
     const userId = getUserIdOrThrow();
     const now = dateUtils.nowUTC();
 
-    // Update local state immediately
     set({
       streakAchievements: {},
       currentStreak: 0,
@@ -201,10 +236,11 @@ export const createAchievementSlice: StateCreator<
       cat4: 50,
       cat5: 50,
     });
+
     setTimeout(() => {
       get().calculateAndUpdate();
     }, 100);
-    // Delete from server in the background
+
     supabase
       .from('user_achievements')
       .delete()
