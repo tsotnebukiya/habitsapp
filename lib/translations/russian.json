@@ -1,0 +1,204 @@
+{
+  "common": {
+    "done": "Готово",
+    "cancel": "Отмена",
+    "save": "Сохранить",
+    "delete": "Удалить",
+    "edit": "Редактировать",
+    "add": "Добавить",
+    "continue": "Продолжить",
+    "back": "Назад",
+    "next": "Далее",
+    "skip": "Пропустить",
+    "loading": "Загрузка...",
+    "error": "Ошибка",
+    "success": "Успех",
+    "confirm": "Подтвердить",
+    "yes": "Да",
+    "no": "Нет",
+    "none": "Нет",
+    "today": "Сегодня",
+    "yesterday": "Вчера",
+    "tomorrow": "Завтра"
+  },
+  "navigation": {
+    "habits": "Привычки",
+    "stats": "Статистика",
+    "achievements": "Достижения",
+    "settings": "Настройки"
+  },
+  "habits": {
+    "title": "Мои Привычки",
+    "addHabit": "Добавить Привычку",
+    "editHabit": "Редактировать Привычку",
+    "deleteHabit": "Удалить Привычку",
+    "habitName": "Название привычки",
+    "description": "Описание",
+    "category": "Категория",
+    "goal": "Цель",
+    "frequency": "Частота",
+    "startDate": "Дата Начала",
+    "endDate": "Дата Окончания",
+    "reminderTime": "Время Напоминания",
+    "icon": "Иконка",
+    "color": "Цвет",
+    "emptyTitle": "Пока нет привычек",
+    "emptySubtitle": "Создайте свою первую привычку, чтобы начать",
+    "streakDays": "{{count}} день подряд",
+    "streakDays_plural": "{{count}} дней подряд",
+    "completedToday": "Выполнено сегодня",
+    "markComplete": "Отметить как выполненное",
+    "markIncomplete": "Отметить как невыполненное"
+  },
+  "categories": {
+    "cat1": "Жизненная сила",
+    "cat2": "Связь",
+    "cat3": "Вклад",
+    "cat4": "Дух",
+    "cat5": "Рост",
+    "total": "Всего"
+  },
+  "frequency": {
+    "daily": "Ежедневно",
+    "weekly": "Еженедельно",
+    "custom": "Настраиваемая"
+  },
+  "goalTypes": {
+    "completion": "Завершение",
+    "duration": "Продолжительность",
+    "quantity": "Количество"
+  },
+  "units": {
+    "count": {
+      "oneName": "Раз",
+      "name": "Раз",
+      "shortName": "×"
+    },
+    "minutes": {
+      "oneName": "Минута",
+      "name": "Минуты",
+      "shortName": "мин"
+    },
+    "hours": {
+      "oneName": "Час",
+      "name": "Часы",
+      "shortName": "ч"
+    },
+    "kilometers": {
+      "oneName": "Километр",
+      "name": "Километры",
+      "shortName": "км"
+    },
+    "steps": {
+      "oneName": "Шаг",
+      "name": "Шаги",
+      "shortName": "шаги"
+    },
+    "liters": {
+      "oneName": "Литр",
+      "name": "Литры",
+      "shortName": "л"
+    },
+    "glasses": {
+      "oneName": "Стакан",
+      "name": "Стаканы",
+      "shortName": "ст"
+    },
+    "servings": {
+      "oneName": "Порция",
+      "name": "Порции",
+      "shortName": "порц"
+    },
+    "words": {
+      "oneName": "Слово",
+      "name": "Слова",
+      "shortName": "сл"
+    },
+    "pages": {
+      "oneName": "Страница",
+      "name": "Страницы",
+      "shortName": "стр"
+    },
+    "dollars": {
+      "oneName": "Доллар",
+      "name": "USD",
+      "shortName": "$"
+    }
+  },
+  "achievements": {
+    "title": "Достижения",
+    "earned": "Получено",
+    "notEarned": "Не Получено",
+    "viewEarned": "Посмотреть Полученные",
+    "congratulations": "Поздравляем!",
+    "achievementUnlocked": "Достижение Разблокировано",
+    "untilNext": "До следующего достижения",
+    "streakAchievement": "Серия {{days}} Дней",
+    "firstStep": "Первый Шаг",
+    "weekWarrior": "Воин Недели",
+    "twoWeekChampion": "Чемпион Двух Недель",
+    "monthMaster": "Мастер Месяца"
+  },
+  "settings": {
+    "title": "Настройки",
+    "language": "Язык",
+    "selectLanguage": "Выберите предпочитаемый язык",
+    "notifications": "Уведомления",
+    "account": "Аккаунт",
+    "about": "О приложении",
+    "logout": "Выйти",
+    "version": "Версия",
+    "privacyPolicy": "Политика Конфиденциальности",
+    "termsOfService": "Условия Использования"
+  },
+  "stats": {
+    "title": "Статистика",
+    "overview": "Обзор",
+    "thisWeek": "Эта Неделя",
+    "thisMonth": "Этот Месяц",
+    "allTime": "За Все Время",
+    "completionRate": "Процент Выполнения",
+    "totalHabits": "Всего Привычек",
+    "activeStreaks": "Активные Серии",
+    "longestStreak": "Самая Длинная Серия"
+  },
+  "forms": {
+    "required": "Это поле обязательно",
+    "invalidInput": "Неверный ввод",
+    "nameTooShort": "Название должно содержать не менее 2 символов",
+    "nameTooLong": "Название должно содержать менее 50 символов"
+  },
+  "notifications": {
+    "habitCreated": "Привычка успешно создана",
+    "habitUpdated": "Привычка успешно обновлена",
+    "habitDeleted": "Привычка успешно удалена",
+    "habitCompleted": "Отличная работа! Привычка выполнена",
+    "streakContinued": "Серия продолжается! Так держать",
+    "achievementEarned": "Получено новое достижение!",
+    "dailyUpdate": "Уведомления о Ежедневных Обновлениях",
+    "streak": "Уведомления о Сериях"
+  },
+  "errors": {
+    "generic": "Что-то пошло не так",
+    "networkError": "Ошибка сетевого соединения",
+    "saveError": "Не удалось сохранить изменения",
+    "loadError": "Не удалось загрузить данные",
+    "deleteError": "Не удалось удалить элемент"
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Добро пожаловать в HabitsApp",
+      "description": "Ваше универсальное решение для управления ежедневными привычками и достижения целей."
+    },
+    "track": {
+      "title": "Отслеживайте свой Прогресс",
+      "description": "Ставьте цели, отслеживайте свой прогресс и празднуйте свои достижения на пути."
+    },
+    "start": {
+      "title": "Давайте Начнем",
+      "description": "Присоединяйтесь к нашему сообществу достигающих и начните свое путешествие сегодня."
+    },
+    "getStarted": "Начать",
+    "next": "Далее"
+  }
+}

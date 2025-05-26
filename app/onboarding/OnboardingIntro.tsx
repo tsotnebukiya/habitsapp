@@ -1,6 +1,7 @@
 // app/onboarding/OnboardingIntro.tsx
 // app/onboarding/OnboardingCarousel.tsx
 import { colors } from '@/lib/constants/ui';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useRef, useState } from 'react';
@@ -26,34 +27,10 @@ const { width, height } = Dimensions.get('window');
 
 type OnboardingItem = {
   id: string;
-  title: string;
-  description: string;
+  titleKey: string;
+  descriptionKey: string;
   icon: string;
 };
-
-const slides: OnboardingItem[] = [
-  {
-    id: '1',
-    title: 'Welcome to [Your App]',
-    description:
-      'Your all-in-one solution for managing your daily tasks and achieving your goals.',
-    icon: 'rocket',
-  },
-  {
-    id: '2',
-    title: 'Track Your Progress',
-    description:
-      'Set goals, track your progress, and celebrate your achievements along the way.',
-    icon: 'chart-line',
-  },
-  {
-    id: '3',
-    title: "Let's Get Started",
-    description:
-      'Join our community of achievers and start your journey today.',
-    icon: 'flag-checkered',
-  },
-];
 
 const OnboardingCarousel = () => {
   const insets = useSafeAreaInsets();
@@ -61,6 +38,28 @@ const OnboardingCarousel = () => {
   const router = useRouter();
   const flatListRef = useRef<FlatList>(null);
   const scrollX = useSharedValue(0);
+  const { t } = useTranslation();
+
+  const slides: OnboardingItem[] = [
+    {
+      id: '1',
+      titleKey: 'onboarding.welcome.title',
+      descriptionKey: 'onboarding.welcome.description',
+      icon: 'rocket',
+    },
+    {
+      id: '2',
+      titleKey: 'onboarding.track.title',
+      descriptionKey: 'onboarding.track.description',
+      icon: 'chart-line',
+    },
+    {
+      id: '3',
+      titleKey: 'onboarding.start.title',
+      descriptionKey: 'onboarding.start.description',
+      icon: 'flag-checkered',
+    },
+  ];
 
   const onViewableItemsChanged = ({ changed }: { changed: ViewToken[] }) => {
     if (changed && changed[0].index !== null) {
@@ -92,8 +91,8 @@ const OnboardingCarousel = () => {
             color={colors.bgDark}
           />
         </Animated.View>
-        <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.description}>{item.description}</Text>
+        <Text style={styles.title}>{t(item.titleKey as any)}</Text>
+        <Text style={styles.description}>{t(item.descriptionKey as any)}</Text>
       </View>
     );
   };
@@ -170,7 +169,9 @@ const OnboardingCarousel = () => {
       <View style={styles.bottomContainer}>
         <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
           <Text style={styles.nextButtonText}>
-            {currentIndex === slides.length - 1 ? 'Get Started' : 'Next'}
+            {currentIndex === slides.length - 1
+              ? t('onboarding.getStarted')
+              : t('onboarding.next')}
           </Text>
           <FontAwesome6
             name="arrow-right"

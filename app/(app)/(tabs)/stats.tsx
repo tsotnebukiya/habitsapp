@@ -2,12 +2,15 @@ import CalendarViewNew from '@/components/stats/CalendarViewNew';
 import Records from '@/components/stats/Records';
 import WeeklyProgress from '@/components/stats/WeeklyProgress';
 import { colors, fontWeights } from '@/lib/constants/ui';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 import React from 'react';
 import { ScrollView, StyleSheet, Text } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const StatsScreen = () => {
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
+
   return (
     <ScrollView
       style={styles.container}
@@ -20,7 +23,7 @@ const StatsScreen = () => {
       ]}
       showsVerticalScrollIndicator={false}
     >
-      <Text style={styles.title}>Statistics</Text>
+      <Text style={styles.title}>{t('stats.title')}</Text>
       <CalendarViewNew />
       <Records />
       <WeeklyProgress />

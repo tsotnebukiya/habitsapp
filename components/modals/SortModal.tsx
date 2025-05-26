@@ -13,6 +13,7 @@ import { colors, fontWeights } from '@/lib/constants/ui';
 import useHabitsStore from '@/lib/habit-store/store';
 import { SharedSlice } from '@/lib/habit-store/types';
 import { useAllHabits } from '@/lib/hooks/useHabits';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 import { sortHabits } from '@/lib/utils/habits';
 
 import { IconButton } from 'react-native-paper';
@@ -24,6 +25,7 @@ interface Props {
 }
 
 const SortModal = ({ onDismiss }: Props) => {
+  const { t } = useTranslation();
   const habits = useAllHabits();
   const updateHabitOrder = useHabitsStore(
     (s: SharedSlice) => s.updateHabitOrder
@@ -64,7 +66,7 @@ const SortModal = ({ onDismiss }: Props) => {
         />
 
         <View style={styles.card}>
-          <Text style={styles.header}>Sort Habits</Text>
+          <Text style={styles.header}>{t('habits.title')}</Text>
 
           <ScrollView
             style={styles.scroll}
@@ -106,8 +108,16 @@ const SortModal = ({ onDismiss }: Props) => {
           </ScrollView>
 
           <View style={styles.footer}>
-            <Button label="Cancel" type="secondary" onPress={onDismiss} />
-            <Button label="Confirm" type="primary" onPress={handleConfirm} />
+            <Button
+              label={t('common.cancel')}
+              type="secondary"
+              onPress={onDismiss}
+            />
+            <Button
+              label={t('common.confirm')}
+              type="primary"
+              onPress={handleConfirm}
+            />
           </View>
         </View>
       </View>

@@ -1,37 +1,40 @@
 import { colors, fontWeights } from '@/lib/constants/ui';
 import useHabitsStore from '@/lib/habit-store/store';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 export default function Records() {
+  const { t } = useTranslation();
   const maxStreak = useHabitsStore((state) => state.maxStreak);
   const currentStreak = useHabitsStore((state) => state.getCurrentStreak());
   const totalCompletions = useHabitsStore((state) =>
     state.getTotalCompletions()
   );
   const successRate = useHabitsStore((state) => state.getSuccessRate());
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Records</Text>
+      <Text style={styles.title}>{t('stats.overview')}</Text>
       <View style={styles.box}>
         <View style={[styles.row, styles.topRow]}>
           <View style={styles.item}>
             <Text style={styles.value}>{currentStreak}</Text>
-            <Text style={styles.description}>Current streak</Text>
+            <Text style={styles.description}>{t('stats.activeStreaks')}</Text>
           </View>
           <View style={[styles.item, styles.leftItem]}>
             <Text style={styles.value}>{maxStreak}</Text>
-            <Text style={styles.description}>Longest streak</Text>
+            <Text style={styles.description}>{t('stats.longestStreak')}</Text>
           </View>
         </View>
         <View style={styles.row}>
           <View style={styles.item}>
             <Text style={styles.value}>{totalCompletions}</Text>
-            <Text style={styles.description}>Completed</Text>
+            <Text style={styles.description}>{t('habits.completedToday')}</Text>
           </View>
           <View style={[styles.item, styles.leftItem]}>
             <Text style={styles.value}>{successRate}%</Text>
-            <Text style={styles.description}>Success rate</Text>
+            <Text style={styles.description}>{t('stats.completionRate')}</Text>
           </View>
         </View>
       </View>

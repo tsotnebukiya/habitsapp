@@ -1,0 +1,204 @@
+{
+  "common": {
+    "done": "Fertig",
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "add": "Hinzufügen",
+    "continue": "Weiter",
+    "back": "Zurück",
+    "next": "Weiter",
+    "skip": "Überspringen",
+    "loading": "Lädt...",
+    "error": "Fehler",
+    "success": "Erfolg",
+    "confirm": "Bestätigen",
+    "yes": "Ja",
+    "no": "Nein",
+    "none": "Keine",
+    "today": "Heute",
+    "yesterday": "Gestern",
+    "tomorrow": "Morgen"
+  },
+  "navigation": {
+    "habits": "Gewohnheiten",
+    "stats": "Statistiken",
+    "achievements": "Erfolge",
+    "settings": "Einstellungen"
+  },
+  "habits": {
+    "title": "Meine Gewohnheiten",
+    "addHabit": "Gewohnheit Hinzufügen",
+    "editHabit": "Gewohnheit Bearbeiten",
+    "deleteHabit": "Gewohnheit Löschen",
+    "habitName": "Name der Gewohnheit",
+    "description": "Beschreibung",
+    "category": "Kategorie",
+    "goal": "Ziel",
+    "frequency": "Häufigkeit",
+    "startDate": "Startdatum",
+    "endDate": "Enddatum",
+    "reminderTime": "Erinnerungszeit",
+    "icon": "Symbol",
+    "color": "Farbe",
+    "emptyTitle": "Noch keine Gewohnheiten",
+    "emptySubtitle": "Erstelle deine erste Gewohnheit, um zu beginnen",
+    "streakDays": "{{count}} Tag Serie",
+    "streakDays_plural": "{{count}} Tage Serie",
+    "completedToday": "Heute abgeschlossen",
+    "markComplete": "Als abgeschlossen markieren",
+    "markIncomplete": "Als unvollständig markieren"
+  },
+  "categories": {
+    "cat1": "Vitalität",
+    "cat2": "Verbindung",
+    "cat3": "Beitrag",
+    "cat4": "Geist",
+    "cat5": "Wachstum",
+    "total": "Gesamt"
+  },
+  "frequency": {
+    "daily": "Täglich",
+    "weekly": "Wöchentlich",
+    "custom": "Benutzerdefiniert"
+  },
+  "goalTypes": {
+    "completion": "Abschluss",
+    "duration": "Dauer",
+    "quantity": "Menge"
+  },
+  "units": {
+    "count": {
+      "oneName": "Mal",
+      "name": "Mal",
+      "shortName": "×"
+    },
+    "minutes": {
+      "oneName": "Minute",
+      "name": "Minuten",
+      "shortName": "min"
+    },
+    "hours": {
+      "oneName": "Stunde",
+      "name": "Stunden",
+      "shortName": "h"
+    },
+    "kilometers": {
+      "oneName": "Kilometer",
+      "name": "Kilometer",
+      "shortName": "km"
+    },
+    "steps": {
+      "oneName": "Schritt",
+      "name": "Schritte",
+      "shortName": "Schritte"
+    },
+    "liters": {
+      "oneName": "Liter",
+      "name": "Liter",
+      "shortName": "L"
+    },
+    "glasses": {
+      "oneName": "Glas",
+      "name": "Gläser",
+      "shortName": "Glas"
+    },
+    "servings": {
+      "oneName": "Portion",
+      "name": "Portionen",
+      "shortName": "Port"
+    },
+    "words": {
+      "oneName": "Wort",
+      "name": "Wörter",
+      "shortName": "W"
+    },
+    "pages": {
+      "oneName": "Seite",
+      "name": "Seiten",
+      "shortName": "S"
+    },
+    "dollars": {
+      "oneName": "Dollar",
+      "name": "USD",
+      "shortName": "$"
+    }
+  },
+  "achievements": {
+    "title": "Erfolge",
+    "earned": "Erhalten",
+    "notEarned": "Nicht Erhalten",
+    "viewEarned": "Erhaltene Anzeigen",
+    "congratulations": "Herzlichen Glückwunsch!",
+    "achievementUnlocked": "Erfolg Freigeschaltet",
+    "untilNext": "Bis zum nächsten Erfolg",
+    "streakAchievement": "{{days}} Tage Serie",
+    "firstStep": "Erster Schritt",
+    "weekWarrior": "Wochen-Krieger",
+    "twoWeekChampion": "Zwei-Wochen-Champion",
+    "monthMaster": "Monats-Meister"
+  },
+  "settings": {
+    "title": "Einstellungen",
+    "language": "Sprache",
+    "selectLanguage": "Wählen Sie Ihre bevorzugte Sprache",
+    "notifications": "Benachrichtigungen",
+    "account": "Konto",
+    "about": "Über",
+    "logout": "Abmelden",
+    "version": "Version",
+    "privacyPolicy": "Datenschutzrichtlinie",
+    "termsOfService": "Nutzungsbedingungen"
+  },
+  "stats": {
+    "title": "Statistiken",
+    "overview": "Übersicht",
+    "thisWeek": "Diese Woche",
+    "thisMonth": "Dieser Monat",
+    "allTime": "Alle Zeit",
+    "completionRate": "Abschlussrate",
+    "totalHabits": "Gesamte Gewohnheiten",
+    "activeStreaks": "Aktive Serien",
+    "longestStreak": "Längste Serie"
+  },
+  "forms": {
+    "required": "Dieses Feld ist erforderlich",
+    "invalidInput": "Ungültige Eingabe",
+    "nameTooShort": "Der Name muss mindestens 2 Zeichen lang sein",
+    "nameTooLong": "Der Name muss weniger als 50 Zeichen lang sein"
+  },
+  "notifications": {
+    "habitCreated": "Gewohnheit erfolgreich erstellt",
+    "habitUpdated": "Gewohnheit erfolgreich aktualisiert",
+    "habitDeleted": "Gewohnheit erfolgreich gelöscht",
+    "habitCompleted": "Großartige Arbeit! Gewohnheit abgeschlossen",
+    "streakContinued": "Serie fortgesetzt! Weiter so",
+    "achievementEarned": "Neuer Erfolg erhalten!",
+    "dailyUpdate": "Tägliche Update-Benachrichtigungen",
+    "streak": "Serien-Benachrichtigungen"
+  },
+  "errors": {
+    "generic": "Etwas ist schief gelaufen",
+    "networkError": "Netzwerkverbindungsfehler",
+    "saveError": "Fehler beim Speichern der Änderungen",
+    "loadError": "Fehler beim Laden der Daten",
+    "deleteError": "Fehler beim Löschen des Elements"
+  },
+  "onboarding": {
+    "welcome": {
+      "title": "Willkommen bei HabitsApp",
+      "description": "Ihre All-in-One-Lösung für die Verwaltung Ihrer täglichen Gewohnheiten und das Erreichen Ihrer Ziele."
+    },
+    "track": {
+      "title": "Verfolgen Sie Ihren Fortschritt",
+      "description": "Setzen Sie Ziele, verfolgen Sie Ihren Fortschritt und feiern Sie Ihre Erfolge auf dem Weg."
+    },
+    "start": {
+      "title": "Lassen Sie uns beginnen",
+      "description": "Treten Sie unserer Gemeinschaft von Erfolgreichen bei und beginnen Sie heute Ihre Reise."
+    },
+    "getStarted": "Loslegen",
+    "next": "Weiter"
+  }
+}

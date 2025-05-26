@@ -1,6 +1,7 @@
 import { ACHIEVEMENTS } from '@/lib/constants/achievements';
 import { colors, fontWeights } from '@/lib/constants/ui';
 import useHabitsStore from '@/lib/habit-store/store';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 import { FlashList } from '@shopify/flash-list';
 import { router } from 'expo-router';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -9,7 +10,9 @@ import { ACTIVE_OPACITY } from '../shared/config';
 function DividerSpacer() {
   return <View style={styles.separator} />;
 }
+
 export default function Achievements() {
+  const { t } = useTranslation();
   const streakAchievements = useHabitsStore(
     (state) => state.streakAchievements
   );
@@ -38,7 +41,9 @@ export default function Achievements() {
           }
           style={styles.achievementIcon}
         />
-        <Text style={styles.achievementTitle}>{days} day streak</Text>
+        <Text style={styles.achievementTitle}>
+          {t('achievements.streakAchievement', { days })}
+        </Text>
         <Text style={styles.achievementDescription}>{achievement.name}</Text>
       </View>
     );
@@ -46,23 +51,32 @@ export default function Achievements() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Current Progress</Text>
+      <Text style={styles.title}>{t('stats.overview')}</Text>
       <View style={styles.box}>
         <View style={styles.topProgress}>
           <Text style={styles.calendarIcon}>🗓️</Text>
           <Text style={styles.days}>
-            {daysToNext} {daysToNext === 1 ? 'Day' : 'Days'}
+            {daysToNext}{' '}
+            {daysToNext === 1
+              ? t('common.today').slice(0, 3)
+              : t('habits.streakDays', { count: daysToNext }).split(' ')[1]}
           </Text>
-          <Text style={styles.daysToNextStreak}>Until next achievement</Text>
+          <Text style={styles.daysToNextStreak}>
+            {t('achievements.untilNext')}
+          </Text>
         </View>
         <View style={styles.bottomProgress}>
           <View style={styles.milestonesHeader}>
-            <Text style={styles.achievementsTitle}>Milestones</Text>
+            <Text style={styles.achievementsTitle}>
+              {t('achievements.title')}
+            </Text>
             <TouchableOpacity
               onPress={() => router.push('/badges')}
               activeOpacity={ACTIVE_OPACITY}
             >
-              <Text style={styles.viewEarnedButton}>View all</Text>
+              <Text style={styles.viewEarnedButton}>
+                {t('achievements.viewEarned')}
+              </Text>
             </TouchableOpacity>
           </View>
           <View style={styles.flashListContainer}>

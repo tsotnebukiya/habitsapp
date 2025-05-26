@@ -225,7 +225,7 @@ export const createAchievementSlice: StateCreator<
   resetAchievements: () => {
     const userId = getUserIdOrThrow();
     const now = dateUtils.nowUTC();
-
+    // useAppStore.getState().resetPromptedMilestones();
     set({
       streakAchievements: {},
       currentStreak: 0,

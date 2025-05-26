@@ -1,12 +1,15 @@
 import Achievements from '@/components/achievements/Achievements';
 import { MatrixGrid } from '@/components/achievements/MatrixGrid';
 import { colors, fontWeights } from '@/lib/constants/ui';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 import React from 'react';
 import { ScrollView, StyleSheet, Text } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const AchievementsScreen = () => {
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
+
   return (
     <ScrollView
       style={styles.container}
@@ -19,7 +22,7 @@ const AchievementsScreen = () => {
       ]}
       showsVerticalScrollIndicator={false}
     >
-      <Text style={styles.title}>Achievements</Text>
+      <Text style={styles.title}>{t('achievements.title')}</Text>
       <MatrixGrid />
       <Achievements />
     </ScrollView>

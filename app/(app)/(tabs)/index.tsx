@@ -1,4 +1,3 @@
-import HabitList from '@/components/habits/HabitList';
 import WeekView from '@/components/habits/WeekView';
 import { colors } from '@/lib/constants/ui';
 import useHabitsStore from '@/lib/habit-store/store';
@@ -26,7 +25,7 @@ export default function Home() {
   return (
     <View style={[styles.container, { paddingTop: insets.top + 17 }]}>
       <WeekView selectedDate={selectedDate} onDateSelect={setSelectedDate} />
-      <HabitList selectedDate={selectedDate} />
+      {/* TODO: Add HabitList component here */}
     </View>
   );
 }

@@ -1,5 +1,6 @@
 import { colors, fontWeights } from '@/lib/constants/ui';
 import { useWeeklyHabitProgress } from '@/lib/hooks/useHabits';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -52,13 +53,15 @@ const ProgressCircle: React.FC<ProgressCircleProps> = ({ progress, color }) => {
 };
 
 export default function WeeklyProgress() {
+  const { t } = useTranslation();
   const weeklyProgress = useWeeklyHabitProgress();
   const dailyProgressArrays = Array.from({ length: 7 }, (_, dayIndex) =>
     weeklyProgress.map((habit) => habit.progressLevels[dayIndex])
   );
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Weekly</Text>
+      <Text style={styles.title}>{t('stats.thisWeek')}</Text>
       <View style={styles.box}>
         <View style={styles.habitsColumn}>
           {weeklyProgress.map((el, i) => (

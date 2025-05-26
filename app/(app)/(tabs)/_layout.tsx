@@ -1,5 +1,6 @@
 import { ACTIVE_OPACITY } from '@/components/shared/config';
 import { colors, fontWeights } from '@/lib/constants/ui';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 
 import { router, Tabs } from 'expo-router';
 import React from 'react';
@@ -34,6 +35,8 @@ function TabBarLabel(props: { children: React.ReactNode; focused: boolean }) {
 
 export default function TabLayout() {
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
+
   return (
     <>
       <Tabs
@@ -46,7 +49,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="index"
           options={{
-            title: 'Home',
+            title: t('navigation.habits'),
             headerShown: false,
             tabBarItemStyle: {
               marginLeft: 20,
@@ -58,14 +61,16 @@ export default function TabLayout() {
               />
             ),
             tabBarLabel: ({ focused }) => (
-              <TabBarLabel focused={focused}>Home</TabBarLabel>
+              <TabBarLabel focused={focused}>
+                {t('navigation.habits')}
+              </TabBarLabel>
             ),
           }}
         />
         <Tabs.Screen
           name="stats"
           options={{
-            title: 'Stats',
+            title: t('navigation.stats'),
             headerShown: false,
             tabBarItemStyle: {
               marginRight: 40,
@@ -77,14 +82,16 @@ export default function TabLayout() {
               />
             ),
             tabBarLabel: ({ focused }) => (
-              <TabBarLabel focused={focused}>Stats</TabBarLabel>
+              <TabBarLabel focused={focused}>
+                {t('navigation.stats')}
+              </TabBarLabel>
             ),
           }}
         />
         <Tabs.Screen
           name="achievements"
           options={{
-            title: 'Badges',
+            title: t('navigation.achievements'),
             headerShown: false,
             tabBarItemStyle: {
               marginLeft: 40,
@@ -96,14 +103,16 @@ export default function TabLayout() {
               />
             ),
             tabBarLabel: ({ focused }) => (
-              <TabBarLabel focused={focused}>Badges</TabBarLabel>
+              <TabBarLabel focused={focused}>
+                {t('navigation.achievements')}
+              </TabBarLabel>
             ),
           }}
         />
         <Tabs.Screen
           name="settings"
           options={{
-            title: 'Profile',
+            title: t('settings.title'),
             headerShown: false,
             tabBarItemStyle: {
               marginRight: 20,
@@ -115,7 +124,7 @@ export default function TabLayout() {
               />
             ),
             tabBarLabel: ({ focused }) => (
-              <TabBarLabel focused={focused}>Profile</TabBarLabel>
+              <TabBarLabel focused={focused}>{t('settings.title')}</TabBarLabel>
             ),
           }}
         />
