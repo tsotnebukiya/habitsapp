@@ -62,6 +62,7 @@
   "@marceloterreiro/flash-calendar": "^1.3.0",
   "@supabase/supabase-js": "^2.44.4",
   "expo-router": "^3.5.18",
+  "expo-store-review": "~8.0.1",
   "posthog-react-native": "^3.3.9",
   "@sentry/react-native": "^6.1.0",
   "react-native-mmkv": "2.12.2",

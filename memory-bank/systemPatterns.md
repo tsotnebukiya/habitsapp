@@ -749,17 +749,27 @@ The application now uses a centralized modal system with the following architect
 
 3. **Modal Components**: Individual modal implementations with specific functionality
 
-   - `AchievementsModal`: Displays unlocked achievements with confetti animation
-   - `ConfirmationModal`: Generic confirmation dialog with customizable messages
+   - `AchievementsModal`: Displays unlocked achievements with confetti animation (automatically triggered)
    - More modals to be added as needed
 
-4. **Triggering Modals**: Using store actions to show modals from anywhere in the app
+4. **Triggering Modals**: Achievement modals are now automatically triggered from the achievement calculation system
 
    ```typescript
-   const { showAchievementModal } = useModalStore();
+   // Achievement modals are automatically shown when achievements are unlocked
+   // in the achievement calculation logic (calculateAndUpdate)
+   if (unlockedAchievements.length > 0) {
+     useModalStore.getState().showAchievementModal(unlockedAchievements);
+   }
+   ```
 
-   // Show an achievement modal with the specified achievements
-   showAchievementModal(achievementDetails);
+   Other modals can still be triggered manually:
+
+   ```typescript
+   const { showSettingsModal, showSortModal } = useModalStore();
+
+   // Show specific modals
+   showSettingsModal();
+   showSortModal();
    ```
 
 Benefits:
