@@ -22,7 +22,9 @@
     "tomorrow": "Demain",
     "retry": "Réessayer",
     "close": "Fermer",
-    "search": "Rechercher"
+    "search": "Rechercher",
+    "invalidValue": "Valeur invalide",
+    "valueMustBeBetween": "La valeur doit être comprise entre {{min}} et {{max}}"
   },
   "navigation": {
     "habits": "Accueil",
@@ -100,7 +102,8 @@
     "habitAlreadyCompleted": "Habitude déjà terminée",
     "habitCompletedToday": "Cette habitude a été terminée aujourd'hui",
     "cannotCompleteSkipped": "Impossible de terminer les habitudes ignorées",
-    "unskipFirst": "D'abord, ne plus ignorer l'habitude"
+    "unskipFirst": "D'abord, ne plus ignorer l'habitude",
+    "setValue": "Définir la valeur"
   },
   "categories": {
     "cat1": "Vitalité",

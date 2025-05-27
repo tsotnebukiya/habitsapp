@@ -181,7 +181,6 @@ export const createAchievementSlice: StateCreator<
 
     // Check for store review opportunity - only prompt once on first milestone
     const reviewMilestones = [7, 14, 21];
-    console.log(`[Achievement] Unlocked achievements:`, unlockedAchievements);
 
     // Find the first milestone that was unlocked
     const firstMilestoneHit = reviewMilestones.find((milestone) =>
@@ -189,28 +188,16 @@ export const createAchievementSlice: StateCreator<
     );
 
     if (firstMilestoneHit) {
-      console.log(
-        `[Achievement] Found first review milestone: ${firstMilestoneHit} days`
-      );
       // Check if we've ever prompted for any review before
       const { promptedReviewMilestones } = useAppStore.getState();
       const hasPromptedBefore = promptedReviewMilestones.length > 0;
 
       if (!hasPromptedBefore) {
-        console.log(
-          `[Achievement] First time hitting a review milestone, will prompt after delay`
-        );
         // Delay the review request slightly to let the achievement celebration show first
         setTimeout(() => {
-          console.log(
-            `[Achievement] Triggering review request for ${firstMilestoneHit} days after delay`
-          );
           useAppStore.getState().requestReview(firstMilestoneHit);
         }, 2000);
       } else {
-        console.log(
-          `[Achievement] Already prompted for review before, skipping`
-        );
       }
     }
 

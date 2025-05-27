@@ -36,7 +36,6 @@ export default function TemplateSelection() {
   };
 
   const handleChooseTemplate = (template: HabitTemplate) => {
-    console.log('template', template);
     applyTemplate({
       ...template,
       name: t(template.nameKey as any),

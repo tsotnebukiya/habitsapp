@@ -22,7 +22,9 @@
     "tomorrow": "Morgen",
     "retry": "Wiederholen",
     "close": "Schließen",
-    "search": "Suchen"
+    "search": "Suchen",
+    "invalidValue": "Ungültiger Wert",
+    "valueMustBeBetween": "Der Wert muss zwischen {{min}} und {{max}} liegen"
   },
   "navigation": {
     "habits": "Start",
@@ -100,7 +102,8 @@
     "habitAlreadyCompleted": "Gewohnheit bereits abgeschlossen",
     "habitCompletedToday": "Diese Gewohnheit wurde heute bereits abgeschlossen",
     "cannotCompleteSkipped": "Übersprungene Gewohnheiten können nicht abgeschlossen werden",
-    "unskipFirst": "Hebe das Überspringen der Gewohnheit zuerst auf"
+    "unskipFirst": "Bitte heben Sie das Überspringen der Gewohnheit zuerst auf",
+    "setValue": "Wert festlegen"
   },
   "categories": {
     "cat1": "Vitalität",

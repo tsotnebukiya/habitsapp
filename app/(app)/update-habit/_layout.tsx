@@ -2,6 +2,7 @@ import { ACTIVE_OPACITY } from '@/components/shared/config';
 import { colors, fontWeights } from '@/lib/constants/ui';
 import { useHabit } from '@/lib/hooks/useHabits';
 import { useUpdateHabitStore } from '@/lib/stores/update_habit_store';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { router, Stack, useLocalSearchParams, usePathname } from 'expo-router';
 import { useEffect } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -27,52 +28,54 @@ export default function UpdateHabitLayout() {
     };
   }, []);
   return (
-    <View style={{ flex: 1 }}>
-      <View style={styles.header}>
-        {backButton ? (
+    <BottomSheetModalProvider>
+      <View style={{ flex: 1 }}>
+        <View style={styles.header}>
+          {backButton ? (
+            <TouchableOpacity
+              onPress={handleBack}
+              activeOpacity={ACTIVE_OPACITY}
+              style={styles.backButton}
+            >
+              <Icon
+                source={require('@/assets/icons/chevron-left.png')}
+                size={18}
+                color="black"
+              />
+            </TouchableOpacity>
+          ) : (
+            <View style={styles.headerSpacing} />
+          )}
+
+          <Text style={styles.heading}>Edit {habit?.name}</Text>
           <TouchableOpacity
-            onPress={handleBack}
-            activeOpacity={ACTIVE_OPACITY}
-            style={styles.backButton}
+            onPress={handleClose}
+            activeOpacity={0.1}
+            style={styles.closeButton}
           >
             <Icon
-              source={require('@/assets/icons/chevron-left.png')}
-              size={18}
+              source={require('@/assets/icons/x-close.png')}
+              size={24}
               color="black"
             />
           </TouchableOpacity>
-        ) : (
-          <View style={styles.headerSpacing} />
-        )}
-
-        <Text style={styles.heading}>Edit {habit?.name}</Text>
-        <TouchableOpacity
-          onPress={handleClose}
-          activeOpacity={0.1}
-          style={styles.closeButton}
-        >
-          <Icon
-            source={require('@/assets/icons/x-close.png')}
-            size={24}
-            color="black"
+        </View>
+        <Stack>
+          <Stack.Screen
+            name="index"
+            options={{
+              headerShown: false,
+            }}
           />
-        </TouchableOpacity>
+          <Stack.Screen
+            name="detail-choosing"
+            options={{
+              headerShown: false,
+            }}
+          />
+        </Stack>
       </View>
-      <Stack>
-        <Stack.Screen
-          name="index"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="detail-choosing"
-          options={{
-            headerShown: false,
-          }}
-        />
-      </Stack>
-    </View>
+    </BottomSheetModalProvider>
   );
 }
 

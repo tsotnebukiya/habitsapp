@@ -171,6 +171,13 @@ export const getUserIdOrThrow = () => {
 };
 
 /**
+ * Rounds a number to a specified number of decimal places to avoid floating-point precision issues
+ */
+const roundToDecimalPlaces = (value: number, places: number = 2): number => {
+  return Math.round(value * Math.pow(10, places)) / Math.pow(10, places);
+};
+
+/**
  * Calculate new value and status for a habit based on the action taken
  */
 export function calculateHabitToggle({
@@ -199,7 +206,10 @@ export function calculateHabitToggle({
 
   let newValue = 0;
   const maxValue = habit.goal_value || habit.completions_per_day || 1;
-  const stepSize = habit.goal_value ? Math.max(habit.goal_value * 0.1, 1) : 1;
+  // Round stepSize to nearest integer to avoid decimal increments
+  const stepSize = Math.round(
+    habit.goal_value ? Math.max(habit.goal_value * 0.1, 1) : 1
+  );
   const currentValue = existingCompletion?.value || 0;
   const currentStatus = existingCompletion?.status || 'not_started';
 
@@ -232,6 +242,9 @@ export function calculateHabitToggle({
       newValue = currentStatus === 'completed' ? 0 : maxValue;
       break;
   }
+
+  // Round newValue to prevent floating-point precision issues
+  newValue = roundToDecimalPlaces(newValue);
 
   // Special case for skip action
   const newStatus =
@@ -287,7 +300,7 @@ export function getCurrentProgress(habit: Habit, currentValue: number): number {
  */
 export function getProgressText(habit: Habit, currentValue: number): string {
   if (!habit) return '0/1';
-
+  console.log('habit', currentValue);
   if (habit.goal_value && habit.goal_unit) {
     const unit = MeasurementUnits[habit.goal_unit];
     const unitName = habit.goal_value === 1 ? unit.oneName : unit.name;

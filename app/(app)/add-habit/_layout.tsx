@@ -3,6 +3,7 @@ import toastConfig from '@/components/shared/toastConfig';
 import { colors, fontWeights } from '@/lib/constants/ui';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 import { useAddHabitStore } from '@/lib/stores/add_habit_store';
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { router, Stack, usePathname } from 'expo-router';
 import { useEffect } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -29,65 +30,67 @@ export default function AddHabitLayout() {
   }, []);
 
   return (
-    <View style={{ flex: 1 }}>
-      <View style={styles.header}>
-        {backButton ? (
+    <BottomSheetModalProvider>
+      <View style={{ flex: 1 }}>
+        <View style={styles.header}>
+          {backButton ? (
+            <TouchableOpacity
+              onPress={handleBack}
+              activeOpacity={ACTIVE_OPACITY}
+              style={styles.backButton}
+            >
+              <Icon
+                source={require('@/assets/icons/chevron-left.png')}
+                size={18}
+                color="black"
+              />
+            </TouchableOpacity>
+          ) : (
+            <View style={styles.headerSpacing} />
+          )}
+
+          <Text style={styles.heading}>{t('habits.addNewHabit')}</Text>
           <TouchableOpacity
-            onPress={handleBack}
-            activeOpacity={ACTIVE_OPACITY}
-            style={styles.backButton}
+            onPress={handleClose}
+            activeOpacity={0.1}
+            style={styles.closeButton}
           >
             <Icon
-              source={require('@/assets/icons/chevron-left.png')}
-              size={18}
+              source={require('@/assets/icons/x-close.png')}
+              size={24}
               color="black"
             />
           </TouchableOpacity>
-        ) : (
-          <View style={styles.headerSpacing} />
-        )}
-
-        <Text style={styles.heading}>{t('habits.addNewHabit')}</Text>
-        <TouchableOpacity
-          onPress={handleClose}
-          activeOpacity={0.1}
-          style={styles.closeButton}
-        >
-          <Icon
-            source={require('@/assets/icons/x-close.png')}
-            size={24}
-            color="black"
+        </View>
+        <Stack>
+          <Stack.Screen
+            name="index"
+            options={{
+              headerShown: false,
+            }}
           />
-        </TouchableOpacity>
+          <Stack.Screen
+            name="template-selection"
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="create-habit"
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen
+            name="detail-choosing"
+            options={{
+              headerShown: false,
+            }}
+          />
+        </Stack>
+        <Toast config={toastConfig} />
       </View>
-      <Stack>
-        <Stack.Screen
-          name="index"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="template-selection"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="create-habit"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="detail-choosing"
-          options={{
-            headerShown: false,
-          }}
-        />
-      </Stack>
-      <Toast config={toastConfig} />
-    </View>
+    </BottomSheetModalProvider>
   );
 }
 

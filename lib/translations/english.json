@@ -22,7 +22,9 @@
     "tomorrow": "Tomorrow",
     "retry": "Retry",
     "close": "Close",
-    "search": "Search"
+    "search": "Search",
+    "invalidValue": "Invalid Value",
+    "valueMustBeBetween": "Value must be between {{min}} and {{max}}"
   },
   "navigation": {
     "habits": "Home",
@@ -102,7 +104,8 @@
     "habitAlreadyCompleted": "Habit already completed",
     "habitCompletedToday": "This habit has been completed for today",
     "cannotCompleteSkipped": "Cannot complete skipped habits",
-    "unskipFirst": "Please unskip the habit first"
+    "unskipFirst": "Please unskip the habit first",
+    "setValue": "Set Value"
   },
   "categories": {
     "cat1": "Vitality",

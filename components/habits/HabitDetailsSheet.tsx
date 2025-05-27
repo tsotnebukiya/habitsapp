@@ -9,12 +9,19 @@ import {
   BottomSheetModal,
   BottomSheetView,
 } from '@gorhom/bottom-sheet';
+import { BlurView } from 'expo-blur';
 import * as Haptics from 'expo-haptics';
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import {
+  Alert,
+  KeyboardAvoidingView,
   LayoutAnimation,
+  Modal,
+  Platform,
+  Pressable,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
@@ -40,6 +47,8 @@ export default function HabitDetailsSheet({
 }: HabitDetailsSheetProps) {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
+  const [inputValue, setInputValue] = useState('');
+  const [showInputModal, setShowInputModal] = useState(false);
 
   const toggleHabitStatus = useHabitsStore((state) => state.toggleHabitStatus);
   const deleteHabit = useHabitsStore((state) => state.deleteHabit);
@@ -125,6 +134,40 @@ export default function HabitDetailsSheet({
   const handleResetHistory = () => {
     if (!habit) return;
     resetHabitHistory(habit.id);
+  };
+
+  const handleProgressContainerPress = () => {
+    if (!habit || isSkipped) return;
+    setInputValue(currentValue.toString());
+    setShowInputModal(true);
+  };
+
+  const handleSetValue = () => {
+    if (!habit) return;
+    const numValue = parseInt(inputValue, 10);
+
+    if (isNaN(numValue) || numValue < 0 || numValue > maxValue) {
+      Alert.alert(
+        t('common.invalidValue'),
+        t('common.valueMustBeBetween', { min: 0, max: maxValue })
+      );
+      return;
+    }
+
+    toggleHabitStatus(habit.id, date, 'set_value', numValue);
+    setShowInputModal(false);
+    setInputValue('');
+  };
+
+  const handleInputChange = (text: string) => {
+    // Only allow integers (no decimals, no negative signs)
+    const filteredText = text.replace(/[^0-9]/g, '');
+    setInputValue(filteredText);
+  };
+
+  const handleCancelInput = () => {
+    setShowInputModal(false);
+    setInputValue('');
   };
 
   React.useEffect(() => {
@@ -219,8 +262,12 @@ export default function HabitDetailsSheet({
             >
               <MaterialIcons name="remove" size={24} color="#FFFFFF" />
             </TouchableOpacity>
-            <View
+
+            <TouchableOpacity
+              activeOpacity={ACTIVE_OPACITY}
+              onPress={handleProgressContainerPress}
               style={[styles.progressContainer, isSkipped && styles.disabled]}
+              disabled={isSkipped}
             >
               <View
                 style={[
@@ -243,7 +290,8 @@ export default function HabitDetailsSheet({
                 <Text style={styles.value}>{currentValue}</Text>
                 <Text style={styles.maxValue}>/{maxValue}</Text>
               </View>
-            </View>
+            </TouchableOpacity>
+
             <TouchableOpacity
               activeOpacity={ACTIVE_OPACITY}
               onPress={handleIncrement}
@@ -278,6 +326,59 @@ export default function HabitDetailsSheet({
           </View>
         </View>
       </BottomSheetView>
+
+      {/* Input Modal */}
+      <Modal
+        visible={showInputModal}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={handleCancelInput}
+      >
+        <BlurView
+          intensity={5}
+          style={StyleSheet.absoluteFill}
+          pointerEvents="none"
+        />
+
+        <KeyboardAvoidingView
+          style={styles.modalOverlay}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        >
+          <Pressable
+            style={[StyleSheet.absoluteFill, styles.backdrop]}
+            onPress={handleCancelInput}
+            android_disableSound
+          />
+
+          <View style={styles.inputModal}>
+            <Text style={styles.inputModalTitle}>{t('habits.setValue')}</Text>
+
+            <TextInput
+              style={styles.textInput}
+              value={inputValue}
+              onChangeText={handleInputChange}
+              keyboardType="number-pad"
+              placeholder={`0 - ${maxValue}`}
+              autoFocus
+              selectTextOnFocus
+              maxLength={maxValue.toString().length}
+            />
+
+            <View style={styles.inputModalButtons}>
+              <Button
+                label={t('common.cancel')}
+                type="secondary"
+                onPress={handleCancelInput}
+              />
+              <Button
+                label={t('common.confirm')}
+                type="primary"
+                onPress={handleSetValue}
+              />
+            </View>
+          </View>
+        </KeyboardAvoidingView>
+      </Modal>
     </BottomSheetModal>
   );
 }
@@ -382,5 +483,43 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 10,
     alignItems: 'center',
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingTop: '30%',
+  },
+  backdrop: {
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  inputModal: {
+    width: '90%',
+    maxWidth: 400,
+    padding: 16,
+    borderRadius: 16,
+    backgroundColor: colors.bgLight,
+    gap: 16,
+  },
+  inputModalTitle: {
+    fontSize: 20,
+    fontFamily: fontWeights.interBold,
+    color: colors.text,
+    textAlign: 'center',
+  },
+  textInput: {
+    fontSize: 18,
+    fontFamily: fontWeights.medium,
+    color: colors.text,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: 12,
+    textAlign: 'center',
+    backgroundColor: 'white',
+  },
+  inputModalButtons: {
+    flexDirection: 'row',
+    gap: 12,
   },
 });
