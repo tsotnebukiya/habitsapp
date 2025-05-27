@@ -223,6 +223,8 @@
     "language": "Sprache",
     "selectLanguage": "Wählen Sie Ihre bevorzugte Sprache",
     "notifications": "Benachrichtigungen",
+    "enableNotifications": "Benachrichtigungen Aktivieren",
+    "notificationSettings": "Benachrichtigungseinstellungen",
     "account": "Konto",
     "about": "Über",
     "logout": "Abmelden",
@@ -255,7 +257,17 @@
     "streakContinued": "Serie fortgesetzt! Weiter so",
     "achievementEarned": "Neuer Erfolg erhalten!",
     "dailyUpdate": "Tägliche Update-Benachrichtigungen",
-    "streak": "Serien-Benachrichtigungen"
+    "streak": "Serien-Benachrichtigungen",
+    "permissionDenied": "Benachrichtigungsberechtigung verweigert",
+    "permissionDeniedMessage": "Um Benachrichtigungen zu erhalten, aktivieren Sie sie bitte in Ihren Geräteeinstellungen.",
+    "openSettings": "Einstellungen Öffnen",
+    "permissionRequired": "Berechtigung Erforderlich",
+    "enablingNotifications": "Benachrichtigungen aktivieren...",
+    "notificationError": "Fehler beim Aktivieren der Benachrichtigungen. Bitte versuchen Sie es erneut.",
+    "enableToConfigureMessage": "Aktivieren Sie Benachrichtigungen, um spezifische Benachrichtigungstypen zu konfigurieren",
+    "allowPushNotifications": "Der App erlauben, Push-Benachrichtigungen zu senden",
+    "dailyProgressSummary": "Erhalten Sie tägliche Zusammenfassungen Ihres Gewohnheitsfortschritts",
+    "streakNotifications": "Lassen Sie sich über Ihre Gewohnheitsserien benachrichtigen"
   },
   "errors": {
     "generic": "Etwas ist schief gelaufen",

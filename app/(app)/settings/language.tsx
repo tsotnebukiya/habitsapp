@@ -5,12 +5,9 @@ import { SUPPORTED_LANGUAGES, SupportedLanguage } from '@/lib/utils/i18n';
 import { router } from 'expo-router';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Icon } from 'react-native-paper';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function LanguageScreen() {
   const { t, currentLanguage, changeLanguage } = useTranslation();
-  const insets = useSafeAreaInsets();
-
   const handleClose = () => {
     router.back();
   };
@@ -20,7 +17,6 @@ export default function LanguageScreen() {
       await changeLanguage(languageCode);
     }
   };
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>

@@ -1,6 +1,6 @@
+import Constants from 'expo-constants';
 import * as Notifications from 'expo-notifications';
 import { Platform } from 'react-native';
-import Constants from 'expo-constants';
 import { supabase } from '../../supabase/client';
 import { dateUtils } from './dayjs';
 
@@ -88,23 +88,30 @@ export async function removePushToken(userId: string) {
   }
 }
 
-export async function getNotificationState(): Promise<boolean> {
-  // Check system permissions
-  const { status: permissionStatus } =
-    await Notifications.getPermissionsAsync();
-  const systemEnabled = permissionStatus === 'granted';
-
-  // Check if we have a valid push token
-  let hasValidToken = false;
+export async function getNotificationState(userId?: string): Promise<boolean> {
   try {
-    const tokenData = await Notifications.getExpoPushTokenAsync({
-      projectId: Constants.expoConfig?.extra?.eas?.projectId,
-    });
-    hasValidToken = !!tokenData.data;
-  } catch {
-    hasValidToken = false;
-  }
+    const { status: permissionStatus } =
+      await Notifications.getPermissionsAsync();
+    const systemEnabled = permissionStatus === 'granted';
 
-  // Notifications are enabled if we have both permission and token
-  return systemEnabled && hasValidToken;
+    if (!systemEnabled) {
+      return false;
+    }
+
+    if (userId) {
+      const { data: user, error } = await supabase
+        .from('users')
+        .select('push_token')
+        .eq('id', userId)
+        .single();
+
+      if (error) {
+        return false;
+      }
+      return !!user?.push_token;
+    }
+    return systemEnabled;
+  } catch (error) {
+    return false;
+  }
 }

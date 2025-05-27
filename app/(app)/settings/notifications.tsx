@@ -4,7 +4,15 @@ import { useTranslation } from '@/lib/hooks/useTranslation';
 import { useAppStore } from '@/lib/stores/app_state';
 import useUserProfileStore from '@/lib/stores/user_profile';
 import { router } from 'expo-router';
-import { StyleSheet, Switch, Text, TouchableOpacity, View } from 'react-native';
+import React from 'react';
+import {
+  ActivityIndicator,
+  StyleSheet,
+  Switch,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { Icon } from 'react-native-paper';
 
 export default function NotificationsScreen() {
@@ -23,14 +31,13 @@ export default function NotificationsScreen() {
   const notificationsEnabled = useAppStore(
     (state) => state.notificationsEnabled
   );
-  const { toggleNotifications } = useNotifications();
-  console.log(notificationsEnabled);
+  const { toggleNotifications, isLoading } = useNotifications();
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.headerSpacing} />
 
-        <Text style={styles.heading}>Notifications</Text>
+        <Text style={styles.heading}>{t('settings.notificationSettings')}</Text>
         <TouchableOpacity
           onPress={handleClose}
           activeOpacity={0.1}
@@ -43,27 +50,66 @@ export default function NotificationsScreen() {
           />
         </TouchableOpacity>
       </View>
+
       <View style={styles.row}>
-        <Text style={styles.text}>{t('settings.notifications')}</Text>
-        <Switch
-          value={notificationsEnabled ?? false}
-          onValueChange={toggleNotifications}
-        />
+        <View style={styles.textContainer}>
+          <Text style={styles.text}>{t('settings.enableNotifications')}</Text>
+          <Text style={styles.description}>
+            {t('notifications.allowPushNotifications')}
+          </Text>
+        </View>
+        <View style={styles.switchContainer}>
+          {isLoading ? (
+            <ActivityIndicator size="small" color={colors.primary} />
+          ) : (
+            <Switch
+              value={notificationsEnabled ?? false}
+              onValueChange={toggleNotifications}
+              disabled={isLoading}
+            />
+          )}
+        </View>
       </View>
-      <View style={styles.row}>
-        <Text style={styles.text}>{t('notifications.dailyUpdate')}</Text>
-        <Switch
-          value={profile?.allow_daily_update_notifications ?? false}
-          onValueChange={setDailyUpdateNotificationsEnabled}
-        />
-      </View>
-      <View style={styles.row}>
-        <Text style={styles.text}>{t('notifications.streak')}</Text>
-        <Switch
-          value={profile?.allow_streak_notifications ?? false}
-          onValueChange={setStreakNotificationsEnabled}
-        />
-      </View>
+
+      {/* Only show specific notification types if global notifications are enabled */}
+      {notificationsEnabled && (
+        <>
+          <View style={styles.row}>
+            <View style={styles.textContainer}>
+              <Text style={styles.text}>{t('notifications.dailyUpdate')}</Text>
+              <Text style={styles.description}>
+                {t('notifications.dailyProgressSummary')}
+              </Text>
+            </View>
+            <Switch
+              value={profile?.allow_daily_update_notifications ?? false}
+              onValueChange={setDailyUpdateNotificationsEnabled}
+            />
+          </View>
+
+          <View style={styles.row}>
+            <View style={styles.textContainer}>
+              <Text style={styles.text}>{t('notifications.streak')}</Text>
+              <Text style={styles.description}>
+                {t('notifications.streakNotifications')}
+              </Text>
+            </View>
+            <Switch
+              value={profile?.allow_streak_notifications ?? false}
+              onValueChange={setStreakNotificationsEnabled}
+            />
+          </View>
+        </>
+      )}
+
+      {/* Show message when notifications are disabled */}
+      {!notificationsEnabled && (
+        <View style={styles.disabledContainer}>
+          <Text style={styles.disabledText}>
+            {t('notifications.enableToConfigureMessage')}
+          </Text>
+        </View>
+      )}
     </View>
   );
 }
@@ -113,7 +159,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 14,
+    paddingVertical: 16,
     paddingHorizontal: 19,
     borderRadius: 16,
     ...colors.dropShadow,
@@ -124,5 +170,38 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: fontWeights.medium,
     color: colors.text,
+    marginBottom: 2,
+  },
+  textContainer: {
+    flex: 1,
+    marginRight: 12,
+  },
+  description: {
+    fontSize: 10,
+    fontFamily: fontWeights.regular,
+    color: colors.textLight,
+    opacity: 0.8,
+  },
+  switchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    minWidth: 50,
+    justifyContent: 'flex-end',
+  },
+  disabledContainer: {
+    backgroundColor: 'white',
+    borderRadius: 16,
+    paddingVertical: 24,
+    paddingHorizontal: 19,
+    marginTop: 20,
+    ...colors.dropShadow,
+    alignItems: 'center',
+  },
+  disabledText: {
+    fontSize: 12,
+    fontFamily: fontWeights.medium,
+    color: colors.textLight,
+    textAlign: 'center',
+    opacity: 0.8,
   },
 });

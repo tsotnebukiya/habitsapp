@@ -628,6 +628,8 @@
     "language": "Language",
     "selectLanguage": "Select your preferred language",
     "notifications": "Notifications",
+    "enableNotifications": "Enable Notifications",
+    "notificationSettings": "Notification Settings",
     "account": "Account",
     "about": "About",
     "logout": "Logout",
@@ -660,7 +662,17 @@
     "streakContinued": "Streak continued! Keep it up",
     "achievementEarned": "New achievement earned!",
     "dailyUpdate": "Daily Update Notifications",
-    "streak": "Streak Notifications"
+    "streak": "Streak Notifications",
+    "permissionDenied": "Notification permission denied",
+    "permissionDeniedMessage": "To receive notifications, please enable them in your device settings.",
+    "openSettings": "Open Settings",
+    "permissionRequired": "Permission Required",
+    "enablingNotifications": "Enabling notifications...",
+    "notificationError": "Failed to enable notifications. Please try again.",
+    "enableToConfigureMessage": "Enable notifications to configure specific notification types",
+    "allowPushNotifications": "Allow the app to send push notifications",
+    "dailyProgressSummary": "Get daily summaries of your habit progress",
+    "streakNotifications": "Get notified about your habit streaks"
   },
   "errors": {
     "generic": "Something went wrong",

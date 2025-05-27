@@ -224,6 +224,8 @@
     "language": "Язык",
     "selectLanguage": "Выберите предпочитаемый язык",
     "notifications": "Уведомления",
+    "enableNotifications": "Включить Уведомления",
+    "notificationSettings": "Настройки Уведомлений",
     "account": "Аккаунт",
     "about": "О приложении",
     "logout": "Выйти",
@@ -256,7 +258,17 @@
     "streakContinued": "Серия продолжается! Так держать",
     "achievementEarned": "Получено новое достижение!",
     "dailyUpdate": "Ежедневные уведомления",
-    "streak": "Уведомления о сериях"
+    "streak": "Уведомления о сериях",
+    "permissionDenied": "Разрешение на уведомления отклонено",
+    "permissionDeniedMessage": "Чтобы получать уведомления, включите их в настройках устройства.",
+    "openSettings": "Открыть Настройки",
+    "permissionRequired": "Требуется Разрешение",
+    "enablingNotifications": "Включение уведомлений...",
+    "notificationError": "Не удалось включить уведомления. Попробуйте снова.",
+    "enableToConfigureMessage": "Включите уведомления для настройки конкретных типов уведомлений",
+    "allowPushNotifications": "Разрешить приложению отправлять push-уведомления",
+    "dailyProgressSummary": "Получайте ежедневные сводки о прогрессе ваших привычек",
+    "streakNotifications": "Получайте уведомления о ваших сериях привычек"
   },
   "errors": {
     "generic": "Что-то пошло не так",

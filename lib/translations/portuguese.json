@@ -223,6 +223,8 @@
     "language": "Idioma",
     "selectLanguage": "Selecione seu idioma preferido",
     "notifications": "Notificações",
+    "enableNotifications": "Ativar Notificações",
+    "notificationSettings": "Configurações de Notificação",
     "account": "Conta",
     "about": "Sobre",
     "logout": "Sair",
@@ -255,7 +257,17 @@
     "streakContinued": "Sequência continuada! Continue assim",
     "achievementEarned": "Nova conquista obtida!",
     "dailyUpdate": "Notificações de Atualização Diária",
-    "streak": "Notificações de Sequência"
+    "streak": "Notificações de Sequência",
+    "permissionDenied": "Permissão de notificação negada",
+    "permissionDeniedMessage": "Para receber notificações, ative-as nas configurações do seu dispositivo.",
+    "openSettings": "Abrir Configurações",
+    "permissionRequired": "Permissão Necessária",
+    "enablingNotifications": "Ativando notificações...",
+    "notificationError": "Falha ao ativar notificações. Tente novamente.",
+    "enableToConfigureMessage": "Ative as notificações para configurar tipos específicos de notificação",
+    "allowPushNotifications": "Permitir que o aplicativo envie notificações push",
+    "dailyProgressSummary": "Receba resumos diários do seu progresso de hábitos",
+    "streakNotifications": "Seja notificado sobre suas sequências de hábitos"
   },
   "errors": {
     "generic": "Algo deu errado",

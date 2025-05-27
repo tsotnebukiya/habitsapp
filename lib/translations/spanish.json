@@ -224,6 +224,8 @@
     "language": "Idioma",
     "selectLanguage": "Selecciona tu idioma preferido",
     "notifications": "Notificaciones",
+    "enableNotifications": "Habilitar Notificaciones",
+    "notificationSettings": "Configuración de Notificaciones",
     "account": "Cuenta",
     "about": "Acerca de",
     "logout": "Cerrar Sesión",
@@ -256,7 +258,17 @@
     "streakContinued": "¡Racha continuada! Sigue así",
     "achievementEarned": "¡Nuevo logro obtenido!",
     "dailyUpdate": "Notificaciones de Actualización Diaria",
-    "streak": "Notificaciones de Racha"
+    "streak": "Notificaciones de Racha",
+    "permissionDenied": "Permiso de notificaciones denegado",
+    "permissionDeniedMessage": "Para recibir notificaciones, por favor habilítalas en la configuración de tu dispositivo.",
+    "openSettings": "Abrir Configuración",
+    "permissionRequired": "Permiso Requerido",
+    "enablingNotifications": "Habilitando notificaciones...",
+    "notificationError": "Error al habilitar notificaciones. Por favor intenta de nuevo.",
+    "enableToConfigureMessage": "Habilita las notificaciones para configurar tipos específicos de notificación",
+    "allowPushNotifications": "Permitir que la aplicación envíe notificaciones push",
+    "dailyProgressSummary": "Recibe resúmenes diarios de tu progreso de hábitos",
+    "streakNotifications": "Recibe notificaciones sobre tus rachas de hábitos"
   },
   "errors": {
     "generic": "Algo salió mal",

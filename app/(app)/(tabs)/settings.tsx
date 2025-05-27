@@ -75,7 +75,7 @@ const SettingsScreen = () => {
               size={24}
               color={colors.habitColors.grapePurple}
             />
-            <Text style={styles.itemText}>Notifications</Text>
+            <Text style={styles.itemText}>{t('settings.notifications')}</Text>
             <View style={styles.containerRight}>
               <Icon
                 source={require('@/assets/icons/chevron-right.png')}

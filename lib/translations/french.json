@@ -223,6 +223,8 @@
     "language": "Langue",
     "selectLanguage": "Sélectionnez votre langue préférée",
     "notifications": "Notifications",
+    "enableNotifications": "Activer les Notifications",
+    "notificationSettings": "Paramètres de Notification",
     "account": "Compte",
     "about": "À propos",
     "logout": "Se Déconnecter",
@@ -255,7 +257,17 @@
     "streakContinued": "Série continuée ! Continuez comme ça",
     "achievementEarned": "Nouvelle réussite obtenue !",
     "dailyUpdate": "Notifications de Mise à Jour Quotidienne",
-    "streak": "Notifications de Série"
+    "streak": "Notifications de Série",
+    "permissionDenied": "Permission de notification refusée",
+    "permissionDeniedMessage": "Pour recevoir des notifications, veuillez les activer dans les paramètres de votre appareil.",
+    "openSettings": "Ouvrir les Paramètres",
+    "permissionRequired": "Permission Requise",
+    "enablingNotifications": "Activation des notifications...",
+    "notificationError": "Échec de l'activation des notifications. Veuillez réessayer.",
+    "enableToConfigureMessage": "Activez les notifications pour configurer des types de notification spécifiques",
+    "allowPushNotifications": "Permettre à l'application d'envoyer des notifications push",
+    "dailyProgressSummary": "Recevez des résumés quotidiens de vos progrès d'habitudes",
+    "streakNotifications": "Soyez notifié de vos séries d'habitudes"
   },
   "errors": {
     "generic": "Quelque chose s'est mal passé",

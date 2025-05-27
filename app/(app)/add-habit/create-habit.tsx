@@ -114,6 +114,11 @@ export default function CreateHabbit() {
     }
   };
 
+  const handleNotificationsEnable = () => {
+    if (!notificationsEnabled) {
+      router.push('/settings/notifications');
+    }
+  };
   const handleSubmit = async () => {
     if (!formData.name) {
       Toast.show({
@@ -411,7 +416,7 @@ export default function CreateHabbit() {
               <TouchableOpacity
                 activeOpacity={ACTIVE_OPACITY}
                 style={styles.item}
-                onPress={() => {}}
+                onPress={handleNotificationsEnable}
                 disabled={!!notificationsEnabled}
               >
                 <MaterialIcons
