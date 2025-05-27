@@ -1,20 +1,13 @@
-import Badges from '@/components/achievements/Badges';
 import { colors, fontWeights } from '@/lib/constants/ui';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 import { router } from 'expo-router';
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Icon } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-export default function BadgesScreen() {
-  const insets = useSafeAreaInsets();
+export default function FeedbackScreen() {
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
   const handleClose = () => {
     router.back();
   };
@@ -23,7 +16,7 @@ export default function BadgesScreen() {
       <View style={styles.header}>
         <View style={styles.headerSpacing} />
 
-        <Text style={styles.heading}>{t('achievements.milestones')}</Text>
+        <Text style={styles.heading}>Send Feedback</Text>
         <TouchableOpacity
           onPress={handleClose}
           activeOpacity={0.1}
@@ -36,17 +29,13 @@ export default function BadgesScreen() {
           />
         </TouchableOpacity>
       </View>
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={[
-          styles.contentContainerStyle,
-          {
-            paddingBottom: insets.bottom + 20,
-          },
-        ]}
-      >
-        <Badges />
-      </ScrollView>
+      <View style={styles.mainContainer}>
+        <View style={styles.subContainer}>
+          <TouchableOpacity style={styles.item}>
+            <Text>English</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
     </View>
   );
 }
@@ -81,5 +70,22 @@ const styles = StyleSheet.create({
     fontFamily: fontWeights.semibold,
     textAlign: 'center',
     color: colors.text,
+  },
+  mainContainer: {
+    ...colors.dropShadow,
+  },
+  subContainer: {
+    backgroundColor: colors.border,
+    gap: 1,
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
+  item: {
+    backgroundColor: 'white',
+    height: 50,
+    paddingHorizontal: 16.5,
+    gap: 8.5,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 });

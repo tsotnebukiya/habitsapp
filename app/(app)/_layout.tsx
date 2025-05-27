@@ -67,6 +67,14 @@ function StackLayout() {
             animation: 'slide_from_bottom',
           }}
         />
+        <Stack.Screen
+          name="settings"
+          options={{
+            presentation: 'modal',
+            headerShown: false,
+            animation: 'slide_from_bottom',
+          }}
+        />
       </Stack>
     </BottomSheetModalProvider>
   );

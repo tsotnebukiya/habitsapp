@@ -186,6 +186,7 @@
   },
   "achievements": {
     "title": "Logros",
+    "milestones": "Hitos",
     "earned": "Obtenido",
     "notEarned": "No Obtenido",
     "viewEarned": "Ver Obtenidos",

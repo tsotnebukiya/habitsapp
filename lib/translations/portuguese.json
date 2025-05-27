@@ -186,6 +186,7 @@
   },
   "achievements": {
     "title": "Conquistas",
+    "milestones": "Marcos",
     "lifeBalanceMatrix": "Matriz de Equilíbrio de Vida",
     "scoresAcrossAreas": "Suas pontuações em áreas-chave da vida",
     "longestStreaks": "Sequências Mais Longas",

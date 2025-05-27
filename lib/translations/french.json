@@ -186,6 +186,7 @@
   },
   "achievements": {
     "title": "Réalisations",
+    "milestones": "Jalons",
     "lifeBalanceMatrix": "Matrice d'Équilibre de Vie",
     "scoresAcrossAreas": "Vos scores dans les domaines clés de la vie",
     "longestStreaks": "Plus Longues Séries",

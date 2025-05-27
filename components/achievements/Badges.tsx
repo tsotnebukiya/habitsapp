@@ -14,7 +14,6 @@ export default function Badges() {
   const achievementKeys = Object.keys(ACHIEVEMENTS).map(Number);
 
   const renderBadge = (days: number) => {
-    const achievement = ACHIEVEMENTS[days as keyof typeof ACHIEVEMENTS];
     const isUnlocked =
       streakAchievements[days as keyof typeof streakAchievements] || false;
 

@@ -186,6 +186,7 @@
   },
   "achievements": {
     "title": "Достижения",
+    "milestones": "Вехи",
     "earned": "Получено",
     "notEarned": "Не получено",
     "viewEarned": "Посмотреть полученные",

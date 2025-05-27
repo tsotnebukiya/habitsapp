@@ -590,6 +590,7 @@
   },
   "achievements": {
     "title": "Achievements",
+    "milestones": "Milestones",
     "earned": "Earned",
     "notEarned": "Not Earned",
     "viewEarned": "View Earned",

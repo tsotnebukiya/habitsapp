@@ -26,7 +26,6 @@ export default function Home() {
   return (
     <View style={[styles.container, { paddingTop: insets.top + 17 }]}>
       <WeekView selectedDate={selectedDate} onDateSelect={setSelectedDate} />
-      {/* TODO: Add HabitList component here */}
       <HabitList selectedDate={selectedDate} />
     </View>
   );

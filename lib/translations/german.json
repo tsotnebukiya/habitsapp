@@ -25,9 +25,9 @@
     "search": "Suchen"
   },
   "navigation": {
-    "habits": "Home",
-    "stats": "Stats",
-    "achievements": "Awards",
+    "habits": "Start",
+    "stats": "Statistiken",
+    "achievements": "Erfolge",
     "settings": "Optionen"
   },
   "habits": {
@@ -186,6 +186,7 @@
   },
   "achievements": {
     "title": "Erfolge",
+    "milestones": "Meilensteine",
     "lifeBalanceMatrix": "Lebensbalance-Matrix",
     "scoresAcrossAreas": "Ihre Punkte in wichtigen Lebensbereichen",
     "longestStreaks": "Längste Serien",
