@@ -31,8 +31,8 @@ export default function FeedbackScreen() {
       setMessage('');
     } catch (error: any) {
       Alert.alert(
-        'Unable to Send Feedback',
-        'Unable to send feedback at the moment. Please try again later.'
+        t('settings.feedback.unableToSend'),
+        t('settings.feedback.errorMessage')
       );
     }
   };
@@ -50,7 +50,7 @@ export default function FeedbackScreen() {
       <View style={styles.container}>
         <View style={styles.header}>
           <View style={styles.headerSpacing} />
-          <Text style={styles.heading}>Feedback Sent!</Text>
+          <Text style={styles.heading}>{t('settings.feedback.sent')}</Text>
           <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
             <Icon
               source={require('@/assets/icons/x-close.png')}
@@ -61,10 +61,11 @@ export default function FeedbackScreen() {
         </View>
 
         <View style={styles.successContainer}>
-          <Text style={styles.successTitle}>Thank you!</Text>
+          <Text style={styles.successTitle}>
+            {t('settings.feedback.thankYou')}
+          </Text>
           <Text style={styles.successMessage}>
-            Your feedback has been sent successfully. We appreciate your input
-            and will review it carefully!
+            {t('settings.feedback.successMessage')}
           </Text>
           <TouchableOpacity
             style={styles.successButton}
@@ -73,7 +74,9 @@ export default function FeedbackScreen() {
               setMessage('');
             }}
           >
-            <Text style={styles.successButtonText}>Send More Feedback</Text>
+            <Text style={styles.successButtonText}>
+              {t('settings.feedback.sendMore')}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -87,7 +90,7 @@ export default function FeedbackScreen() {
     >
       <View style={styles.header}>
         <View style={styles.headerSpacing} />
-        <Text style={styles.heading}>Send Feedback</Text>
+        <Text style={styles.heading}>{t('settings.feedback.title')}</Text>
         <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
           <Icon
             source={require('@/assets/icons/x-close.png')}
@@ -103,16 +106,17 @@ export default function FeedbackScreen() {
       >
         <View style={styles.formContainer}>
           <View style={styles.inputContainer}>
-            <Text style={styles.label}>Your Feedback</Text>
+            <Text style={styles.label}>
+              {t('settings.feedback.yourFeedback')}
+            </Text>
             <Text style={styles.description}>
-              Tell us what you think, report a bug, or suggest a feature. We
-              read every message!
+              {t('settings.feedback.description')}
             </Text>
             <TextInput
               style={styles.textInput}
               value={message}
               onChangeText={setMessage}
-              placeholder="Type your feedback here..."
+              placeholder={t('settings.feedback.placeholder')}
               placeholderTextColor={colors.textLight}
               multiline
               maxLength={MAX_LENGTH}
@@ -134,7 +138,9 @@ export default function FeedbackScreen() {
               </Text>
               {charCount < MIN_LENGTH && (
                 <Text style={styles.minLengthText}>
-                  Minimum {MIN_LENGTH} characters
+                  {t('settings.feedback.minimumCharacters', {
+                    count: MIN_LENGTH,
+                  })}
                 </Text>
               )}
             </View>
@@ -151,7 +157,9 @@ export default function FeedbackScreen() {
             {isLoading ? (
               <ActivityIndicator color="white" size="small" />
             ) : (
-              <Text style={styles.submitButtonText}>Send Feedback</Text>
+              <Text style={styles.submitButtonText}>
+                {t('settings.sendFeedback')}
+              </Text>
             )}
           </TouchableOpacity>
         </View>

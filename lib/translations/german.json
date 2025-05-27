@@ -59,6 +59,7 @@
     "category": "Kategorie",
     "goal": "Ziel",
     "goalLabel": "Ziel",
+    "unitLabel": "Einheit",
     "frequency": "Häufigkeit",
     "selectFrequency": "Häufigkeit wählen",
     "startDate": "Startdatum",
@@ -230,7 +231,22 @@
     "logout": "Abmelden",
     "version": "Version",
     "privacyPolicy": "Datenschutzrichtlinie",
-    "termsOfService": "Nutzungsbedingungen"
+    "termsOfService": "Nutzungsbedingungen",
+    "sendFeedback": "Feedback Senden",
+    "share": "Teilen",
+    "feedback": {
+      "title": "Feedback Senden",
+      "sent": "Feedback Gesendet!",
+      "thankYou": "Vielen Dank!",
+      "successMessage": "Ihr Feedback wurde erfolgreich gesendet. Wir schätzen Ihre Eingabe und werden sie sorgfältig prüfen!",
+      "sendMore": "Mehr Feedback Senden",
+      "yourFeedback": "Ihr Feedback",
+      "description": "Teilen Sie uns mit, was Sie denken, melden Sie einen Fehler oder schlagen Sie eine Funktion vor. Wir lesen jede Nachricht!",
+      "placeholder": "Geben Sie hier Ihr Feedback ein...",
+      "minimumCharacters": "Mindestens {{count}} Zeichen",
+      "unableToSend": "Feedback Kann Nicht Gesendet Werden",
+      "errorMessage": "Feedback kann im Moment nicht gesendet werden. Bitte versuchen Sie es später erneut."
+    }
   },
   "stats": {
     "title": "Statistiken",

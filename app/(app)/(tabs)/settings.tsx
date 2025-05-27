@@ -29,20 +29,22 @@ const SettingsScreen = () => {
     router.push('/settings/language');
   };
   const handleTerms = async () => {
-    await WebBrowser.openBrowserAsync('https://www.gymleadai.app/terms');
+    await WebBrowser.openBrowserAsync('https://www.habitslab.app/terms');
   };
   const handlePrivacy = async () => {
-    await WebBrowser.openBrowserAsync('https://www.gymleadai.app/privacy');
+    await WebBrowser.openBrowserAsync('https://www.habitslab.app/privacy');
   };
 
   const handleShare = async () => {
     try {
-      const message = 'Check out this amazing app!';
-      const url = 'https://apps.apple.com/ge/app/mercury-weather/id1621800675';
+      const message = 'Check out Habits Lab - the best habit tracking app!';
+
+      const iosUrl = 'https://apps.apple.com/app/habitsapp/id6745717349';
+      const shareUrl = iosUrl;
 
       await Share.share({
-        message: `${message} ${url}`,
-        url: url,
+        message: `${message} ${shareUrl}`,
+        url: shareUrl,
         title: 'Habits Lab',
       });
     } catch (error) {
@@ -94,7 +96,7 @@ const SettingsScreen = () => {
               size={24}
               color={colors.habitColors.amberYellow}
             />
-            <Text style={styles.itemText}>Send Feadback</Text>
+            <Text style={styles.itemText}>{t('settings.sendFeedback')}</Text>
             <View style={styles.containerRight}>
               <Icon
                 source={require('@/assets/icons/chevron-right.png')}
@@ -113,7 +115,7 @@ const SettingsScreen = () => {
               size={24}
               color={'#42A5F5'}
             />
-            <Text style={styles.itemText}>Share</Text>
+            <Text style={styles.itemText}>{t('settings.share')}</Text>
             <View style={styles.containerRight}>
               <Icon
                 source={require('@/assets/icons/chevron-right.png')}
@@ -132,7 +134,7 @@ const SettingsScreen = () => {
               size={24}
               color={colors.habitColors.tealGreen}
             />
-            <Text style={styles.itemText}>Privacy Policy</Text>
+            <Text style={styles.itemText}>{t('settings.privacyPolicy')}</Text>
             <View style={styles.containerRight}>
               <Icon
                 source={require('@/assets/icons/chevron-right.png')}
@@ -151,7 +153,7 @@ const SettingsScreen = () => {
               size={24}
               color={colors.habitColors.indigoBlue}
             />
-            <Text style={styles.itemText}>Terms of service</Text>
+            <Text style={styles.itemText}>{t('settings.termsOfService')}</Text>
             <View style={styles.containerRight}>
               <Icon
                 source={require('@/assets/icons/chevron-right.png')}
@@ -170,7 +172,7 @@ const SettingsScreen = () => {
               size={24}
               color={colors.habitColors.amethystPurple}
             />
-            <Text style={styles.itemText}>Language</Text>
+            <Text style={styles.itemText}>{t('settings.language')}</Text>
             <View style={styles.containerRight}>
               <Icon
                 source={require('@/assets/icons/chevron-right.png')}

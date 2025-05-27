@@ -59,6 +59,7 @@
     "category": "Categoría",
     "goal": "Meta",
     "goalLabel": "Meta",
+    "unitLabel": "Unidad",
     "frequency": "Frecuencia",
     "selectFrequency": "Elige la frecuencia",
     "startDate": "Fecha de inicio",
@@ -231,7 +232,22 @@
     "logout": "Cerrar Sesión",
     "version": "Versión",
     "privacyPolicy": "Política de Privacidad",
-    "termsOfService": "Términos de Servicio"
+    "termsOfService": "Términos de Servicio",
+    "sendFeedback": "Enviar Comentarios",
+    "share": "Compartir",
+    "feedback": {
+      "title": "Enviar Comentarios",
+      "sent": "¡Comentarios Enviados!",
+      "thankYou": "¡Gracias!",
+      "successMessage": "Tus comentarios han sido enviados exitosamente. ¡Apreciamos tu aporte y lo revisaremos cuidadosamente!",
+      "sendMore": "Enviar Más Comentarios",
+      "yourFeedback": "Tus Comentarios",
+      "description": "Dinos qué piensas, reporta un error o sugiere una función. ¡Leemos cada mensaje!",
+      "placeholder": "Escribe tus comentarios aquí...",
+      "minimumCharacters": "Mínimo {{count}} caracteres",
+      "unableToSend": "No Se Pueden Enviar Comentarios",
+      "errorMessage": "No se pueden enviar comentarios en este momento. Por favor intenta de nuevo más tarde."
+    }
   },
   "stats": {
     "title": "Estadísticas",

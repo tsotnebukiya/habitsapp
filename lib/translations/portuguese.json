@@ -59,6 +59,7 @@
     "category": "Categoria",
     "goal": "Meta",
     "goalLabel": "Meta",
+    "unitLabel": "Unidade",
     "frequency": "Frequência",
     "selectFrequency": "Escolha a frequência",
     "startDate": "Data de início",
@@ -230,7 +231,22 @@
     "logout": "Sair",
     "version": "Versão",
     "privacyPolicy": "Política de Privacidade",
-    "termsOfService": "Termos de Serviço"
+    "termsOfService": "Termos de Serviço",
+    "sendFeedback": "Enviar Feedback",
+    "share": "Compartilhar",
+    "feedback": {
+      "title": "Enviar Feedback",
+      "sent": "Feedback Enviado!",
+      "thankYou": "Obrigado!",
+      "successMessage": "Seu feedback foi enviado com sucesso. Agradecemos sua contribuição e a analisaremos cuidadosamente!",
+      "sendMore": "Enviar Mais Feedback",
+      "yourFeedback": "Seu Feedback",
+      "description": "Diga-nos o que pensa, relate um bug ou sugira uma funcionalidade. Lemos todas as mensagens!",
+      "placeholder": "Digite seu feedback aqui...",
+      "minimumCharacters": "Mínimo {{count}} caracteres",
+      "unableToSend": "Não Foi Possível Enviar Feedback",
+      "errorMessage": "Não foi possível enviar feedback no momento. Tente novamente mais tarde."
+    }
   },
   "stats": {
     "title": "Estatísticas",

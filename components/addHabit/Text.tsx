@@ -1,8 +1,8 @@
 import { colors, fontWeights } from '@/lib/constants/ui';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 import { router } from 'expo-router';
-import { useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Keyboard, Platform, StyleSheet, Text, View } from 'react-native';
 import { TextInput } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Button from '../shared/Button';
@@ -27,7 +27,7 @@ export default function TextChoosing({
 }) {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
-
+  const [keyboardOffset, setKeyboardOffset] = useState(0);
   const [tempData, setTempData] = useState<string>(
     type === 'name' ? formData.name || '' : formData.description || ''
   );
@@ -35,6 +35,20 @@ export default function TextChoosing({
     setFormField(type === 'name' ? 'name' : 'description', tempData);
     router.back();
   };
+  useEffect(() => {
+    const show = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
+      (e) => setKeyboardOffset(e.endCoordinates.height)
+    );
+    const hide = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
+      () => setKeyboardOffset(0)
+    );
+    return () => {
+      show.remove();
+      hide.remove();
+    };
+  }, [insets.bottom]);
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -63,7 +77,12 @@ export default function TextChoosing({
           }
         />
       </View>
-      <View style={[styles.footer, { paddingBottom: insets.bottom }]}>
+      <View
+        style={[
+          styles.footer,
+          { paddingBottom: insets.bottom, bottom: keyboardOffset },
+        ]}
+      >
         <Button
           onPress={handleSubmit}
           label={t('common.done')}

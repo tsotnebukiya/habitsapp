@@ -7,8 +7,15 @@ import { colors, fontWeights } from '@/lib/constants/ui';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import React, { useRef, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  Keyboard,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import ModalSelector from 'react-native-modal-selector';
 import { Icon, TextInput } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -43,7 +50,7 @@ export default function GoalChoosing({
   const insets = useSafeAreaInsets();
   const modalSelectorRef = useRef<any>(null);
   const { t } = useTranslation();
-
+  const [keyboardOffset, setKeyboardOffset] = useState(0);
   const [tempData, setTempData] = useState<{
     value: number;
     unit: MeasurementUnit;
@@ -66,6 +73,21 @@ export default function GoalChoosing({
 
   const goalText =
     tempData.value === 1 ? tempData.unit.oneName : tempData.unit.name;
+
+  useEffect(() => {
+    const show = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow',
+      (e) => setKeyboardOffset(e.endCoordinates.height)
+    );
+    const hide = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
+      () => setKeyboardOffset(0)
+    );
+    return () => {
+      show.remove();
+      hide.remove();
+    };
+  }, [insets.bottom]);
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -115,7 +137,7 @@ export default function GoalChoosing({
                   size={24}
                   color={colors.habitColors.salmonRed}
                 />
-                <Text style={styles.itemText}>{t('habits.goalLabel')}</Text>
+                <Text style={styles.itemText}>{t('habits.unitLabel')}</Text>
                 <View style={[styles.itemRight]}>
                   <Text style={styles.itemUnit}>{tempData.unit.name}</Text>
                   <Icon
@@ -129,7 +151,12 @@ export default function GoalChoosing({
           />
         </View>
       </View>
-      <View style={[styles.footer, { paddingBottom: insets.bottom }]}>
+      <View
+        style={[
+          styles.footer,
+          { paddingBottom: insets.bottom, bottom: keyboardOffset },
+        ]}
+      >
         <Button
           onPress={handleSubmit}
           label={t('common.done')}
