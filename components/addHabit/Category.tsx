@@ -1,6 +1,7 @@
 import { ACTIVE_OPACITY } from '@/components/shared/config';
 import { CATEGORIES, HabitCategory } from '@/lib/constants/HabitTemplates';
 import { colors, fontWeights } from '@/lib/constants/ui';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -24,6 +25,7 @@ export default function CategoryChoosing({
   ) => void;
 }) {
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
   const selectedCategory = formData.category || 'cat1';
   const [tempCategory, setTempCategory] = useState<string>(selectedCategory);
 
@@ -39,7 +41,7 @@ export default function CategoryChoosing({
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.heading}>Select category</Text>
+        <Text style={styles.heading}>{t('habits.selectCategory')}</Text>
       </View>
       <View style={styles.contentContainer}>
         <View style={styles.categoriesContainer}>
@@ -76,7 +78,11 @@ export default function CategoryChoosing({
         </View>
       </View>
       <View style={[styles.footer, { paddingBottom: insets.bottom }]}>
-        <Button onPress={handleSubmit} label="Done" type="primary" />
+        <Button
+          onPress={handleSubmit}
+          label={t('common.done')}
+          type="primary"
+        />
       </View>
     </View>
   );

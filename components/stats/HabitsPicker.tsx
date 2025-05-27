@@ -1,6 +1,7 @@
 import { ACTIVE_OPACITY } from '@/components/shared/config';
 import { colors, fontWeights } from '@/lib/constants/ui';
 import useHabitsStore from '@/lib/habit-store/store';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 import { MaterialIcons } from '@expo/vector-icons';
 import React, { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -8,30 +9,34 @@ import { Icon, IconButton } from 'react-native-paper';
 
 type Props = {
   selectedHabit: string | null;
-  setSelectedHabit: React.Dispatch<React.SetStateAction<string | null>>;
+  setSelectedHabit: (habitId: string | null) => void;
 };
 
 const HabitsPicker = ({ selectedHabit, setSelectedHabit }: Props) => {
+  const { t } = useTranslation();
   const [showChooseModal, setShowChooseModal] = useState(false);
   const habits = useHabitsStore((state) => state.habits);
   const habitName = selectedHabit
-    ? habits.get(selectedHabit)?.name
-    : 'All habits';
+    ? habits.get(selectedHabit)?.name || ''
+    : t('habits.allHabits');
 
   const onDismissChooseModal = () => {
     setShowChooseModal(false);
   };
+
   const onSelectHabit = (habitId: string | null) => {
     setSelectedHabit(habitId);
     setShowChooseModal(false);
   };
+
   const handleReset = () => {
     setSelectedHabit(null);
   };
+
   return (
-    <>
+    <View style={styles.container}>
       <View style={styles.subtitleContainer}>
-        <Text style={styles.subtitle}>Selected habits</Text>
+        <Text style={styles.subtitle}>{t('habits.selectedHabits')}</Text>
         {selectedHabit ? (
           <IconButton
             icon={() => (
@@ -59,7 +64,7 @@ const HabitsPicker = ({ selectedHabit, setSelectedHabit }: Props) => {
             size={24}
             color={colors.habitColors.meadowGreen}
           />
-          <Text style={styles.buttonText}>Habits</Text>
+          <Text style={styles.buttonText}>{t('habits.title')}</Text>
         </View>
         <View style={styles.buttonRow}>
           <Text style={styles.habitText}>{habitName}</Text>
@@ -70,7 +75,7 @@ const HabitsPicker = ({ selectedHabit, setSelectedHabit }: Props) => {
           />
         </View>
       </TouchableOpacity>
-    </>
+    </View>
   );
 };
 
@@ -115,6 +120,15 @@ const styles = StyleSheet.create({
   },
   noMargin: {
     margin: 0,
+  },
+  container: {
+    flex: 1,
+  },
+  bottomSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 16,
   },
 });
 

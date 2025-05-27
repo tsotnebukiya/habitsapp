@@ -3,6 +3,7 @@ import ItemIcon from '@/components/shared/Icon';
 import SearchInput from '@/components/shared/SearchInput';
 import { HABIT_TEMPLATES, HabitTemplate } from '@/lib/constants/HabitTemplates';
 import { colors, fontWeights } from '@/lib/constants/ui';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 import { useAddHabitStore } from '@/lib/stores/add_habit_store';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import { router } from 'expo-router';
@@ -13,24 +14,34 @@ import { Icon, Text } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function TemplateSelection() {
+  const { t } = useTranslation();
   const formData = useAddHabitStore((state) => state.formData);
   const applyTemplate = useAddHabitStore((state) => state.applyTemplate);
   const insets = useSafeAreaInsets();
   const [state, setState] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
-  const templates = HABIT_TEMPLATES.filter(
-    (template) =>
+  const templates = HABIT_TEMPLATES.filter((template) => {
+    const translatedName = t(template.nameKey as any) || template.name;
+    const searchLower = searchQuery.trim().toLowerCase();
+    return (
       template.category === formData.category &&
       template.type === (state === 0 ? 'GOOD' : 'BAD') &&
-      template.name.toLowerCase().includes(searchQuery.trim().toLowerCase())
-  );
+      (template.name.toLowerCase().includes(searchLower) ||
+        translatedName.toLowerCase().includes(searchLower))
+    );
+  });
 
   const handleCreateCustomHabit = () => {
     router.push('/add-habit/create-habit');
   };
 
   const handleChooseTemplate = (template: HabitTemplate) => {
-    applyTemplate(template);
+    console.log('template', template);
+    applyTemplate({
+      ...template,
+      name: t(template.nameKey as any),
+      description: t(template.descriptionKey as any),
+    });
     router.push('/add-habit/create-habit');
   };
 
@@ -48,7 +59,7 @@ export default function TemplateSelection() {
           setSearchQuery={setSearchQuery}
         />
         <SegmentedControl
-          values={['Good', 'Bad']}
+          values={[t('habits.good'), t('habits.bad')]}
           selectedIndex={state}
           onChange={(event) => {
             setState(event.nativeEvent.selectedSegmentIndex);
@@ -61,7 +72,9 @@ export default function TemplateSelection() {
           activeOpacity={ACTIVE_OPACITY}
           onPress={handleCreateCustomHabit}
         >
-          <Text style={styles.cusstomHabbitText}>Create custom habbit</Text>
+          <Text style={styles.cusstomHabbitText}>
+            {t('habits.createCustomHabit')}
+          </Text>
         </TouchableOpacity>
         <View style={styles.templatesContainer}>
           {templates.map((template) => (
@@ -74,7 +87,9 @@ export default function TemplateSelection() {
               }}
             >
               <ItemIcon color={template.color} icon={template.icon} />
-              <Text style={styles.templateName}>{template.name}</Text>
+              <Text style={styles.templateName}>
+                {t(template.nameKey as any) || template.name}
+              </Text>
               <View style={styles.chevron}>
                 <Icon
                   source={require('@/assets/icons/chevron-right.png')}

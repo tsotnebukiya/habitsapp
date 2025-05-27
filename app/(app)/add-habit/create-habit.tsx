@@ -2,9 +2,9 @@ import { DetailChoosingType } from '@/app/(app)/add-habit/detail-choosing';
 import Button from '@/components/shared/Button';
 import { ACTIVE_OPACITY } from '@/components/shared/config';
 import ItemIcon from '@/components/shared/Icon';
-import { CATEGORIES_MAP } from '@/lib/constants/HabitTemplates';
 import { colors, fontWeights } from '@/lib/constants/ui';
 import useHabitsStore from '@/lib/habit-store/store';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 import { useAddHabitStore } from '@/lib/stores/add_habit_store';
 import { useAppStore } from '@/lib/stores/app_state';
 import useUserProfileStore from '@/lib/stores/user_profile';
@@ -26,6 +26,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Toast from 'react-native-toast-message';
 
 export default function CreateHabbit() {
+  const { t } = useTranslation();
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const profile = useUserProfileStore((state) => state.profile);
@@ -117,14 +118,14 @@ export default function CreateHabbit() {
     if (!formData.name) {
       Toast.show({
         type: 'error',
-        text1: 'Habit name is required',
+        text1: t('habits.habitNameRequired'),
       });
       return;
     }
     if (formData.goal.value === 0) {
       Toast.show({
         type: 'error',
-        text1: 'Goal must be greater than 0',
+        text1: t('habits.goalMustBeGreaterThanZero'),
       });
       return;
     }
@@ -196,11 +197,13 @@ export default function CreateHabbit() {
               <ItemIcon icon={formData.icon} color={'white'} />
               <View style={styles.headerContent}>
                 {formData.name && (
-                  <Text style={styles.habitFieldText}>Habit name</Text>
+                  <Text style={styles.habitFieldText}>
+                    {t('habits.habitName')}
+                  </Text>
                 )}
 
                 <Text style={styles.headerTitle}>
-                  {formData.name || 'Habit name'}
+                  {formData.name || t('habits.habitName')}
                 </Text>
               </View>
               <View style={styles.nameButton}>
@@ -211,7 +214,7 @@ export default function CreateHabbit() {
                 />
               </View>
             </TouchableOpacity>
-            <Text style={styles.subTitle}>Appearance</Text>
+            <Text style={styles.subTitle}>{t('habits.appearance')}</Text>
             <View
               style={[styles.subContainer, styles.subContainerMarginBottom]}
             >
@@ -225,7 +228,7 @@ export default function CreateHabbit() {
                   size={24}
                   color={colors.habitColors.grapePurple}
                 />
-                <Text style={styles.itemText}>Color</Text>
+                <Text style={styles.itemText}>{t('habits.color')}</Text>
                 <View style={styles.containerRight}>
                   <View
                     style={[
@@ -250,7 +253,7 @@ export default function CreateHabbit() {
                   size={24}
                   color={colors.habitColors.salmonRed}
                 />
-                <Text style={styles.itemText}>Icon</Text>
+                <Text style={styles.itemText}>{t('habits.icon')}</Text>
                 <View style={styles.containerRight}>
                   <ItemIcon icon={formData.icon} color={formData.color} />
                   <Icon
@@ -270,7 +273,7 @@ export default function CreateHabbit() {
                   size={24}
                   color={colors.habitColors.amberYellow}
                 />
-                <Text style={styles.itemText}>Description</Text>
+                <Text style={styles.itemText}>{t('habits.description')}</Text>
                 <View style={styles.containerRight}>
                   {formData.description ? (
                     <Text
@@ -281,7 +284,9 @@ export default function CreateHabbit() {
                       {formData.description}
                     </Text>
                   ) : (
-                    <Text style={styles.descriptionTextNone}>None</Text>
+                    <Text style={styles.descriptionTextNone}>
+                      {t('common.none')}
+                    </Text>
                   )}
 
                   <Icon
@@ -301,10 +306,10 @@ export default function CreateHabbit() {
                   size={24}
                   color={colors.habitColors.indigoBlue}
                 />
-                <Text style={styles.itemText}>Category</Text>
+                <Text style={styles.itemText}>{t('habits.category')}</Text>
                 <View style={styles.containerRight}>
                   <Text style={styles.descriptionText}>
-                    {CATEGORIES_MAP[formData.category].name}
+                    {t(`categories.${formData.category}`)}
                   </Text>
                   <Icon
                     source={require('@/assets/icons/chevron-right.png')}
@@ -314,7 +319,7 @@ export default function CreateHabbit() {
                 </View>
               </TouchableOpacity>
             </View>
-            <Text style={styles.subTitle}>General</Text>
+            <Text style={styles.subTitle}>{t('habits.general')}</Text>
             <View style={styles.subContainer}>
               <TouchableOpacity
                 activeOpacity={ACTIVE_OPACITY}
@@ -326,11 +331,13 @@ export default function CreateHabbit() {
                   size={24}
                   color={colors.habitColors.meadowGreen}
                 />
-                <Text style={styles.itemText}>Type</Text>
+                <Text style={styles.itemText}>{t('habits.type')}</Text>
 
                 <View style={styles.containerRight}>
                   <Text style={styles.descriptionText}>
-                    {formData.type === 'GOOD' ? 'Good' : 'Bad'}
+                    {formData.type === 'GOOD'
+                      ? t('habits.good')
+                      : t('habits.bad')}
                   </Text>
                   <Icon
                     source={require('@/assets/icons/chevron-right.png')}
@@ -349,7 +356,7 @@ export default function CreateHabbit() {
                   size={24}
                   color={colors.habitColors.skyBlue}
                 />
-                <Text style={styles.itemText}>Goal</Text>
+                <Text style={styles.itemText}>{t('habits.goal')}</Text>
                 <View style={styles.containerRight}>
                   <Text style={styles.descriptionText}>
                     {formData.goal.value} {goalText}
@@ -371,17 +378,26 @@ export default function CreateHabbit() {
                   size={24}
                   color={colors.habitColors.amethystPurple}
                 />
-                <Text style={styles.itemText}>Repeat</Text>
+                <Text style={styles.itemText}>{t('habits.repeat')}</Text>
                 <View style={styles.containerRight}>
                   <Text style={styles.descriptionText}>
                     {formData.frequencyType === 'daily'
-                      ? 'Every day'
+                      ? t('habits.everyDay')
                       : formData.daysOfWeek
-                          .map((day) =>
-                            dayjs()
-                              .isoWeekday(day + 1)
-                              .format('ddd')
-                          )
+                          .map((day) => {
+                            const weekdayKeys = [
+                              'monday',
+                              'tuesday',
+                              'wednesday',
+                              'thursday',
+                              'friday',
+                              'saturday',
+                              'sunday',
+                            ] as const;
+                            return t(
+                              `weekdays.short.${weekdayKeys[day]}` as any
+                            );
+                          })
                           .join(', ')}
                   </Text>
 
@@ -403,7 +419,7 @@ export default function CreateHabbit() {
                   size={24}
                   color={colors.habitColors.salmonRed}
                 />
-                <Text style={styles.itemText}>Notifications</Text>
+                <Text style={styles.itemText}>{t('habits.notifications')}</Text>
                 {notificationsEnabled && (
                   <Switch
                     trackColor={{ true: '#31C859' }}
@@ -442,7 +458,7 @@ export default function CreateHabbit() {
                 {!notificationsEnabled && (
                   <View style={styles.containerRight}>
                     <Text style={[styles.descriptionText, styles.errorColor]}>
-                      Enable notifications to use reminders
+                      {t('habits.enableNotificationsToUseReminders')}
                     </Text>
                     <Icon
                       source={require('@/assets/icons/chevron-right.png')}
@@ -458,7 +474,7 @@ export default function CreateHabbit() {
                   size={24}
                   color={colors.habitColors.tealGreen}
                 />
-                <Text style={styles.itemText}>Starts on</Text>
+                <Text style={styles.itemText}>{t('habits.startsOn')}</Text>
 
                 <View style={styles.containerRight}>
                   <TouchableOpacity
@@ -483,7 +499,7 @@ export default function CreateHabbit() {
                   size={24}
                   color={colors.habitColors.brown}
                 />
-                <Text style={styles.itemText}>Ends on</Text>
+                <Text style={styles.itemText}>{t('habits.endsOn')}</Text>
                 <Switch
                   trackColor={{ true: '#31C859' }}
                   thumbColor={'white'}
@@ -519,7 +535,11 @@ export default function CreateHabbit() {
           </View>
         </ScrollView>
         <View style={[styles.footer, { paddingBottom: insets.bottom }]}>
-          <Button onPress={handleSubmit} label="Save" type="primary" />
+          <Button
+            onPress={handleSubmit}
+            label={t('common.save')}
+            type="primary"
+          />
         </View>
       </View>
     </>

@@ -1,4 +1,5 @@
 import { colors, fontWeights } from '@/lib/constants/ui';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 import { Dayjs } from 'dayjs';
 import React, { memo, useCallback, useEffect, useMemo, useRef } from 'react';
 import {
@@ -14,6 +15,7 @@ import {
   DATE_ITEM_WIDTH,
   WEEK_VIEW_ITEM_GAP,
 } from '../shared/config';
+
 interface DateItemProps {
   onPress: (date: Date) => void;
   isSelected: boolean;
@@ -35,6 +37,7 @@ const DateItem = memo(function DateItem({
   itemIndex,
   completionStatus,
 }: DateItemProps) {
+  const { t } = useTranslation();
   const animatedProgress = useRef(new Animated.Value(completionStatus)).current;
   const prevCompletionStatus = useRef(completionStatus);
 
@@ -63,7 +66,19 @@ const DateItem = memo(function DateItem({
     [animatedProgress, circumference]
   );
 
-  const dateWeek = useMemo(() => date.format('ddd'), [date]);
+  // Use translated weekday abbreviations
+  const dayOfWeek = date.day(); // 0 = Sunday, 1 = Monday, etc.
+  const weekdayKeys = [
+    'sunday',
+    'monday',
+    'tuesday',
+    'wednesday',
+    'thursday',
+    'friday',
+    'saturday',
+  ] as const;
+  const weekdayKey = weekdayKeys[dayOfWeek];
+  const dateWeek = t(`weekdays.medium.${weekdayKey}` as any);
   const dateNumber = useMemo(() => date.format('D'), [date]);
 
   return (

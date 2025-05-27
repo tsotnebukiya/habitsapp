@@ -1,5 +1,6 @@
 import { ACTIVE_OPACITY } from '@/components/shared/config';
 import { colors } from '@/lib/constants/ui';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -22,6 +23,7 @@ export default function ColorChoosing({
     value: ColorFormData[K]
   ) => void;
 }) {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const selectedColor = formData.color || colors.habitColors.cyanBlue;
   const [tempColor, setTempColor] = useState<string>(selectedColor);
@@ -38,7 +40,7 @@ export default function ColorChoosing({
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.heading}>Select color</Text>
+        <Text style={styles.heading}>{t('habits.selectColor')}</Text>
       </View>
       <View style={styles.colorGrid}>
         {Object.values(colors.habitColors).map((color, i) => {
@@ -62,7 +64,11 @@ export default function ColorChoosing({
         })}
       </View>
       <View style={[styles.footer, { paddingBottom: insets.bottom }]}>
-        <Button onPress={handleSubmit} label="Done" type="primary" />
+        <Button
+          onPress={handleSubmit}
+          label={t('common.done')}
+          type="primary"
+        />
       </View>
     </View>
   );

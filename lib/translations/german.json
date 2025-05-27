@@ -19,44 +19,103 @@
     "none": "Keine",
     "today": "Heute",
     "yesterday": "Gestern",
-    "tomorrow": "Morgen"
+    "tomorrow": "Morgen",
+    "retry": "Wiederholen",
+    "close": "Schließen",
+    "search": "Suchen"
   },
   "navigation": {
-    "habits": "Gewohnheiten",
-    "stats": "Statistiken",
-    "achievements": "Erfolge",
-    "settings": "Einstellungen"
+    "habits": "Home",
+    "stats": "Stats",
+    "achievements": "Awards",
+    "settings": "Optionen"
   },
   "habits": {
-    "title": "Meine Gewohnheiten",
-    "addHabit": "Gewohnheit Hinzufügen",
-    "editHabit": "Gewohnheit Bearbeiten",
-    "deleteHabit": "Gewohnheit Löschen",
+    "title": "Gewohnheiten",
+    "allHabits": "Alle Gewohnheiten",
+    "selectedHabits": "Ausgewählte Gewohnheiten",
+    "addHabit": "Gewohnheit hinzufügen",
+    "addNewHabit": "Neue Gewohnheit",
+    "editHabit": "Gewohnheit bearbeiten",
+    "deleteHabit": "Gewohnheit löschen",
+    "completeHabit": "Gewohnheit abschließen",
+    "skipHabit": "Gewohnheit überspringen",
+    "habitCompleted": "Gewohnheit abgeschlossen",
+    "habitSkipped": "Gewohnheit übersprungen",
+    "noHabitsToday": "Keine Gewohnheiten für heute.",
+    "addOneNow": "Füge eine hinzu, um mit der Verfolgung zu beginnen.",
+    "noHabitsScheduled": "Keine Gewohnheiten für {{date}} geplant.",
+    "noHabitsPlanned": "Noch keine Gewohnheiten für {{date}} geplant.",
+    "planAhead": "Plane im Voraus, indem du Gewohnheiten hinzufügst.",
+    "completedToday": "Abgeschlossen",
+    "selectCategory": "Kategorie wählen",
+    "selectIcon": "Symbol wählen",
+    "selectGoal": "Ziel wählen",
+    "selectHabitType": "Gewohnheitstyp wählen",
     "habitName": "Name der Gewohnheit",
+    "habitNameRequired": "Name der Gewohnheit ist erforderlich",
+    "goalMustBeGreaterThanZero": "Ziel muss größer als 0 sein",
     "description": "Beschreibung",
     "category": "Kategorie",
     "goal": "Ziel",
+    "goalLabel": "Ziel",
     "frequency": "Häufigkeit",
+    "selectFrequency": "Häufigkeit wählen",
     "startDate": "Startdatum",
     "endDate": "Enddatum",
     "reminderTime": "Erinnerungszeit",
     "icon": "Symbol",
+    "icons": "Symbole",
+    "emojis": "Emojis",
     "color": "Farbe",
+    "selectColor": "Farbe wählen",
     "emptyTitle": "Noch keine Gewohnheiten",
     "emptySubtitle": "Erstelle deine erste Gewohnheit, um zu beginnen",
-    "streakDays": "{{count}} Tag Serie",
-    "streakDays_plural": "{{count}} Tage Serie",
-    "completedToday": "Heute abgeschlossen",
+    "streakDays": "{{count}} Tag am Stück",
+    "streakDays_plural": "{{count}} Tage am Stück",
     "markComplete": "Als abgeschlossen markieren",
-    "markIncomplete": "Als unvollständig markieren"
+    "markIncomplete": "Als unvollständig markieren",
+    "enableEndDate": "Enddatum aktivieren",
+    "enableReminder": "Erinnerung aktivieren",
+    "createHabit": "Gewohnheit erstellen",
+    "appearance": "Erscheinungsbild",
+    "general": "Allgemein",
+    "type": "Typ",
+    "good": "Gut",
+    "bad": "Schlecht",
+    "repeat": "Wiederholen",
+    "everyDay": "Jeden Tag",
+    "notifications": "Benachrichtigungen",
+    "enableNotificationsToUseReminders": "Aktiviere Benachrichtigungen, um Erinnerungen zu verwenden",
+    "startsOn": "Beginnt am",
+    "endsOn": "Endet am",
+    "createCustomHabit": "Eigene Gewohnheit erstellen",
+    "daysOfWeek": "Wochentage",
+    "complete": "Abschließen",
+    "unskip": "Nicht überspringen",
+    "resetHistory": "Verlauf zurücksetzen",
+    "cannotCompleteFuture": "Zukünftige Gewohnheiten können nicht abgeschlossen werden",
+    "waitUntilDay": "Warte, bis der Tag kommt",
+    "habitAlreadyCompleted": "Gewohnheit bereits abgeschlossen",
+    "habitCompletedToday": "Diese Gewohnheit wurde heute bereits abgeschlossen",
+    "cannotCompleteSkipped": "Übersprungene Gewohnheiten können nicht abgeschlossen werden",
+    "unskipFirst": "Hebe das Überspringen der Gewohnheit zuerst auf"
   },
   "categories": {
     "cat1": "Vitalität",
-    "cat2": "Verbindung",
-    "cat3": "Beitrag",
+    "cat2": "Weisheit",
+    "cat3": "Harmonie",
     "cat4": "Geist",
-    "cat5": "Wachstum",
+    "cat5": "Ehrgeiz",
     "total": "Gesamt"
+  },
+  "categoryDescriptions": {
+    "cat1": "Körperliche Gesundheit und Energie",
+    "cat2": "Geistiges Wachstum und Lernen",
+    "cat3": "Gleichgewicht und Beziehungen",
+    "cat4": "Innerer Frieden und Achtsamkeit",
+    "cat5": "Karriere und persönliche Ziele",
+    "total": "Allgemeine Lebensbalance"
   },
   "frequency": {
     "daily": "Täglich",
@@ -127,17 +186,36 @@
   },
   "achievements": {
     "title": "Erfolge",
+    "lifeBalanceMatrix": "Lebensbalance-Matrix",
+    "scoresAcrossAreas": "Ihre Punkte in wichtigen Lebensbereichen",
+    "longestStreaks": "Längste Serien",
+    "resetAchievements": "Erfolge zurücksetzen",
+    "daysStreak": "{{days}} Tage",
+    "untilNext": "bis zum nächsten",
+    "streakAchievement": "Serien-Erfolg",
     "earned": "Erhalten",
     "notEarned": "Nicht Erhalten",
     "viewEarned": "Erhaltene Anzeigen",
     "congratulations": "Herzlichen Glückwunsch!",
     "achievementUnlocked": "Erfolg Freigeschaltet",
-    "untilNext": "Bis zum nächsten Erfolg",
-    "streakAchievement": "{{days}} Tage Serie",
-    "firstStep": "Erster Schritt",
     "weekWarrior": "Wochen-Krieger",
     "twoWeekChampion": "Zwei-Wochen-Champion",
-    "monthMaster": "Monats-Meister"
+    "monthMaster": "Monats-Meister",
+    "streak_1": "Erster Schritt",
+    "streak_3": "Erste Schritte",
+    "streak_5": "Arbeitswoche-Gewinner",
+    "streak_7": "Wochen-Krieger",
+    "streak_10": "Zweistellig",
+    "streak_14": "Vierzehn-Tage-Fokus",
+    "streak_21": "Gewohnheit Bilden",
+    "streak_28": "Vier-Wochen-Krieger",
+    "streak_30": "Monats-Meister",
+    "streak_45": "Sechs-Wochen-Superstar",
+    "streak_60": "Zweimonats-Bestie",
+    "streak_90": "Quartals-Champion",
+    "streak_100": "Jahrhundert-Zermalmer",
+    "streak_180": "Halbjahres-Held",
+    "streak_200": "Zweihundert-Boss"
   },
   "settings": {
     "title": "Einstellungen",
@@ -200,5 +278,461 @@
     },
     "getStarted": "Loslegen",
     "next": "Weiter"
+  },
+  "weekdays": {
+    "short": {
+      "monday": "M",
+      "tuesday": "D",
+      "wednesday": "M",
+      "thursday": "D",
+      "friday": "F",
+      "saturday": "S",
+      "sunday": "S"
+    },
+    "medium": {
+      "monday": "Mo",
+      "tuesday": "Di",
+      "wednesday": "Mi",
+      "thursday": "Do",
+      "friday": "Fr",
+      "saturday": "Sa",
+      "sunday": "So"
+    },
+    "long": {
+      "monday": "Montag",
+      "tuesday": "Dienstag",
+      "wednesday": "Mittwoch",
+      "thursday": "Donnerstag",
+      "friday": "Freitag",
+      "saturday": "Samstag",
+      "sunday": "Sonntag"
+    }
+  },
+  "months": {
+    "january": "Januar",
+    "february": "Februar",
+    "march": "März",
+    "april": "April",
+    "may": "Mai",
+    "june": "Juni",
+    "july": "Juli",
+    "august": "August",
+    "september": "September",
+    "october": "Oktober",
+    "november": "November",
+    "december": "Dezember",
+    "jan": "Jan",
+    "feb": "Feb",
+    "mar": "Mär",
+    "apr": "Apr",
+    "jun": "Jun",
+    "jul": "Jul",
+    "aug": "Aug",
+    "sep": "Sep",
+    "oct": "Okt",
+    "nov": "Nov",
+    "dec": "Dez"
+  },
+  "habitTemplates": {
+    "vitality_good_1": {
+      "name": "Tägliche Bewegung",
+      "description": "Mindestens 30 Minuten moderate Bewegung."
+    },
+    "vitality_good_2": {
+      "name": "Wasser Trinken",
+      "description": "Mindestens 8 Gläser Wasser trinken."
+    },
+    "vitality_good_3": {
+      "name": "Obst & Gemüse",
+      "description": "Mindestens 5 Portionen Obst und Gemüse essen."
+    },
+    "vitality_good_4": {
+      "name": "7+ Stunden Schlaf",
+      "description": "Mindestens 7 Stunden pro Nacht schlafen."
+    },
+    "vitality_good_5": {
+      "name": "Tägliches Dehnen",
+      "description": "10 Minuten dehnen."
+    },
+    "vitality_good_6": {
+      "name": "Vitamine Nehmen",
+      "description": "Verschriebene Vitamine oder Nahrungsergänzungsmittel nehmen."
+    },
+    "vitality_good_7": {
+      "name": "Gesundes Frühstück",
+      "description": "Ein ausgewogenes Frühstück für den Tagesstart essen."
+    },
+    "vitality_good_8": {
+      "name": "8.000 Schritte Gehen",
+      "description": "Mindestens 8.000 Schritte bis zum Ende des Tages erreichen."
+    },
+    "vitality_good_9": {
+      "name": "Zahnseide Benutzen",
+      "description": "Zahnseide für die Zahnhygiene verwenden."
+    },
+    "vitality_good_10": {
+      "name": "Hautpflege-Routine",
+      "description": "Tägliche Hautpflege-Routine durchführen."
+    },
+    "vitality_bad_1": {
+      "name": "Junk Food",
+      "description": "Junk Food oder zuckerhaltige Snacks gegessen."
+    },
+    "vitality_bad_2": {
+      "name": "Zuckerhaltige Getränke",
+      "description": "Limonade oder andere zuckerhaltige Getränke konsumiert."
+    },
+    "vitality_bad_3": {
+      "name": "Rauchen",
+      "description": "Zigaretten oder E-Zigaretten geraucht."
+    },
+    "vitality_bad_4": {
+      "name": "Übermäßige Bildschirmzeit",
+      "description": "Übermäßige Freizeit vor Bildschirmen verbracht."
+    },
+    "vitality_bad_5": {
+      "name": "Nächtliches Naschen",
+      "description": "Nach 22 Uhr genascht."
+    },
+    "vitality_bad_6": {
+      "name": "Schlummertaste Drücken",
+      "description": "Schlummertaste gedrückt und verschlafen."
+    },
+    "vitality_bad_7": {
+      "name": "Alkoholkonsum",
+      "description": "Alkoholische Getränke getrunken."
+    },
+    "vitality_bad_8": {
+      "name": "Übermäßiges Koffein",
+      "description": "Mehr als zwei koffeinhaltige Getränke getrunken."
+    },
+    "vitality_bad_9": {
+      "name": "Spätes Zubettgehen",
+      "description": "Nach Mitternacht ins Bett gegangen."
+    },
+    "vitality_bad_10": {
+      "name": "Kein Sport",
+      "description": "Keine absichtliche Bewegung gemacht."
+    },
+    "wisdom_good_1": {
+      "name": "Lesen",
+      "description": "30 Minuten lesen."
+    },
+    "wisdom_good_2": {
+      "name": "Sprachpraxis",
+      "description": "15 Minuten eine Fremdsprache üben."
+    },
+    "wisdom_good_3": {
+      "name": "Instrument Üben",
+      "description": "20 Minuten ein Musikinstrument spielen."
+    },
+    "wisdom_good_4": {
+      "name": "Rätsel Lösen",
+      "description": "Ein Puzzle oder Rätsel lösen."
+    },
+    "wisdom_good_5": {
+      "name": "Etwas Neues Lernen",
+      "description": "Eine neue Tatsache oder ein Konzept entdecken."
+    },
+    "wisdom_good_6": {
+      "name": "Online-Kurs",
+      "description": "20 Minuten an einem Online-Kurs arbeiten."
+    },
+    "wisdom_good_7": {
+      "name": "Schreibpraxis",
+      "description": "500 Wörter schreiben, um Schreibfähigkeiten zu verbessern."
+    },
+    "wisdom_good_8": {
+      "name": "Karteikarten Wiederholen",
+      "description": "Karteikarten wiederholen."
+    },
+    "wisdom_good_9": {
+      "name": "Nachrichten Lesen",
+      "description": "Seriöse Nachrichtenquellen lesen oder ansehen."
+    },
+    "wisdom_good_10": {
+      "name": "Neues Wort Lernen",
+      "description": "Ein neues Vokabelwort zum Wortschatz hinzufügen."
+    },
+    "wisdom_bad_1": {
+      "name": "Zielloses Scrollen",
+      "description": "Ziellos in sozialen Medien gescrollt."
+    },
+    "wisdom_bad_2": {
+      "name": "Übermäßiges Schauen",
+      "description": "TV-Sendungen oder Videos übermäßig angeschaut."
+    },
+    "wisdom_bad_3": {
+      "name": "Übermäßiges Spielen",
+      "description": "Videospiele für eine übermäßige Zeit gespielt."
+    },
+    "wisdom_bad_4": {
+      "name": "Lernen Übersprungen",
+      "description": "Geplantes Lernen oder Üben übersprungen."
+    },
+    "wisdom_bad_5": {
+      "name": "Clickbait Lesen",
+      "description": "Clickbait oder Klatsch-Artikel gelesen."
+    },
+    "wisdom_bad_6": {
+      "name": "Doomscrolling",
+      "description": "Übermäßig negative Nachrichten konsumiert."
+    },
+    "wisdom_bad_7": {
+      "name": "Online-Kurs Übersprungen",
+      "description": "Eine Online-Lektion oder einen Kurs übersprungen."
+    },
+    "wisdom_bad_8": {
+      "name": "Zielloses Web-Surfen",
+      "description": "Ziellos im Internet gesurft."
+    },
+    "wisdom_bad_9": {
+      "name": "Kommentar-Kaninchenbau",
+      "description": "In toxische Kommentarbereiche geraten."
+    },
+    "wisdom_bad_10": {
+      "name": "YouTube-Marathon",
+      "description": "Viel Zeit mit Online-Videos verbracht."
+    },
+    "harmony_good_1": {
+      "name": "Familienzeit",
+      "description": "Qualitätszeit mit der Familie verbringen."
+    },
+    "harmony_good_2": {
+      "name": "Freund Kontaktieren",
+      "description": "Einen Freund anrufen oder ihm schreiben."
+    },
+    "harmony_good_3": {
+      "name": "Zufällige Freundlichkeit",
+      "description": "Eine zufällige freundliche Tat vollbringen."
+    },
+    "harmony_good_4": {
+      "name": "Raum Aufräumen",
+      "description": "10 Minuten den Raum aufräumen."
+    },
+    "harmony_good_5": {
+      "name": "Recycling",
+      "description": "Müll ordnungsgemäß recyceln oder sortieren."
+    },
+    "harmony_good_6": {
+      "name": "Gerätefreie Stunde",
+      "description": "Eine Stunde ohne digitale Geräte verbringen."
+    },
+    "harmony_good_7": {
+      "name": "Kompliment Machen",
+      "description": "Jemandem ein aufrichtiges Kompliment machen."
+    },
+    "harmony_good_8": {
+      "name": "Zeit mit Partner",
+      "description": "Qualitätszeit mit dem Partner verbringen."
+    },
+    "harmony_good_9": {
+      "name": "Mit Haustier Spielen",
+      "description": "Mit dem Haustier spielen oder es pflegen."
+    },
+    "harmony_good_10": {
+      "name": "Dankbarkeit Ausdrücken",
+      "description": "Dankbarkeit ausdrücken oder aufzeichnen."
+    },
+    "harmony_bad_1": {
+      "name": "Handy beim Essen",
+      "description": "Handy während der Mahlzeiten benutzt."
+    },
+    "harmony_bad_2": {
+      "name": "Hausarbeit Übersprungen",
+      "description": "Hausarbeiten übersprungen."
+    },
+    "harmony_bad_3": {
+      "name": "Straßenwut",
+      "description": "Beim Fahren die Beherrschung verloren."
+    },
+    "harmony_bad_4": {
+      "name": "Nachrichten Ignoriert",
+      "description": "Nachrichten von Freunden oder Familie ignoriert."
+    },
+    "harmony_bad_5": {
+      "name": "Tratschen",
+      "description": "An Klatsch oder negativen Gesprächen teilgenommen."
+    },
+    "harmony_bad_6": {
+      "name": "Online-Streit",
+      "description": "Im Internet gestritten."
+    },
+    "harmony_bad_7": {
+      "name": "Müll Wegwerfen",
+      "description": "Müll weggeworfen oder nicht verantwortlich entsorgt."
+    },
+    "harmony_bad_8": {
+      "name": "Zu Spät Kommen",
+      "description": "Zu spät zu einem Termin oder Meeting gekommen."
+    },
+    "harmony_bad_9": {
+      "name": "Partner Vernachlässigt",
+      "description": "Versäumt, dem Partner Aufmerksamkeit zu schenken."
+    },
+    "harmony_bad_10": {
+      "name": "Andere Unterbrechen",
+      "description": "Jemanden beim Sprechen unterbrochen."
+    },
+    "spirit_good_1": {
+      "name": "Meditation",
+      "description": "10 Minuten meditieren."
+    },
+    "spirit_good_2": {
+      "name": "Tagebuch Schreiben",
+      "description": "In ein Tagebuch schreiben zum Reflektieren."
+    },
+    "spirit_good_3": {
+      "name": "Dankbarkeitstagebuch",
+      "description": "Dinge auflisten, für die man dankbar ist."
+    },
+    "spirit_good_4": {
+      "name": "Gebet",
+      "description": "Zeit im Gebet oder spiritueller Reflexion verbringen."
+    },
+    "spirit_good_5": {
+      "name": "Tiefes Atmen",
+      "description": "5 Minuten Atemübungen machen."
+    },
+    "spirit_good_6": {
+      "name": "Positive Affirmationen",
+      "description": "Positive Affirmationen aufsagen."
+    },
+    "spirit_good_7": {
+      "name": "Inspirierendes Lesen",
+      "description": "Eine inspirierende Passage lesen."
+    },
+    "spirit_good_8": {
+      "name": "Selbstreflexion",
+      "description": "10 Minuten in stiller Reflexion verbringen."
+    },
+    "spirit_good_9": {
+      "name": "Zeit in der Natur",
+      "description": "Zeit draußen in der Natur verbringen."
+    },
+    "spirit_good_10": {
+      "name": "Kreativer Ausdruck",
+      "description": "Etwas Kreatives zum Vergnügen machen."
+    },
+    "spirit_bad_1": {
+      "name": "Negative Selbstgespräche",
+      "description": "Negative Selbstgespräche geführt."
+    },
+    "spirit_bad_2": {
+      "name": "Wutausbruch",
+      "description": "Einen Wutausbruch gehabt."
+    },
+    "spirit_bad_3": {
+      "name": "Sich Beschweren",
+      "description": "Übermäßig beschwert."
+    },
+    "spirit_bad_4": {
+      "name": "Groll Hegen",
+      "description": "Groll gehegt."
+    },
+    "spirit_bad_5": {
+      "name": "Überdenken",
+      "description": "Überanalysiert oder übermäßig gesorgt."
+    },
+    "spirit_bad_6": {
+      "name": "Sich Vergleichen",
+      "description": "Sich negativ mit anderen verglichen."
+    },
+    "spirit_bad_7": {
+      "name": "Perfektionismus",
+      "description": "Von ungesundem Perfektionismus getrieben gefühlt."
+    },
+    "spirit_bad_8": {
+      "name": "Andere Verurteilen",
+      "description": "Andere beurteilt oder kritisiert."
+    },
+    "spirit_bad_9": {
+      "name": "Menschen Gefallen",
+      "description": "Die Bedürfnisse anderer über die eigenen gestellt zum eigenen Nachteil."
+    },
+    "spirit_bad_10": {
+      "name": "Selbstvernachlässigung",
+      "description": "Persönliche Selbstfürsorge vernachlässigt."
+    },
+    "ambition_good_1": {
+      "name": "Früh Aufstehen",
+      "description": "Um 7 Uhr morgens aufstehen."
+    },
+    "ambition_good_2": {
+      "name": "Projekt-Arbeit",
+      "description": "60 Minuten an einem persönlichen Projekt arbeiten."
+    },
+    "ambition_good_3": {
+      "name": "Tagesplanung",
+      "description": "Den Tag am Morgen planen."
+    },
+    "ambition_good_4": {
+      "name": "Fokussierte Arbeit",
+      "description": "Eine 25-minütige Deep-Work-Session abschließen."
+    },
+    "ambition_good_5": {
+      "name": "Berufliche Entwicklung",
+      "description": "Etwas lernen, das die Karriere voranbringt."
+    },
+    "ambition_good_6": {
+      "name": "Netzwerken",
+      "description": "Mit einem Kollegen oder beruflichen Kontakt verbinden."
+    },
+    "ambition_good_7": {
+      "name": "Geld Sparen",
+      "description": "10$ für die Ziele sparen."
+    },
+    "ambition_good_8": {
+      "name": "Posteingang Leeren",
+      "description": "Inbox Zero erreichen oder beibehalten."
+    },
+    "ambition_good_9": {
+      "name": "Ausgaben Verfolgen",
+      "description": "Tägliche Ausgaben protokollieren."
+    },
+    "ambition_good_10": {
+      "name": "Zeit Verfolgen",
+      "description": "Verfolgen, wie man die Zeit heute verbringt."
+    },
+    "ambition_bad_1": {
+      "name": "Prokrastination",
+      "description": "Bei wichtigen Aufgaben prokrastiniert."
+    },
+    "ambition_bad_2": {
+      "name": "Verspätung",
+      "description": "Zu spät zur Arbeit oder zu Meetings gekommen."
+    },
+    "ambition_bad_3": {
+      "name": "Übermäßige Ausgaben",
+      "description": "Unnötige oder impulsive Käufe getätigt."
+    },
+    "ambition_bad_4": {
+      "name": "Unproduktiver Tag",
+      "description": "Gefühlt, dass der Tag unproduktiv war."
+    },
+    "ambition_bad_5": {
+      "name": "Budget Übersprungen",
+      "description": "Versäumt, Ausgaben zu verfolgen oder Budget einzuhalten."
+    },
+    "ambition_bad_6": {
+      "name": "Spät Arbeiten",
+      "description": "Spät in die Nacht ohne Pause gearbeitet."
+    },
+    "ambition_bad_7": {
+      "name": "Deadline Verpasst",
+      "description": "Eine Projekt-Deadline verpasst."
+    },
+    "ambition_bad_8": {
+      "name": "Impulskauf",
+      "description": "Einen ungeplanten Impulskauf getätigt."
+    },
+    "ambition_bad_9": {
+      "name": "Ziele Vernachlässigt",
+      "description": "Versäumt, an persönlichen Zielen zu arbeiten."
+    },
+    "ambition_bad_10": {
+      "name": "Mittagessen Übersprungen",
+      "description": "Mittagessen übersprungen oder durch die Pause gearbeitet."
+    }
   }
 }

@@ -1,5 +1,6 @@
 import { ACTIVE_OPACITY } from '@/components/shared/config';
 import { colors, fontWeights } from '@/lib/constants/ui';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 import { dateUtils } from '@/lib/utils/dayjs';
 import dayjs from 'dayjs';
 import { router } from 'expo-router';
@@ -8,20 +9,22 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Icon } from 'react-native-paper';
 
 function EmptyHabits({ selectedDate }: { selectedDate: Date }) {
+  const { t } = useTranslation();
   const today = dateUtils.today();
   const selected = dayjs(selectedDate);
-  let title = 'No habits for today yet.';
-  let subtitle = 'Add one now to start tracking.';
+  let title = t('habits.noHabitsToday');
+  let subtitle = t('habits.addOneNow');
   let showAddButton = true;
-  if (selected.isBefore(today)) {
-    title = `No habits were scheduled on ${selected.format('MMM D')}.`;
+
+  if (selected.isBefore(today, 'day')) {
+    title = t('habits.noHabitsScheduled', { date: selected.format('MMM D') });
     subtitle = '';
     showAddButton = false; // hide CTA for past dates
   } else if (selected.isAfter(today)) {
-    title = `No habits planned for ${selected.format('MMM D')} yet.`;
-    subtitle = 'Plan ahead by adding habits.';
-    showAddButton = true;
+    title = t('habits.noHabitsPlanned', { date: selected.format('MMM D') });
+    subtitle = t('habits.planAhead');
   }
+
   return (
     <View style={styles.emptyContainer}>
       <Image
@@ -46,7 +49,7 @@ function EmptyHabits({ selectedDate }: { selectedDate: Date }) {
             size={24}
             color="white"
           />
-          <Text style={styles.addHabitButtonText}>Add habit</Text>
+          <Text style={styles.addHabitButtonText}>{t('habits.addHabit')}</Text>
         </TouchableOpacity>
       )}
     </View>

@@ -2,6 +2,7 @@ import { colors, fontWeights } from '@/lib/constants/ui';
 import useHabitsStore from '@/lib/habit-store/store';
 import { Habit } from '@/lib/habit-store/types';
 import { useHabitStatusInfo } from '@/lib/hooks/useHabits';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 import { MaterialIcons } from '@expo/vector-icons';
 import {
   BottomSheetBackdrop,
@@ -37,6 +38,7 @@ export default function HabitDetailsSheet({
   bottomSheetModalRef,
   onDismiss,
 }: HabitDetailsSheetProps) {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
 
   const toggleHabitStatus = useHabitsStore((state) => state.toggleHabitStatus);
@@ -67,8 +69,8 @@ export default function HabitDetailsSheet({
   const showIsSkippedToast = () => {
     Toast.show({
       type: 'error',
-      text1: 'Cannot complete skipped habits',
-      text2: 'Please unskip the habit first',
+      text1: t('habits.cannotCompleteSkipped'),
+      text2: t('habits.unskipFirst'),
       position: 'bottom',
     });
   };
@@ -157,13 +159,17 @@ export default function HabitDetailsSheet({
               <DropdownMenu.Content>
                 <DropdownMenu.Label />
                 <DropdownMenu.Item key="edit" onSelect={handleEdit}>
-                  <DropdownMenu.ItemTitle>Edit</DropdownMenu.ItemTitle>
+                  <DropdownMenu.ItemTitle>
+                    {t('habits.edit')}
+                  </DropdownMenu.ItemTitle>
                   <DropdownMenu.ItemIcon ios={{ name: 'pencil.line' }} />
                 </DropdownMenu.Item>
 
                 {!isSkipped && (
                   <DropdownMenu.Item key="skip" onSelect={handleSkip}>
-                    <DropdownMenu.ItemTitle>Skip</DropdownMenu.ItemTitle>
+                    <DropdownMenu.ItemTitle>
+                      {t('habits.skip')}
+                    </DropdownMenu.ItemTitle>
                     <DropdownMenu.ItemIcon
                       ios={{ name: 'arrow.forward.to.line' }}
                     />
@@ -171,7 +177,9 @@ export default function HabitDetailsSheet({
                 )}
                 {isSkipped && (
                   <DropdownMenu.Item key="unskip" onSelect={handleSkip}>
-                    <DropdownMenu.ItemTitle>Unskip</DropdownMenu.ItemTitle>
+                    <DropdownMenu.ItemTitle>
+                      {t('habits.unskip')}
+                    </DropdownMenu.ItemTitle>
                     <DropdownMenu.ItemIcon
                       ios={{ name: 'arrow.backward.to.line' }}
                     />
@@ -179,7 +187,9 @@ export default function HabitDetailsSheet({
                 )}
 
                 <DropdownMenu.Item key="reset" onSelect={handleResetHistory}>
-                  <DropdownMenu.ItemTitle>Reset history</DropdownMenu.ItemTitle>
+                  <DropdownMenu.ItemTitle>
+                    {t('habits.resetHistory')}
+                  </DropdownMenu.ItemTitle>
                   <DropdownMenu.ItemIcon ios={{ name: 'repeat' }} />
                 </DropdownMenu.Item>
 
@@ -188,7 +198,9 @@ export default function HabitDetailsSheet({
                   destructive
                   onSelect={handleDelete}
                 >
-                  <DropdownMenu.ItemTitle>Delete Habit</DropdownMenu.ItemTitle>
+                  <DropdownMenu.ItemTitle>
+                    {t('habits.deleteHabit')}
+                  </DropdownMenu.ItemTitle>
                   <DropdownMenu.ItemIcon ios={{ name: 'trash' }} />
                 </DropdownMenu.Item>
               </DropdownMenu.Content>
@@ -259,7 +271,7 @@ export default function HabitDetailsSheet({
             />
             <Button
               disabled={isCompleted}
-              label="Complete"
+              label={t('habits.complete')}
               type="primary"
               onPress={handleCompletion}
             />

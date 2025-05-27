@@ -1,5 +1,6 @@
 import { colors, fontWeights } from '@/lib/constants/ui';
 import { MatrixCategory } from '@/lib/hooks/useMatrix';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 import { MaterialIcons } from '@expo/vector-icons';
 import React, { memo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -12,6 +13,8 @@ interface MatrixGridCellProps {
 export const MatrixGridCell = memo(function MatrixGridCell({
   category,
 }: MatrixGridCellProps) {
+  const { t } = useTranslation();
+
   const getDifferenceColor = (difference: number) => {
     return difference >= 0 ? colors.primary : '#D92D20';
   };
@@ -19,6 +22,21 @@ export const MatrixGridCell = memo(function MatrixGridCell({
   const getDifferenceText = (difference: number) => {
     const sign = difference >= 0 ? '+' : '';
     return `${sign}${difference}`;
+  };
+
+  // Get translated category name and description
+  const getCategoryName = () => {
+    if (category.id === 'total') {
+      return t('categories.total' as any);
+    }
+    return t(`categories.${category.id}` as any);
+  };
+
+  const getCategoryDescription = () => {
+    if (category.id === 'total') {
+      return t('categoryDescriptions.total' as any);
+    }
+    return t(`categoryDescriptions.${category.id}` as any);
   };
 
   return (
@@ -43,7 +61,7 @@ export const MatrixGridCell = memo(function MatrixGridCell({
           />
         )}
         <Text style={[styles.title, { color: category.display.title }]}>
-          {category.name}
+          {getCategoryName()}
         </Text>
       </View>
 
@@ -67,7 +85,7 @@ export const MatrixGridCell = memo(function MatrixGridCell({
 
         {/* Description */}
         <Text style={styles.description} numberOfLines={2}>
-          {category.description}
+          {getCategoryDescription()}
         </Text>
       </View>
     </View>

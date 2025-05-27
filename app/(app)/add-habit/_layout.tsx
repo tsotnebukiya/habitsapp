@@ -1,6 +1,7 @@
 import { ACTIVE_OPACITY } from '@/components/shared/config';
 import toastConfig from '@/components/shared/toastConfig';
 import { colors, fontWeights } from '@/lib/constants/ui';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 import { useAddHabitStore } from '@/lib/stores/add_habit_store';
 import { router, Stack, usePathname } from 'expo-router';
 import { useEffect } from 'react';
@@ -9,6 +10,7 @@ import { Icon } from 'react-native-paper';
 import Toast from 'react-native-toast-message';
 
 export default function AddHabitLayout() {
+  const { t } = useTranslation();
   const resetForm = useAddHabitStore((state) => state.resetForm);
   const pathname = usePathname();
   const backButton = pathname !== '/add-habit';
@@ -45,7 +47,7 @@ export default function AddHabitLayout() {
           <View style={styles.headerSpacing} />
         )}
 
-        <Text style={styles.heading}>Add New Habit</Text>
+        <Text style={styles.heading}>{t('habits.addNewHabit')}</Text>
         <TouchableOpacity
           onPress={handleClose}
           activeOpacity={0.1}

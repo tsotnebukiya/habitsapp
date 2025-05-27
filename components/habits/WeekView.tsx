@@ -1,5 +1,6 @@
 import { fontWeights } from '@/lib/constants/ui';
 import { useThreeMonthsStatuses } from '@/lib/hooks/useHabits';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 import { useModalStore } from '@/lib/stores/modal_store';
 import { dateUtils } from '@/lib/utils/dayjs';
 import { getRelativeDateText, isToday } from '@/lib/utils/misc';
@@ -26,6 +27,7 @@ export const WeekView = memo(function WeekView({
   selectedDate,
   onDateSelect,
 }: WeekViewProps) {
+  const { t } = useTranslation();
   const monthStatuses = useThreeMonthsStatuses();
   const flatListRef = useRef<FlashList<any>>(null);
   const selectedDayjs = dayjs(selectedDate);
@@ -122,7 +124,7 @@ export const WeekView = memo(function WeekView({
       <View style={styles.topContainer}>
         <View style={styles.dayContainer}>
           <Text style={styles.topText}>
-            {getRelativeDateText(selectedDate)}
+            {getRelativeDateText(selectedDate, t as any)}
           </Text>
           {!isToday(selectedDate) && (
             <IconButton

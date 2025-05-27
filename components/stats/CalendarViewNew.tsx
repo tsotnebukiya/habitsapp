@@ -1,5 +1,6 @@
 import { colors } from '@/lib/constants/ui';
 import { useThreeMonthsStatuses } from '@/lib/hooks/useHabits';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 import dayjs, { dateUtils } from '@/lib/utils/dayjs';
 import React, { useCallback, useState } from 'react';
 import { StyleSheet } from 'react-native';
@@ -18,6 +19,7 @@ interface DateObject {
 interface CalendarViewProps {}
 
 const CalendarViewNew: React.FC<CalendarViewProps> = () => {
+  const { currentLanguage } = useTranslation();
   const today = new Date();
   const [currentMonth, setCurrentMonth] = useState(dayjs(today).toDate());
 
@@ -55,6 +57,7 @@ const CalendarViewNew: React.FC<CalendarViewProps> = () => {
 
   return (
     <Calendar
+      key={currentLanguage}
       current={dayjs(currentMonth).format('YYYY-MM-DD')}
       onMonthChange={handleMonthChange}
       markedDates={markedDates}

@@ -19,36 +19,89 @@
     "none": "None",
     "today": "Today",
     "yesterday": "Yesterday",
-    "tomorrow": "Tomorrow"
+    "tomorrow": "Tomorrow",
+    "retry": "Retry",
+    "close": "Close",
+    "search": "Search"
   },
   "navigation": {
-    "habits": "Habits",
+    "habits": "Home",
     "stats": "Stats",
-    "achievements": "Achievements",
+    "achievements": "Awards",
     "settings": "Settings"
   },
   "habits": {
-    "title": "My Habits",
-    "addHabit": "Add Habit",
-    "editHabit": "Edit Habit",
-    "deleteHabit": "Delete Habit",
+    "title": "Habits",
+    "allHabits": "All habits",
+    "selectedHabits": "Selected habits",
+    "addHabit": "Add habit",
+    "addNewHabit": "Add New Habit",
+    "editHabit": "Edit habit",
+    "deleteHabit": "Delete habit",
+    "completeHabit": "Complete habit",
+    "skipHabit": "Skip habit",
+    "habitCompleted": "Habit completed",
+    "habitSkipped": "Habit skipped",
+    "noHabitsToday": "No habits for today yet.",
+    "addOneNow": "Add one now to start tracking.",
+    "noHabitsScheduled": "No habits were scheduled on {{date}}.",
+    "noHabitsPlanned": "No habits planned for {{date}} yet.",
+    "planAhead": "Plan ahead by adding habits.",
+    "completedToday": "Completed",
+    "selectCategory": "Select category",
+    "selectIcon": "Select icon",
+    "selectGoal": "Select goal",
+    "selectHabitType": "Select habit type",
     "habitName": "Habit name",
+    "habitNameRequired": "Habit name is required",
+    "goalMustBeGreaterThanZero": "Goal must be greater than 0",
     "description": "Description",
     "category": "Category",
     "goal": "Goal",
+    "goalLabel": "Goal",
     "frequency": "Frequency",
+    "selectFrequency": "Select frequency",
     "startDate": "Start Date",
     "endDate": "End Date",
     "reminderTime": "Reminder Time",
     "icon": "Icon",
+    "icons": "Icons",
+    "emojis": "Emojis",
     "color": "Color",
+    "selectColor": "Select color",
     "emptyTitle": "No habits yet",
     "emptySubtitle": "Create your first habit to get started",
     "streakDays": "{{count}} day streak",
     "streakDays_plural": "{{count}} day streak",
-    "completedToday": "Completed today",
     "markComplete": "Mark as complete",
-    "markIncomplete": "Mark as incomplete"
+    "markIncomplete": "Mark as incomplete",
+    "enableEndDate": "Enable end date",
+    "enableReminder": "Enable reminder",
+    "createHabit": "Create Habit",
+    "appearance": "Appearance",
+    "general": "General",
+    "type": "Type",
+    "good": "Good",
+    "bad": "Bad",
+    "repeat": "Repeat",
+    "everyDay": "Every day",
+    "notifications": "Notifications",
+    "enableNotificationsToUseReminders": "Enable notifications to use reminders",
+    "startsOn": "Starts on",
+    "endsOn": "Ends on",
+    "createCustomHabit": "Create custom habit",
+    "daysOfWeek": "Days of Week",
+    "complete": "Complete",
+    "edit": "Edit",
+    "skip": "Skip",
+    "unskip": "Unskip",
+    "resetHistory": "Reset history",
+    "cannotCompleteFuture": "Cannot complete future habits",
+    "waitUntilDay": "Please wait until the day arrives",
+    "habitAlreadyCompleted": "Habit already completed",
+    "habitCompletedToday": "This habit has been completed for today",
+    "cannotCompleteSkipped": "Cannot complete skipped habits",
+    "unskipFirst": "Please unskip the habit first"
   },
   "categories": {
     "cat1": "Vitality",
@@ -57,6 +110,416 @@
     "cat4": "Spirit",
     "cat5": "Growth",
     "total": "Total"
+  },
+  "categoryDescriptions": {
+    "cat1": "Physical health and energy",
+    "cat2": "Mental growth and learning",
+    "cat3": "Balance and relationships",
+    "cat4": "Inner peace and mindfulness",
+    "cat5": "Career and personal goals",
+    "total": "Overall life balance"
+  },
+  "habitTemplates": {
+    "vitality_good_1": {
+      "name": "Daily Exercise",
+      "description": "Get at least 30 minutes of moderate-intensity exercise."
+    },
+    "vitality_good_2": {
+      "name": "Drink Water",
+      "description": "Drink at least 8 glasses of water."
+    },
+    "vitality_good_3": {
+      "name": "Fruits & Vegetables",
+      "description": "Eat at least 5 servings of fruits and vegetables."
+    },
+    "vitality_good_4": {
+      "name": "7+ Hours Sleep",
+      "description": "Sleep at least 7 hours each night."
+    },
+    "vitality_good_5": {
+      "name": "Daily Stretching",
+      "description": "Stretch for 10 minutes."
+    },
+    "vitality_good_6": {
+      "name": "Take Vitamins",
+      "description": "Take prescribed vitamins or supplements."
+    },
+    "vitality_good_7": {
+      "name": "Healthy Breakfast",
+      "description": "Eat a balanced breakfast to start the day."
+    },
+    "vitality_good_8": {
+      "name": "Walk 8 000 Steps",
+      "description": "Reach at least 8 000 steps by the end of the day."
+    },
+    "vitality_good_9": {
+      "name": "Floss Teeth",
+      "description": "Floss to maintain dental hygiene."
+    },
+    "vitality_good_10": {
+      "name": "Skincare Routine",
+      "description": "Complete your daily skincare routine."
+    },
+    "vitality_bad_1": {
+      "name": "Junk Food",
+      "description": "Ate junk food or sugary snacks."
+    },
+    "vitality_bad_2": {
+      "name": "Sugary Drinks",
+      "description": "Consumed soda or other sugary drinks."
+    },
+    "vitality_bad_3": {
+      "name": "Smoking",
+      "description": "Smoked any cigarettes or vapes."
+    },
+    "vitality_bad_4": {
+      "name": "Excess Screen-Time",
+      "description": "Spent excessive leisure time on screens."
+    },
+    "vitality_bad_5": {
+      "name": "Late-Night Snacking",
+      "description": "Snacked on food after 10 PM."
+    },
+    "vitality_bad_6": {
+      "name": "Hit Snooze",
+      "description": "Hit the snooze button and overslept."
+    },
+    "vitality_bad_7": {
+      "name": "Alcohol Consumption",
+      "description": "Drank alcoholic beverages."
+    },
+    "vitality_bad_8": {
+      "name": "Excess Caffeine",
+      "description": "Had more than two caffeinated drinks."
+    },
+    "vitality_bad_9": {
+      "name": "Late Bedtime",
+      "description": "Went to bed after midnight."
+    },
+    "vitality_bad_10": {
+      "name": "No Exercise",
+      "description": "Did not perform any intentional exercise."
+    },
+    "wisdom_good_1": {
+      "name": "Reading",
+      "description": "Read for 30 minutes."
+    },
+    "wisdom_good_2": {
+      "name": "Language Practice",
+      "description": "Practice a foreign language for 15 minutes."
+    },
+    "wisdom_good_3": {
+      "name": "Practice Instrument",
+      "description": "Play a musical instrument for 20 minutes."
+    },
+    "wisdom_good_4": {
+      "name": "Puzzle Solving",
+      "description": "Solve a puzzle or brain-teaser."
+    },
+    "wisdom_good_5": {
+      "name": "Learn Something New",
+      "description": "Discover a new fact or concept."
+    },
+    "wisdom_good_6": {
+      "name": "Online Course",
+      "description": "Spend 20 minutes on an online course."
+    },
+    "wisdom_good_7": {
+      "name": "Writing Practice",
+      "description": "Write 500 words to improve writing skills."
+    },
+    "wisdom_good_8": {
+      "name": "Flashcard Review",
+      "description": "Review your flashcards."
+    },
+    "wisdom_good_9": {
+      "name": "Read News",
+      "description": "Read or watch reputable news sources."
+    },
+    "wisdom_good_10": {
+      "name": "Learn a New Word",
+      "description": "Add one new vocabulary word to your lexicon."
+    },
+    "wisdom_bad_1": {
+      "name": "Mindless Scrolling",
+      "description": "Mindlessly scrolled social media."
+    },
+    "wisdom_bad_2": {
+      "name": "Binge Watching",
+      "description": "Binge-watched TV shows or videos."
+    },
+    "wisdom_bad_3": {
+      "name": "Excessive Gaming",
+      "description": "Played video games for an excessive period."
+    },
+    "wisdom_bad_4": {
+      "name": "Skipped Studying",
+      "description": "Skipped planned study or practice."
+    },
+    "wisdom_bad_5": {
+      "name": "Clickbait Reading",
+      "description": "Read clickbait or gossip articles."
+    },
+    "wisdom_bad_6": {
+      "name": "Doomscrolling",
+      "description": "Excessively consumed negative news."
+    },
+    "wisdom_bad_7": {
+      "name": "Skipped Online Class",
+      "description": "Skipped an online lesson or course."
+    },
+    "wisdom_bad_8": {
+      "name": "Aimless Web Surfing",
+      "description": "Browsed the internet aimlessly."
+    },
+    "wisdom_bad_9": {
+      "name": "Comment Section Rabbit Hole",
+      "description": "Got pulled into toxic comment sections."
+    },
+    "wisdom_bad_10": {
+      "name": "YouTube Binge",
+      "description": "Spent a long time watching online videos."
+    },
+    "harmony_good_1": {
+      "name": "Family Time",
+      "description": "Spend quality time with family."
+    },
+    "harmony_good_2": {
+      "name": "Reach Out to a Friend",
+      "description": "Call or message a friend to catch up."
+    },
+    "harmony_good_3": {
+      "name": "Random Act of Kindness",
+      "description": "Perform a random act of kindness."
+    },
+    "harmony_good_4": {
+      "name": "Clean Up Space",
+      "description": "Tidy your space for 10 minutes."
+    },
+    "harmony_good_5": {
+      "name": "Recycling",
+      "description": "Properly recycle or sort your waste."
+    },
+    "harmony_good_6": {
+      "name": "Device-Free Hour",
+      "description": "Spend one hour without digital devices."
+    },
+    "harmony_good_7": {
+      "name": "Give a Compliment",
+      "description": "Give someone a sincere compliment."
+    },
+    "harmony_good_8": {
+      "name": "Quality Time with Partner",
+      "description": "Spend quality time with your partner."
+    },
+    "harmony_good_9": {
+      "name": "Play with Pet",
+      "description": "Play with or care for your pet."
+    },
+    "harmony_good_10": {
+      "name": "Express Gratitude",
+      "description": "Express or record gratitude."
+    },
+    "harmony_bad_1": {
+      "name": "Phone at Mealtime",
+      "description": "Used phone during meals."
+    },
+    "harmony_bad_2": {
+      "name": "Skipped Chores",
+      "description": "Skipped household chores."
+    },
+    "harmony_bad_3": {
+      "name": "Road Rage",
+      "description": "Lost your temper while driving."
+    },
+    "harmony_bad_4": {
+      "name": "Ignored Messages",
+      "description": "Ignored messages from friends or family."
+    },
+    "harmony_bad_5": {
+      "name": "Gossiping",
+      "description": "Engaged in gossip or negative talk."
+    },
+    "harmony_bad_6": {
+      "name": "Online Arguments",
+      "description": "Argued on the internet."
+    },
+    "harmony_bad_7": {
+      "name": "Littering",
+      "description": "Littered or failed to dispose of trash responsibly."
+    },
+    "harmony_bad_8": {
+      "name": "Being Late",
+      "description": "Arrived late to an appointment or meeting."
+    },
+    "harmony_bad_9": {
+      "name": "Neglected Partner",
+      "description": "Neglected to give partner attention."
+    },
+    "harmony_bad_10": {
+      "name": "Interrupting Others",
+      "description": "Interrupted someone while they were speaking."
+    },
+    "spirit_good_1": {
+      "name": "Meditation",
+      "description": "Meditate for 10 minutes."
+    },
+    "spirit_good_2": {
+      "name": "Journaling",
+      "description": "Write in a journal to reflect."
+    },
+    "spirit_good_3": {
+      "name": "Gratitude Journal",
+      "description": "List things you are grateful for."
+    },
+    "spirit_good_4": {
+      "name": "Prayer",
+      "description": "Spend time in prayer or spiritual reflection."
+    },
+    "spirit_good_5": {
+      "name": "Deep Breathing",
+      "description": "Do deep-breathing exercises for 5 minutes."
+    },
+    "spirit_good_6": {
+      "name": "Positive Affirmations",
+      "description": "Recite positive affirmations."
+    },
+    "spirit_good_7": {
+      "name": "Read Inspiration",
+      "description": "Read an inspirational passage."
+    },
+    "spirit_good_8": {
+      "name": "Self-Reflection",
+      "description": "Spend 10 minutes in quiet reflection."
+    },
+    "spirit_good_9": {
+      "name": "Time in Nature",
+      "description": "Spend time outdoors in nature."
+    },
+    "spirit_good_10": {
+      "name": "Creative Expression",
+      "description": "Do something creative for enjoyment."
+    },
+    "spirit_bad_1": {
+      "name": "Negative Self-Talk",
+      "description": "Engaged in negative self-talk."
+    },
+    "spirit_bad_2": {
+      "name": "Anger Outburst",
+      "description": "Had an anger outburst."
+    },
+    "spirit_bad_3": {
+      "name": "Complaining",
+      "description": "Complained excessively."
+    },
+    "spirit_bad_4": {
+      "name": "Holding a Grudge",
+      "description": "Held onto resentment."
+    },
+    "spirit_bad_5": {
+      "name": "Overthinking",
+      "description": "Over-analyzed or worried excessively."
+    },
+    "spirit_bad_6": {
+      "name": "Comparing Yourself",
+      "description": "Compared yourself negatively to others."
+    },
+    "spirit_bad_7": {
+      "name": "Perfectionism",
+      "description": "Felt driven by unhealthy perfectionism."
+    },
+    "spirit_bad_8": {
+      "name": "Judging Others",
+      "description": "Judged or criticized others."
+    },
+    "spirit_bad_9": {
+      "name": "People Pleasing",
+      "description": "Put others' needs above your own to your detriment."
+    },
+    "spirit_bad_10": {
+      "name": "Self-Neglect",
+      "description": "Neglected personal self-care."
+    },
+    "ambition_good_1": {
+      "name": "Wake Up Early",
+      "description": "Wake up by 7 AM."
+    },
+    "ambition_good_2": {
+      "name": "Side-Project Work",
+      "description": "Work on a personal project for 60 minutes."
+    },
+    "ambition_good_3": {
+      "name": "Daily Planning",
+      "description": "Plan your day in the morning."
+    },
+    "ambition_good_4": {
+      "name": "Focused Work",
+      "description": "Complete one 25-minute deep-work session."
+    },
+    "ambition_good_5": {
+      "name": "Professional Development",
+      "description": "Learn something that advances your career."
+    },
+    "ambition_good_6": {
+      "name": "Networking",
+      "description": "Connect with a colleague or professional contact."
+    },
+    "ambition_good_7": {
+      "name": "Save Money",
+      "description": "Save $10 toward your goals."
+    },
+    "ambition_good_8": {
+      "name": "Clear Inbox",
+      "description": "Achieve or maintain Inbox Zero."
+    },
+    "ambition_good_9": {
+      "name": "Track Expenses",
+      "description": "Log your daily expenses."
+    },
+    "ambition_good_10": {
+      "name": "Time Tracking",
+      "description": "Track how you spend your time today."
+    },
+    "ambition_bad_1": {
+      "name": "Procrastination",
+      "description": "Procrastinated on important tasks."
+    },
+    "ambition_bad_2": {
+      "name": "Tardiness",
+      "description": "Arrived late to work or meetings."
+    },
+    "ambition_bad_3": {
+      "name": "Overspending",
+      "description": "Made unnecessary or impulsive purchases."
+    },
+    "ambition_bad_4": {
+      "name": "Unproductive Day",
+      "description": "Felt the day was unproductive."
+    },
+    "ambition_bad_5": {
+      "name": "Skipped Budgeting",
+      "description": "Neglected to track expenses or stick to budget."
+    },
+    "ambition_bad_6": {
+      "name": "Overworking Late",
+      "description": "Worked late into the night without rest."
+    },
+    "ambition_bad_7": {
+      "name": "Missed Deadline",
+      "description": "Missed a project deadline."
+    },
+    "ambition_bad_8": {
+      "name": "Impulse Purchase",
+      "description": "Made an unplanned impulse purchase."
+    },
+    "ambition_bad_9": {
+      "name": "Neglected Goals",
+      "description": "Failed to work on personal goals."
+    },
+    "ambition_bad_10": {
+      "name": "Skipped Lunch",
+      "description": "Skipped lunch or worked through lunch break."
+    }
   },
   "frequency": {
     "daily": "Daily",
@@ -132,12 +595,32 @@
     "viewEarned": "View Earned",
     "congratulations": "Congratulations!",
     "achievementUnlocked": "Achievement Unlocked",
-    "untilNext": "Until next achievement",
-    "streakAchievement": "{{days}} Day Streak",
+    "untilNext": "until next",
+    "streakAchievement": "Streak Achievement",
     "firstStep": "First Step",
     "weekWarrior": "Week Warrior",
     "twoWeekChampion": "Two Week Champion",
-    "monthMaster": "Month Master"
+    "monthMaster": "Month Master",
+    "lifeBalanceMatrix": "Life Balance Matrix",
+    "scoresAcrossAreas": "Your scores across key life areas",
+    "longestStreaks": "Longest Streaks",
+    "resetAchievements": "Reset achievements",
+    "daysStreak": "{{days}} days",
+    "streak_1": "First Step",
+    "streak_3": "Getting Started",
+    "streak_5": "Work Week Winner",
+    "streak_7": "Week Warrior",
+    "streak_10": "Double Digits",
+    "streak_14": "Fortnight Focus",
+    "streak_21": "Habit Forming",
+    "streak_28": "Four Week Warrior",
+    "streak_30": "Monthly Master",
+    "streak_45": "Six Week Superstar",
+    "streak_60": "Bi-Monthly Beast",
+    "streak_90": "Quarterly Champion",
+    "streak_100": "Century Crusher",
+    "streak_180": "Half-Year Hero",
+    "streak_200": "Bicentennial Boss"
   },
   "settings": {
     "title": "Settings",
@@ -200,5 +683,59 @@
     },
     "getStarted": "Get Started",
     "next": "Next"
+  },
+  "weekdays": {
+    "short": {
+      "monday": "M",
+      "tuesday": "T",
+      "wednesday": "W",
+      "thursday": "T",
+      "friday": "F",
+      "saturday": "S",
+      "sunday": "S"
+    },
+    "medium": {
+      "monday": "Mon",
+      "tuesday": "Tue",
+      "wednesday": "Wed",
+      "thursday": "Thu",
+      "friday": "Fri",
+      "saturday": "Sat",
+      "sunday": "Sun"
+    },
+    "long": {
+      "monday": "Monday",
+      "tuesday": "Tuesday",
+      "wednesday": "Wednesday",
+      "thursday": "Thursday",
+      "friday": "Friday",
+      "saturday": "Saturday",
+      "sunday": "Sunday"
+    }
+  },
+  "months": {
+    "january": "January",
+    "february": "February",
+    "march": "March",
+    "april": "April",
+    "may": "May",
+    "june": "June",
+    "july": "July",
+    "august": "August",
+    "september": "September",
+    "october": "October",
+    "november": "November",
+    "december": "December",
+    "jan": "Jan",
+    "feb": "Feb",
+    "mar": "Mar",
+    "apr": "Apr",
+    "jun": "Jun",
+    "jul": "Jul",
+    "aug": "Aug",
+    "sep": "Sep",
+    "oct": "Oct",
+    "nov": "Nov",
+    "dec": "Dec"
   }
 }

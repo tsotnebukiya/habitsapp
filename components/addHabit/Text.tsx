@@ -1,4 +1,5 @@
 import { colors, fontWeights } from '@/lib/constants/ui';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 import { router } from 'expo-router';
 import { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -24,6 +25,7 @@ export default function TextChoosing({
   ) => void;
   type: 'name' | 'description';
 }) {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
 
   const [tempData, setTempData] = useState<string>(
@@ -37,14 +39,16 @@ export default function TextChoosing({
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.heading}>
-          {type === 'name' ? 'Habit name' : 'Description'}
+          {type === 'name' ? t('habits.habitName') : t('habits.description')}
         </Text>
       </View>
       <View style={styles.textContainer}>
         <TextInput
           style={styles.searchInput}
           mode="outlined"
-          placeholder={type === 'name' ? 'Habit name' : 'Description'}
+          placeholder={
+            type === 'name' ? t('habits.habitName') : t('habits.description')
+          }
           outlineStyle={[
             styles.searchOutline,
             type === 'description' && styles.multiline,
@@ -60,7 +64,11 @@ export default function TextChoosing({
         />
       </View>
       <View style={[styles.footer, { paddingBottom: insets.bottom }]}>
-        <Button onPress={handleSubmit} label="Done" type="primary" />
+        <Button
+          onPress={handleSubmit}
+          label={t('common.done')}
+          type="primary"
+        />
       </View>
     </View>
   );

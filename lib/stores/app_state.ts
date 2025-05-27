@@ -2,6 +2,7 @@ import * as StoreReview from 'expo-store-review';
 import { MMKV } from 'react-native-mmkv';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
+import { configureCalendarLocale } from '../utils/calendarLocalization';
 import i18n, { SupportedLanguage } from '../utils/i18n';
 
 interface AppState {
@@ -69,6 +70,7 @@ export const useAppStore = create<AppState>()(
       setLanguage: async (language: SupportedLanguage) => {
         try {
           await i18n.changeLanguage(language);
+          configureCalendarLocale(language);
           set({ currentLanguage: language });
         } catch (error) {
           console.error('Failed to change language:', error);
@@ -85,6 +87,7 @@ export const useAppStore = create<AppState>()(
           // If no language is stored, detect device language
           const languageToUse = currentLanguage;
           await i18n.changeLanguage(languageToUse);
+          configureCalendarLocale(languageToUse);
           set({
             currentLanguage: languageToUse,
             isLanguageInitialized: true,
@@ -93,6 +96,7 @@ export const useAppStore = create<AppState>()(
           console.error('Failed to initialize language:', error);
           // Fallback to English
           await i18n.changeLanguage('en');
+          configureCalendarLocale('en');
           set({
             currentLanguage: 'en',
             isLanguageInitialized: true,

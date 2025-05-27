@@ -1,4 +1,5 @@
 /* IconChoosing.tsx – figma-accurate grid  (8 columns, 24 px glyph, 24 px gaps) */
+import { useTranslation } from '@/lib/hooks/useTranslation';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import { FlashList } from '@shopify/flash-list';
 import { useCallback, useMemo, useState } from 'react';
@@ -49,6 +50,7 @@ export default function IconChoosing({
   ) => void;
 }) {
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
   const selectedIcon = formData.icon || 'lightbulb';
   const [tempIcon, setTempIcon] = useState<string>(selectedIcon);
   const [tabIndex, setTabIndex] = useState<0 | 1>(0);
@@ -97,7 +99,7 @@ export default function IconChoosing({
     <View style={styles.listHeader}>
       <SearchInput searchQuery={query} setSearchQuery={setQuery} />
       <SegmentedControl
-        values={['Icons', 'Emojis']}
+        values={[t('habits.icons'), t('habits.emojis')]}
         selectedIndex={tabIndex}
         onChange={(e) =>
           setTabIndex(e.nativeEvent.selectedSegmentIndex as 0 | 1)
@@ -109,7 +111,7 @@ export default function IconChoosing({
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.heading}>Select icon</Text>
+        <Text style={styles.heading}>{t('habits.selectIcon')}</Text>
       </View>
       <FlashList
         data={data}
@@ -126,7 +128,11 @@ export default function IconChoosing({
         showsVerticalScrollIndicator={false}
       />
       <View style={[styles.footer, { paddingBottom: insets.bottom }]}>
-        <Button onPress={handleSubmit} label="Done" type="primary" />
+        <Button
+          onPress={handleSubmit}
+          label={t('common.done')}
+          type="primary"
+        />
       </View>
     </View>
   );

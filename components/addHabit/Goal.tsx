@@ -4,6 +4,7 @@ import {
   MeasurementUnits,
 } from '@/lib/constants/MeasurementUnits';
 import { colors, fontWeights } from '@/lib/constants/ui';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import React, { useRef, useState } from 'react';
@@ -41,6 +42,7 @@ export default function GoalChoosing({
 }) {
   const insets = useSafeAreaInsets();
   const modalSelectorRef = useRef<any>(null);
+  const { t } = useTranslation();
 
   const [tempData, setTempData] = useState<{
     value: number;
@@ -67,13 +69,13 @@ export default function GoalChoosing({
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.heading}>Select goal</Text>
+        <Text style={styles.heading}>{t('habits.selectGoal')}</Text>
       </View>
       <View style={styles.goalContainer}>
         <View style={styles.itemContainer}>
           <View style={styles.item}>
             <MaterialIcons name="flag" size={24} color={'#42A5F5'} />
-            <Text style={styles.itemText}>Goal</Text>
+            <Text style={styles.itemText}>{t('habits.goalLabel')}</Text>
             <View style={styles.itemRight}>
               <View>
                 <TextInput
@@ -96,7 +98,7 @@ export default function GoalChoosing({
           </View>
           <ModalSelector
             data={data}
-            cancelText="Cancel"
+            cancelText={t('common.cancel')}
             animationType="fade"
             ref={modalSelectorRef}
             onChange={(option: UnitType) => handleSelectUnit(option)}
@@ -113,7 +115,7 @@ export default function GoalChoosing({
                   size={24}
                   color={colors.habitColors.salmonRed}
                 />
-                <Text style={styles.itemText}>Goal</Text>
+                <Text style={styles.itemText}>{t('habits.goalLabel')}</Text>
                 <View style={[styles.itemRight]}>
                   <Text style={styles.itemUnit}>{tempData.unit.name}</Text>
                   <Icon
@@ -128,7 +130,11 @@ export default function GoalChoosing({
         </View>
       </View>
       <View style={[styles.footer, { paddingBottom: insets.bottom }]}>
-        <Button onPress={handleSubmit} label="Done" type="primary" />
+        <Button
+          onPress={handleSubmit}
+          label={t('common.done')}
+          type="primary"
+        />
       </View>
     </View>
   );

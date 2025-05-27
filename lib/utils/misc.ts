@@ -1,5 +1,4 @@
 import dayjs, { dateUtils } from './dayjs';
-import i18n from './i18n';
 
 export const isToday = (date: Date) => {
   const today = dateUtils.today();
@@ -7,26 +6,37 @@ export const isToday = (date: Date) => {
   return targetDate.isSame(today, 'day');
 };
 
-export const getRelativeDateText = (date: Date): string => {
+export const getRelativeDateText = (
+  date: Date,
+  t: (key: string, options?: any) => string
+): string => {
   const today = dateUtils.today();
   const targetDate = dayjs(date);
 
   if (targetDate.isSame(today, 'day')) {
-    return i18n.t('common.today');
+    return t('common.today');
   }
 
   if (targetDate.isSame(today.subtract(1, 'day'), 'day')) {
-    return i18n.t('common.yesterday');
+    return t('common.yesterday');
   }
 
   if (targetDate.isSame(today.add(1, 'day'), 'day')) {
-    return i18n.t('common.tomorrow');
+    return t('common.tomorrow');
   }
+
+  // Use translated month names instead of dayjs format
+  const monthKey = targetDate.format('MMMM').toLowerCase();
+  const translatedMonth = t(`months.${monthKey}`, {
+    defaultValue: monthKey,
+  });
+  const day = targetDate.format('D');
 
   // If it's a different year, include the year
   if (!targetDate.isSame(today, 'year')) {
-    return targetDate.format('D MMMM YYYY');
+    const year = targetDate.format('YYYY');
+    return `${day} ${translatedMonth} ${year}`;
   }
 
-  return targetDate.format('D MMMM');
+  return `${day} ${translatedMonth}`;
 };

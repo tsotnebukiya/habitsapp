@@ -1,6 +1,7 @@
 import { ACTIVE_OPACITY } from '@/components/shared/config';
 import { colors, fontWeights } from '@/lib/constants/ui';
 import { HabitFrequency } from '@/lib/habit-store/types';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 import { HabitFormData } from '@/lib/stores/add_habit_store';
 import { router } from 'expo-router';
 import { useState } from 'react';
@@ -21,6 +22,7 @@ export default function FrequencyChoosing({
     value: HabitFormData[K]
   ) => void;
 }) {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
 
   const [tempFrequencyType, setTempFrequencyType] = useState<HabitFrequency>(
@@ -52,7 +54,7 @@ export default function FrequencyChoosing({
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.heading}>Select frequency</Text>
+        <Text style={styles.heading}>{t('habits.selectFrequency')}</Text>
       </View>
       <View style={styles.frequencyContainer}>
         <View style={styles.frequencyOptionsContainer}>
@@ -73,7 +75,9 @@ export default function FrequencyChoosing({
                     tempFrequencyType === type && styles.selectedFrequencyText,
                   ]}
                 >
-                  {type.charAt(0).toUpperCase() + type.slice(1)}
+                  {type === 'daily'
+                    ? t('frequency.daily')
+                    : t('frequency.weekly')}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -81,37 +85,46 @@ export default function FrequencyChoosing({
         </View>
         {tempFrequencyType === 'weekly' && (
           <View style={styles.card}>
-            <Text style={styles.label}>Days of Week</Text>
+            <Text style={styles.label}>{t('habits.daysOfWeek')}</Text>
             <View style={styles.daysContainer}>
-              {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(
-                (day, index) => (
-                  <TouchableOpacity
-                    key={day}
+              {[
+                'monday',
+                'tuesday',
+                'wednesday',
+                'thursday',
+                'friday',
+                'saturday',
+                'sunday',
+              ].map((day, index) => (
+                <TouchableOpacity
+                  key={day}
+                  style={[
+                    styles.dayButton,
+                    tempDaysOfWeek.includes(index) && styles.selectedDay,
+                  ]}
+                  activeOpacity={ACTIVE_OPACITY}
+                  onPress={() => toggleDayOfWeek(index)}
+                >
+                  <Text
                     style={[
-                      styles.dayButton,
-                      tempDaysOfWeek.includes(index) && styles.selectedDay,
+                      styles.dayText,
+                      tempDaysOfWeek.includes(index) && styles.selectedDayText,
                     ]}
-                    activeOpacity={ACTIVE_OPACITY}
-                    onPress={() => toggleDayOfWeek(index)}
                   >
-                    <Text
-                      style={[
-                        styles.dayText,
-                        tempDaysOfWeek.includes(index) &&
-                          styles.selectedDayText,
-                      ]}
-                    >
-                      {day}
-                    </Text>
-                  </TouchableOpacity>
-                )
-              )}
+                    {t(`weekdays.short.${day}` as any)}
+                  </Text>
+                </TouchableOpacity>
+              ))}
             </View>
           </View>
         )}
       </View>
       <View style={[styles.footer, { paddingBottom: insets.bottom }]}>
-        <Button onPress={handleSubmit} label="Done" type="primary" />
+        <Button
+          onPress={handleSubmit}
+          label={t('common.done')}
+          type="primary"
+        />
       </View>
     </View>
   );

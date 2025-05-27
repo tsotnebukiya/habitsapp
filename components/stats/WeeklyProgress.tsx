@@ -4,10 +4,9 @@ import { useTranslation } from '@/lib/hooks/useTranslation';
 import { MaterialIcons } from '@expo/vector-icons';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Circle, Svg } from 'react-native-svg';
+import Svg, { Circle } from 'react-native-svg';
 import ItemIcon from '../shared/Icon';
 
-const WEEKDAYS = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 const CIRCLE_SIZE = 18;
 const STROKE_WIDTH = 3;
 
@@ -29,23 +28,23 @@ const ProgressCircle: React.FC<ProgressCircleProps> = ({ progress, color }) => {
           cx={CIRCLE_SIZE / 2}
           cy={CIRCLE_SIZE / 2}
           r={radius}
+          stroke={color}
           strokeWidth={STROKE_WIDTH}
-          stroke={colors.accent}
-          strokeOpacity={0.2}
           fill="transparent"
+          opacity={0.2}
         />
         {/* Progress circle at 100% opacity */}
         <Circle
           cx={CIRCLE_SIZE / 2}
           cy={CIRCLE_SIZE / 2}
           r={radius}
+          stroke={color}
           strokeWidth={STROKE_WIDTH}
-          stroke={colors.accent}
           fill="transparent"
           strokeDasharray={circumference}
           strokeDashoffset={strokeDashoffset}
           strokeLinecap="round"
-          transform={`rotate(-90, ${CIRCLE_SIZE / 2}, ${CIRCLE_SIZE / 2})`}
+          transform={`rotate(-90 ${CIRCLE_SIZE / 2} ${CIRCLE_SIZE / 2})`}
         />
       </Svg>
     </View>
@@ -56,8 +55,18 @@ export default function WeeklyProgress() {
   const { t } = useTranslation();
   const weeklyProgress = useWeeklyHabitProgress();
   const dailyProgressArrays = Array.from({ length: 7 }, (_, dayIndex) =>
-    weeklyProgress.map((habit) => habit.progressLevels[dayIndex])
+    weeklyProgress.map((habit) => habit.progressLevels[dayIndex] || 0)
   );
+
+  const WEEKDAYS = [
+    t('weekdays.short.monday'),
+    t('weekdays.short.tuesday'),
+    t('weekdays.short.wednesday'),
+    t('weekdays.short.thursday'),
+    t('weekdays.short.friday'),
+    t('weekdays.short.saturday'),
+    t('weekdays.short.sunday'),
+  ];
 
   return (
     <View style={styles.container}>
@@ -95,7 +104,7 @@ export default function WeeklyProgress() {
                     {progress > 0 && progress < 1 && (
                       <ProgressCircle
                         progress={progress}
-                        color={colors.primary}
+                        color={weeklyProgress[habitIndex].color}
                       />
                     )}
                   </View>

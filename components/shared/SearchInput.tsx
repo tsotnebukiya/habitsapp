@@ -1,4 +1,5 @@
 import { colors, fontWeights } from '@/lib/constants/ui';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 import { StyleSheet } from 'react-native';
 import { TextInput } from 'react-native-paper';
 
@@ -10,11 +11,13 @@ export default function SearchInput({
   searchQuery,
   setSearchQuery,
 }: SearchInputProps) {
+  const { t } = useTranslation();
+
   return (
     <TextInput
       style={styles.searchInput}
       mode="outlined"
-      placeholder="Search"
+      placeholder={t('common.search')}
       outlineStyle={styles.searchOutline}
       left={
         <TextInput.Icon

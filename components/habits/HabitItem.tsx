@@ -2,6 +2,7 @@ import { ACTIVE_OPACITY } from '@/components/shared/config';
 import { colors, fontWeights } from '@/lib/constants/ui';
 import useHabitsStore from '@/lib/habit-store/store';
 import { useHabitStatusInfo } from '@/lib/hooks/useHabits';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 import { Database } from '@/supabase/types';
 import { MaterialIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
@@ -40,6 +41,7 @@ function HabitItem({
   afterToday,
   onPress,
 }: HabitItemProps) {
+  const { t } = useTranslation();
   const { completion, progress, progressText } = useHabitStatusInfo(
     habit.id,
     selectedDate
@@ -54,8 +56,8 @@ function HabitItem({
   const showIsAfterToast = () => {
     Toast.show({
       type: 'error',
-      text1: 'Cannot complete future habits',
-      text2: 'Please wait until the day arrives',
+      text1: t('habits.cannotCompleteFuture'),
+      text2: t('habits.waitUntilDay'),
       position: 'bottom',
     });
   };
@@ -63,8 +65,8 @@ function HabitItem({
   const showIsCompletedToast = () => {
     Toast.show({
       type: 'info',
-      text1: 'Habit already completed',
-      text2: 'This habit has been completed for today',
+      text1: t('habits.habitAlreadyCompleted'),
+      text2: t('habits.habitCompletedToday'),
       position: 'bottom',
     });
   };
@@ -245,29 +247,33 @@ function HabitItem({
           {renderHabitContent()}
         </ContextMenu.Preview>
         <ContextMenu.Item key="edit" onSelect={handleEdit}>
-          <ContextMenu.ItemTitle>Edit Habit</ContextMenu.ItemTitle>
+          <ContextMenu.ItemTitle>{t('habits.edit')}</ContextMenu.ItemTitle>
           <ContextMenu.ItemIcon ios={{ name: 'pencil.line' }} />
         </ContextMenu.Item>
         {!isSkipped && (
           <ContextMenu.Item key="skip" onSelect={handleSkip}>
-            <ContextMenu.ItemTitle>Skip</ContextMenu.ItemTitle>
+            <ContextMenu.ItemTitle>{t('habits.skip')}</ContextMenu.ItemTitle>
             <ContextMenu.ItemIcon ios={{ name: 'arrow.forward.to.line' }} />
           </ContextMenu.Item>
         )}
         {isSkipped && (
           <ContextMenu.Item key="unskip" onSelect={handleSkip}>
-            <ContextMenu.ItemTitle>Unskip</ContextMenu.ItemTitle>
+            <ContextMenu.ItemTitle>{t('habits.unskip')}</ContextMenu.ItemTitle>
             <ContextMenu.ItemIcon ios={{ name: 'arrow.backward.to.line' }} />
           </ContextMenu.Item>
         )}
 
         <ContextMenu.Item key="reset" onSelect={handleResetHistory}>
-          <ContextMenu.ItemTitle>Reset history</ContextMenu.ItemTitle>
+          <ContextMenu.ItemTitle>
+            {t('habits.resetHistory')}
+          </ContextMenu.ItemTitle>
           <ContextMenu.ItemIcon ios={{ name: 'repeat' }} />
         </ContextMenu.Item>
 
         <ContextMenu.Item key="delete" destructive onSelect={handleDelete}>
-          <ContextMenu.ItemTitle>Delete Habit</ContextMenu.ItemTitle>
+          <ContextMenu.ItemTitle>
+            {t('habits.deleteHabit')}
+          </ContextMenu.ItemTitle>
           <ContextMenu.ItemIcon ios={{ name: 'trash' }} />
         </ContextMenu.Item>
       </ContextMenu.Content>

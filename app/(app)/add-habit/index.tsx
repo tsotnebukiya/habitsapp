@@ -1,6 +1,7 @@
 import { ACTIVE_OPACITY } from '@/components/shared/config';
 import { CATEGORIES } from '@/lib/constants/HabitTemplates';
 import { colors, fontWeights } from '@/lib/constants/ui';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 import { useAddHabitStore } from '@/lib/stores/add_habit_store';
 import { router } from 'expo-router';
 import React from 'react';
@@ -15,6 +16,7 @@ import { Icon } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function CategorySelection() {
+  const { t } = useTranslation();
   const setFormField = useAddHabitStore((state) => state.setFormField);
   const insets = useSafeAreaInsets();
   const handleCategorySelect = (categoryId: string) => {
@@ -31,7 +33,7 @@ export default function CategorySelection() {
       showsVerticalScrollIndicator={false}
     >
       <View style={styles.contentContainer}>
-        <Text style={styles.subheading}>Select category</Text>
+        <Text style={styles.subheading}>{t('habits.selectCategory')}</Text>
         <View style={styles.categoriesContainer}>
           {CATEGORIES.map((category, i) => (
             <TouchableOpacity
@@ -50,9 +52,11 @@ export default function CategorySelection() {
                 <Icon source={category.icon} size={24} color={category.color} />
               </View>
               <View style={styles.categoryTextContainer}>
-                <Text style={styles.categoryName}>{category.name}</Text>
+                <Text style={styles.categoryName}>
+                  {t(`categories.${category.id}`)}
+                </Text>
                 <Text style={styles.categoryDescription}>
-                  {category.description}
+                  {t(`categoryDescriptions.${category.id}`)}
                 </Text>
               </View>
               <Icon

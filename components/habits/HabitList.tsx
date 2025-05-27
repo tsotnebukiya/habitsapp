@@ -1,5 +1,6 @@
 import { Habit } from '@/lib/habit-store/types';
 import { useHabitsForDate } from '@/lib/hooks/useHabits';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 import { dateUtils } from '@/lib/utils/dayjs';
 import { sortHabits } from '@/lib/utils/habits';
 import { BottomSheetModal } from '@gorhom/bottom-sheet';
@@ -23,6 +24,7 @@ interface HabitListProps {
 }
 
 const HabitList = function HabitList({ selectedDate }: HabitListProps) {
+  const { t } = useTranslation();
   const habitsForDate = useHabitsForDate(selectedDate);
   const sortedHabits = useMemo(
     () => sortHabits(habitsForDate),
@@ -37,11 +39,11 @@ const HabitList = function HabitList({ selectedDate }: HabitListProps) {
   const showIsAfterToast = useCallback(() => {
     Toast.show({
       type: 'error',
-      text1: 'Cannot complete future habits',
-      text2: 'Please wait until the day arrives',
+      text1: t('habits.cannotCompleteFuture'),
+      text2: t('habits.waitUntilDay'),
       position: 'bottom',
     });
-  }, []);
+  }, [t]);
 
   const handleHabitPress = useCallback(
     (habit: Habit) => {

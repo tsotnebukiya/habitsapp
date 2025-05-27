@@ -1,5 +1,6 @@
 import { colors, fontWeights } from '@/lib/constants/ui';
 import { useMatrix } from '@/lib/hooks/useMatrix';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 import React, { memo, useMemo, useRef } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { MatrixGridCell } from './MatrixGridCell';
@@ -11,6 +12,7 @@ interface MatrixGridProps {
 export const MatrixGrid = memo(function MatrixGrid({
   columnCount = 2,
 }: MatrixGridProps) {
+  const { t } = useTranslation();
   const renderCount = useRef(0);
   const { categories, balanceCategory } = useMatrix();
 
@@ -43,8 +45,10 @@ export const MatrixGrid = memo(function MatrixGrid({
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Life Balance Matrix</Text>
-      <Text style={styles.description}>Your scores across key life areas</Text>
+      <Text style={styles.title}>{t('achievements.lifeBalanceMatrix')}</Text>
+      <Text style={styles.description}>
+        {t('achievements.scoresAcrossAreas')}
+      </Text>
       <View style={styles.gridContainer}>{renderGrid}</View>
     </View>
   );

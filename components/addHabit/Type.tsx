@@ -1,5 +1,6 @@
 import { ACTIVE_OPACITY } from '@/components/shared/config';
 import { colors, fontWeights } from '@/lib/constants/ui';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { useState } from 'react';
@@ -24,6 +25,7 @@ export default function TypeChoosing({
   ) => void;
 }) {
   const insets = useSafeAreaInsets();
+  const { t } = useTranslation();
 
   const selectedType = formData.type;
 
@@ -38,7 +40,7 @@ export default function TypeChoosing({
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Text style={styles.heading}>Select habit type</Text>
+        <Text style={styles.heading}>{t('habits.selectHabitType')}</Text>
       </View>
       <View style={styles.typeContainer}>
         <TouchableOpacity
@@ -51,7 +53,7 @@ export default function TypeChoosing({
             size={24}
             color={colors.habitColors.meadowGreen}
           />
-          <Text style={styles.itemText}>Good</Text>
+          <Text style={styles.itemText}>{t('habits.good')}</Text>
           <View style={styles.radioButtonContainer}>
             <RadioButton
               value={tempType}
@@ -67,7 +69,7 @@ export default function TypeChoosing({
           onPress={() => handleTypeSelect('BAD')}
         >
           <Icon source={require('@/assets/icons/badhabbit.png')} size={24} />
-          <Text style={styles.itemText}>Bad</Text>
+          <Text style={styles.itemText}>{t('habits.bad')}</Text>
           <View style={styles.radioButtonContainer}>
             <RadioButton
               value={tempType}
@@ -79,7 +81,11 @@ export default function TypeChoosing({
         </TouchableOpacity>
       </View>
       <View style={[styles.footer, { paddingBottom: insets.bottom }]}>
-        <Button onPress={handleSubmit} label="Done" type="primary" />
+        <Button
+          onPress={handleSubmit}
+          label={t('common.done')}
+          type="primary"
+        />
       </View>
     </View>
   );

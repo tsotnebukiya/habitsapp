@@ -1,10 +1,12 @@
 import { ACHIEVEMENTS } from '@/lib/constants/achievements';
 import { colors, fontWeights } from '@/lib/constants/ui';
 import useHabitsStore from '@/lib/habit-store/store';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { ACTIVE_OPACITY } from '../shared/config';
 
 export default function Badges() {
+  const { t } = useTranslation();
   const streakAchievements = useHabitsStore(
     (state) => state.streakAchievements
   );
@@ -26,15 +28,21 @@ export default function Badges() {
           }
           style={styles.badgeIcon}
         />
-        <Text style={styles.badgeText}>{days} days</Text>
-        <Text style={styles.badgeName}>{achievement.name}</Text>
+        <Text style={styles.badgeText}>
+          {t('achievements.daysStreak', { days } as any)}
+        </Text>
+        <Text style={styles.badgeName}>
+          {t(`achievements.streak_${days}` as any)}
+        </Text>
       </View>
     );
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Longest Streaks</Text>
+      <Text style={styles.title}>
+        {t('achievements.longestStreaks' as any)}
+      </Text>
 
       <View style={styles.grid}>
         {achievementKeys.map((days) => renderBadge(days))}
@@ -44,7 +52,9 @@ export default function Badges() {
         style={styles.resetButton}
         onPress={resetAchievements}
       >
-        <Text style={styles.resetButtonText}>Reset achievements</Text>
+        <Text style={styles.resetButtonText}>
+          {t('achievements.resetAchievements' as any)}
+        </Text>
       </TouchableOpacity>
     </View>
   );

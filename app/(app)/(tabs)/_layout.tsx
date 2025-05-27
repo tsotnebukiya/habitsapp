@@ -112,7 +112,7 @@ export default function TabLayout() {
         <Tabs.Screen
           name="settings"
           options={{
-            title: t('settings.title'),
+            title: t('navigation.settings'),
             headerShown: false,
             tabBarItemStyle: {
               marginRight: 20,
@@ -124,7 +124,9 @@ export default function TabLayout() {
               />
             ),
             tabBarLabel: ({ focused }) => (
-              <TabBarLabel focused={focused}>{t('settings.title')}</TabBarLabel>
+              <TabBarLabel focused={focused}>
+                {t('navigation.settings')}
+              </TabBarLabel>
             ),
           }}
         />
