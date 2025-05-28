@@ -25,7 +25,7 @@ struct WeeklyHabitsWidget_Previews: PreviewProvider {
     static var previews: some View {
         // Use the HabitStore for mock data in previews with fixed date
         let habitStore = HabitStore()
-        let testDate = Calendar.current.date(from: DateComponents(year: 2025, month: 5, day: 26))! // Monday May 26, 2025
+        let testDate = Calendar.current.date(from: DateComponents(year: 2025, month: 5, day: 27))! // Monday May 26, 2025
         let mockEntry = SimpleEntry(date: testDate, habits: habitStore.mockHabits())
         
         WeeklyHabitsWidgetEntryView(entry: mockEntry)

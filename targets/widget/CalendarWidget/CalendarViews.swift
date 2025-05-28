@@ -114,7 +114,7 @@ struct WeeklyHabitsWidgetEntryView: View {
         case .systemMedium:
             return 3  // Matches Figma design exactly
         case .systemLarge:
-            return 5  // Good balance for readability
+            return 10  // Good balance for readability
         default:
             return 2  // Small widget fallback
         }
@@ -200,8 +200,23 @@ struct WeeklyHabitsWidgetEntryView: View {
                             HStack(spacing: 6) {
                                 // Habit icon
                               
-                              Image(systemName: "drop")
-                                // Habit name (flex: 1)
+                              ZStack {
+                                  Color.clear
+
+                                  if habit.icon.isEmoji {
+                                      Text(habit.icon)
+                                          .font(.system(size: 16))
+                                          .frame(width: 24, height: 20, alignment: .center)
+                                  } else {
+                                      Image(systemName: habit.icon)
+                                          .resizable()
+                                          .scaledToFit()
+                                          .foregroundColor(Color(hex: habit.color) ?? .gray)
+                                          .frame(width: 24, height: 20, alignment: .center)
+                                  }
+                              }
+                              .frame(width: 24, height: 20, alignment: .center) // Fixed icon container size
+
                                 Text(habit.name)
                                 .font(.system(size: 12, weight: .regular))
                                     .foregroundColor(Color(hex: "#293447"))

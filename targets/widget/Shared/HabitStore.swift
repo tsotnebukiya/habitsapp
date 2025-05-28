@@ -2,6 +2,13 @@ import Foundation
 import WidgetKit // Needed for Habit? No, Habit is in Models.swift now
 import os
 
+
+extension String {
+    var isEmoji: Bool {
+        return self.unicodeScalars.first?.properties.isEmojiPresentation ?? false
+    }
+}
+
 // Logger can remain here or be moved if needed elsewhere later
 private let widgetLogger = Logger(subsystem: "com.vdl.habitapp.widget", category: "DataStore")
 
@@ -42,7 +49,7 @@ struct HabitStore {
             Habit(
                 id: "1",
                 name: "Drink Water",
-                icon: "💧",
+                icon: "drop.fill",
                 color: "#3498DB",
                 weeklyStatus: [:] // Empty = no completions
             ),
@@ -50,7 +57,7 @@ struct HabitStore {
             Habit(
                 id: "2",
                 name: "Take Vitamins",
-                icon: "💊",
+                icon: "pills.fill",
                 color: "#FFC857",
                 weeklyStatus: [
                     "2025-05-26T00:00:00.000Z": true,  // Monday
@@ -63,11 +70,60 @@ struct HabitStore {
             Habit(
                 id: "3",
                 name: "Make Your Bed",
-                icon: "🛏️",
+                icon: "💪",
                 color: "#A1887F",
                 weeklyStatus: [
                     "2025-05-26T00:00:00.000Z": true  // Monday only
                 ]
+            ),
+            Habit(
+                id: "4",
+                name: "Drink Water",
+                icon: "drop.fill",
+                color: "#3498DB",
+                weeklyStatus: [:] // Empty = no completions
+            ),
+            Habit(
+                id: "5",
+                name: "Drink Water",
+                icon: "drop.fill",
+                color: "#3498DB",
+                weeklyStatus: [:] // Empty = no completions
+            ),
+            Habit(
+                id: "6",
+                name: "Drink Water",
+                icon: "drop.fill",
+                color: "#3498DB",
+                weeklyStatus: [:] // Empty = no completions
+            ),
+            Habit(
+                id: "7",
+                name: "Drink Water",
+                icon: "drop.fill",
+                color: "#3498DB",
+                weeklyStatus: [:] // Empty = no completions
+            ),
+            Habit(
+                id: "8",
+                name: "Drink Water",
+                icon: "drop.fill",
+                color: "#3498DB",
+                weeklyStatus: [:] // Empty = no completions
+            ),
+            Habit(
+                id: "9",
+                name: "Drink Water",
+                icon: "drop.fill",
+                color: "#3498DB",
+                weeklyStatus: [:] // Empty = no completions
+            ),
+            Habit(
+                id: "10",
+                name: "Drink Water",
+                icon: "drop.fill",
+                color: "#3498DB",
+                weeklyStatus: [:] // Empty = no completions
             )
         ]
         
