@@ -31,7 +31,7 @@ func getIconTint(hex: String, opacity: Double = 1.0) -> Color {
 }
 
 struct InteractiveWidgetEntryView: View {
-    var entry: InteractiveProvider.Entry
+    var entry: ConfigurableEntry
     @Environment(\.widgetFamily) var family
 
     // Determine max habits based on widget size

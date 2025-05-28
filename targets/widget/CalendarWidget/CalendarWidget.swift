@@ -3,29 +3,32 @@ import SwiftUI
 
 struct WeeklyHabitsWidget: Widget {
     let kind: String = "WeeklyHabitsWidget"
-    // Reference the separated Provider
-    let provider = CalendarProvider()
 
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: provider) { entry in
-            // Reference the separated Entry View
+        AppIntentConfiguration(
+            kind: kind,
+            intent: HabitConfigurationIntent.self,
+            provider: SharedHabitConfigurationProvider()
+        ) { entry in
             WeeklyHabitsWidgetEntryView(entry: entry)
                 .containerBackground(.clear, for: .widget)
         }
         .configurationDisplayName("Weekly Habits")
-        .description("Track your weekly habits progress")
+        .description("Choose which habits to display in your weekly calendar widget.")
         .supportedFamilies([.systemMedium, .systemLarge])
     }
 }
 
-// Previews can optionally live here or in CalendarViews.swift
-// Let's keep them with the main widget definition for now.
+// Previews using the shared configuration
 struct WeeklyHabitsWidget_Previews: PreviewProvider {
     static var previews: some View {
-        // Use the HabitStore for mock data in previews with fixed date
         let habitStore = HabitStore()
         let testDate = Calendar.current.date(from: DateComponents(year: 2025, month: 5, day: 27))! // Monday May 26, 2025
-        let mockEntry = SimpleEntry(date: testDate, habits: habitStore.mockHabits())
+        let mockEntry = ConfigurableEntry(
+            date: testDate,
+            habits: habitStore.mockHabits(),
+            selectedHabitIds: []
+        )
         
         WeeklyHabitsWidgetEntryView(entry: mockEntry)
             .previewContext(WidgetPreviewContext(family: .systemMedium))

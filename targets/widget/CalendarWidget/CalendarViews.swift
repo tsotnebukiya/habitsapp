@@ -103,7 +103,7 @@ struct HabitRowView: View {
 }
 
 struct WeeklyHabitsWidgetEntryView: View {
-    var entry: SimpleEntry 
+    var entry: ConfigurableEntry // Updated to use ConfigurableEntry
     @Environment(\.widgetFamily) var family
     
     // WIDGET SIZING: Determines how many habits to show based on widget size
@@ -118,6 +118,11 @@ struct WeeklyHabitsWidgetEntryView: View {
         default:
             return 2  // Small widget fallback
         }
+    }
+    
+    // Use displayHabits from ConfigurableEntry and limit by widget size
+    private var displayHabits: [Habit] {
+        Array(entry.displayHabits.prefix(maxHabits))
     }
     
     // DATE FORMATTING: Uses shared utility to format week range (e.g., "May 26 - Jun 1")
@@ -192,7 +197,7 @@ struct WeeklyHabitsWidgetEntryView: View {
                 
                 // HABITS TABLE: Flex column with gap
                 VStack(spacing: 10) {
-                    ForEach(Array(entry.habits.prefix(maxHabits).enumerated()), id: \.element.id) { index, habit in
+                    ForEach(Array(displayHabits.enumerated()), id: \.element.id) { index, habit in
                         
                         // HABIT ROW: Flex row with space-between
                         HStack {

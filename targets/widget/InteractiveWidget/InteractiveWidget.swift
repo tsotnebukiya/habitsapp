@@ -1,19 +1,21 @@
 import WidgetKit
 import SwiftUI
 
-struct InteractiveHabitWidget: Widget {
-    let kind: String = "InteractiveHabitWidget"
-    let provider = InteractiveProvider()
+struct InteractiveWidget: Widget {
+    let kind: String = "InteractiveWidget"
 
     var body: some WidgetConfiguration {
-        // Using StaticConfiguration for widgets with multiple AppIntents in buttons
-        StaticConfiguration(kind: kind, provider: provider) { entry in
+        AppIntentConfiguration(
+            kind: kind,
+            intent: HabitConfigurationIntent.self,
+            provider: SharedHabitConfigurationProvider()
+        ) { entry in
             InteractiveWidgetEntryView(entry: entry)
-            
+                .containerBackground(.clear, for: .widget)
         }
         .configurationDisplayName("Interactive Habits")
-        .description("Tap to complete your habits.")
-        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge]) 
+        .description("Track your habits with interactive buttons. Tap habits to mark them complete.")
+        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
     }
 }
 
@@ -21,7 +23,11 @@ struct InteractiveHabitWidget: Widget {
 struct InteractiveHabitWidget_Previews: PreviewProvider {
     static var previews: some View {
         let habitStore = HabitStore()
-        let mockEntry = SimpleEntry(date: Date(), habits: habitStore.mockHabits())
+        let mockEntry = ConfigurableEntry(
+            date: Date(), 
+            habits: habitStore.mockHabits(),
+            selectedHabitIds: [] // Empty selection shows default habits
+        )
         
         Group {
             // Small widget preview

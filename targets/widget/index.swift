@@ -7,7 +7,7 @@ struct MainWidgetBundle: WidgetBundle {
     var body: some Widget {
       
       // Register the Interactive Widget
-      InteractiveHabitWidget()
+      InteractiveWidget()
       
         // Register the Calendar Widget
         WeeklyHabitsWidget()
