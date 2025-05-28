@@ -5,6 +5,31 @@ import os
 
 private let viewLogger = Logger(subsystem: "com.vdl.habitapp.widget", category: "InteractiveViews")
 
+// Helper function to determine icon tint based on background color brightness
+func getIconTint(hex: String, opacity: Double = 1.0) -> Color {
+    // Remove # if present
+    let cleanHex = hex.hasPrefix("#") ? String(hex.dropFirst()) : hex
+    
+    // Convert hex to RGB
+    guard cleanHex.count == 6,
+          let r = Int(cleanHex.prefix(2), radix: 16),
+          let g = Int(cleanHex.dropFirst(2).prefix(2), radix: 16),
+          let b = Int(cleanHex.suffix(2), radix: 16) else {
+        return .primary // Fallback to primary color
+    }
+    
+    // Apply opacity by blending with white background (255, 255, 255)
+    let adjustedR = Int(Double(r) * opacity + 255.0 * (1.0 - opacity))
+    let adjustedG = Int(Double(g) * opacity + 255.0 * (1.0 - opacity))
+    let adjustedB = Int(Double(b) * opacity + 255.0 * (1.0 - opacity))
+    
+    // Calculate YIQ brightness with opacity-adjusted values
+    let yiq = (adjustedR * 299 + adjustedG * 587 + adjustedB * 114) / 1000
+    
+    // Return dark color for light backgrounds, white for dark backgrounds
+    return yiq > 150 ? .primary : .white
+}
+
 struct InteractiveWidgetEntryView: View {
     var entry: InteractiveProvider.Entry
     @Environment(\.widgetFamily) var family
@@ -23,6 +48,7 @@ struct InteractiveWidgetEntryView: View {
         }
     }
 
+  
     var body: some View {
         // Main container with no padding (following CalendarWidget pattern)
         VStack(alignment: .leading, spacing: 0) {
@@ -102,12 +128,18 @@ struct HabitCard: View {
     private var habitColor: Color {
         Color(hex: habit.color) ?? .blue
     }
-    
+  private var iconColor: Color {
+      if habit.icon.isEmoji {
+          return .clear // Not used for emojis
+      }
+      
+    return getIconTint(hex: habit.color)
+  }
     var body: some View {
         Group {
             if isCompletedToday {
-                // If completed, open app instead of toggling
-                Button(intent: OpenAppIntent(habitID: habit.id)) {
+                // Use Link to open the app for completed habits (Apple's recommended approach)
+                Link(destination: URL(string: "habitapp://")!) {
                     habitCardContent
                 }
             } else {
@@ -118,7 +150,7 @@ struct HabitCard: View {
             }
         }
         .buttonStyle(.plain)
-        .opacity(isSkipped ? 0.7 : 1.0)
+        .opacity(isCompletedToday ? 1 : 0.62)
     }
     
     // Extract the card content to avoid duplication
@@ -148,7 +180,7 @@ struct HabitCard: View {
                     } else {
                         Image(systemName: habit.icon)
                             .font(.system(size: 20))
-                            .foregroundColor(Color.white)
+                            .foregroundColor(Color(iconColor))
                     }
                 }
                 .frame(width: 22, height: 22)
@@ -156,9 +188,9 @@ struct HabitCard: View {
                 // Habit info
                 VStack(alignment: .leading, spacing: 2) {
                     Text(habit.name)
-                        .font(.system(size: 8, weight: .bold))
+                    .font(.system(size: 10, weight: .semibold))
                         .foregroundColor(.primary)
-                        .lineLimit(1)
+//                        .lineLimit(1)
                     
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)

@@ -6,9 +6,10 @@ struct InteractiveHabitWidget: Widget {
     let provider = InteractiveProvider()
 
     var body: some WidgetConfiguration {
-        // Using AppIntentConfiguration for interactive widgets
-        AppIntentConfiguration(kind: kind, intent: ToggleHabitIntent.self, provider: provider) { entry in
+        // Using StaticConfiguration for widgets with multiple AppIntents in buttons
+        StaticConfiguration(kind: kind, provider: provider) { entry in
             InteractiveWidgetEntryView(entry: entry)
+            
         }
         .configurationDisplayName("Interactive Habits")
         .description("Tap to complete your habits.")

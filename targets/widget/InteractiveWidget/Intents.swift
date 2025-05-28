@@ -21,7 +21,7 @@ enum IntentError: Swift.Error, CustomLocalizedStringResourceConvertible {
     }
 }
 
-struct ToggleHabitIntent: WidgetConfigurationIntent {
+struct ToggleHabitIntent: AppIntent {
     static var title: LocalizedStringResource = "Toggle Habit Completion"
     static var description = IntentDescription("Marks a habit as completed or not completed for today.")
     // Allows the intent to run without opening the app
@@ -90,9 +90,8 @@ intentLogger.info("Toggled habit '\(currentHabits[habitIndex].name, privacy: .pu
         // No need for the 'else' block anymore due to the guard statements above
     }
 }
-
 // Intent to open the main app
-struct OpenAppIntent: WidgetConfigurationIntent {
+struct OpenAppIntent: AppIntent {
     static var title: LocalizedStringResource = "Open Habit App"
     static var description = IntentDescription("Opens the main habit tracking app.")
     static var openAppWhenRun: Bool = true // This will open the app
@@ -115,3 +114,4 @@ struct OpenAppIntent: WidgetConfigurationIntent {
         return .result()
     }
 }
+

@@ -15,7 +15,6 @@ struct WeeklyHabitsWidget: Widget {
         .configurationDisplayName("Weekly Habits")
         .description("Track your weekly habits progress")
         .supportedFamilies([.systemMedium, .systemLarge])
-        .contentMarginsDisabled()
     }
 }
 

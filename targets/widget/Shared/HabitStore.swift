@@ -85,11 +85,11 @@ struct HabitStore {
                 icon: "figure.mind.and.body",
                 color: "#9B59B6",
                 weeklyStatus: [
-                    "2025-05-26T00:00:00.000Z": true,  // Monday
-                    "2025-05-27T00:00:00.000Z": true,  // Tuesday
-                    "2025-05-28T00:00:00.000Z": true,  // Wednesday
-                    "2025-05-29T00:00:00.000Z": true,  // Thursday
-                    "2025-05-30T00:00:00.000Z": true,  // Friday
+                    "2025-05-26T00:00:00.000Z": false,  // Monday
+                    "2025-05-27T00:00:00.000Z": false,  // Tuesday
+                    "2025-05-28T00:00:00.000Z": false,  // Wednesday
+                    "2025-05-29T00:00:00.000Z": false,  // Thursday
+                    "2025-05-30T00:00:00.000Z": false,  // Friday
                 ]
             ),
             
