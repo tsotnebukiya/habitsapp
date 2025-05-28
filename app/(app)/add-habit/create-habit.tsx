@@ -199,7 +199,7 @@ export default function CreateHabbit() {
           <View style={[styles.container, { paddingBottom: insets.bottom }]}>
             <TouchableOpacity
               activeOpacity={ACTIVE_OPACITY}
-              style={[styles.header, { backgroundColor: formData.color }]}
+              style={[styles.header]}
               onPress={() => chooseDetail('name')}
             >
               <ItemIcon icon={formData.icon} color={'white'} />
@@ -591,6 +591,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 12,
     marginBottom: 18,
+    backgroundColor: colors.habitColors.cyanBlue,
   },
   headerContent: {
     gap: 2,

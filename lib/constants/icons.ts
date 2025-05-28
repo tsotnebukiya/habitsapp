@@ -5,151 +5,163 @@ export type MaterialIconName = keyof typeof MaterialIcons.glyphMap;
 
 export type IconType = MaterialIconName | string;
 
-/* ---------- 1. CORE PICKER ---------- */
-export const PRIME_ICON_NAMES: SFSymbol[] = [
-  /* Row 1 – Health / Vitality */
-  'dumbbell',
-  'drop',
-  'bed.double',
-  'figure.walk',
-  'leaf',
-  'fork.knife',
+export const HABIT_SYMBOLS: SFSymbol[] = [
+  /* ── Vitality – GOOD ── */
+  'dumbbell.fill',
+  'drop.fill',
+  'leaf.fill',
+  'bed.double.fill',
+  'figure.cooldown.circle.fill',
+  'pills.fill',
+  'cup.and.saucer.fill',
+  'figure.walk.circle.fill',
+  'mouth.fill',
+  'leaf.circle.fill',
 
-  /* Row 2 – Habits to avoid & learning */
-  'nosign',
-  'iphone',
-  'book.closed',
-  'music.note',
-  'lightbulb',
-  'graduationcap',
+  /* Vitality – BAD */
+  'takeoutbag.and.cup.and.straw.fill',
+  'mug.fill',
+  'smoke.fill',
+  'iphone.circle.fill',
+  'birthday.cake.fill',
+  'zzz', // ← was zzz.circle.fill
+  'wineglass.fill',
+  'waterbottle.fill',
+  'moon.stars.fill',
+  'figure.cooldown', // ← was figure.cooldown.square.fill
 
-  /* Row 3 – Social / Harmony */
-  'person.3',
-  'heart',
-  'hands.sparkles',
-  'face.smiling',
-  'pawprint',
-  'hand.wave',
-
-  /* Row 4 – Spirit / Reflection */
-  'figure.mind.and.body',
-  'square.and.pencil',
-  'mic',
-  'alarm',
-  'checkmark.circle',
-
-  /* Row 5 – Productivity / Finance */
-  'timer',
-  'briefcase',
-  'banknote',
-  'dollarsign.circle',
-  'chart.pie',
-  'chart.line.uptrend.xyaxis',
-];
-
-/* ---------- 2. EXTENDED PALETTE ---------- */
-export const EXTRA_ICON_NAMES: SFSymbol[] = [
-  /* Food & Rest (×10) */
-  'cup.and.saucer',
-  'takeoutbag.and.cup.and.straw',
-  'wineglass',
-  'waterbottle',
-  'carrot',
-  'birthday.cake',
-  'fork.knife.circle',
-  'mug',
-  'zzz',
-  'sleep',
-
-  /* Learning & Creativity (×10) */
-  'book',
-  'graduationcap.circle',
-  'pencil',
-  'paintpalette',
-  'paintbrush',
-  'lightbulb.fill',
-  'brain',
-  'backpack',
-  'ruler',
-  'globe.europe.africa',
-
-  /* Digital Well-being & Media (×10) */
-  'tv',
-  'gamecontroller',
+  /* ── Wisdom – GOOD ── */
+  'book.closed.fill',
+  'globe.europe.africa.fill',
   'music.note.list',
-  'play.circle',
-  'film',
+  'puzzlepiece.fill',
+  'lightbulb.fill',
+  'graduationcap.fill',
+  'square.and.pencil.circle.fill',
+  'questionmark.circle.fill',
+  'newspaper.fill',
+  'textformat.abc.dottedunderline',
 
-  'headphones',
-  'laptopcomputer',
-  'keyboard',
-  'magnifyingglass',
+  /* Wisdom – BAD */
+  'iphone.slash.circle.fill',
+  'tv.fill',
+  'gamecontroller.fill',
+  'book.circle.fill',
+  'gobackward', // ← was gobackward.circle.fill
+  'antenna.radiowaves.left.and.right.circle.fill',
+  'laptopcomputer.slash',
+  'magnifyingglass.circle.fill',
+  'bubble.left.and.bubble.right.fill',
+  'play.tv.fill',
 
-  /* Social & Community (×10) */
-  'bubble.left',
-  'bubble.left.and.bubble.right',
-  'heart.circle',
-  'hand.raised',
-  'hands.clap',
-  'megaphone',
-  'sparkles',
+  /* ── Harmony – GOOD ── */
+  'person.3.sequence.fill',
+  'bubble.left.and.exclamationmark.bubble.right.fill',
+  'hands.sparkles.fill',
+  'trash.circle.fill',
+  'arrow.clockwise.circle.fill',
+  'hand.thumbsup.circle.fill',
+  'heart.circle.fill',
+  'pawprint.fill',
+  'face.smiling.fill',
 
-  /* Hobbies & Play (×8) */
-  'figure.run',
-  'figure.tennis',
-  'figure.soccer',
-  'figure.badminton',
-  'figure.yoga',
-  'figure.surfing',
-  'figure.cooldown',
-  'bicycle',
-
-  /* Productivity & Time (×10) */
-  'calendar',
-  'clock',
-  'stopwatch',
-  'checklist',
-  'note.text',
-  'doc.text',
-  'paperplane',
-  'tray',
-  'bookmark',
-  'bell',
-
-  /* Finance & Work (×6) */
-  'creditcard',
-  'cart',
-  'bag',
-  'banknote.fill',
-  'wallet.pass',
-  'dollarsign.square',
-
-  'antenna.radiowaves.left.and.right',
-  'battery.25',
-  'calendar.badge.clock',
-  'calendar.badge.exclamationmark',
+  /* Harmony – BAD */
+  'sofa.fill',
   'car.fill',
-  'clock.badge.exclamationmark',
+  'bubble.left.fill',
+  'megaphone.fill',
+  'exclamationmark.bubble.fill', // ← was bubble.left.and.bubble.right.fill.badge.exclamationmark
+  'trash.slash.circle.fill',
+  'clock.badge.exclamationmark.fill',
+  'heart.slash.circle.fill',
+  'mic.slash.circle.fill',
+
+  /* ── Spirit – GOOD ── */
+  'figure.mind.and.body.circle.fill',
+  'pencil.circle.fill',
+  'heart.text.square.fill',
+  'wind.circle.fill',
+  'mic.fill',
+  'book.fill',
+  'brain.head.profile',
+  'leaf.arrow.circlepath',
+  'paintpalette.fill',
+
+  /* Spirit – BAD */
+  'face.dashed.fill',
+  'flame.fill',
+  'hand.thumbsdown.circle.fill',
+  'face.smiling.inverse',
+  'arrow.2.circlepath.circle.fill',
+  'arrow.left.arrow.right.circle.fill',
+  'star.circle.fill',
+  'hammer.circle.fill',
+  'figure.stand.line.dotted.figure.stand',
+  'battery.25',
+
+  /* ── Ambition – GOOD ── */
+  'alarm.fill',
+  'paperplane.circle.fill',
+  'checkmark.circle.fill',
+  'timer.circle.fill',
+  'briefcase.fill',
+  'hand.wave.fill',
+  'banknote.fill',
+  'tray.full.fill',
   'dollarsign.circle.fill',
-  'face.dashed',
-  'flag',
-  'flame',
-  'hammer',
-  'hand.thumbsup',
-  'hand.thumbsdown',
-  'heart.slash',
-  'iphone.slash',
-  'mic.slash',
-  'moon.stars',
-  'pills',
-  'puzzlepiece',
-  'questionmark.circle',
-  'arrow.3.trianglepath',
-  'smoke',
-  'sofa',
-  'timer.square',
-  'trash',
-  'wind',
+  'chart.pie.fill',
+
+  /* Ambition – BAD */
+  'calendar.badge.clock',
+  'timer',
+  'cart.fill',
+  'calendar.badge.exclamationmark',
+  'creditcard.fill', // ← was banknote.slash
+  'briefcase.circle.fill',
+  'doc.badge.clock.fill',
+  'bag.fill',
+  'flag.slash.circle.fill',
+  'fork.knife.circle.fill',
+
+  /* ─────────────────────────────────── */
+  /* EXTRA 38 SYMBOLS                    */
+  'arrow.up.forward.app.fill',
+  'arrow.down.circle.fill',
+  'bell.circle.fill',
+  'bookmark.circle.fill',
+  'bolt.heart.fill',
+  'bubble.middle.bottom.fill',
+  'calendar.circle.fill',
+  'capsule.portrait.fill',
+  'cloud.sun.fill',
+  'command.circle.fill',
+  'cube.box.fill',
+  'doc.richtext.fill',
+  'envelope.open.fill',
+  'eye.circle.fill',
+  'gearshape.2.fill',
+  'gift.fill',
+  'globe.americas.fill',
+  'hand.tap.fill',
+  'headphones.circle.fill',
+  'hourglass.circle.fill',
+  'figure.rower',
+  'figure.tennis.circle.fill',
+  'figure.skiing.downhill.circle.fill',
+  'key.fill',
+  'link.circle.fill',
+  'lock.open.fill',
+  'map.fill',
+  'medal.fill',
+  'music.quarternote.3',
+  'paintbrush.pointed.fill',
+  'paperclip.circle.fill',
+  'person.crop.circle.badge.plus',
+  'shield.lefthalf.filled',
+  'sparkles.tv.fill',
+  'sun.max.circle.fill',
+  'target',
+  'trophy.fill',
 ];
 
 export const PRIME_EMOJIS: string[] = [

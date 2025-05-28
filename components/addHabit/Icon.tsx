@@ -18,9 +18,8 @@ import ItemIcon from '@/components/shared/Icon';
 import SearchInput from '@/components/shared/SearchInput';
 import {
   EXTRA_EMOJIS,
-  EXTRA_ICON_NAMES,
+  HABIT_SYMBOLS,
   PRIME_EMOJIS,
-  PRIME_ICON_NAMES,
 } from '@/lib/constants/icons';
 import { colors } from '@/lib/constants/ui';
 import { router } from 'expo-router';
@@ -61,13 +60,11 @@ export default function IconChoosing({
   /* derive filtered dataset */
   const data = useMemo(() => {
     const all =
-      tabIndex === 0
-        ? [...PRIME_ICON_NAMES, ...EXTRA_ICON_NAMES]
-        : [...PRIME_EMOJIS, ...EXTRA_EMOJIS];
+      tabIndex === 0 ? HABIT_SYMBOLS : [...PRIME_EMOJIS, ...EXTRA_EMOJIS];
 
     if (!query.trim()) return all;
     const q = query.toLowerCase();
-    return all.filter((item) => item.toLowerCase().includes(q));
+    return all.filter((item) => item.toString().toLowerCase().includes(q));
   }, [tabIndex, query]);
 
   /* tap handler */
