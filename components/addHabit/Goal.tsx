@@ -5,6 +5,7 @@ import {
 } from '@/lib/constants/MeasurementUnits';
 import { colors, fontWeights } from '@/lib/constants/ui';
 import { useTranslation } from '@/lib/hooks/useTranslation';
+import { translateMeasurementUnit } from '@/lib/utils/translationHelpers';
 import { MaterialIcons } from '@expo/vector-icons';
 import {
   BottomSheetBackdrop,
@@ -83,8 +84,13 @@ export default function GoalChoosing({
     []
   );
 
+  const translatedUnit = translateMeasurementUnit(
+    t,
+    tempData.unit.id,
+    tempData.unit
+  );
   const goalText =
-    tempData.value === 1 ? tempData.unit.oneName : tempData.unit.name;
+    tempData.value === 1 ? translatedUnit.oneName : translatedUnit.name;
 
   useEffect(() => {
     const show = Keyboard.addListener(
@@ -142,7 +148,7 @@ export default function GoalChoosing({
             />
             <Text style={styles.itemText}>{t('habits.unitLabel')}</Text>
             <View style={[styles.itemRight]}>
-              <Text style={styles.itemUnit}>{tempData.unit.name}</Text>
+              <Text style={styles.itemUnit}>{translatedUnit.name}</Text>
               <Icon
                 source={require('@/assets/icons/chevron-right.png')}
                 size={24}
@@ -180,30 +186,37 @@ export default function GoalChoosing({
         >
           <View style={styles.mainContainer}>
             <View style={styles.subContainer}>
-              {Object.values(MeasurementUnits).map((unit: MeasurementUnit) => (
-                <TouchableOpacity
-                  key={unit.id}
-                  style={styles.bottomSheetItem}
-                  onPress={() => handleSelectUnit(unit)}
-                >
-                  <Text
-                    style={[
-                      styles.unitOptionText,
-                      tempData.unit.id === unit.id &&
-                        styles.selectedUnitOptionText,
-                    ]}
+              {Object.values(MeasurementUnits).map((unit: MeasurementUnit) => {
+                const translatedModalUnit = translateMeasurementUnit(
+                  t,
+                  unit.id,
+                  unit
+                );
+                return (
+                  <TouchableOpacity
+                    key={unit.id}
+                    style={styles.bottomSheetItem}
+                    onPress={() => handleSelectUnit(unit)}
                   >
-                    {unit.name}
-                  </Text>
-                  {tempData.unit.id === unit.id && (
-                    <MaterialIcons
-                      name="check"
-                      size={20}
-                      color={colors.primary}
-                    />
-                  )}
-                </TouchableOpacity>
-              ))}
+                    <Text
+                      style={[
+                        styles.unitOptionText,
+                        tempData.unit.id === unit.id &&
+                          styles.selectedUnitOptionText,
+                      ]}
+                    >
+                      {translatedModalUnit.name}
+                    </Text>
+                    {tempData.unit.id === unit.id && (
+                      <MaterialIcons
+                        name="check"
+                        size={20}
+                        color={colors.primary}
+                      />
+                    )}
+                  </TouchableOpacity>
+                );
+              })}
             </View>
           </View>
         </BottomSheetView>

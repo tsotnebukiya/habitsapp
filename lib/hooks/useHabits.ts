@@ -8,6 +8,8 @@ import {
   getMonthKey,
   getProgressText,
 } from '../utils/habits';
+import { formatProgressText } from '../utils/translationHelpers';
+import { useTranslation } from './useTranslation';
 
 export function useThreeMonthsStatuses(targetMonth?: Date) {
   const monthCache = useHabitsStore((state) => state.monthCache);
@@ -221,4 +223,46 @@ export const useWeeklyHabitProgress = () => {
 
     return weeklyProgress;
   }, [habitsMap, completionsMap]);
+};
+
+export const useTranslatedHabitStatusInfo = (habitId: string, date: Date) => {
+  const { t } = useTranslation();
+  const habitsMap = useHabitsStore((state) => state.habits);
+  const completionsMap = useHabitsStore((state) => state.completions);
+
+  return useMemo(() => {
+    const habit = habitsMap.get(habitId);
+    if (!habit) {
+      return {
+        completion: null,
+        currentValue: 0,
+        progress: 0,
+        progressText: '',
+      };
+    }
+    const completion = getHabitStatus(
+      Array.from(completionsMap.values()),
+      habitId,
+      date
+    );
+    const currentValue = completion?.value || 0;
+    const progress = getCurrentProgress(habit, currentValue);
+
+    // Use translated progress text
+    let progressText = '';
+    if (habit.goal_value && habit.goal_unit) {
+      progressText = formatProgressText(
+        t,
+        currentValue,
+        habit.goal_value,
+        habit.goal_unit
+      );
+    } else if (habit.completions_per_day > 1) {
+      progressText = `${currentValue}/${habit.completions_per_day}`;
+    } else {
+      progressText = `${currentValue}/1`;
+    }
+
+    return { completion, currentValue, progress, progressText };
+  }, [habitsMap, completionsMap, habitId, date, t]);
 };

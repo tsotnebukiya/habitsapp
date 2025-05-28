@@ -9,6 +9,7 @@ import { useAddHabitStore } from '@/lib/stores/add_habit_store';
 import { useAppStore } from '@/lib/stores/app_state';
 import useUserProfileStore from '@/lib/stores/user_profile';
 import dayjs, { dateUtils } from '@/lib/utils/dayjs';
+import { translateMeasurementUnit } from '@/lib/utils/translationHelpers';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -41,10 +42,12 @@ export default function CreateHabbit() {
   const setFormField = useAddHabitStore((state) => state.setFormField);
   const resetForm = useAddHabitStore((state) => state.resetForm);
   const [showReminderPicker, setShowReminderPicker] = useState(false);
-  const goalText =
-    formData.goal.value === 1
-      ? formData.goal.unit.oneName
-      : formData.goal.unit.name;
+  const goal = translateMeasurementUnit(
+    t,
+    formData.goal.unit.id,
+    formData.goal.unit
+  );
+  const goalText = formData.goal.value === 1 ? goal.oneName : goal.name;
 
   const openReminderPicker = () => {
     setShowReminderPicker(true);

@@ -1,5 +1,3 @@
-// app/onboarding/OnboardingIntro.tsx
-// app/onboarding/OnboardingCarousel.tsx
 import { colors } from '@/lib/constants/ui';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 import { FontAwesome6 } from '@expo/vector-icons';
@@ -99,7 +97,7 @@ const OnboardingCarousel = () => {
 
   const handleNext = () => {
     if (currentIndex === slides.length - 1) {
-      router.push('/onboarding/OnboardingLogin');
+      router.push('/onboarding/OnboardingSignUp');
     } else {
       flatListRef.current?.scrollToIndex({
         index: currentIndex + 1,

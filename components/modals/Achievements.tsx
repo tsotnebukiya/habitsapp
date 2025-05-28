@@ -1,5 +1,6 @@
 import { colors, fontWeights } from '@/lib/constants/ui';
 import useHabitsStore from '@/lib/habit-store/store';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 import { useModalStore } from '@/lib/stores/modal_store';
 import { BlurView } from 'expo-blur';
 import React, { useEffect, useRef, useState } from 'react';
@@ -76,6 +77,7 @@ interface Props {
 
 const AchievementsModal = ({ onDismiss }: Props) => {
   const { achievements } = useModalStore();
+  const { t } = useTranslation();
   const confettiRef = useRef<ConfettiCannon>(null);
   const scrollViewRef = useRef<ScrollView>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -133,13 +135,13 @@ const AchievementsModal = ({ onDismiss }: Props) => {
 
             {/* Header with congratulations */}
             <View style={styles.header}>
-              <Text style={styles.congratsText}>🎉 Congratulations!</Text>
+              <Text style={styles.congratsText}>
+                🎉 {t('achievements.congratulations')}
+              </Text>
               <Text style={styles.achievementText}>
-                You've unlocked{' '}
                 {achievements.length > 1
-                  ? 'new achievements'
-                  : 'a new achievement'}
-                !
+                  ? t('achievements.unlockedMultiple')
+                  : t('achievements.unlockedSingle')}
               </Text>
             </View>
 
@@ -178,9 +180,13 @@ const AchievementsModal = ({ onDismiss }: Props) => {
                           style={styles.badgeIcon}
                         />
                         <Text style={styles.badgeText}>
-                          {achievement.days}-day streak
+                          {t('achievements.daysStreak', {
+                            count: achievement.days,
+                          })}
                         </Text>
-                        <Text style={styles.badgeName}>{achievement.name}</Text>
+                        <Text style={styles.badgeName}>
+                          {t(`achievements.streak_${achievement.days}` as any)}
+                        </Text>
                       </View>
                     </View>
                   );

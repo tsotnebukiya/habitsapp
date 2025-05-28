@@ -1,10 +1,16 @@
 import { ACTIVE_OPACITY } from '@/components/shared/config';
 import { colors, fontWeights } from '@/lib/constants/ui';
+import useHabitsStore from '@/lib/habit-store/store';
 import { useTranslation } from '@/lib/hooks/useTranslation';
+import { useAppStore } from '@/lib/stores/app_state';
+import { useUserProfileStore } from '@/lib/stores/user_profile';
+import { supabase } from '@/supabase/client';
 import { router } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
-import React from 'react';
+import React, { useState } from 'react';
 import {
+  ActivityIndicator,
+  Alert,
   ScrollView,
   Share,
   StyleSheet,
@@ -14,10 +20,15 @@ import {
 } from 'react-native';
 import { Icon } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Toast from 'react-native-toast-message';
 
 const SettingsScreen = () => {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
+  const { profile, clearProfile } = useUserProfileStore();
+  const clearHabitsData = useHabitsStore((state) => state.clearAllData);
+  const clearAppData = useAppStore((state) => state.clearAllData);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleNotifications = () => {
     router.push('/settings/notifications');
@@ -52,6 +63,83 @@ const SettingsScreen = () => {
     }
   };
 
+  const handleDeleteAccount = () => {
+    Alert.alert(
+      t('settings.deleteAccount.title'),
+      t('settings.deleteAccount.message'),
+      [
+        {
+          text: t('common.cancel'),
+          style: 'cancel',
+        },
+        {
+          text: t('settings.deleteAccount.confirm'),
+          style: 'destructive',
+          onPress: confirmDeleteAccount,
+        },
+      ]
+    );
+  };
+
+  const confirmDeleteAccount = async () => {
+    if (!profile?.id) {
+      Toast.show({
+        type: 'error',
+        text1: t('errors.generic'),
+        text2: t('settings.deleteAccount.noUser'),
+      });
+      return;
+    }
+    setIsDeleting(true);
+    try {
+      // Get current session to pass to Edge Function
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session) {
+        throw new Error('No active session');
+      }
+
+      // Call the delete-user Edge Function with proper auth header
+      const { error } = await supabase.functions.invoke('delete-user', {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      // Clear all local data stores
+      clearProfile();
+      clearHabitsData();
+      clearAppData();
+
+      // Clear local session (user is already deleted from auth)
+      await supabase.auth.signOut({ scope: 'local' });
+      setIsDeleting(false);
+      // Show success message
+      Toast.show({
+        type: 'success',
+        text1: t('settings.deleteAccount.success'),
+      });
+
+      // Navigate to onboarding
+      router.replace('/onboarding/OnboardingIntro');
+    } catch (error: any) {
+      setIsDeleting(false);
+      console.error('Error deleting account:', error);
+
+      Toast.show({
+        type: 'error',
+        text1: t('settings.deleteAccount.error'),
+        text2: error.message || t('errors.generic'),
+      });
+    }
+  };
+
   return (
     <ScrollView
       style={styles.container}
@@ -59,7 +147,7 @@ const SettingsScreen = () => {
         styles.contentContainerStyle,
         {
           paddingTop: insets.top + 17,
-          paddingBottom: 20,
+          paddingBottom: insets.bottom + 20,
         },
       ]}
       showsVerticalScrollIndicator={false}
@@ -183,6 +271,18 @@ const SettingsScreen = () => {
           </TouchableOpacity>
         </View>
       </View>
+
+      {/* Delete Account Button - At the bottom of ScrollView */}
+      <TouchableOpacity
+        style={styles.deleteAccount}
+        onPress={handleDeleteAccount}
+        disabled={isDeleting}
+      >
+        <Text style={styles.deleteAccountText}>
+          {t('settings.deleteAccount.button')}
+        </Text>
+        {isDeleting && <ActivityIndicator size="small" color={'#D80027'} />}
+      </TouchableOpacity>
     </ScrollView>
   );
 };
@@ -228,6 +328,18 @@ const styles = StyleSheet.create({
     fontFamily: fontWeights.medium,
     color: colors.text,
     minWidth: 80,
+  },
+  deleteAccount: {
+    marginTop: 60,
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 8,
+    justifyContent: 'center',
+  },
+  deleteAccountText: {
+    fontSize: 14,
+    fontFamily: fontWeights.bold,
+    color: '#D80027',
   },
 });
 

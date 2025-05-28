@@ -19,6 +19,7 @@ export interface HabitSlice {
   deleteHabit: (id: string) => Promise<void>;
   updateHabitOrder: (habitIds: string[]) => Promise<void>;
   deleteAllHabits: () => Promise<void>;
+  clearAllData: () => void;
 }
 
 export const createHabitSlice: StateCreator<SharedSlice, [], [], HabitSlice> = (
@@ -250,5 +251,25 @@ export const createHabitSlice: StateCreator<SharedSlice, [], [], HabitSlice> = (
     for (const habit of habits) {
       await get().deleteHabit(habit.id);
     }
+  },
+
+  clearAllData: () => {
+    set({
+      habits: new Map(),
+      completions: new Map(),
+      monthCache: new Map(),
+      lastSyncTime: null,
+      isLoading: false,
+      error: null,
+      pendingOperations: [],
+      streakAchievements: {},
+      currentStreak: 0,
+      maxStreak: 0,
+      cat1: 50,
+      cat2: 50,
+      cat3: 50,
+      cat4: 50,
+      cat5: 50,
+    });
   },
 });

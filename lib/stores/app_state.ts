@@ -15,6 +15,7 @@ interface AppState {
   resetPromptedMilestones: () => void;
   setLanguage: (language: SupportedLanguage) => Promise<void>;
   initializeLanguage: () => Promise<void>;
+  clearAllData: () => void;
 }
 
 export const appStorage = new MMKV({
@@ -102,6 +103,15 @@ export const useAppStore = create<AppState>()(
             isLanguageInitialized: true,
           });
         }
+      },
+
+      clearAllData: () => {
+        set({
+          notificationsEnabled: null,
+          promptedReviewMilestones: [],
+          currentLanguage: 'en',
+          isLanguageInitialized: false,
+        });
       },
     }),
     {

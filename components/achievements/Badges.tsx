@@ -28,7 +28,7 @@ export default function Badges() {
           style={styles.badgeIcon}
         />
         <Text style={styles.badgeText}>
-          {t('achievements.daysStreak', { days } as any)}
+          {t('achievements.daysStreak', { count: days })}
         </Text>
         <Text style={styles.badgeName}>
           {t(`achievements.streak_${days}` as any)}

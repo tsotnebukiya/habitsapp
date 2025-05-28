@@ -1,7 +1,7 @@
 import { ACTIVE_OPACITY } from '@/components/shared/config';
 import { colors, fontWeights } from '@/lib/constants/ui';
 import useHabitsStore from '@/lib/habit-store/store';
-import { useHabitStatusInfo } from '@/lib/hooks/useHabits';
+import { useTranslatedHabitStatusInfo } from '@/lib/hooks/useHabits';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 import { Database } from '@/supabase/types';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -42,7 +42,7 @@ function HabitItem({
   onPress,
 }: HabitItemProps) {
   const { t } = useTranslation();
-  const { completion, progress, progressText } = useHabitStatusInfo(
+  const { completion, progress, progressText } = useTranslatedHabitStatusInfo(
     habit.id,
     selectedDate
   );

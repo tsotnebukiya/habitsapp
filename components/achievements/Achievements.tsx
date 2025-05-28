@@ -2,6 +2,7 @@ import { ACHIEVEMENTS } from '@/lib/constants/achievements';
 import { colors, fontWeights } from '@/lib/constants/ui';
 import useHabitsStore from '@/lib/habit-store/store';
 import { useTranslation } from '@/lib/hooks/useTranslation';
+import { translateAchievement } from '@/lib/utils/translationHelpers';
 import { FlashList } from '@shopify/flash-list';
 import { router } from 'expo-router';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
@@ -25,12 +26,12 @@ export default function Achievements() {
       !streakAchievements[days as keyof typeof streakAchievements]
   );
   const daysToNext = nextAchievement ? nextAchievement - currentStreak : 0;
-
   const renderBadge = ({ item: days }: { item: number }) => {
-    const achievement = ACHIEVEMENTS[days as keyof typeof ACHIEVEMENTS];
     const isUnlocked =
       streakAchievements[days as keyof typeof streakAchievements] || false;
-
+    const translatedAchievement = translateAchievement(t, `streak_${days}`, {
+      count: days,
+    });
     return (
       <View style={styles.achievementCard}>
         <Image
@@ -42,9 +43,11 @@ export default function Achievements() {
           style={styles.achievementIcon}
         />
         <Text style={styles.achievementTitle}>
-          {t('achievements.streakAchievement', { days })}
+          {t('habits.streakDays', { count: days })}
         </Text>
-        <Text style={styles.achievementDescription}>{achievement.name}</Text>
+        <Text style={styles.achievementDescription}>
+          {translatedAchievement}
+        </Text>
       </View>
     );
   };
@@ -56,10 +59,9 @@ export default function Achievements() {
         <View style={styles.topProgress}>
           <Text style={styles.calendarIcon}>🗓️</Text>
           <Text style={styles.days}>
-            {daysToNext}{' '}
             {daysToNext === 1
-              ? t('common.today').slice(0, 3)
-              : t('habits.streakDays', { count: daysToNext }).split(' ')[1]}
+              ? t('achievements.daysStreak', { count: daysToNext })
+              : t('achievements.daysStreak_plural', { count: daysToNext })}
           </Text>
           <Text style={styles.daysToNextStreak}>
             {t('achievements.untilNext')}
