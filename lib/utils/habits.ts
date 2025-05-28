@@ -300,7 +300,6 @@ export function getCurrentProgress(habit: Habit, currentValue: number): number {
  */
 export function getProgressText(habit: Habit, currentValue: number): string {
   if (!habit) return '0/1';
-  console.log('habit', currentValue);
   if (habit.goal_value && habit.goal_unit) {
     const unit = MeasurementUnits[habit.goal_unit];
     const unitName = habit.goal_value === 1 ? unit.oneName : unit.name;

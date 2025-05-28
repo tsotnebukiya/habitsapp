@@ -1,9 +1,9 @@
 import useHabitsStore from '@/lib/habit-store/store';
 import { widgetStorage } from '@/lib/habit-store/widget-storage';
 import { dateUtils } from '@/lib/utils/dayjs';
+import { getHabitStatus } from '@/lib/utils/habits';
 import { useEffect, useRef } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
-import { useHabitStatusInfo } from './useHabits';
 
 const RECONCILIATION_DEBOUNCE = 1000; // 1 second
 
@@ -53,6 +53,11 @@ export const useReconcileWidgetState = () => {
             const today = dateUtils.nowUTC().startOf('day').toDate();
             const todayKey = today.toISOString();
 
+            // Get store state once for all operations
+            const state = useHabitsStore.getState();
+            const habits = state.habits;
+            const completions = Array.from(state.completions.values());
+
             // Process each habit from widget data
             for (const widgetHabit of widgetData) {
               const { id, weeklyStatus } = widgetHabit;
@@ -64,18 +69,18 @@ export const useReconcileWidgetState = () => {
               // Get widget status for today (defaults to false if undefined)
               const widgetStatusIsCompleted = weeklyStatus[todayKey] === true;
 
-              // Check current state in store
-              const currentStoreStatus = useHabitStatusInfo(id, today);
+              // Check current state in store using direct access
+              const habit = habits.get(id);
+              const completion = getHabitStatus(completions, id, today);
 
               const currentStoreIsCompleted =
-                currentStoreStatus?.completion?.status === 'completed';
-              const habit = useHabitsStore.getState().habits.get(id);
+                completion?.status === 'completed';
 
               if (
                 habit &&
                 widgetStatusIsCompleted !== currentStoreIsCompleted
               ) {
-                toggleHabitStatus(id, today, 'toggle');
+                toggleHabitStatus(id, today, 'toggle_complete');
               }
             }
           } catch (error) {

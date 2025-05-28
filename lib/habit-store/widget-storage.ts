@@ -1,7 +1,8 @@
-import * as WidgetStorage from 'modules/widget-storage';
 import { dateUtils } from '@/lib/utils/dayjs';
-import { Habit, HabitCompletion } from './types';
+import { getCurrentProgress } from '@/lib/utils/habits';
 import dayjs from 'dayjs';
+import * as WidgetStorage from 'modules/widget-storage';
+import { Habit, HabitCompletion } from './types';
 
 const WIDGET_DATA_KEY = 'habits';
 
@@ -36,13 +37,21 @@ const transformStoreDataForWidget = (
       // Format date to match widget's format
       const dateKey = date.toISOString();
 
-      const isCompleted = completions.some((c) => {
+      // Find completion for this habit and date
+      const completion = completions.find((c) => {
         const completionDate = dayjs.utc(c.completion_date).startOf('day');
         const isSameHabit = c.habit_id === habit.id;
         const isSameDay = completionDate.isSame(date, 'day');
-        const isCompletedStatus = c.status === 'completed';
-        return isSameHabit && isSameDay && isCompletedStatus;
+        return isSameHabit && isSameDay;
       });
+
+      // Calculate progress and convert to boolean for widget
+      // Widget shows complete only when progress reaches 100%
+      const progress = completion
+        ? getCurrentProgress(habit, completion.value || 0)
+        : 0;
+      const isCompleted = progress >= 1.0;
+
       weeklyStatus[dateKey] = isCompleted;
     }
     return {

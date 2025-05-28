@@ -43,33 +43,36 @@ const getDeviceLanguage = (): SupportedLanguage => {
   }
 };
 
-i18n.use(initReactI18next).init({
-  debug: __DEV__,
-  lng: getDeviceLanguage(),
-  fallbackLng: 'en',
-  interpolation: {
-    escapeValue: false,
-  },
-  resources: {
-    en: {
-      translation: english,
+// Initialize i18n only if it hasn't been initialized yet
+if (!i18n.isInitialized) {
+  i18n.use(initReactI18next).init({
+    debug: __DEV__,
+    lng: getDeviceLanguage(),
+    fallbackLng: 'en',
+    interpolation: {
+      escapeValue: false,
     },
-    es: {
-      translation: spanish,
+    resources: {
+      en: {
+        translation: english,
+      },
+      es: {
+        translation: spanish,
+      },
+      fr: {
+        translation: french,
+      },
+      de: {
+        translation: german,
+      },
+      pt: {
+        translation: portuguese,
+      },
+      ru: {
+        translation: russian,
+      },
     },
-    fr: {
-      translation: french,
-    },
-    de: {
-      translation: german,
-    },
-    pt: {
-      translation: portuguese,
-    },
-    ru: {
-      translation: russian,
-    },
-  },
-});
+  });
+}
 
 export default i18n;
