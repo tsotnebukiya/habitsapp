@@ -10,11 +10,12 @@ struct WeeklyHabitsWidget: Widget {
         StaticConfiguration(kind: kind, provider: provider) { entry in
             // Reference the separated Entry View
             WeeklyHabitsWidgetEntryView(entry: entry)
-                .containerBackground(.fill.tertiary, for: .widget)
+                .containerBackground(.clear, for: .widget)
         }
         .configurationDisplayName("Weekly Habits")
         .description("Track your weekly habits progress")
         .supportedFamilies([.systemMedium, .systemLarge])
+        .contentMarginsDisabled()
     }
 }
 
@@ -22,9 +23,10 @@ struct WeeklyHabitsWidget: Widget {
 // Let's keep them with the main widget definition for now.
 struct WeeklyHabitsWidget_Previews: PreviewProvider {
     static var previews: some View {
-         // Use the HabitStore for mock data in previews
+        // Use the HabitStore for mock data in previews with fixed date
         let habitStore = HabitStore()
-        let mockEntry = SimpleEntry(date: Date(), habits: habitStore.mockHabits())
+        let testDate = Calendar.current.date(from: DateComponents(year: 2025, month: 5, day: 26))! // Monday May 26, 2025
+        let mockEntry = SimpleEntry(date: testDate, habits: habitStore.mockHabits())
         
         WeeklyHabitsWidgetEntryView(entry: mockEntry)
             .previewContext(WidgetPreviewContext(family: .systemMedium))

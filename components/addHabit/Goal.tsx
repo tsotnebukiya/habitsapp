@@ -6,13 +6,13 @@ import {
 import { colors, fontWeights } from '@/lib/constants/ui';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 import { translateMeasurementUnit } from '@/lib/utils/translationHelpers';
-import { MaterialIcons } from '@expo/vector-icons';
 import {
   BottomSheetBackdrop,
   BottomSheetModal,
   BottomSheetView,
 } from '@gorhom/bottom-sheet';
 import { router } from 'expo-router';
+import { SymbolView } from 'expo-symbols';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Keyboard,
@@ -114,7 +114,7 @@ export default function GoalChoosing({
       <View style={styles.goalContainer}>
         <View style={styles.itemContainer}>
           <View style={styles.item}>
-            <MaterialIcons name="flag" size={24} color={'#42A5F5'} />
+            <SymbolView name="flag.fill" size={24} tintColor={'#42A5F5'} />
             <Text style={styles.itemText}>{t('habits.goalLabel')}</Text>
             <View style={styles.itemRight}>
               <View>
@@ -141,10 +141,10 @@ export default function GoalChoosing({
             style={[styles.item]}
             onPress={handlePresentModalPress}
           >
-            <MaterialIcons
-              name="layers"
+            <SymbolView
+              name="square.2.layers.3d.fill"
               size={24}
-              color={colors.habitColors.salmonRed}
+              tintColor={colors.habitColors.salmonRed}
             />
             <Text style={styles.itemText}>{t('habits.unitLabel')}</Text>
             <View style={[styles.itemRight]}>
@@ -208,10 +208,10 @@ export default function GoalChoosing({
                       {translatedModalUnit.name}
                     </Text>
                     {tempData.unit.id === unit.id && (
-                      <MaterialIcons
-                        name="check"
-                        size={20}
-                        color={colors.primary}
+                      <SymbolView
+                        name="checkmark"
+                        size={24}
+                        tintColor={colors.primary}
                       />
                     )}
                   </TouchableOpacity>

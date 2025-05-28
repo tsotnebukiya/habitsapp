@@ -5,6 +5,8 @@ import { FlashList } from '@shopify/flash-list';
 import { useCallback, useMemo, useState } from 'react';
 import {
   Dimensions,
+  KeyboardAvoidingView,
+  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -86,10 +88,12 @@ export default function IconChoosing({
       <TouchableOpacity
         onPress={() => handleSelect(item)}
         activeOpacity={ACTIVE_OPACITY}
-        style={[styles.cell, item === tempIcon && styles.selected]}
+        style={[styles.cell]}
       >
-        <ItemIcon icon={item} color={colors.text} />
-        {/* <Text>{item}</Text> */}
+        <ItemIcon
+          icon={item}
+          color={item === tempIcon ? colors.primary : colors.text}
+        />
       </TouchableOpacity>
     ),
     [tabIndex, selectedIcon, handleSelect, tempIcon]
@@ -109,7 +113,10 @@ export default function IconChoosing({
     </View>
   );
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.container}
+    >
       <View style={styles.header}>
         <Text style={styles.heading}>{t('habits.selectIcon')}</Text>
       </View>
@@ -134,7 +141,7 @@ export default function IconChoosing({
           type="primary"
         />
       </View>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 

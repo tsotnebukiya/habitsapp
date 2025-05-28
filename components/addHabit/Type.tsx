@@ -1,8 +1,8 @@
 import { ACTIVE_OPACITY } from '@/components/shared/config';
 import { colors, fontWeights } from '@/lib/constants/ui';
 import { useTranslation } from '@/lib/hooks/useTranslation';
-import { MaterialIcons } from '@expo/vector-icons';
 import { router } from 'expo-router';
+import { SymbolView } from 'expo-symbols';
 import { useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Icon, RadioButton } from 'react-native-paper';
@@ -48,11 +48,7 @@ export default function TypeChoosing({
           style={styles.itemContainer}
           onPress={() => handleTypeSelect('GOOD')}
         >
-          <MaterialIcons
-            name="check-circle"
-            size={24}
-            color={colors.habitColors.meadowGreen}
-          />
+          <SymbolView name="checkmark" size={24} tintColor={colors.primary} />
           <Text style={styles.itemText}>{t('habits.good')}</Text>
           <View style={styles.radioButtonContainer}>
             <RadioButton

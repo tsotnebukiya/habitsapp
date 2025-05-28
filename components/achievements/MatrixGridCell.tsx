@@ -1,7 +1,7 @@
 import { colors, fontWeights } from '@/lib/constants/ui';
 import { MatrixCategory } from '@/lib/hooks/useMatrix';
 import { useTranslation } from '@/lib/hooks/useTranslation';
-import { MaterialIcons } from '@expo/vector-icons';
+import { SymbolView } from 'expo-symbols';
 import React, { memo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Icon } from 'react-native-paper';
@@ -48,10 +48,10 @@ export const MatrixGridCell = memo(function MatrixGridCell({
     >
       <View style={styles.header}>
         {category.id === 'total' ? (
-          <MaterialIcons
-            name="balance"
+          <SymbolView
+            name="circle.grid.cross.fill"
             size={24}
-            color={category.display.title}
+            tintColor={category.display.title}
           />
         ) : (
           <Icon

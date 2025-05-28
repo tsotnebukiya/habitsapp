@@ -10,8 +10,8 @@ import { useAppStore } from '@/lib/stores/app_state';
 import useUserProfileStore from '@/lib/stores/user_profile';
 import dayjs, { dateUtils } from '@/lib/utils/dayjs';
 import { translateMeasurementUnit } from '@/lib/utils/translationHelpers';
-import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { SymbolView } from 'expo-symbols';
 import React, { useEffect, useState } from 'react';
 import {
   ScrollView,
@@ -231,10 +231,10 @@ export default function CreateHabbit() {
                 style={styles.item}
                 onPress={() => chooseDetail('color')}
               >
-                <MaterialIcons
-                  name="color-lens"
+                <SymbolView
+                  name="paintpalette.fill"
                   size={24}
-                  color={colors.habitColors.grapePurple}
+                  tintColor={colors.habitColors.grapePurple}
                 />
                 <Text style={styles.itemText}>{t('habits.color')}</Text>
                 <View style={styles.containerRight}>
@@ -256,10 +256,10 @@ export default function CreateHabbit() {
                 style={styles.item}
                 onPress={() => chooseDetail('icon')}
               >
-                <MaterialIcons
-                  name="image"
+                <SymbolView
+                  name="photo.fill"
                   size={24}
-                  color={colors.habitColors.salmonRed}
+                  tintColor={colors.habitColors.salmonRed}
                 />
                 <Text style={styles.itemText}>{t('habits.icon')}</Text>
                 <View style={styles.containerRight}>
@@ -276,10 +276,10 @@ export default function CreateHabbit() {
                 onPress={() => chooseDetail('description')}
                 style={styles.item}
               >
-                <MaterialIcons
-                  name="description"
+                <SymbolView
+                  name="list.bullet.rectangle.portrait.fill"
                   size={24}
-                  color={colors.habitColors.amberYellow}
+                  tintColor={colors.habitColors.amberYellow}
                 />
                 <Text style={styles.itemText}>{t('habits.description')}</Text>
                 <View style={styles.containerRight}>
@@ -309,10 +309,10 @@ export default function CreateHabbit() {
                 onPress={() => chooseDetail('category')}
                 style={styles.item}
               >
-                <MaterialIcons
-                  name="label"
+                <SymbolView
+                  name="tag.fill"
                   size={24}
-                  color={colors.habitColors.indigoBlue}
+                  tintColor={colors.habitColors.indigoBlue}
                 />
                 <Text style={styles.itemText}>{t('habits.category')}</Text>
                 <View style={styles.containerRight}>
@@ -334,10 +334,10 @@ export default function CreateHabbit() {
                 onPress={() => chooseDetail('type')}
                 style={styles.item}
               >
-                <MaterialIcons
-                  name="check-circle"
+                <SymbolView
+                  name="checkmark.circle.fill"
                   size={24}
-                  color={colors.habitColors.meadowGreen}
+                  tintColor={colors.habitColors.meadowGreen}
                 />
                 <Text style={styles.itemText}>{t('habits.type')}</Text>
 
@@ -359,10 +359,10 @@ export default function CreateHabbit() {
                 onPress={() => chooseDetail('goal')}
                 style={styles.item}
               >
-                <MaterialIcons
-                  name="flag"
+                <SymbolView
+                  name="flag.fill"
                   size={24}
-                  color={colors.habitColors.skyBlue}
+                  tintColor={colors.habitColors.skyBlue}
                 />
                 <Text style={styles.itemText}>{t('habits.goal')}</Text>
                 <View style={styles.containerRight}>
@@ -381,10 +381,10 @@ export default function CreateHabbit() {
                 onPress={() => chooseDetail('repeat')}
                 style={styles.item}
               >
-                <MaterialIcons
-                  name="sync-lock"
+                <SymbolView
+                  name="repeat"
                   size={24}
-                  color={colors.habitColors.amethystPurple}
+                  tintColor={colors.habitColors.amethystPurple}
                 />
                 <Text style={styles.itemText}>{t('habits.repeat')}</Text>
                 <View style={styles.containerRight}>
@@ -422,10 +422,10 @@ export default function CreateHabbit() {
                 onPress={handleNotificationsEnable}
                 disabled={!!notificationsEnabled}
               >
-                <MaterialIcons
-                  name="notifications-active"
+                <SymbolView
+                  name="bell.fill"
                   size={24}
-                  color={colors.habitColors.salmonRed}
+                  tintColor={colors.habitColors.salmonRed}
                 />
                 <Text style={styles.itemText}>{t('habits.notifications')}</Text>
                 {notificationsEnabled && (
@@ -477,10 +477,10 @@ export default function CreateHabbit() {
                 )}
               </TouchableOpacity>
               <View style={styles.item}>
-                <MaterialIcons
-                  name="event-available"
+                <SymbolView
+                  name="calendar.badge.exclamationmark"
                   size={24}
-                  color={colors.habitColors.tealGreen}
+                  tintColor={colors.habitColors.tealGreen}
                 />
                 <Text style={styles.itemText}>{t('habits.startsOn')}</Text>
 
@@ -502,10 +502,10 @@ export default function CreateHabbit() {
                 </View>
               </View>
               <View style={styles.item}>
-                <MaterialIcons
-                  name="calendar-month"
+                <SymbolView
+                  name="calendar.badge.checkmark"
                   size={24}
-                  color={colors.habitColors.brown}
+                  tintColor={colors.habitColors.brown}
                 />
                 <Text style={styles.itemText}>{t('habits.endsOn')}</Text>
                 <Switch

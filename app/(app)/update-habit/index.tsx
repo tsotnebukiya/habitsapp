@@ -7,9 +7,9 @@ import { colors, fontWeights } from '@/lib/constants/ui';
 import useHabitsStore from '@/lib/habit-store/store';
 import { useHabit } from '@/lib/hooks/useHabits';
 import { useUpdateHabitStore } from '@/lib/stores/update_habit_store';
-import { MaterialIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { SymbolView } from 'expo-symbols';
 import React, { useEffect } from 'react';
 import {
   ScrollView,
@@ -105,10 +105,10 @@ export default function UpdateHabit() {
                 style={styles.item}
                 onPress={() => chooseDetail('color')}
               >
-                <MaterialIcons
-                  name="color-lens"
+                <SymbolView
+                  name="paintpalette.fill"
                   size={24}
-                  color={colors.habitColors.grapePurple}
+                  tintColor={colors.habitColors.grapePurple}
                 />
                 <Text style={styles.itemText}>Color</Text>
                 <View style={styles.containerRight}>
@@ -130,10 +130,10 @@ export default function UpdateHabit() {
                 style={styles.item}
                 onPress={() => chooseDetail('icon')}
               >
-                <MaterialIcons
-                  name="image"
+                <SymbolView
+                  name="photo.fill"
                   size={24}
-                  color={colors.habitColors.salmonRed}
+                  tintColor={colors.habitColors.salmonRed}
                 />
                 <Text style={styles.itemText}>Icon</Text>
                 <View style={styles.containerRight}>
@@ -150,10 +150,10 @@ export default function UpdateHabit() {
                 onPress={() => chooseDetail('description')}
                 style={styles.item}
               >
-                <MaterialIcons
-                  name="description"
+                <SymbolView
+                  name="list.bullet.rectangle.portrait.fill"
                   size={24}
-                  color={colors.habitColors.amberYellow}
+                  tintColor={colors.habitColors.amberYellow}
                 />
                 <Text style={styles.itemText}>Description</Text>
                 <View style={styles.containerRight}>
@@ -181,10 +181,10 @@ export default function UpdateHabit() {
                 onPress={() => chooseDetail('category')}
                 style={styles.item}
               >
-                <MaterialIcons
-                  name="label"
+                <SymbolView
+                  name="tag.fill"
                   size={24}
-                  color={colors.habitColors.indigoBlue}
+                  tintColor={colors.habitColors.indigoBlue}
                 />
                 <Text style={styles.itemText}>Category</Text>
                 <View style={styles.containerRight}>

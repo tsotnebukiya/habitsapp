@@ -1,7 +1,7 @@
 import { colors, fontWeights } from '@/lib/constants/ui';
 import { useWeeklyHabitProgress } from '@/lib/hooks/useHabits';
 import { useTranslation } from '@/lib/hooks/useTranslation';
-import { MaterialIcons } from '@expo/vector-icons';
+import { SymbolView } from 'expo-symbols';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
@@ -95,10 +95,10 @@ export default function WeeklyProgress() {
                   <View key={habitIndex} style={styles.circleContainer}>
                     {progress === 0 && <View style={styles.circleEmpty} />}
                     {progress === 1 && (
-                      <MaterialIcons
-                        name="check-circle"
+                      <SymbolView
+                        name="checkmark"
                         size={24}
-                        color={colors.primary}
+                        tintColor={colors.primary}
                       />
                     )}
                     {progress > 0 && progress < 1 && (

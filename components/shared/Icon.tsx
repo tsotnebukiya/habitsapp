@@ -1,6 +1,6 @@
 import { IconType } from '@/lib/constants/icons';
 import { colors } from '@/lib/constants/ui';
-import { MaterialIcons } from '@expo/vector-icons';
+import { SymbolView } from 'expo-symbols';
 import React from 'react';
 import { Text } from 'react-native';
 
@@ -22,8 +22,7 @@ const ItemIcon = ({ icon, color }: ItemIconProps) => {
   if (isEmoji(icon)) {
     return <Text style={{ fontSize: 24, color }}>{icon}</Text>;
   }
-
-  return <MaterialIcons name={icon} size={24} color={color} />;
+  return <SymbolView name={icon} size={24} tintColor={color} />;
 };
 
 export default ItemIcon;

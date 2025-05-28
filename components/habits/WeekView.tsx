@@ -1,12 +1,12 @@
-import { fontWeights } from '@/lib/constants/ui';
+import { colors, fontWeights } from '@/lib/constants/ui';
 import { useThreeMonthsStatuses } from '@/lib/hooks/useHabits';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 import { useModalStore } from '@/lib/stores/modal_store';
 import { dateUtils } from '@/lib/utils/dayjs';
 import { getRelativeDateText, isToday } from '@/lib/utils/misc';
-import { MaterialIcons } from '@expo/vector-icons';
 import { FlashList } from '@shopify/flash-list';
 import dayjs, { Dayjs } from 'dayjs';
+import { SymbolView } from 'expo-symbols';
 import React, { memo, useCallback, useEffect, useMemo, useRef } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Icon, IconButton } from 'react-native-paper';
@@ -130,7 +130,13 @@ export const WeekView = memo(function WeekView({
             <IconButton
               style={styles.marginNone}
               onPress={returnToToday}
-              icon={() => <MaterialIcons name="restore" size={24} />}
+              icon={() => (
+                <SymbolView
+                  name="clock.arrow.trianglehead.counterclockwise.rotate.90"
+                  size={24}
+                  tintColor={colors.text}
+                />
+              )}
             />
           )}
         </View>

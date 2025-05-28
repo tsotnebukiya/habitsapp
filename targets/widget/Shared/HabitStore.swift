@@ -33,37 +33,44 @@ struct HabitStore {
     // Method to generate mock habits
     func mockHabits() -> [Habit] {
          widgetLogger.info("Generating mock habits.")
-        let today = Date()
         
-        // Generate weekly status keys based on the current week, ensuring consistency
-        let calendar = Calendar.current
-        let startOfWeek = calendar.date(from: calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: today))!
-        
-        let weeklyStatus = Dictionary(
-            uniqueKeysWithValues: (0...6).map { dayOffset -> (String, Bool) in
-                let date = calendar.date(byAdding: .day, value: dayOffset, to: startOfWeek)!
-                // Use a consistent formatter for keys
-                let formatter = ISO8601DateFormatter()
-                // IMPORTANT: The format options AND timezone MUST match exactly where these keys are generated/used (e.g., Views, Intents)
-                formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds] // Keep consistent with HabitRowView usage if needed
-                formatter.timeZone = TimeZone(secondsFromGMT: 0) // Standardize timezone for keys
-
-                // For mock data, ensure the date component is just the date part for matching if necessary
-                let dateOnlyFormatter = DateFormatter()
-                dateOnlyFormatter.dateFormat = "yyyy-MM-dd"
-                dateOnlyFormatter.timeZone = TimeZone(secondsFromGMT: 0)
-         
-                
-                // Return the formatted string expected by the saving mechanism/used for lookup
-                return (formatter.string(from: date), false) // Assuming ISO8601 is used for storage keys
-            }
-        )
+        // Use a fixed date for consistent testing: Monday May 26, 2025
+        let testDate = Calendar.current.date(from: DateComponents(year: 2025, month: 5, day: 26))!
         
         let mockData = [
-            Habit(id: "1", name: "Meditation", icon: "🧘‍♂️", color: "#3498DB", weeklyStatus: weeklyStatus),
-            Habit(id: "2", name: "Reading", icon: "📚", color: "#2ECC71", weeklyStatus: weeklyStatus),
-            Habit(id: "3", name: "Exercise", icon: "💪", color: "#E74C3C", weeklyStatus: weeklyStatus)
+            // TEST HABIT 1: No completions (all gray circles)
+            Habit(
+                id: "1",
+                name: "Drink Water",
+                icon: "💧",
+                color: "#3498DB",
+                weeklyStatus: [:] // Empty = no completions
+            ),
+            // TEST HABIT 2: Partial completions (green checkmarks Mon-Thu)
+            Habit(
+                id: "2",
+                name: "Take Vitamins",
+                icon: "💊",
+                color: "#FFC857",
+                weeklyStatus: [
+                    "2025-05-26T00:00:00.000Z": true,  // Monday
+                    "2025-05-27T00:00:00.000Z": true,  // Tuesday
+                    "2025-05-28T00:00:00.000Z": true,  // Wednesday
+                    "2025-05-29T00:00:00.000Z": true   // Thursday
+                ]
+            ),
+            // TEST HABIT 3: Single completion (green checkmark Monday only)
+            Habit(
+                id: "3",
+                name: "Make Your Bed",
+                icon: "🛏️",
+                color: "#A1887F",
+                weeklyStatus: [
+                    "2025-05-26T00:00:00.000Z": true  // Monday only
+                ]
+            )
         ]
+        
         widgetLogger.debug("Generated mock habits: \(mockData)")
         return mockData
     }
