@@ -90,3 +90,28 @@ intentLogger.info("Toggled habit '\(currentHabits[habitIndex].name, privacy: .pu
         // No need for the 'else' block anymore due to the guard statements above
     }
 }
+
+// Intent to open the main app
+struct OpenAppIntent: WidgetConfigurationIntent {
+    static var title: LocalizedStringResource = "Open Habit App"
+    static var description = IntentDescription("Opens the main habit tracking app.")
+    static var openAppWhenRun: Bool = true // This will open the app
+    
+    // Optional parameter to pass habit ID to the app
+    @Parameter(title: "Habit ID")
+    var habitID: String?
+    
+    init(habitID: String? = nil) {
+        self.habitID = habitID
+    }
+    
+    init() {
+        self.habitID = nil
+    }
+    
+    func perform() async throws -> some IntentResult {
+        // The app will open automatically due to openAppWhenRun = true
+        // You can add any additional logic here if needed
+        return .result()
+    }
+}

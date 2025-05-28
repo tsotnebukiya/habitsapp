@@ -45,15 +45,18 @@ struct HabitStore {
         let testDate = Calendar.current.date(from: DateComponents(year: 2025, month: 5, day: 26))!
         
         let mockData = [
-            // TEST HABIT 1: No completions (all gray circles)
+            // Health & Wellness Habits
             Habit(
                 id: "1",
                 name: "Drink Water",
                 icon: "drop.fill",
                 color: "#3498DB",
-                weeklyStatus: [:] // Empty = no completions
+                weeklyStatus: [
+                    "2025-05-26T00:00:00.000Z": true,  // Monday
+                    "2025-05-27T00:00:00.000Z": true,  // Tuesday
+                    "2025-05-28T00:00:00.000Z": true,  // Wednesday
+                ]
             ),
-            // TEST HABIT 2: Partial completions (green checkmarks Mon-Thu)
             Habit(
                 id: "2",
                 name: "Take Vitamins",
@@ -66,64 +69,98 @@ struct HabitStore {
                     "2025-05-29T00:00:00.000Z": true   // Thursday
                 ]
             ),
-            // TEST HABIT 3: Single completion (green checkmark Monday only)
             Habit(
                 id: "3",
-                name: "Make Your Bed",
-                icon: "💪",
-                color: "#A1887F",
+                name: "Morning Exercise",
+                icon: "figure.run",
+                color: "#E74C3C",
                 weeklyStatus: [
-                    "2025-05-26T00:00:00.000Z": true  // Monday only
+                    "2025-05-26T00:00:00.000Z": true,  // Monday
+                    "2025-05-28T00:00:00.000Z": true,  // Wednesday
                 ]
             ),
             Habit(
                 id: "4",
-                name: "Drink Water",
-                icon: "drop.fill",
-                color: "#3498DB",
-                weeklyStatus: [:] // Empty = no completions
+                name: "Meditate",
+                icon: "figure.mind.and.body",
+                color: "#9B59B6",
+                weeklyStatus: [
+                    "2025-05-26T00:00:00.000Z": true,  // Monday
+                    "2025-05-27T00:00:00.000Z": true,  // Tuesday
+                    "2025-05-28T00:00:00.000Z": true,  // Wednesday
+                    "2025-05-29T00:00:00.000Z": true,  // Thursday
+                    "2025-05-30T00:00:00.000Z": true,  // Friday
+                ]
             ),
+            
+            // Productivity Habits
             Habit(
                 id: "5",
-                name: "Drink Water",
-                icon: "drop.fill",
-                color: "#3498DB",
-                weeklyStatus: [:] // Empty = no completions
+                name: "Read 30 Minutes",
+                icon: "book.fill",
+                color: "#2ECC71",
+                weeklyStatus: [
+                    "2025-05-26T00:00:00.000Z": true,  // Monday
+                    "2025-05-28T00:00:00.000Z": true,  // Wednesday
+                    "2025-05-30T00:00:00.000Z": true,  // Friday
+                ]
             ),
             Habit(
                 id: "6",
-                name: "Drink Water",
-                icon: "drop.fill",
-                color: "#3498DB",
-                weeklyStatus: [:] // Empty = no completions
+                name: "Write Journal",
+                icon: "pencil.and.outline",
+                color: "#F39C12",
+                weeklyStatus: [
+                    "2025-05-26T00:00:00.000Z": true,  // Monday
+                    "2025-05-27T00:00:00.000Z": true,  // Tuesday
+                ]
             ),
             Habit(
                 id: "7",
-                name: "Drink Water",
-                icon: "drop.fill",
-                color: "#3498DB",
-                weeklyStatus: [:] // Empty = no completions
+                name: "Learn Spanish",
+                icon: "character.book.closed.fill",
+                color: "#E67E22",
+                weeklyStatus: [
+                    "2025-05-27T00:00:00.000Z": true,  // Tuesday
+                    "2025-05-29T00:00:00.000Z": true,  // Thursday
+                ]
             ),
+            
+            // Lifestyle Habits
             Habit(
                 id: "8",
-                name: "Drink Water",
-                icon: "drop.fill",
-                color: "#3498DB",
-                weeklyStatus: [:] // Empty = no completions
+                name: "Make Bed",
+                icon: "bed.double.fill",
+                color: "#A1887F",
+                weeklyStatus: [
+                    "2025-05-26T00:00:00.000Z": true,  // Monday
+                    "2025-05-27T00:00:00.000Z": true,  // Tuesday
+                    "2025-05-28T00:00:00.000Z": true,  // Wednesday
+                    "2025-05-29T00:00:00.000Z": true,  // Thursday
+                    "2025-05-30T00:00:00.000Z": true,  // Friday
+                    "2025-05-31T00:00:00.000Z": true,  // Saturday
+                ]
             ),
             Habit(
                 id: "9",
-                name: "Drink Water",
-                icon: "drop.fill",
-                color: "#3498DB",
-                weeklyStatus: [:] // Empty = no completions
+                name: "No Social Media",
+                icon: "iphone.slash",
+                color: "#34495E",
+                weeklyStatus: [
+                    "2025-05-26T00:00:00.000Z": true,  // Monday
+                    "2025-05-28T00:00:00.000Z": true,  // Wednesday
+                    "2025-05-30T00:00:00.000Z": true,  // Friday
+                ]
             ),
             Habit(
                 id: "10",
-                name: "Drink Water",
-                icon: "drop.fill",
-                color: "#3498DB",
-                weeklyStatus: [:] // Empty = no completions
+                name: "Call Family",
+                icon: "phone.fill",
+                color: "#1ABC9C",
+                weeklyStatus: [
+                    "2025-05-26T00:00:00.000Z": true,  // Monday
+                    "2025-05-29T00:00:00.000Z": true,  // Thursday
+                ]
             )
         ]
         

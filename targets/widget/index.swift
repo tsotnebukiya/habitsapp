@@ -5,10 +5,13 @@ import SwiftUI
 @main
 struct MainWidgetBundle: WidgetBundle {
     var body: some Widget {
+      
+      // Register the Interactive Widget
+      InteractiveHabitWidget()
+      
         // Register the Calendar Widget
         WeeklyHabitsWidget()
         
-        // Register the Interactive Widget
-        InteractiveHabitWidget()
+
     }
 }

@@ -1,11 +1,11 @@
 import SwiftUI
 import WidgetKit
 import AppIntents
-import os // Import OSLog
+import os
 
-private let viewLogger = Logger(subsystem: "com.vdl.habitapp.widget", category: "InteractiveViews") // Define logger
+private let viewLogger = Logger(subsystem: "com.vdl.habitapp.widget", category: "InteractiveViews")
 
-struct InteractiveWidgetEntryView : View {
+struct InteractiveWidgetEntryView: View {
     var entry: InteractiveProvider.Entry
     @Environment(\.widgetFamily) var family
 
@@ -13,135 +13,185 @@ struct InteractiveWidgetEntryView : View {
     private var maxHabits: Int {
         switch family {
         case .systemSmall:
-            return 2
+            return 2  // 1 column, 2 rows
         case .systemMedium:
-            return 4 // Updated from 3
+            return 4  // 2 columns, 2 rows
         case .systemLarge:
-            return 6 // Added large
+            return 10  // 2 columns, 4 rows
         @unknown default:
-            return 2 // Default to small size limit
+            return 2
         }
     }
 
     var body: some View {
-        // Removed header Text("Complete Today:") and its padding
-        // Added switch statement for layout based on family
-        switch family {
-        case .systemSmall:
-            VStack(spacing: 8) {
-                 // Use .id for ForEach identifier assuming Habit conforms to Identifiable or has a unique id
-                ForEach(entry.habits.prefix(maxHabits), id: \.id) { habit in
-                    HabitToggleButton(habit: habit)
-                    // Add divider if not the last item in the *displayed* list
-                    if habit.id != entry.habits.prefix(maxHabits).last?.id {
-                        Divider()
+        // Main container with no padding (following CalendarWidget pattern)
+        VStack(alignment: .leading, spacing: 0) {
+            switch family {
+            case .systemSmall:
+                // Small widget: 1 column, 2 rows with padding
+                VStack(spacing: 10) {
+                    ForEach(entry.habits.prefix(maxHabits), id: \.id) { habit in
+                        HabitCard(habit: habit)
+                    }
+                    
+                    // Fill remaining space if fewer habits
+                    if entry.habits.count < maxHabits {
+                        Spacer()
                     }
                 }
-                // Add Spacer to push content up if fewer than maxHabits are displayed
-                if entry.habits.count < maxHabits {
-                     Spacer()
-                 }
-            }
-            .padding() // Add padding around the VStack for the small widget
-        case .systemMedium:
-            // Define grid columns for 2x2 layout
-            let columns: [GridItem] = Array(repeating: .init(.flexible()), count: 2)
-            LazyVGrid(columns: columns, spacing: 12) { // Added spacing between grid items
-                ForEach(entry.habits.prefix(maxHabits), id: \.id) { habit in
-                     HabitToggleButton(habit: habit)
-                 }
-             }
-            .padding() // Add padding around the LazyVGrid
-        case .systemLarge:
-            // Use VStack similar to small, maxHabits handles the limit
-            VStack(spacing: 8) {
-                ForEach(entry.habits.prefix(maxHabits), id: \.id) { habit in
-                    HabitToggleButton(habit: habit)
-                    // Add divider if not the last item in the *displayed* list
-                    if habit.id != entry.habits.prefix(maxHabits).last?.id {
-                        Divider()
+                .padding(.vertical, 16)  // 16px vertical padding
+                
+
+                
+            case .systemMedium, .systemLarge:
+                // Medium/Large widget: 2 columns grid with edge-to-edge layout
+                let columns: [GridItem] = Array(repeating: .init(.flexible()), count: 2)
+                LazyVGrid(columns: columns, spacing: 10) {
+                    ForEach(entry.habits.prefix(maxHabits), id: \.id) { habit in
+                        HabitCard(habit: habit)
                     }
                 }
-                // Add Spacer to push content up if fewer than maxHabits are displayed
-                 if entry.habits.count < maxHabits {
-                      Spacer()
-                  }
-            }
-            .padding() // Add padding around the VStack for the large widget
-        @unknown default:
-            // Fallback to small layout for unknown sizes
-             VStack(spacing: 8) {
-                 // Use .id for ForEach identifier assuming Habit conforms to Identifiable or has a unique id
-                ForEach(entry.habits.prefix(maxHabits), id: \.id) { habit in
-                    HabitToggleButton(habit: habit)
-                    // Add divider if not the last item in the *displayed* list
-                    if habit.id != entry.habits.prefix(maxHabits).last?.id {
-                        Divider()
+                
+            @unknown default:
+                // Fallback to small layout
+                VStack(spacing: 10) {
+                    ForEach(entry.habits.prefix(maxHabits), id: \.id) { habit in
+                        HabitCard(habit: habit)
                     }
                 }
-                // Add Spacer to push content up if fewer than maxHabits are displayed
-                if entry.habits.count < maxHabits {
-                     Spacer()
-                 }
+                .padding(.vertical, 16)  // 16px vertical padding
             }
-            .padding() // Add padding around the VStack for the default widget
         }
-        // Padding will be applied within each case
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .containerBackground(.clear, for: .widget)
     }
 }
 
-struct HabitToggleButton: View {
+struct HabitCard: View {
     let habit: Habit
-
     
-    // Get today's date string key (important to match the logic in the Intent)
+    // Get today's date string key
     private var todayDateKey: String {
         let formatter = ISO8601DateFormatter()
-        // IMPORTANT: Must match the formatter settings used in ToggleHabitIntent and HabitStore
         formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        formatter.timeZone = TimeZone(secondsFromGMT: 0) // Consistent timezone
+        formatter.timeZone = TimeZone(secondsFromGMT: 0)
         let now = Date()
         var calendar = Calendar.current
-        calendar.timeZone = TimeZone(secondsFromGMT: 0)! // Ensure UTC
+        calendar.timeZone = TimeZone(secondsFromGMT: 0)!
         let startOfDay = calendar.startOfDay(for: now)
-        return formatter.string(from: startOfDay) // Use current date for toggle
+        return formatter.string(from: startOfDay)
     }
     
-    // Determine if the habit is completed today based on the key
+    // Determine completion status
     private var isCompletedToday: Bool {
         habit.weeklyStatus[todayDateKey] ?? false
     }
-
-    var body: some View {
-        // Use Button with the AppIntent
-        Button(intent: ToggleHabitIntent(habitID: habit.id)) {
-             // HStack is now the styled label
-             HStack(spacing: 8) { // Added spacing for clarity
-                Text(habit.icon)
-                    .font(.title3) // Slightly smaller icon
-                Text(habit.name)
-                    .font(.callout) // Slightly smaller text
-                    .lineLimit(1) // Prevent wrapping in tight spaces
-                    // Removed Spacer() and Image()
-            }
-            .padding(.vertical, 8) // Internal padding
-            .padding(.horizontal, 12)
-            .frame(maxWidth: .infinity, alignment: .leading) // Ensure HStack fills width
-            .background(isCompletedToday ? Color.green.opacity(0.8) : Color.gray.opacity(0.2)) // Conditional background
-            .foregroundColor(isCompletedToday ? .white : .primary) // Conditional text color
-            .cornerRadius(10) // Rounded corners
-        }
-        .buttonStyle(.plain) // Use plain style to make the styled HStack tappable
-        // Removed .padding(.horizontal)
-        .onAppear {
-                viewLogger.info("TodayDateKey: \(todayDateKey, privacy: .public)")
-viewLogger.info("""
-HabitToggleButton:
-- Name: \(habit.name, privacy: .public)
-- ID: \(habit.id, privacy: .public)
-- WeeklyStatus: \(String(describing: habit.weeklyStatus), privacy: .public) 
-- IsCompletedToday: \(isCompletedToday, privacy: .public)
-""")
-            }
+    
+    private var isSkipped: Bool {
+        // For now, we'll assume no skip functionality in widget
+        // This can be extended later if needed
+        false
     }
-} 
+    
+    // Calculate progress (0.0 to 1.0)
+    private var progress: Double {
+        isCompletedToday ? 1.0 : 0.0
+    }
+    
+    // Get habit color
+    private var habitColor: Color {
+        Color(hex: habit.color) ?? .blue
+    }
+    
+    var body: some View {
+        Group {
+            if isCompletedToday {
+                // If completed, open app instead of toggling
+                Button(intent: OpenAppIntent(habitID: habit.id)) {
+                    habitCardContent
+                }
+            } else {
+                // If not completed, allow toggling
+                Button(intent: ToggleHabitIntent(habitID: habit.id)) {
+                    habitCardContent
+                }
+            }
+        }
+        .buttonStyle(.plain)
+        .opacity(isSkipped ? 0.7 : 1.0)
+    }
+    
+    // Extract the card content to avoid duplication
+    private var habitCardContent: some View {
+        ZStack {
+            // Base background (habit color with reduced opacity)
+            RoundedRectangle(cornerRadius: 16)
+                .fill(habitColor.opacity(0.38))
+            
+            // Progress overlay (full habit color)
+            GeometryReader { geometry in
+                HStack {
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(habitColor)
+                        .frame(width: geometry.size.width * progress)
+                    Spacer(minLength: 0)
+                }
+            }
+            
+            // Content layer
+            HStack() {
+                // Habit icon
+                ZStack {
+                    if habit.icon.isEmoji {
+                        Text(habit.icon)
+                            .font(.system(size: 20))
+                    } else {
+                        Image(systemName: habit.icon)
+                            .font(.system(size: 20))
+                            .foregroundColor(Color.white)
+                    }
+                }
+                .frame(width: 22, height: 22)
+                
+                // Habit info
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(habit.name)
+                        .font(.system(size: 8, weight: .bold))
+                        .foregroundColor(.primary)
+                        .lineLimit(1)
+                    
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                
+                // Action button
+                ZStack {
+                    // Button background
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(Color.black.opacity(0.4))
+                        .frame(width: 30, height: 30)
+                    
+                    // Button icon
+                    actionIcon
+                        .foregroundColor(.white)
+                }
+            }
+            .padding(.horizontal, 9)
+            .padding(.vertical, 14)
+        }
+    }
+
+    
+    // Action icon based on completion status
+    private var actionIcon: some View {
+        Group {
+            if isCompletedToday {
+                Image(systemName: "checkmark")
+                    .font(.system(size: 16))
+            } else {
+                Image(systemName: "plus")
+                    .font(.system(size: 16))
+            }
+        }
+    }
+}
+

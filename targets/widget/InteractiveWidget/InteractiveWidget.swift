@@ -9,21 +9,34 @@ struct InteractiveHabitWidget: Widget {
         // Using AppIntentConfiguration for interactive widgets
         AppIntentConfiguration(kind: kind, intent: ToggleHabitIntent.self, provider: provider) { entry in
             InteractiveWidgetEntryView(entry: entry)
-                 .containerBackground(.fill.tertiary, for: .widget)
         }
         .configurationDisplayName("Interactive Habits")
         .description("Tap to complete your habits.")
-        // Define supported families (e.g., medium)
         .supportedFamilies([.systemSmall, .systemMedium, .systemLarge]) 
     }
 }
 
-// Basic Preview (can be enhanced later)
+// Preview for different widget sizes
 struct InteractiveHabitWidget_Previews: PreviewProvider {
     static var previews: some View {
         let habitStore = HabitStore()
         let mockEntry = SimpleEntry(date: Date(), habits: habitStore.mockHabits())
-        InteractiveWidgetEntryView(entry: mockEntry)
-            .previewContext(WidgetPreviewContext(family: .systemMedium))
+        
+        Group {
+            // Small widget preview
+            InteractiveWidgetEntryView(entry: mockEntry)
+                .previewContext(WidgetPreviewContext(family: .systemSmall))
+                .previewDisplayName("Small Widget")
+            
+            // Medium widget preview
+            InteractiveWidgetEntryView(entry: mockEntry)
+                .previewContext(WidgetPreviewContext(family: .systemMedium))
+                .previewDisplayName("Medium Widget")
+            
+            // Large widget preview
+            InteractiveWidgetEntryView(entry: mockEntry)
+                .previewContext(WidgetPreviewContext(family: .systemLarge))
+                .previewDisplayName("Large Widget")
+        }
     }
 } 

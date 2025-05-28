@@ -7,9 +7,6 @@ struct Habit: Codable, Identifiable {
     let icon: String
     let color: String
     var weeklyStatus: [String: Bool]
-    var colorValue: Color {
-        Color(hex: color) ?? .gray
-    }
 }
 
 extension Color {
