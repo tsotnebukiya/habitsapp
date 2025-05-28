@@ -24,6 +24,7 @@ HabitsApp/
 │   ├── stores/          # Additional Zustand stores
 │   ├── hooks/           # Custom React hooks
 │   ├── utils/           # Helper functions
+│   ├── i18n/            # Internationalization utilities
 │   └── constants/       # App constants
 ├── targets/             # Native iOS widget implementation
 │   └── widget/          # Swift widget code
@@ -149,7 +150,15 @@ HabitsApp/
    - Supabase for backend storage
    - Offline sync capabilities
 
-2. **State Updates**
+2. **Internationalization (i18n)**
+
+   - i18next for translation management
+   - react-i18next for React Native integration
+   - Translation utilities for measurement units, categories, progress text, and achievements
+   - Fallback strategy with default values
+   - Dynamic pluralization and value insertion support
+
+3. **State Updates**
 
    - Optimistic updates for instant feedback
    - Non-blocking state updates for UI responsiveness
@@ -159,7 +168,7 @@ HabitsApp/
    - Error handling with retry limits
    - Key Pattern: Avoid awaiting non-critical async operations that would block UI updates
 
-3. **Sync Pattern**
+4. **Sync Pattern**
 
    - Initial sync on app launch
    - Periodic sync (hourly)
@@ -168,7 +177,7 @@ HabitsApp/
    - Conflict resolution strategy
    - Async operations run in background to prevent UI blocking
 
-4. **State Selection/Derivation**
+5. **State Selection/Derivation**
    - Prefer custom hooks with `useMemo` for selecting/deriving state over complex selectors within `create`
    - Keep state updates synchronous where possible for immediate UI feedback
    - Use non-blocking async operations for server sync

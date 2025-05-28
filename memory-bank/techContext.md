@@ -60,10 +60,14 @@
   "@expo/vector-icons": "^14.1.0",
   "@gorhom/bottom-sheet": "^5.1.4",
   "@marceloterreiro/flash-calendar": "^1.3.0",
+  "@react-native-picker/picker": "^2.11.0",
   "@supabase/supabase-js": "^2.44.4",
   "expo-router": "^3.5.18",
   "expo-store-review": "~8.0.1",
+  "i18next": "^25.2.1",
   "posthog-react-native": "^3.3.9",
+  "react-i18next": "^15.5.2",
+  "react-native-keyboard-aware-scroll-view": "^0.9.5",
   "@sentry/react-native": "^6.1.0",
   "react-native-mmkv": "2.12.2",
   "zustand": "^5.0.1",
@@ -176,9 +180,13 @@ npm run test:coverage
      - Habits: Stores habit definitions and configurations
      - Habit Completions: Tracks habit completion history
      - User Achievements: Stores achievement progress with one-to-one user relationship
+     - Notifications: Stores scheduled notifications for habits and achievements
    - Authentication
    - Real-time subscriptions
    - Storage
+   - Edge Functions:
+     - delete-user: GDPR-compliant user account deletion
+     - email-resend: User feedback collection with device information
 
 ## Development Setup
 

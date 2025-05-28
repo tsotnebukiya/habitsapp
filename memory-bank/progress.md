@@ -2,7 +2,7 @@
 
 ## Current Status
 
-HabitsApp is a fully functional habit tracking application with all core features implemented and operational. Recent major updates include a comprehensive achievement system overhaul, UI simplification, and store review integration for improved user engagement.
+HabitsApp is a fully functional habit tracking application with all core features implemented and operational. Recent major updates include internationalization (i18n) support, enhanced user experience features, comprehensive achievement system overhaul, UI simplification, and store review integration for improved user engagement.
 
 ## Completed Systems ✅
 
@@ -25,6 +25,10 @@ HabitsApp is a fully functional habit tracking application with all core feature
 
 ### Recent Major Improvements ✅
 
+- **Internationalization Support**: Added i18next with comprehensive translation utilities for multi-language support
+- **Enhanced UX Components**: Integrated picker component and keyboard-aware scroll view for better form interactions
+- **User Account Management**: Added delete-user edge function for GDPR compliance and data privacy
+- **Feedback System**: Implemented email-resend edge function for user feedback collection with device info
 - **Achievement System Overhaul**: Simplified data model, expanded milestones, automatic modal display
 - **UI Simplification**: Removed unused components and streamlined modal system
 - **Category Enhancement**: Added display color configurations and baseline difference tracking
@@ -62,16 +66,32 @@ HabitsApp is a fully functional habit tracking application with all core feature
 
 ### High Priority
 
-1. **Test Implementation**: Write comprehensive tests for core functionality
+1. **Internationalization Implementation**: Complete i18n setup with language selection UI and translation files
 
+   - Language selection in settings
+   - Translation files for supported languages
+   - Integration of translation utilities throughout the app
+   - Testing of i18n functionality
+
+2. **User Account Features**: Integrate new edge functions into app UI
+
+   - Delete account functionality in settings
+   - Feedback form with device info collection
+   - Error handling and user confirmation flows
+
+3. **Form Improvements**: Implement new UI components
+
+   - Replace existing pickers with @react-native-picker/picker
+   - Integrate keyboard-aware scroll view in forms
+   - Improve overall form user experience
+
+4. **Test Implementation**: Write comprehensive tests for core functionality
+
+   - i18n translation utilities tests
+   - Edge function integration tests
    - Achievement system tests (including new milestone logic)
    - Store review integration tests
    - Updated modal system tests
-   - Category enhancement tests
-
-2. **UI Polish**: Complete remaining modal animations, loading states, error handling
-3. **Settings Page**: Full implementation with preference management
-4. **Authentication**: Apple/Google Sign-in integration
 
 ### Medium Priority
 
