@@ -1,25 +1,24 @@
 // app/onboarding/OnboardingSignUp.tsx
-import React, { useEffect } from 'react';
-import { View, Text, TouchableOpacity } from 'react-native';
-import { Href, useRouter } from 'expo-router';
+import useHabitsStore from '@/lib/habit-store/store';
+import useUserProfileStore from '@/lib/stores/user_profile';
+import { dateUtils } from '@/lib/utils/dayjs';
+import { GOOGLE_SIGN_IN_IOS_CLIENT_ID } from '@/safe_constants';
+import { supabase } from '@/supabase/client';
 import { FontAwesome6 } from '@expo/vector-icons';
 import {
   GoogleSignin,
   statusCodes,
 } from '@react-native-google-signin/google-signin';
-import Toast from 'react-native-toast-message';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import * as Haptics from 'expo-haptics';
-import { usePostHog } from 'posthog-react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { supabase } from '@/supabase/client';
+import { useRouter } from 'expo-router';
+import { usePostHog } from 'posthog-react-native';
+import React, { useEffect } from 'react';
+import { Text, TouchableOpacity, View } from 'react-native';
+import Toast from 'react-native-toast-message';
 import { newOnboardingStyles, onboardingGradient } from './newOnboardingStyles';
-import useUserProfileStore from '@/lib/stores/user_profile';
-import { GOOGLE_SIGN_IN_IOS_CLIENT_ID } from '@/safe_constants';
 import { ONBOARDING_STEPS } from './OnboardingSteps';
-import dayjs from '@/lib/utils/dayjs';
-import useHabitsStore from '@/lib/habit-store/store';
-import { dateUtils } from '@/lib/utils/dayjs';
 
 const OnboardingSignUp = () => {
   const router = useRouter();
@@ -129,8 +128,8 @@ const OnboardingSignUp = () => {
               cat3: userData.cat3,
               cat4: userData.cat4,
               cat5: userData.cat5,
-              allow_streak_notifications: true,
-              allow_daily_update_notifications: true,
+              allow_streak_notifications: false,
+              allow_daily_update_notifications: false,
               date_of_birth: null,
               push_token: null,
               timezone: currentTimezone,
@@ -223,8 +222,8 @@ const OnboardingSignUp = () => {
             cat3: userData.cat3,
             cat4: userData.cat4,
             cat5: userData.cat5,
-            allow_streak_notifications: true,
-            allow_daily_update_notifications: true,
+            allow_streak_notifications: false,
+            allow_daily_update_notifications: false,
             date_of_birth: null,
             push_token: null,
             timezone: currentTimezone,
