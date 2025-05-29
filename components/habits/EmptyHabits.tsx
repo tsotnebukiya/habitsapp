@@ -16,12 +16,26 @@ function EmptyHabits({ selectedDate }: { selectedDate: Date }) {
   let subtitle = t('habits.addOneNow');
   let showAddButton = true;
 
+  // Helper function to format date with translated month names
+  const formatDateWithTranslatedMonth = (date: dayjs.Dayjs): string => {
+    const monthKey = date.format('MMMM').toLowerCase();
+    const translatedMonth = t(`months.${monthKey}`, {
+      defaultValue: monthKey,
+    });
+    const day = date.format('D');
+    return `${day} ${translatedMonth}`;
+  };
+
   if (selected.isBefore(today, 'day')) {
-    title = t('habits.noHabitsScheduled', { date: selected.format('MMM D') });
+    title = t('habits.noHabitsScheduled', {
+      date: formatDateWithTranslatedMonth(selected),
+    });
     subtitle = '';
     showAddButton = false; // hide CTA for past dates
   } else if (selected.isAfter(today)) {
-    title = t('habits.noHabitsPlanned', { date: selected.format('MMM D') });
+    title = t('habits.noHabitsPlanned', {
+      date: formatDateWithTranslatedMonth(selected),
+    });
     subtitle = t('habits.planAhead');
   }
 
