@@ -1,7 +1,6 @@
 import { dateUtils } from '@/lib/utils/dayjs';
 import { getUserIdOrThrow, STORE_CONSTANTS } from '@/lib/utils/habits';
 import { supabase } from '@/supabase/client';
-import dayjs from 'dayjs';
 import { StateCreator } from 'zustand';
 import { PendingOperation, SharedSlice, StreakAchievements } from '../types';
 import { syncStoreToWidget } from '../widget-storage';
@@ -82,108 +81,68 @@ export const createSyncSlice: StateCreator<SharedSlice, [], [], SyncSlice> = (
       // Process any pending operations first
       await get().processPendingOperations();
 
-      const lastSyncTimeValue = get().lastSyncTime; // Type: Date | null
-      const isInitialSync = lastSyncTimeValue === null; // Direct check for null
+      const userId = getUserIdOrThrow();
 
-      let habitsQuery = supabase
-        .from('habits')
-        .select('*')
-        .eq('user_id', getUserIdOrThrow());
+      // Simple approach: Always fetch all data and replace local state
+      // This is more reliable and still fast for typical habit app data sizes
+      const [habitsResult, completionsResult, achievementsResult] =
+        await Promise.all([
+          supabase.from('habits').select('*').eq('user_id', userId),
 
-      let completionsQuery = supabase
-        .from('habit_completions')
-        .select('*')
-        .eq('user_id', getUserIdOrThrow());
+          supabase.from('habit_completions').select('*').eq('user_id', userId),
 
-      if (!isInitialSync) {
-        // We are sure lastSyncTimeValue is a Date here
-        const lastSyncFormatted = dateUtils.toServerDateTime(lastSyncTimeValue); // Format the Date
-        habitsQuery = habitsQuery.gt('updated_at', lastSyncFormatted);
-        completionsQuery = completionsQuery.gt('created_at', lastSyncFormatted);
-      }
+          supabase
+            .from('user_achievements')
+            .select('*')
+            .eq('user_id', userId)
+            .single(),
+        ]);
 
-      // Execute the constructed queries
-      const { data: serverHabits, error: habitsError } = await habitsQuery;
-      if (habitsError) throw habitsError;
+      // Check for errors
+      if (habitsResult.error) throw habitsResult.error;
+      if (completionsResult.error) throw completionsResult.error;
+      if (achievementsResult.error) throw achievementsResult.error;
 
-      const { data: serverCompletions, error: completionsError } =
-        await completionsQuery;
-      if (completionsError) throw completionsError;
+      // Replace local state completely with server data
+      const newHabits = new Map();
+      habitsResult.data?.forEach((habit) => newHabits.set(habit.id, habit));
 
-      // Add achievements sync
-      const { data: serverAchievements, error: achievementsError } =
-        await supabase
-          .from('user_achievements')
-          .select('*')
-          .eq('user_id', getUserIdOrThrow())
-          .single();
+      const newCompletions = new Map();
+      completionsResult.data?.forEach((completion) =>
+        newCompletions.set(completion.id, completion)
+      );
 
-      if (achievementsError) throw achievementsError;
-
-      const affectedHabits = new Set<string>();
-
-      if (serverHabits) {
-        const localHabits = get().habits;
-        serverHabits.forEach((serverHabit) => {
-          const localHabit = localHabits.get(serverHabit.id);
-          if (
-            !localHabit ||
-            // Compare timestamps directly, ensuring UTC context
-            dayjs
-              .utc(serverHabit.updated_at)
-              .isAfter(dayjs.utc(localHabit.updated_at))
-          ) {
-            set((state) => {
-              const newHabits = new Map(state.habits);
-              newHabits.set(serverHabit.id, serverHabit);
-              return { habits: newHabits };
-            });
-            affectedHabits.add(serverHabit.id);
-          }
-        });
-      }
-
-      if (serverCompletions) {
-        const localCompletions = get().completions;
-        const affectedDates = new Set<string>();
-
-        serverCompletions.forEach((serverCompletion) => {
-          if (!localCompletions.has(serverCompletion.id)) {
-            set((state) => {
-              const newCompletions = new Map(state.completions);
-              newCompletions.set(serverCompletion.id, serverCompletion);
-              return { completions: newCompletions };
-            });
-            // Ensure the date used for cache update is consistent (UTC string -> local Date)
-            affectedDates.add(serverCompletion.completion_date);
-            affectedHabits.add(serverCompletion.habit_id);
-          }
-        });
-
-        // Update cache for affected dates
-        affectedDates.forEach((dateString) => {
-          // Convert UTC date string back to local Date object for updateDayStatus
-          const date = dateUtils.fromServerDate(dateString).toDate();
-          get().updateDayStatus(date);
-        });
-      }
-      if (serverAchievements) {
-        // Update achievements state
-        set({
+      // Update all state at once
+      set({
+        habits: newHabits,
+        completions: newCompletions,
+        // Update achievements if available
+        ...(achievementsResult.data && {
           streakAchievements:
-            (serverAchievements?.streak_achievements as StreakAchievements) ||
-            {},
-          currentStreak: serverAchievements.current_streak,
-          maxStreak: serverAchievements.max_streak,
-          cat1: serverAchievements.cat1 || 50,
-          cat2: serverAchievements.cat2 || 50,
-          cat3: serverAchievements.cat3 || 50,
-          cat4: serverAchievements.cat4 || 50,
-          cat5: serverAchievements.cat5 || 50,
-        });
-      }
+            (achievementsResult.data
+              .streak_achievements as StreakAchievements) || {},
+          currentStreak: achievementsResult.data.current_streak,
+          maxStreak: achievementsResult.data.max_streak,
+          cat1: achievementsResult.data.cat1 || 50,
+          cat2: achievementsResult.data.cat2 || 50,
+          cat3: achievementsResult.data.cat3 || 50,
+          cat4: achievementsResult.data.cat4 || 50,
+          cat5: achievementsResult.data.cat5 || 50,
+        }),
+      });
 
-      // Trigger widget sync AFTER merging server data
+      // Update cache for all dates with completions
+      const affectedDates = new Set<string>();
+      completionsResult.data?.forEach((completion) => {
+        affectedDates.add(completion.completion_date);
+      });
+
+      affectedDates.forEach((dateString) => {
+        const date = dateUtils.fromServerDate(dateString).toDate();
+        get().updateDayStatus(date);
+      });
+
+      // Trigger widget sync AFTER updating all data
       const { habits, completions } = get();
       syncStoreToWidget(habits, completions);
 

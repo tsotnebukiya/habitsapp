@@ -1,4 +1,5 @@
 import { CATEGORIES } from '@/lib/constants/HabitTemplates';
+import { dateUtils } from '@/lib/utils/dayjs';
 import { Database } from '@/supabase/types';
 import { create } from 'zustand';
 
@@ -11,6 +12,8 @@ interface UpdateHabitFormData {
   color: string;
   icon: string;
   category: CategoryId;
+  hasReminder: boolean;
+  reminderTime: Date | null;
 }
 
 interface UpdateHabitStore {
@@ -29,6 +32,8 @@ const initialFormData: UpdateHabitFormData = {
   color: '#5BADFF',
   icon: 'dumbbell',
   category: 'cat1',
+  hasReminder: false,
+  reminderTime: null,
 };
 
 export const useUpdateHabitStore = create<UpdateHabitStore>((set) => ({
@@ -48,6 +53,11 @@ export const useUpdateHabitStore = create<UpdateHabitStore>((set) => ({
         color: habit.color || '#5BADFF',
         icon: habit.icon || 'dumbbell',
         category: (habit.category_name as CategoryId) || 'cat1',
+        hasReminder: habit.reminder_time !== null,
+        reminderTime:
+          habit.reminder_time !== null
+            ? dateUtils.fromHHMMString(habit.reminder_time)
+            : null,
       },
     }),
   resetForm: () => set({ formData: initialFormData }),

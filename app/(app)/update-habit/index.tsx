@@ -6,39 +6,41 @@ import { CATEGORIES_MAP } from '@/lib/constants/HabitTemplates';
 import { colors, fontWeights } from '@/lib/constants/ui';
 import useHabitsStore from '@/lib/habit-store/store';
 import { useHabit } from '@/lib/hooks/useHabits';
+import { useTranslation } from '@/lib/hooks/useTranslation';
+import { useAppStore } from '@/lib/stores/app_state';
 import { useUpdateHabitStore } from '@/lib/stores/update_habit_store';
+import { dateUtils } from '@/lib/utils/dayjs';
 import * as Haptics from 'expo-haptics';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
+  Switch,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { Icon } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function UpdateHabit() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const { t } = useTranslation();
   const { habitId } = useLocalSearchParams<{ habitId: string }>();
   const habit = useHabit(habitId);
+  const [showReminderPicker, setShowReminderPicker] = useState(false);
+  const notificationsEnabled = useAppStore(
+    (state) => state.notificationsEnabled
+  );
   const updateHabit = useHabitsStore((state) => state.updateHabit);
   const formData = useUpdateHabitStore((state) => state.formData);
+  const setFormField = useUpdateHabitStore((state) => state.setFormField);
   const initializeForm = useUpdateHabitStore((state) => state.initializeForm);
   const resetForm = useUpdateHabitStore((state) => state.resetForm);
-
-  useEffect(() => {
-    if (habit) {
-      initializeForm(habit);
-    }
-    return () => {
-      resetForm();
-    };
-  }, [habit, initializeForm, resetForm]);
 
   const chooseDetail = (type: DetailChoosingType) => {
     router.push({
@@ -46,7 +48,32 @@ export default function UpdateHabit() {
       params: { type },
     });
   };
+  const openReminderPicker = () => {
+    setShowReminderPicker(true);
+  };
 
+  const handleConfirmReminder = (date: Date) => {
+    setFormField('reminderTime', date);
+    setShowReminderPicker(false);
+  };
+
+  const handleCancelReminder = () => {
+    setShowReminderPicker(false);
+  };
+  const handleNotificationsEnable = () => {
+    if (!notificationsEnabled) {
+      router.push('/settings/notifications');
+    }
+  };
+  const toggleReminder = () => {
+    if (formData.hasReminder) {
+      setFormField('reminderTime', null);
+      setFormField('hasReminder', false);
+    } else {
+      setFormField('hasReminder', true);
+      setFormField('reminderTime', new Date());
+    }
+  };
   const handleSubmit = () => {
     if (!habit) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -56,9 +83,22 @@ export default function UpdateHabit() {
       color: formData.color,
       icon: formData.icon,
       category_name: formData.category,
+      reminder_time:
+        formData.hasReminder && formData.reminderTime
+          ? dateUtils.toHHMMString(formData.reminderTime)
+          : null,
     });
     router.back();
   };
+
+  useEffect(() => {
+    if (habit) {
+      initializeForm(habit);
+    }
+    return () => {
+      resetForm();
+    };
+  }, [habit, initializeForm, resetForm]);
 
   if (!habit) return null;
 
@@ -96,7 +136,6 @@ export default function UpdateHabit() {
                 />
               </View>
             </TouchableOpacity>
-            <Text style={styles.subTitle}>Appearance</Text>
             <View
               style={[styles.subContainer, styles.subContainerMarginBottom]}
             >
@@ -110,7 +149,7 @@ export default function UpdateHabit() {
                   size={24}
                   tintColor={colors.habitColors.grapePurple}
                 />
-                <Text style={styles.itemText}>Color</Text>
+                <Text style={styles.itemText}>{t('habits.color')}</Text>
                 <View style={styles.containerRight}>
                   <View
                     style={[
@@ -135,7 +174,7 @@ export default function UpdateHabit() {
                   size={24}
                   tintColor={colors.habitColors.salmonRed}
                 />
-                <Text style={styles.itemText}>Icon</Text>
+                <Text style={styles.itemText}>{t('habits.icon')}</Text>
                 <View style={styles.containerRight}>
                   <ItemIcon icon={formData.icon} color={formData.color} />
                   <Icon
@@ -155,7 +194,7 @@ export default function UpdateHabit() {
                   size={24}
                   tintColor={colors.habitColors.amberYellow}
                 />
-                <Text style={styles.itemText}>Description</Text>
+                <Text style={styles.itemText}>{t('habits.description')}</Text>
                 <View style={styles.containerRight}>
                   {formData.description ? (
                     <Text
@@ -166,7 +205,9 @@ export default function UpdateHabit() {
                       {formData.description}
                     </Text>
                   ) : (
-                    <Text style={styles.descriptionTextNone}>None</Text>
+                    <Text style={styles.descriptionTextNone}>
+                      {t('common.none')}
+                    </Text>
                   )}
 
                   <Icon
@@ -186,7 +227,7 @@ export default function UpdateHabit() {
                   size={24}
                   tintColor={colors.habitColors.indigoBlue}
                 />
-                <Text style={styles.itemText}>Category</Text>
+                <Text style={styles.itemText}>{t('habits.category')}</Text>
                 <View style={styles.containerRight}>
                   <Text style={styles.descriptionText}>
                     {CATEGORIES_MAP[formData.category].name}
@@ -197,6 +238,66 @@ export default function UpdateHabit() {
                     color={colors.text}
                   />
                 </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                activeOpacity={ACTIVE_OPACITY}
+                style={styles.item}
+                onPress={handleNotificationsEnable}
+                disabled={!!notificationsEnabled}
+              >
+                <SymbolView
+                  name="bell.fill"
+                  size={24}
+                  tintColor={colors.habitColors.salmonRed}
+                />
+                <Text style={styles.itemText}>{t('habits.notifications')}</Text>
+                {notificationsEnabled && (
+                  <Switch
+                    trackColor={{ true: '#31C859' }}
+                    thumbColor={'white'}
+                    ios_backgroundColor="#7c7c7c"
+                    onValueChange={toggleReminder}
+                    value={formData.hasReminder}
+                  />
+                )}
+                {notificationsEnabled && (
+                  <View style={styles.containerRight}>
+                    <TouchableOpacity
+                      style={[
+                        styles.dateButton,
+                        !formData.hasReminder && styles.dateButtonDisabled,
+                      ]}
+                      disabled={!formData.hasReminder}
+                      onPress={openReminderPicker}
+                    >
+                      <Text>
+                        {formData.reminderTime?.toLocaleTimeString([], {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        }) || 'hh:mm'}
+                      </Text>
+                    </TouchableOpacity>
+                    <DateTimePickerModal
+                      isVisible={showReminderPicker}
+                      mode="time"
+                      date={formData.reminderTime || new Date()}
+                      onConfirm={handleConfirmReminder}
+                      onCancel={handleCancelReminder}
+                    />
+                  </View>
+                )}
+                {!notificationsEnabled && (
+                  <View style={styles.containerRight}>
+                    <Text style={[styles.descriptionText, styles.errorColor]}>
+                      {t('habits.enableNotificationsToUseReminders')}
+                    </Text>
+                    <Icon
+                      source={require('@/assets/icons/chevron-right.png')}
+                      size={18}
+                      color={colors.text}
+                    />
+                  </View>
+                )}
               </TouchableOpacity>
             </View>
           </View>
@@ -314,5 +415,22 @@ const styles = StyleSheet.create({
     fontSize: 12,
     flex: 1,
     textAlign: 'right',
+  },
+  dateButton: {
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    borderRadius: 7,
+    backgroundColor: 'white',
+    borderWidth: 1,
+    borderColor: colors.border,
+    // minWidth: 86,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  dateButtonDisabled: {
+    opacity: 0.38, // MD guidance for disabled text
+  },
+  errorColor: {
+    color: colors.habitColors.salmonRed,
   },
 });

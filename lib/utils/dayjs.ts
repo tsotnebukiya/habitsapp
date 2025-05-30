@@ -93,6 +93,17 @@ export const dateUtils = {
   // New utility: format as hh:mm (24-hour, zero-padded)
   toHHMMString: (date: DateInput) => dayjs(date).format('HH:mm'),
 
+  // Convert HH:mm string back to Date object for today
+  fromHHMMString: (timeString: string) => {
+    const [hours, minutes] = timeString.split(':').map(Number);
+    return dayjs()
+      .hour(hours)
+      .minute(minutes)
+      .second(0)
+      .millisecond(0)
+      .toDate();
+  },
+
   // Common operations (preserving timezone)
   startOfDay: (date: DateInput) => dayjs(date).startOf('day'),
   endOfDay: (date: DateInput) => dayjs(date).endOf('day'),
