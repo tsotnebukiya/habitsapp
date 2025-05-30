@@ -182,6 +182,48 @@ jest.mock(
   { virtual: true }
 );
 
+// Mock expo-store-review
+jest.mock('expo-store-review', () => ({
+  requestReview: jest.fn(() => Promise.resolve()),
+  isAvailableAsync: jest.fn(() => Promise.resolve(true)),
+}));
+
+// Mock react-native-mmkv
+jest.mock('react-native-mmkv', () => ({
+  MMKV: jest.fn(() => ({
+    set: jest.fn(),
+    getString: jest.fn(() => null),
+    delete: jest.fn(),
+  })),
+}));
+
+// Mock zustand middleware
+jest.mock('zustand/middleware', () => ({
+  persist: (fn) => fn,
+  createJSONStorage: () => ({
+    setItem: jest.fn(),
+    getItem: jest.fn(() => null),
+    removeItem: jest.fn(),
+  }),
+}));
+
+// Mock app state store directly
+jest.mock('@/lib/stores/app_state', () => ({
+  useAppStore: jest.fn(() => ({
+    notificationsEnabled: true,
+    promptedReviewMilestones: [],
+    setNotificationsEnabled: jest.fn(),
+    requestReview: jest.fn(() => Promise.resolve(true)),
+    resetPromptedMilestones: jest.fn(),
+    clearAllData: jest.fn(),
+  })),
+  appStorage: {
+    set: jest.fn(),
+    getString: jest.fn(() => null),
+    delete: jest.fn(),
+  },
+}));
+
 // Set timezone for consistent testing
 process.env.TZ = 'Asia/Tbilisi';
 

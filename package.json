@@ -129,7 +129,7 @@
       "__tests__/utils/custom-matchers.ts"
     ],
     "transformIgnorePatterns": [
-      "node_modules/(?!(react-native|@react-native|expo|@expo|@supabase|zustand|dayjs)/)"
+      "node_modules/(?!(react-native|@react-native|expo|@expo|@supabase|zustand|dayjs|expo-store-review)/)"
     ],
     "moduleNameMapper": {
       "^@/(.*)$": "<rootDir>/$1"

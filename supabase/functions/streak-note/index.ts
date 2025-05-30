@@ -18,7 +18,7 @@ import { calculateUserStreaks, prepareNotifications } from './utils.ts';
 
 setupDayjs();
 
-const TARGET_HOUR = 7;
+const TARGET_HOUR = 14;
 
 Deno.serve(async (req) => {
   try {
@@ -86,7 +86,6 @@ Deno.serve(async (req) => {
 
     // 4. Insert scheduled notifications into the database
     if (scheduledNotifications.length > 0) {
-      console.log('Inserting notifications into database');
       const { error } = await supabaseClient
         .from('notifications')
         .insert(scheduledNotifications);
@@ -95,7 +94,6 @@ Deno.serve(async (req) => {
         console.error('Error inserting notifications:', error);
         throw error;
       }
-      console.log('Successfully inserted notifications');
     }
 
     return createSuccessResponse({

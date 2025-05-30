@@ -12,13 +12,16 @@ import { getTemplates, selectRandomTemplate } from '../_shared/utils.ts';
 
 function calculateCurrentStreak(
   habits: Habit[],
-  completions: HabitCompletion[]
+  completions: HabitCompletion[],
+  userTimezone: string
 ): number {
-  // Normalize dates for completions
+  // Normalize dates for completions using user timezone
   const completionsByDate = new Map<string, Set<string>>();
 
   for (const completion of completions) {
-    const dateKey = dayjs.utc(completion.completion_date).format('YYYY-MM-DD');
+    const dateKey = dayjs(completion.completion_date)
+      .tz(userTimezone)
+      .format('YYYY-MM-DD');
 
     if (!completionsByDate.has(dateKey)) {
       completionsByDate.set(dateKey, new Set());
@@ -29,25 +32,14 @@ function calculateCurrentStreak(
     }
   }
 
-  // Sort dates in descending order
-  const dates = Array.from(completionsByDate.keys()).sort((a, b) =>
-    b.localeCompare(a)
-  );
-
-  // Calculate streak
-  let streak = 0;
-  let prevDate = dayjs.utc().format('YYYY-MM-DD');
-
-  for (const date of dates) {
-    // Check for gap in dates
-    const dayDiff = dayjs.utc(prevDate).diff(dayjs.utc(date), 'day');
-    if (dayDiff > 1) break;
-
-    // Get active habits for this date
+  // Helper function to get active habits for a specific date
+  const getActiveHabitsForDate = (date: string) => {
     const activeHabits = habits.filter((habit) => {
-      const startDate = dayjs.utc(habit.start_date).format('YYYY-MM-DD');
+      const startDate = dayjs(habit.start_date)
+        .tz(userTimezone)
+        .format('YYYY-MM-DD');
       const endDate = habit.end_date
-        ? dayjs.utc(habit.end_date).format('YYYY-MM-DD')
+        ? dayjs(habit.end_date).tz(userTimezone).format('YYYY-MM-DD')
         : null;
 
       // Check date range
@@ -58,12 +50,59 @@ function calculateCurrentStreak(
       if (habit.frequency_type === 'daily') {
         return true;
       } else if (habit.frequency_type === 'weekly') {
-        const dayOfWeek = dayjs.utc(date).day();
+        const dayOfWeek = dayjs(date).tz(userTimezone).day();
         return habit.days_of_week?.includes(dayOfWeek) ?? false;
       }
 
       return false;
     });
+
+    return activeHabits;
+  };
+
+  // Check today's completions first
+  const today = dayjs().tz(userTimezone).format('YYYY-MM-DD');
+
+  const todayActiveHabits = getActiveHabitsForDate(today);
+  const todayCompletions = completionsByDate.get(today) || new Set();
+
+  // Check if today is complete
+  const todayComplete =
+    todayActiveHabits.length > 0 &&
+    todayActiveHabits.every((h) => todayCompletions.has(h.id));
+
+  let streak = 0;
+  let checkDate = today;
+
+  // If today is complete, start streak at 1 and check from yesterday
+  if (todayComplete) {
+    streak = 1;
+    checkDate = dayjs(today)
+      .tz(userTimezone)
+      .subtract(1, 'day')
+      .format('YYYY-MM-DD');
+  }
+  // Get all completion dates before checkDate, sorted in descending order
+  const allCompletionDates = Array.from(completionsByDate.keys());
+
+  // If today is complete, we want dates <= checkDate (which is yesterday)
+  // If today is not complete, we want dates < checkDate (which is today)
+  const pastDates = allCompletionDates
+    .filter((date) => (todayComplete ? date <= checkDate : date < checkDate))
+    .sort((a, b) => b.localeCompare(a));
+
+  let prevDate = checkDate;
+
+  for (const date of pastDates) {
+    // Check for gap in dates
+    const dayDiff = dayjs(prevDate).diff(dayjs(date), 'day');
+
+    if (dayDiff > 1) {
+      break;
+    }
+
+    // Get active habits for this date
+    const activeHabits = getActiveHabitsForDate(date);
 
     // Skip days with no active habits
     if (activeHabits.length === 0) {
@@ -75,7 +114,9 @@ function calculateCurrentStreak(
     const completed = completionsByDate.get(date) || new Set();
     const allCompleted = activeHabits.every((h) => completed.has(h.id));
 
-    if (!allCompleted) break;
+    if (!allCompleted) {
+      break;
+    }
 
     streak++;
     prevDate = date;
@@ -95,7 +136,11 @@ export function calculateUserStreaks(
     const allCompletions = habits.flatMap((habit) => habit.completions);
 
     // Calculate current streak using similar logic to achievements.ts
-    const currentStreak = calculateCurrentStreak(habits, allCompletions);
+    const currentStreak = calculateCurrentStreak(
+      habits,
+      allCompletions,
+      user.timezone
+    );
 
     results.push({
       userId: user.id,
