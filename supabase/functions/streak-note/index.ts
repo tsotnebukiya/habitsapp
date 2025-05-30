@@ -1,85 +1,51 @@
 // Setup type definitions for built-in Supabase Runtime APIs
 import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
-import { createClient } from 'jsr:@supabase/supabase-js@2';
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
 import {
+  getActiveHabitsBasic,
+  getHabitCompletionsAll,
   getUsersWithAchievements,
-  prepareNotifications,
-  isNextHourTarget,
-  getActiveHabits,
-  getHabitCompletions,
+} from '../_shared/queries.ts';
+import type { UserWithCurrentStreak } from '../_shared/types.ts';
+import {
+  createErrorResponse,
+  createSuccessResponse,
+  createSupabaseClient,
   groupHabitsAndCompletions,
-  calculateUserStreaks,
-  type UsersWithCurrentStreak,
-} from './utils.ts';
+  isNextHourTarget,
+  setupDayjs,
+} from '../_shared/utils.ts';
+import { calculateUserStreaks, prepareNotifications } from './utils.ts';
 
 // Configure dayjs with UTC and timezone plugins
-dayjs.extend(utc);
-dayjs.extend(timezone);
+setupDayjs();
 
-const TARGET_HOUR = 14; // 2 PM as specified in plan.md
+// const TARGET_HOUR = 14; // 2 PM as specified in plan.md
+const TARGET_HOUR = 5; // 2 PM as specified in plan.md
 
 Deno.serve(async (req) => {
-  // Initialize timing object to track performance
-  const timing = {
-    start: performance.now(),
-    clientCreated: 0,
-    usersFetched: 0,
-    usersFiltered: 0,
-    habitsFetched: 0,
-    completionsFetched: 0,
-    dataGrouped: 0,
-    streaksCalculated: 0,
-    notificationsPrepared: 0,
-    notificationsInserted: 0,
-    end: 0,
-  };
-
   try {
-    console.log('Starting streak-note function');
-
-    const supabaseUrl = Deno.env.get('SUPABASE_URL');
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
-
-    if (!supabaseUrl || !supabaseKey) {
-      throw new Error('Missing Supabase environment variables');
-    }
-
-    console.log('Creating Supabase client');
-    const supabaseClient = createClient(supabaseUrl, supabaseKey);
-    timing.clientCreated = performance.now();
+    const supabaseClient = createSupabaseClient();
 
     // 1. Get all users with push tokens and their achievements
-    console.log('Fetching users with achievements');
     const users = await getUsersWithAchievements(supabaseClient);
-    timing.usersFetched = performance.now();
-    console.log(
-      `Found ${users.length} users with push tokens and achievements`
-    );
 
     // 2. Filter users by target hour
-    console.log('Filtering users by target hour');
+
     const usersInTargetHour = users.filter((user) =>
       isNextHourTarget(user.timezone, TARGET_HOUR)
     );
-    timing.usersFiltered = performance.now();
-    console.log(`Found ${usersInTargetHour.length} users in target hour`);
 
     // 3. Get Habits for users
-    const habits = await getActiveHabits(
+    const habits = await getActiveHabitsBasic(
       supabaseClient,
       usersInTargetHour.map((u) => u.id)
     );
-    timing.habitsFetched = performance.now();
 
     // 4. Get completions for habits
-    const completions = await getHabitCompletions(
+    const completions = await getHabitCompletionsAll(
       supabaseClient,
       habits.map((h) => h.id)
     );
-    timing.completionsFetched = performance.now();
 
     // 5. Group habits and completions
     const usersWithHabits = groupHabitsAndCompletions(
@@ -87,24 +53,22 @@ Deno.serve(async (req) => {
       habits,
       completions
     );
-    timing.dataGrouped = performance.now();
-
     // 6. Calculate streaks
     const streakResults = calculateUserStreaks(usersWithHabits);
-    timing.streaksCalculated = performance.now();
+    console.log(
+      usersInTargetHour,
+      habits,
+      completions,
+      usersWithHabits,
+      streakResults
+    );
 
     if (usersInTargetHour.length === 0) {
-      timing.end = performance.now();
-      logTimingResults(timing);
-
-      return new Response(
-        JSON.stringify({
-          success: true,
-          notificationsScheduled: 0,
-          usersInTargetHour: 0,
-        }),
-        { headers: { 'Content-Type': 'application/json' } }
-      );
+      return createSuccessResponse({
+        success: true,
+        notificationsScheduled: 0,
+        usersInTargetHour: 0,
+      });
     }
 
     // 7. Map streak results back to users for notifications
@@ -122,16 +86,12 @@ Deno.serve(async (req) => {
           current_streak: result.currentStreak,
         };
       })
-      .filter((user): user is UsersWithCurrentStreak => user !== null); // Type predicate
+      .filter((user): user is UserWithCurrentStreak => user !== null); // Type predicate
 
-    // 3. Prepare notifications for eligible users
-    console.log('Preparing notifications');
     const scheduledNotifications = prepareNotifications(
       usersWithCurrentStreak,
       TARGET_HOUR
     );
-    timing.notificationsPrepared = performance.now();
-    console.log(`Prepared ${scheduledNotifications.length} notifications`);
 
     // 4. Insert scheduled notifications into the database
     if (scheduledNotifications.length > 0) {
@@ -146,85 +106,278 @@ Deno.serve(async (req) => {
       }
       console.log('Successfully inserted notifications');
     }
-    timing.notificationsInserted = performance.now();
 
-    timing.end = performance.now();
-    logTimingResults(timing);
-
-    return new Response(
-      JSON.stringify({
-        success: true,
-        notificationsScheduled: scheduledNotifications.length,
-      }),
-      {
-        headers: { 'Content-Type': 'application/json' },
-      }
-    );
+    return createSuccessResponse({
+      success: true,
+      notificationsScheduled: scheduledNotifications.length,
+    });
   } catch (error: unknown) {
     console.error('Error in streak-note function:', error);
     if (error instanceof Error) {
       console.error('Error stack:', error.stack);
     }
 
-    // If we have timing data, log it even on error
-    if (timing.start) {
-      timing.end = performance.now();
-      logTimingResults(timing);
-    }
-
-    return new Response(
-      JSON.stringify({
-        success: false,
-        error:
-          error instanceof Error ? error.message : 'Unknown error occurred',
-        errorDetails: error instanceof Error ? error.stack : undefined,
-      }),
-      {
-        status: 500,
-        headers: { 'Content-Type': 'application/json' },
-      }
-    );
+    return createErrorResponse(error);
   }
 });
 
-// Helper function to log all timing results at once
-function logTimingResults(timing: {
-  start: number;
-  clientCreated: number;
-  usersFetched: number;
-  usersFiltered: number;
-  habitsFetched: number;
-  completionsFetched: number;
-  dataGrouped: number;
-  streaksCalculated: number;
-  notificationsPrepared: number;
-  notificationsInserted: number;
-  end: number;
-}) {
-  const totalTime = (timing.end - timing.start).toFixed(2);
-
-  // Build a single styled log message
-  const logMessage = `
-⏱️ Performance Timing Results ⏱️
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-▶ Total execution time: ${totalTime}ms
-  ├─ Create client: ${(timing.clientCreated - timing.start).toFixed(2)}ms
-  ├─ Fetch users: ${(timing.usersFetched - timing.clientCreated).toFixed(2)}ms
-  ├─ Filter users: ${(timing.usersFiltered - timing.usersFetched).toFixed(2)}ms
-  ├─ Fetch habits: ${(timing.habitsFetched - timing.usersFiltered).toFixed(2)}ms
-  ├─ Fetch completions: ${(timing.completionsFetched - timing.habitsFetched).toFixed(2)}ms
-  ├─ Group data: ${(timing.dataGrouped - timing.completionsFetched).toFixed(2)}ms
-  ├─ Calculate streaks: ${(timing.streaksCalculated - timing.dataGrouped).toFixed(10)}ms${
-    timing.notificationsPrepared > 0
-      ? `\n  ├─ Prepare notifications: ${(timing.notificationsPrepared - timing.streaksCalculated).toFixed(2)}ms`
-      : ''
-  }${
-    timing.notificationsInserted > 0
-      ? `\n  └─ Insert notifications: ${(timing.notificationsInserted - timing.notificationsPrepared).toFixed(2)}ms`
-      : '\n  └─ (No notifications inserted)'
-  }
-`;
-
-  // Log everything in a single call
-  console.log(logMessage);
-}
+// [
+//   {
+//     id: "2a91da72-776e-415f-8e81-65e17d9ae154",
+//     push_token: "ExponentPushToken[-LDSbqNpwulf_r8aXYQDsU]",
+//     timezone: "Asia/Tbilisi",
+//     preferred_language: "ru",
+//     streak_achievements: {
+//       "1": true,
+//       "3": false,
+//       "5": false,
+//       "7": false,
+//       "10": false,
+//       "14": false,
+//       "21": false,
+//       "28": false,
+//       "30": false,
+//       "45": false,
+//       "60": false,
+//       "90": false,
+//       "100": false,
+//       "180": false,
+//       "200": false
+//     }
+//   }
+// ] [
+//   {
+//     id: "ced6794c-d3cd-4ad4-a57f-8ffba34be485",
+//     user_id: "2a91da72-776e-415f-8e81-65e17d9ae154",
+//     created_at: "2025-05-29T16:26:48.481+00:00",
+//     updated_at: "2025-05-29T16:26:48.481+00:00",
+//     name: "Random Act of Kindness",
+//     description: "Perform a random act of kindness.",
+//     icon: "hands.sparkles.fill",
+//     color: "#FF8A65",
+//     frequency_type: "daily",
+//     completions_per_day: 1,
+//     days_of_week: null,
+//     start_date: "2025-05-29",
+//     end_date: null,
+//     goal_value: 1,
+//     goal_unit: "count",
+//     streak_goal: null,
+//     reminder_time: null,
+//     category_name: "cat3",
+//     gamification_attributes: null,
+//     is_active: true,
+//     type: "GOOD",
+//     sort_id: 1
+//   },
+//   {
+//     id: "1fe3a6c8-59da-48de-89fd-76c9b3e63c51",
+//     user_id: "2a91da72-776e-415f-8e81-65e17d9ae154",
+//     created_at: "2025-05-29T23:58:27.748+00:00",
+//     updated_at: "2025-05-29T23:58:27.748+00:00",
+//     name: "Language Practice",
+//     description: "Practice a foreign language for 15 minutes.",
+//     icon: "globe.europe.africa.fill",
+//     color: "#5C6BC0",
+//     frequency_type: "daily",
+//     completions_per_day: 15,
+//     days_of_week: null,
+//     start_date: "2025-05-30",
+//     end_date: null,
+//     goal_value: 15,
+//     goal_unit: "minutes",
+//     streak_goal: null,
+//     reminder_time: "04:00:00",
+//     category_name: "cat2",
+//     gamification_attributes: null,
+//     is_active: true,
+//     type: "GOOD",
+//     sort_id: 2
+//   },
+//   {
+//     id: "5c515085-73b6-4933-8b4f-68e3bc842997",
+//     user_id: "2a91da72-776e-415f-8e81-65e17d9ae154",
+//     created_at: "2025-05-30T00:35:44.121+00:00",
+//     updated_at: "2025-05-30T00:35:44.121+00:00",
+//     name: "Drink Water",
+//     description: "Drink at least 8 glasses of water.",
+//     icon: "drop.fill",
+//     color: "#59B0F6",
+//     frequency_type: "daily",
+//     completions_per_day: 8,
+//     days_of_week: null,
+//     start_date: "2025-05-30",
+//     end_date: null,
+//     goal_value: 8,
+//     goal_unit: "glasses",
+//     streak_goal: null,
+//     reminder_time: "04:40:00",
+//     category_name: "cat1",
+//     gamification_attributes: null,
+//     is_active: true,
+//     type: "GOOD",
+//     sort_id: 3
+//   },
+//   {
+//     id: "23a63dba-a194-46b9-81e7-fd1d69f66b02",
+//     user_id: "2a91da72-776e-415f-8e81-65e17d9ae154",
+//     created_at: "2025-05-30T00:36:17.299+00:00",
+//     updated_at: "2025-05-30T00:36:17.299+00:00",
+//     name: "Reading",
+//     description: "Read for 30 minutes.",
+//     icon: "book.closed.fill",
+//     color: "#7E57C2",
+//     frequency_type: "daily",
+//     completions_per_day: 30,
+//     days_of_week: null,
+//     start_date: "2025-05-30",
+//     end_date: null,
+//     goal_value: 30,
+//     goal_unit: "minutes",
+//     streak_goal: null,
+//     reminder_time: "05:36:00",
+//     category_name: "cat2",
+//     gamification_attributes: null,
+//     is_active: true,
+//     type: "GOOD",
+//     sort_id: 4
+//   }
+// ] [
+//   {
+//     id: "9188b31c-3713-40f1-9400-da25cf1947df",
+//     habit_id: "ced6794c-d3cd-4ad4-a57f-8ffba34be485",
+//     user_id: "2a91da72-776e-415f-8e81-65e17d9ae154",
+//     completion_date: "2025-05-29",
+//     status: "completed",
+//     value: 1,
+//     created_at: "2025-05-29T16:26:53.461+00:00"
+//   }
+// ] [
+//   {
+//     id: "2a91da72-776e-415f-8e81-65e17d9ae154",
+//     push_token: "ExponentPushToken[-LDSbqNpwulf_r8aXYQDsU]",
+//     timezone: "Asia/Tbilisi",
+//     preferred_language: "ru",
+//     streak_achievements: {
+//       "1": true,
+//       "3": false,
+//       "5": false,
+//       "7": false,
+//       "10": false,
+//       "14": false,
+//       "21": false,
+//       "28": false,
+//       "30": false,
+//       "45": false,
+//       "60": false,
+//       "90": false,
+//       "100": false,
+//       "180": false,
+//       "200": false
+//     },
+//     habits: [
+//       {
+//         id: "ced6794c-d3cd-4ad4-a57f-8ffba34be485",
+//         user_id: "2a91da72-776e-415f-8e81-65e17d9ae154",
+//         created_at: "2025-05-29T16:26:48.481+00:00",
+//         updated_at: "2025-05-29T16:26:48.481+00:00",
+//         name: "Random Act of Kindness",
+//         description: "Perform a random act of kindness.",
+//         icon: "hands.sparkles.fill",
+//         color: "#FF8A65",
+//         frequency_type: "daily",
+//         completions_per_day: 1,
+//         days_of_week: null,
+//         start_date: "2025-05-29",
+//         end_date: null,
+//         goal_value: 1,
+//         goal_unit: "count",
+//         streak_goal: null,
+//         reminder_time: null,
+//         category_name: "cat3",
+//         gamification_attributes: null,
+//         is_active: true,
+//         type: "GOOD",
+//         sort_id: 1,
+//         completions: [ [Object] ]
+//       },
+//       {
+//         id: "1fe3a6c8-59da-48de-89fd-76c9b3e63c51",
+//         user_id: "2a91da72-776e-415f-8e81-65e17d9ae154",
+//         created_at: "2025-05-29T23:58:27.748+00:00",
+//         updated_at: "2025-05-29T23:58:27.748+00:00",
+//         name: "Language Practice",
+//         description: "Practice a foreign language for 15 minutes.",
+//         icon: "globe.europe.africa.fill",
+//         color: "#5C6BC0",
+//         frequency_type: "daily",
+//         completions_per_day: 15,
+//         days_of_week: null,
+//         start_date: "2025-05-30",
+//         end_date: null,
+//         goal_value: 15,
+//         goal_unit: "minutes",
+//         streak_goal: null,
+//         reminder_time: "04:00:00",
+//         category_name: "cat2",
+//         gamification_attributes: null,
+//         is_active: true,
+//         type: "GOOD",
+//         sort_id: 2,
+//         completions: []
+//       },
+//       {
+//         id: "5c515085-73b6-4933-8b4f-68e3bc842997",
+//         user_id: "2a91da72-776e-415f-8e81-65e17d9ae154",
+//         created_at: "2025-05-30T00:35:44.121+00:00",
+//         updated_at: "2025-05-30T00:35:44.121+00:00",
+//         name: "Drink Water",
+//         description: "Drink at least 8 glasses of water.",
+//         icon: "drop.fill",
+//         color: "#59B0F6",
+//         frequency_type: "daily",
+//         completions_per_day: 8,
+//         days_of_week: null,
+//         start_date: "2025-05-30",
+//         end_date: null,
+//         goal_value: 8,
+//         goal_unit: "glasses",
+//         streak_goal: null,
+//         reminder_time: "04:40:00",
+//         category_name: "cat1",
+//         gamification_attributes: null,
+//         is_active: true,
+//         type: "GOOD",
+//         sort_id: 3,
+//         completions: []
+//       },
+//       {
+//         id: "23a63dba-a194-46b9-81e7-fd1d69f66b02",
+//         user_id: "2a91da72-776e-415f-8e81-65e17d9ae154",
+//         created_at: "2025-05-30T00:36:17.299+00:00",
+//         updated_at: "2025-05-30T00:36:17.299+00:00",
+//         name: "Reading",
+//         description: "Read for 30 minutes.",
+//         icon: "book.closed.fill",
+//         color: "#7E57C2",
+//         frequency_type: "daily",
+//         completions_per_day: 30,
+//         days_of_week: null,
+//         start_date: "2025-05-30",
+//         end_date: null,
+//         goal_value: 30,
+//         goal_unit: "minutes",
+//         streak_goal: null,
+//         reminder_time: "05:36:00",
+//         category_name: "cat2",
+//         gamification_attributes: null,
+//         is_active: true,
+//         type: "GOOD",
+//         sort_id: 4,
+//         completions: []
+//       }
+//     ]
+//   }
+// ] [
+//   { userId: "2a91da72-776e-415f-8e81-65e17d9ae154", currentStreak: 0 }
+// ]

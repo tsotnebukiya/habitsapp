@@ -1,207 +1,14 @@
 // Setup type definitions for built-in Supabase Runtime APIs
-import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
-import { SupabaseClient } from 'jsr:@supabase/supabase-js@2';
 import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-import timezone from 'dayjs/plugin/timezone';
-
-// Configure dayjs with UTC and timezone plugins
-dayjs.extend(utc);
-dayjs.extend(timezone);
-
-export interface NotificationData {
-  user_id: string;
-  title: string;
-  body: string;
-  notification_type: 'MORNING' | 'EVENING' | 'STREAK';
-  scheduled_for: string;
-  processed: boolean;
-}
-
-export interface Habit {
-  id: string;
-  name: string;
-  user_id: string;
-  reminder_time: string | null;
-  days_of_week: number[] | null;
-  is_active: boolean;
-  start_date: string;
-  end_date: string | null;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface HabitCompletion {
-  id: string;
-  habit_id: string;
-  completion_date: string;
-  created_at: string;
-  status: 'not_started' | 'skipped' | 'completed' | 'in_progress';
-  user_id: string;
-  value: number | null;
-}
-
-export interface UserWithHabits extends UserWithAchievements {
-  habits: (Habit & { completions: HabitCompletion[] })[];
-}
-
-export interface UsersWithCurrentStreak extends UserWithAchievements {
-  current_streak: number;
-}
-
-type UserWithAchievements = {
-  id: string;
-  push_token: string;
-  timezone: string;
-  streak_achievements: Record<string, boolean>;
-};
-
-const streakNotificationTemplates = [
-  {
-    title: 'Almost at a {milestone}-Day Streak! 🎯',
-    body: 'Just 2 more days to reach this milestone!',
-  },
-  {
-    title: '{milestone}-Day Streak Approaching! ✨',
-    body: "You're just 2 days away. Keep going!",
-  },
-  {
-    title: 'Streak Alert: {milestone} Days! 🔥',
-    body: '2 more days until you hit this milestone!',
-  },
-  {
-    title: 'Close to Your {milestone}-Day Goal! 💪',
-    body: "Don't break your streak now - 2 days to go!",
-  },
-  {
-    title: 'Achievement Unlocking Soon! 🏆',
-    body: 'Your {milestone}-day streak is just 2 days away!',
-  },
-  {
-    title: '{milestone}-Day Streak Loading... ⏳',
-    body: 'Almost there! Just 2 more days!',
-  },
-  {
-    title: 'Streak Check: {milestone} Days Soon! 📈',
-    body: 'Stay consistent for 2 more days!',
-  },
-  {
-    title: 'Big Milestone Ahead! 🌟',
-    body: 'Your {milestone}-day streak is 2 days away!',
-  },
-  {
-    title: 'Victory in Sight! 🎉',
-    body: 'Keep going for your {milestone}-day achievement!',
-  },
-  {
-    title: '2 Days to Your {milestone}-Day Goal! 🚀',
-    body: 'Stay on track for this streak milestone!',
-  },
-];
-
-export const getUsersWithAchievements = async (
-  supabase: SupabaseClient
-): Promise<UserWithAchievements[]> => {
-  const { data, error } = await supabase
-    .from('users')
-    .select(
-      `
-      id,
-      push_token,
-      timezone,
-      user_achievements!inner (
-        streak_achievements
-      )
-    `
-    )
-    .not('push_token', 'is', null)
-    .is('allow_streak_notifications', true);
-
-  if (error) {
-    console.error('Error fetching users with achievements:', error);
-    throw error;
-  }
-
-  return data.map((user: any) => ({
-    id: user.id,
-    push_token: user.push_token!,
-    timezone: user.timezone,
-    streak_achievements: user.user_achievements.streak_achievements as Record<
-      string,
-      boolean
-    >,
-  }));
-};
-
-export const isNextHourTarget = (
-  userTimezone: string,
-  targetHour: number
-): boolean => {
-  const userNow = dayjs().tz(userTimezone);
-  const userNextHour = userNow.add(1, 'hour').hour();
-  return userNextHour === targetHour;
-};
-
-export async function getActiveHabits(
-  supabaseClient: SupabaseClient,
-  userIds: string[]
-): Promise<Habit[]> {
-  const { data, error } = await supabaseClient
-    .from('habits')
-    .select('*')
-    .in('user_id', userIds)
-    .eq('is_active', true);
-
-  if (error) throw error;
-  return data || [];
-}
-
-export async function getHabitCompletions(
-  supabaseClient: SupabaseClient,
-  habitIds: string[]
-): Promise<HabitCompletion[]> {
-  const { data: completions, error } = await supabaseClient
-    .from('habit_completions')
-    .select('*')
-    .in('habit_id', habitIds);
-
-  if (error) throw error;
-  return completions || [];
-}
-
-export function groupHabitsAndCompletions(
-  users: UserWithAchievements[],
-  habits: Habit[],
-  completions: HabitCompletion[]
-): UserWithHabits[] {
-  // Create a Map for faster lookups
-  const completionsByHabit = new Map<string, HabitCompletion[]>();
-  for (const completion of completions) {
-    if (!completionsByHabit.has(completion.habit_id)) {
-      completionsByHabit.set(completion.habit_id, []);
-    }
-    completionsByHabit.get(completion.habit_id)!.push(completion);
-  }
-
-  const habitsByUser = new Map<
-    string,
-    (Habit & { completions: HabitCompletion[] })[]
-  >();
-  for (const habit of habits) {
-    if (!habitsByUser.has(habit.user_id)) {
-      habitsByUser.set(habit.user_id, []);
-    }
-    habitsByUser.get(habit.user_id)!.push({
-      ...habit,
-      completions: completionsByHabit.get(habit.id) || [],
-    });
-  }
-
-  return users.map((user) => ({
-    ...user,
-    habits: habitsByUser.get(user.id) || [],
-  }));
-}
+import 'jsr:@supabase/functions-js/edge-runtime.d.ts';
+import {
+  Habit,
+  HabitCompletion,
+  NotificationData,
+  UserWithCurrentStreak,
+  UserWithHabitsAndAchievements,
+} from '../_shared/types.ts';
+import { getTemplates, selectRandomTemplate } from '../_shared/utils.ts';
 
 function calculateCurrentStreak(
   habits: Habit[],
@@ -269,7 +76,7 @@ function calculateCurrentStreak(
 }
 
 export function calculateUserStreaks(
-  usersWithHabits: UserWithHabits[]
+  usersWithHabits: UserWithHabitsAndAchievements[]
 ): { userId: string; currentStreak: number }[] {
   const results = [];
 
@@ -306,7 +113,7 @@ export const getNextStreakMilestone = (
 };
 
 export const prepareNotifications = (
-  users: UsersWithCurrentStreak[],
+  users: UserWithCurrentStreak[],
   targetHour: number
 ): NotificationData[] => {
   const notifications: NotificationData[] = [];
@@ -331,11 +138,9 @@ export const prepareNotifications = (
       .add(1, 'hour')
       .toISOString();
 
-    // Select random template
-    const randomIndex = Math.floor(
-      Math.random() * streakNotificationTemplates.length
-    );
-    const template = streakNotificationTemplates[randomIndex];
+    // Get templates in user's preferred language
+    const templates = getTemplates(user.preferred_language, 'streak');
+    const template = selectRandomTemplate(templates);
 
     // Replace the milestone placeholder with the actual number
     const title = template.title.replace(
