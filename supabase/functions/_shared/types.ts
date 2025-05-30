@@ -44,6 +44,7 @@ export interface Habit {
   end_date: string | null;
   created_at: string;
   updated_at: string;
+  frequency_type: 'daily' | 'weekly';
 }
 
 // HabitCompletion interface (identical across all 3 files)

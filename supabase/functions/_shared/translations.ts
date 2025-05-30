@@ -7,7 +7,12 @@ export interface Template {
 }
 
 export interface StreakTranslations {
-  templates: Template[];
+  twoDay: {
+    templates: Template[];
+  };
+  oneDay: {
+    templates: Template[];
+  };
 }
 
 export interface DailyUpdateTranslations {
@@ -40,48 +45,94 @@ export interface Translations {
 export const translations: Translations = {
   en: {
     streak: {
-      templates: [
-        {
-          title: 'Almost at a {milestone}-Day Streak! 🎯',
-          body: 'Just 2 more days to reach this milestone!',
-        },
-        {
-          title: '{milestone}-Day Streak Approaching! ✨',
-          body: "You're just 2 days away. Keep going!",
-        },
-        {
-          title: 'Streak Alert: {milestone} Days! 🔥',
-          body: '2 more days until you hit this milestone!',
-        },
-        {
-          title: 'Close to Your {milestone}-Day Goal! 💪',
-          body: "Don't break your streak now - 2 days to go!",
-        },
-        {
-          title: 'Achievement Unlocking Soon! 🏆',
-          body: 'Your {milestone}-day streak is just 2 days away!',
-        },
-        {
-          title: '{milestone}-Day Streak Loading... ⏳',
-          body: 'Almost there! Just 2 more days!',
-        },
-        {
-          title: 'Streak Check: {milestone} Days Soon! 📈',
-          body: 'Stay consistent for 2 more days!',
-        },
-        {
-          title: 'Big Milestone Ahead! 🌟',
-          body: 'Your {milestone}-day streak is 2 days away!',
-        },
-        {
-          title: 'Victory in Sight! 🎉',
-          body: 'Keep going for your {milestone}-day achievement!',
-        },
-        {
-          title: '2 Days to Your {milestone}-Day Goal! 🚀',
-          body: 'Stay on track for this streak milestone!',
-        },
-      ],
+      twoDay: {
+        templates: [
+          {
+            title: 'Almost at a {milestone}-Day Streak! 🎯',
+            body: 'Just 2 more days to reach this milestone!',
+          },
+          {
+            title: '{milestone}-Day Streak Approaching! ✨',
+            body: "You're just 2 days away. Keep going!",
+          },
+          {
+            title: 'Streak Alert: {milestone} Days! 🔥',
+            body: '2 more days until you hit this milestone!',
+          },
+          {
+            title: 'Close to Your {milestone}-Day Goal! 💪',
+            body: "Don't break your streak now - 2 days to go!",
+          },
+          {
+            title: 'Achievement Unlocking Soon! 🏆',
+            body: 'Your {milestone}-day streak is just 2 days away!',
+          },
+          {
+            title: '{milestone}-Day Streak Loading... ⏳',
+            body: 'Almost there! Just 2 more days!',
+          },
+          {
+            title: 'Streak Check: {milestone} Days Soon! 📈',
+            body: 'Stay consistent for 2 more days!',
+          },
+          {
+            title: 'Big Milestone Ahead! 🌟',
+            body: 'Your {milestone}-day streak is 2 days away!',
+          },
+          {
+            title: 'Victory in Sight! 🎉',
+            body: 'Keep going for your {milestone}-day achievement!',
+          },
+          {
+            title: '2 Days to Your {milestone}-Day Goal! 🚀',
+            body: 'Stay on track for this streak milestone!',
+          },
+        ],
+      },
+      oneDay: {
+        templates: [
+          {
+            title: 'Tomorrow You Hit {milestone} Days! 🎯',
+            body: "Don't break the chain now - you're so close!",
+          },
+          {
+            title: '1 Day to Your {milestone}-Day Streak! 🔥',
+            body: 'Tomorrow is the big day! Keep going!',
+          },
+          {
+            title: 'Final Push: {milestone} Days Tomorrow! 💪',
+            body: 'One more day to reach this milestone!',
+          },
+          {
+            title: '{milestone}-Day Achievement Tomorrow! ✨',
+            body: "You're just one day away from greatness!",
+          },
+          {
+            title: 'Almost There: {milestone} Days! 🏆',
+            body: "Tomorrow you'll hit this amazing milestone!",
+          },
+          {
+            title: 'Last Day Before {milestone}! ⏰',
+            body: "Don't give up now - victory is tomorrow!",
+          },
+          {
+            title: '24 Hours to {milestone} Days! 🚀',
+            body: 'Your streak milestone is just one day away!',
+          },
+          {
+            title: "Tomorrow's the Day: {milestone}! 🌟",
+            body: 'One final day to reach your goal!',
+          },
+          {
+            title: 'Milestone Eve: {milestone} Days! 🎉',
+            body: 'Tomorrow you achieve something amazing!',
+          },
+          {
+            title: 'One Day Left: {milestone} Streak! ⚡',
+            body: 'Cross the finish line tomorrow!',
+          },
+        ],
+      },
     },
     dailyUpdate: {
       morning: {
@@ -227,48 +278,94 @@ export const translations: Translations = {
   },
   es: {
     streak: {
-      templates: [
-        {
-          title: '¡Casi {milestone} Días de Racha! 🎯',
-          body: '¡Solo 2 días más para alcanzar este hito!',
-        },
-        {
-          title: '¡Racha de {milestone} Días Acercándose! ✨',
-          body: 'Solo te faltan 2 días. ¡Sigue así!',
-        },
-        {
-          title: '¡Alerta de Racha: {milestone} Días! 🔥',
-          body: '¡2 días más hasta alcanzar este hito!',
-        },
-        {
-          title: '¡Cerca de tu Meta de {milestone} Días! 💪',
-          body: '¡No rompas tu racha ahora - faltan 2 días!',
-        },
-        {
-          title: '¡Logro Desbloqueándose Pronto! 🏆',
-          body: '¡Tu racha de {milestone} días está a solo 2 días!',
-        },
-        {
-          title: 'Racha de {milestone} Días Cargando... ⏳',
-          body: '¡Casi ahí! ¡Solo 2 días más!',
-        },
-        {
-          title: '¡Verificación de Racha: {milestone} Días Pronto! 📈',
-          body: '¡Mantente constante por 2 días más!',
-        },
-        {
-          title: '¡Gran Hito Adelante! 🌟',
-          body: '¡Tu racha de {milestone} días está a 2 días!',
-        },
-        {
-          title: '¡Victoria a la Vista! 🎉',
-          body: '¡Sigue así por tu logro de {milestone} días!',
-        },
-        {
-          title: '¡2 Días para tu Meta de {milestone} Días! 🚀',
-          body: '¡Mantente en el camino para este hito de racha!',
-        },
-      ],
+      twoDay: {
+        templates: [
+          {
+            title: '¡Casi {milestone} Días de Racha! 🎯',
+            body: '¡Solo 2 días más para alcanzar este hito!',
+          },
+          {
+            title: '¡Racha de {milestone} Días Acercándose! ✨',
+            body: 'Solo te faltan 2 días. ¡Sigue así!',
+          },
+          {
+            title: '¡Alerta de Racha: {milestone} Días! 🔥',
+            body: '¡2 días más hasta alcanzar este hito!',
+          },
+          {
+            title: '¡Cerca de tu Meta de {milestone} Días! 💪',
+            body: '¡No rompas tu racha ahora - faltan 2 días!',
+          },
+          {
+            title: '¡Logro Desbloqueándose Pronto! 🏆',
+            body: '¡Tu racha de {milestone} días está a solo 2 días!',
+          },
+          {
+            title: 'Racha de {milestone} Días Cargando... ⏳',
+            body: '¡Casi ahí! ¡Solo 2 días más!',
+          },
+          {
+            title: '¡Verificación de Racha: {milestone} Días Pronto! 📈',
+            body: '¡Mantente constante por 2 días más!',
+          },
+          {
+            title: '¡Gran Hito Adelante! 🌟',
+            body: '¡Tu racha de {milestone} días está a 2 días!',
+          },
+          {
+            title: '¡Victoria a la Vista! 🎉',
+            body: '¡Sigue así por tu logro de {milestone} días!',
+          },
+          {
+            title: '¡2 Días para tu Meta de {milestone} Días! 🚀',
+            body: '¡Mantente en el camino para este hito de racha!',
+          },
+        ],
+      },
+      oneDay: {
+        templates: [
+          {
+            title: '¡Mañana Alcanzas {milestone} Días! 🎯',
+            body: '¡No rompas la cadena ahora - estás tan cerca!',
+          },
+          {
+            title: '1 Día para tu Racha de {milestone} Días! 🔥',
+            body: '¡Mañana es el gran día! ¡Sigue así!',
+          },
+          {
+            title: 'Final Push: {milestone} Días Mañana! 💪',
+            body: 'One more day to reach this milestone!',
+          },
+          {
+            title: '{milestone}-Day Achievement Tomorrow! ✨',
+            body: "You're just one day away from greatness!",
+          },
+          {
+            title: 'Almost There: {milestone} Days! 🏆',
+            body: "Tomorrow you'll hit this amazing milestone!",
+          },
+          {
+            title: 'Last Day Before {milestone}! ⏰',
+            body: "Don't give up now - victory is tomorrow!",
+          },
+          {
+            title: '24 Hours to {milestone} Days! 🚀',
+            body: 'Your streak milestone is just one day away!',
+          },
+          {
+            title: "Tomorrow's the Day: {milestone}! 🌟",
+            body: 'One final day to reach your goal!',
+          },
+          {
+            title: 'Milestone Eve: {milestone} Days! 🎉',
+            body: 'Tomorrow you achieve something amazing!',
+          },
+          {
+            title: 'One Day Left: {milestone} Streak! ⚡',
+            body: 'Cross the finish line tomorrow!',
+          },
+        ],
+      },
     },
     dailyUpdate: {
       morning: {
@@ -297,7 +394,7 @@ export const translations: Translations = {
         hasHabits: [
           {
             title: '¡Check-in Matutino! ☀️',
-            body: '¡Hora de tus hábitos diarios!',
+            body: '¡Hora de tus hábitos diários!',
           },
           { title: '¡Vamos! 🚀', body: 'Tus hábitos te están esperando.' },
           {
@@ -324,15 +421,9 @@ export const translations: Translations = {
             title: '¡Impecable! 🎯',
             body: '¡Terminaste todos tus hábitos hoy!',
           },
-          { title: '¡Campeón! 🥇', body: '100% completo. ¡Trabajo increíble!' },
-          {
-            title: '¡Éxito! ✅',
-            body: 'Todos los hábitos hechos. ¡Siente el progreso!',
-          },
-          {
-            title: '¡Día Estelar! 🌟',
-            body: '¡Completado totalmente! ¡Sigue así!',
-          },
+          { title: '¡Campeón! 🥇', body: '100% complete. Incredible job!' },
+          { title: 'Success! ✅', body: 'All habits done. Feel the progress!' },
+          { title: 'Stellar Day! 🌟', body: 'Full completion! Keep it up!' },
         ],
         mediumProgress: [
           {
@@ -349,7 +440,7 @@ export const translations: Translations = {
           },
           {
             title: '¡Check de Medio Día! ⏱️',
-            body: '¡{count} hechos, {remaining} por hacer!',
+            body: '{count} hecho, {remaining} por hacer!',
           },
           {
             title: '¡Buen Comienzo! 👊',
@@ -438,48 +529,94 @@ export const translations: Translations = {
   },
   fr: {
     streak: {
-      templates: [
-        {
-          title: 'Presque {milestone} Jours de Série ! 🎯',
-          body: 'Plus que 2 jours pour atteindre ce jalon !',
-        },
-        {
-          title: 'Série de {milestone} Jours Approche ! ✨',
-          body: 'Il ne vous reste que 2 jours. Continuez !',
-        },
-        {
-          title: 'Alerte Série : {milestone} Jours ! 🔥',
-          body: "2 jours de plus jusqu'à ce jalon !",
-        },
-        {
-          title: 'Proche de Votre Objectif {milestone} Jours ! 💪',
-          body: 'Ne cassez pas votre série maintenant - 2 jours restants !',
-        },
-        {
-          title: 'Succès Bientôt Débloqué ! 🏆',
-          body: "Votre série de {milestone} jours n'est qu'à 2 jours !",
-        },
-        {
-          title: 'Série de {milestone} Jours en Cours... ⏳',
-          body: 'Presque là ! Plus que 2 jours !',
-        },
-        {
-          title: 'Vérification Série : {milestone} Jours Bientôt ! 📈',
-          body: 'Restez constant pendant 2 jours de plus !',
-        },
-        {
-          title: 'Grand Jalon Devant ! 🌟',
-          body: 'Votre série de {milestone} jours est à 2 jours !',
-        },
-        {
-          title: 'Victoire en Vue ! 🎉',
-          body: 'Continuez pour votre succès de {milestone} jours !',
-        },
-        {
-          title: '2 Jours pour Votre Objectif {milestone} Jours ! 🚀',
-          body: 'Restez sur la bonne voie pour ce jalon !',
-        },
-      ],
+      twoDay: {
+        templates: [
+          {
+            title: 'Presque {milestone} Jours de Série ! 🎯',
+            body: 'Plus que 2 jours pour atteindre ce jalon !',
+          },
+          {
+            title: 'Série de {milestone} Jours Approche ! ✨',
+            body: 'Il ne vous reste que 2 jours. Continuez !',
+          },
+          {
+            title: 'Alerte Série : {milestone} Jours ! 🔥',
+            body: "2 jours de plus jusqu'à ce jalon !",
+          },
+          {
+            title: 'Proche de Votre Objectif {milestone} Jours ! 💪',
+            body: 'Ne cassez pas votre série maintenant - 2 jours restants !',
+          },
+          {
+            title: 'Succès Bientôt Débloqué ! 🏆',
+            body: "Votre série de {milestone} jours n'est qu'à 2 jours !",
+          },
+          {
+            title: 'Série de {milestone} Jours en Cours... ⏳',
+            body: 'Presque là ! Plus que 2 jours !',
+          },
+          {
+            title: 'Vérification Série : {milestone} Jours Bientôt ! 📈',
+            body: 'Restez constant pendant 2 jours de plus !',
+          },
+          {
+            title: 'Grand Jalon Devant ! 🌟',
+            body: 'Votre série de {milestone} jours est à 2 jours !',
+          },
+          {
+            title: 'Victoire en Vue ! 🎉',
+            body: 'Continuez pour votre succès de {milestone} jours !',
+          },
+          {
+            title: '2 Jours pour Votre Objectif {milestone} Jours ! 🚀',
+            body: 'Restez sur la bonne voie pour ce jalon !',
+          },
+        ],
+      },
+      oneDay: {
+        templates: [
+          {
+            title: 'Demain Vous Atteignez {milestone} Jours ! 🎯',
+            body: 'Ne cassez pas la chaîne maintenant - vous êtes si proche !',
+          },
+          {
+            title: '1 Jour pour Votre Série de {milestone} Jours ! 🔥',
+            body: 'Demain est le grand jour ! Continuez !',
+          },
+          {
+            title: 'Poussée Finale : {milestone} Jours Demain ! 💪',
+            body: 'One more day to reach this milestone!',
+          },
+          {
+            title: 'Succès de {milestone} Jours Demain ! ✨',
+            body: 'Vous êtes à seulement un jour de la grandeur !',
+          },
+          {
+            title: 'Presque Là : {milestone} Jours ! 🎯',
+            body: 'Demain vous atteindrez ce jalon incroyable !',
+          },
+          {
+            title: 'Dernier Jour Avant {milestone} ! ⏰',
+            body: "N'abandonnez pas maintenant - la victoire est demain !",
+          },
+          {
+            title: '24 Heures pour {milestone} Jours ! 🚀',
+            body: 'Votre jalon de série est à seulement un jour !',
+          },
+          {
+            title: 'Demain est le Jour : {milestone} ! 🌟',
+            body: 'Un dernier jour pour atteindre votre objectif !',
+          },
+          {
+            title: 'Veille du Jalon : {milestone} Jours ! 🎉',
+            body: "Demain vous accomplissez quelque chose d'incroyable !",
+          },
+          {
+            title: 'Un Jour Restant : Série {milestone} ! ⚡',
+            body: "Franchissez la ligne d'arrivée demain !",
+          },
+        ],
+      },
     },
     dailyUpdate: {
       morning: {
@@ -643,11 +780,11 @@ export const translations: Translations = {
           body: 'Appuyez pour suivre votre progrès maintenant.',
         },
         {
-          title: 'Heure de {habit} ! 🚀',
-          body: 'Petits pas, grand progrès. Allons-y !',
+          title: 'Heure de {habit}! 🚀',
+          body: "Kleine Schritte, großer Fortschritt. Los geht's!",
         },
         {
-          title: 'Continuez avec {habit} ! 📈',
+          title: 'Continuez avec {habit}! 📈',
           body: 'La constance gagne ! Ouvrez pour continuer votre série.',
         },
       ],
@@ -655,48 +792,94 @@ export const translations: Translations = {
   },
   de: {
     streak: {
-      templates: [
-        {
-          title: 'Fast {milestone}-Tage-Serie! 🎯',
-          body: 'Nur noch 2 Tage bis zu diesem Meilenstein!',
-        },
-        {
-          title: '{milestone}-Tage-Serie Nähert Sich! ✨',
-          body: 'Du bist nur 2 Tage entfernt. Mach weiter!',
-        },
-        {
-          title: 'Serie-Alarm: {milestone} Tage! 🔥',
-          body: '2 weitere Tage bis zu diesem Meilenstein!',
-        },
-        {
-          title: 'Nah an Deinem {milestone}-Tage-Ziel! 💪',
-          body: 'Brich deine Serie jetzt nicht - 2 Tage zu gehen!',
-        },
-        {
-          title: 'Erfolg Bald Freigeschaltet! 🏆',
-          body: 'Deine {milestone}-Tage-Serie ist nur 2 Tage entfernt!',
-        },
-        {
-          title: '{milestone}-Tage-Serie Lädt... ⏳',
-          body: 'Fast da! Nur noch 2 Tage!',
-        },
-        {
-          title: 'Serie-Check: {milestone} Tage Bald! 📈',
-          body: 'Bleib konstant für 2 weitere Tage!',
-        },
-        {
-          title: 'Großer Meilenstein Voraus! 🌟',
-          body: 'Deine {milestone}-Tage-Serie ist 2 Tage entfernt!',
-        },
-        {
-          title: 'Sieg in Sicht! 🎉',
-          body: 'Mach weiter für deinen {milestone}-Tage-Erfolg!',
-        },
-        {
-          title: '2 Tage zu Deinem {milestone}-Tage-Ziel! 🚀',
-          body: 'Bleib auf Kurs für diesen Serie-Meilenstein!',
-        },
-      ],
+      twoDay: {
+        templates: [
+          {
+            title: 'Fast {milestone}-Tage-Serie! 🎯',
+            body: 'Nur noch 2 Tage bis zu diesem Meilenstein!',
+          },
+          {
+            title: '{milestone}-Tage-Serie Nähert Sich! ✨',
+            body: 'Du bist nur 2 Tage entfernt. Mach weiter!',
+          },
+          {
+            title: 'Serie-Alarm: {milestone} Tage! 🔥',
+            body: '2 weitere Tage bis zu diesem Meilenstein!',
+          },
+          {
+            title: 'Nah an Deinem {milestone}-Tage-Ziel! 💪',
+            body: 'Brich deine Serie jetzt nicht - 2 Tage zu gehen!',
+          },
+          {
+            title: 'Erfolg Bald Freigeschaltet! 🏆',
+            body: 'Deine {milestone}-Tage-Serie ist nur 2 Tage entfernt!',
+          },
+          {
+            title: '{milestone}-Tage-Serie Lädt... ⏳',
+            body: 'Fast da! Nur noch 2 Tage!',
+          },
+          {
+            title: 'Serie-Check: {milestone} Tage Bald! 📈',
+            body: 'Bleib konstant für 2 weitere Tage!',
+          },
+          {
+            title: 'Großer Meilenstein Voraus! 🌟',
+            body: 'Deine {milestone}-Tage-Serie ist 2 Tage entfernt!',
+          },
+          {
+            title: 'Sieg in Sicht! 🎉',
+            body: 'Mach weiter für deinen {milestone}-Tage-Erfolg!',
+          },
+          {
+            title: '2 Tage zu Deinem {milestone}-Tage-Ziel! 🚀',
+            body: 'Bleib auf Kurs für diesen Serie-Meilenstein!',
+          },
+        ],
+      },
+      oneDay: {
+        templates: [
+          {
+            title: 'Morgen Erreichst Du {milestone} Tage! 🎯',
+            body: 'Brich die Kette jetzt nicht - du bist so nah!',
+          },
+          {
+            title: '1 Tag bis zu Deiner {milestone}-Tage-Serie! 🔥',
+            body: 'Morgen ist der große Tag! Mach weiter!',
+          },
+          {
+            title: 'Letzter Schub: {milestone} Tage Morgen! 💪',
+            body: 'Noch ein Tag bis zu diesem Meilenstein!',
+          },
+          {
+            title: '{milestone}-Tage-Erfolg Morgen! ✨',
+            body: 'Du bist nur einen Tag von der Größe entfernt!',
+          },
+          {
+            title: 'Fast Da: {milestone} Tage! 🏆',
+            body: 'Morgen erreichst du diesen unglaublichen Meilenstein!',
+          },
+          {
+            title: 'Letzter Tag vor {milestone}! ⏰',
+            body: 'Gib jetzt nicht auf - der Sieg ist morgen!',
+          },
+          {
+            title: '24 Stunden bis {milestone} Tage! 🚀',
+            body: 'Dein Serie-Meilenstein ist nur einen Tag entfernt!',
+          },
+          {
+            title: 'Morgen ist der Tag: {milestone}! 🌟',
+            body: 'Ein letzter Tag um dein Ziel zu erreichen!',
+          },
+          {
+            title: 'Meilenstein-Vorabend: {milestone} Tage! 🎉',
+            body: 'Morgen erreichst du etwas Unglaubliches!',
+          },
+          {
+            title: 'Ein Tag übrig: {milestone} Serie! ⚡',
+            body: 'Überquere morgen die Ziellinie!',
+          },
+        ],
+      },
     },
     dailyUpdate: {
       morning: {
@@ -872,48 +1055,94 @@ export const translations: Translations = {
   },
   pt: {
     streak: {
-      templates: [
-        {
-          title: 'Quase {milestone} Dias de Sequência! 🎯',
-          body: 'Apenas mais 2 dias para alcançar este marco!',
-        },
-        {
-          title: 'Sequência de {milestone} Dias Aproximando! ✨',
-          body: 'Você está a apenas 2 dias. Continue assim!',
-        },
-        {
-          title: 'Alerta de Sequência: {milestone} Dias! 🔥',
-          body: 'Mais 2 dias até este marco!',
-        },
-        {
-          title: 'Perto da Sua Meta de {milestone} Dias! 💪',
-          body: 'Não quebre sua sequência agora - 2 dias restantes!',
-        },
-        {
-          title: 'Conquista Desbloqueando Em Breve! 🏆',
-          body: 'Sua sequência de {milestone} dias está a apenas 2 dias!',
-        },
-        {
-          title: 'Sequência de {milestone} Dias Carregando... ⏳',
-          body: 'Quase lá! Apenas mais 2 dias!',
-        },
-        {
-          title: 'Verificação de Sequência: {milestone} Dias Em Breve! 📈',
-          body: 'Mantenha-se consistente por mais 2 dias!',
-        },
-        {
-          title: 'Grande Marco À Frente! 🌟',
-          body: 'Sua sequência de {milestone} dias está a 2 dias!',
-        },
-        {
-          title: 'Vitória À Vista! 🎉',
-          body: 'Continue assim pela sua conquista de {milestone} dias!',
-        },
-        {
-          title: '2 Dias Para Sua Meta de {milestone} Dias! 🚀',
-          body: 'Mantenha-se no caminho para este marco de sequência!',
-        },
-      ],
+      twoDay: {
+        templates: [
+          {
+            title: 'Quase {milestone} Dias de Sequência! 🎯',
+            body: 'Apenas mais 2 dias para alcançar este marco!',
+          },
+          {
+            title: 'Sequência de {milestone} Dias Aproximando! ✨',
+            body: 'Você está a apenas 2 dias. Continue assim!',
+          },
+          {
+            title: 'Alerta de Sequência: {milestone} Dias! 🔥',
+            body: 'Mais 2 dias até este marco!',
+          },
+          {
+            title: 'Perto da Sua Meta de {milestone} Dias! 💪',
+            body: 'Não quebre sua sequência agora - 2 dias restantes!',
+          },
+          {
+            title: 'Conquista Desbloqueando Em Breve! 🏆',
+            body: 'Sua sequência de {milestone} dias está a apenas 2 dias!',
+          },
+          {
+            title: 'Sequência de {milestone} Dias Carregando... ⏳',
+            body: 'Quase lá! Apenas mais 2 dias!',
+          },
+          {
+            title: 'Verificação de Sequência: {milestone} Dias Em Breve! 📈',
+            body: 'Mantenha-se consistente por mais 2 dias!',
+          },
+          {
+            title: 'Grande Marco À Frente! 🌟',
+            body: 'Sua sequência de {milestone} dias está a 2 dias!',
+          },
+          {
+            title: 'Vitória À Vista! 🎉',
+            body: 'Continue assim pela sua conquista de {milestone} dias!',
+          },
+          {
+            title: '2 Dias Para Sua Meta de {milestone} Dias! 🚀',
+            body: 'Mantenha-se no caminho para este marco de sequência!',
+          },
+        ],
+      },
+      oneDay: {
+        templates: [
+          {
+            title: 'Amanhã Você Atinge {milestone} Dias! 🎯',
+            body: 'Não quebre a corrente agora - você está tão perto!',
+          },
+          {
+            title: '1 Dia para Sua Sequência de {milestone} Dias! 🔥',
+            body: 'Amanhã é o grande dia! Continue assim!',
+          },
+          {
+            title: 'Empurrão Final: {milestone} Dias Amanhã! 💪',
+            body: 'Mais um dia para alcançar este marco!',
+          },
+          {
+            title: 'Conquista de {milestone} Dias Amanhã! ✨',
+            body: 'Você está a apenas um dia da grandeza!',
+          },
+          {
+            title: 'Quase Lá: {milestone} Dias! 🏆',
+            body: 'Amanhã você atingirá este marco incrível!',
+          },
+          {
+            title: 'Último Dia Antes de {milestone}! ⏰',
+            body: 'Não desista agora - a vitória é amanhã!',
+          },
+          {
+            title: '24 Horas para {milestone} Dias! 🚀',
+            body: 'Seu marco de sequência está a apenas um dia!',
+          },
+          {
+            title: 'Amanhã é o Dia: {milestone}! 🌟',
+            body: 'Um último dia para alcançar seu objetivo!',
+          },
+          {
+            title: 'Véspera do Marco: {milestone} Dias! 🎉',
+            body: 'Amanhã você conquista algo incrível!',
+          },
+          {
+            title: 'Um Dia Restante: Sequência {milestone}! ⚡',
+            body: 'Cruze a linha de chegada amanhã!',
+          },
+        ],
+      },
     },
     dailyUpdate: {
       morning: {
@@ -1078,56 +1307,102 @@ export const translations: Translations = {
           body: 'Pequenos passos, grande progresso. Vamos lá!',
         },
         {
-          title: 'Continue com {habit}! 📈',
-          body: 'Consistência vence! Abra para continuar sua sequência.',
+          title: 'Продолжайте с {habit}! 📈',
+          body: 'Постоянство побеждает! Откройте, чтобы продолжить серию.',
         },
       ],
     },
   },
   ru: {
     streak: {
-      templates: [
-        {
-          title: 'Почти {milestone} Дней Подряд! 🎯',
-          body: 'Всего 2 дня до этой вехи!',
-        },
-        {
-          title: 'Серия {milestone} Дней Приближается! ✨',
-          body: 'Вы всего в 2 днях. Продолжайте!',
-        },
-        {
-          title: 'Тревога Серии: {milestone} Дней! 🔥',
-          body: 'Еще 2 дня до этой вехи!',
-        },
-        {
-          title: 'Близко к Вашей Цели {milestone} Дней! 💪',
-          body: 'Не прерывайте серию сейчас - осталось 2 дня!',
-        },
-        {
-          title: 'Достижение Скоро Разблокируется! 🏆',
-          body: 'Ваша серия {milestone} дней всего в 2 днях!',
-        },
-        {
-          title: 'Серия {milestone} Дней Загружается... ⏳',
-          body: 'Почти там! Всего 2 дня!',
-        },
-        {
-          title: 'Проверка Серии: {milestone} Дней Скоро! 📈',
-          body: 'Оставайтесь последовательными еще 2 дня!',
-        },
-        {
-          title: 'Большая Веха Впереди! 🌟',
-          body: 'Ваша серия {milestone} дней в 2 днях!',
-        },
-        {
-          title: 'Победа На Горизонте! 🎉',
-          body: 'Продолжайте для вашего достижения {milestone} дней!',
-        },
-        {
-          title: '2 Дня До Вашей Цели {milestone} Дней! 🚀',
-          body: 'Оставайтесь на пути к этой вехе серии!',
-        },
-      ],
+      twoDay: {
+        templates: [
+          {
+            title: 'Почти {milestone} Дней Подряд! 🎯',
+            body: 'Всего 2 дня до этой вехи!',
+          },
+          {
+            title: 'Серия {milestone} Дней Приближается! ✨',
+            body: 'Вы всего в 2 днях. Продолжайте!',
+          },
+          {
+            title: 'Тревога Серии: {milestone} Дней! 🔥',
+            body: 'Еще 2 дня до этой вехи!',
+          },
+          {
+            title: 'Близко к Вашей Цели {milestone} Дней! 💪',
+            body: 'Не прерывайте серию сейчас - осталось 2 дня!',
+          },
+          {
+            title: 'Достижение Скоро Разблокируется! 🏆',
+            body: 'Ваша серия {milestone} дней всего в 2 днях!',
+          },
+          {
+            title: 'Серия {milestone} Дней Загружается... ⏳',
+            body: 'Почти там! Всего 2 дня!',
+          },
+          {
+            title: 'Проверка Серии: {milestone} Дней Скоро! 📈',
+            body: 'Оставайтесь последовательными еще 2 дня!',
+          },
+          {
+            title: 'Большая Веха Впереди! 🌟',
+            body: 'Ваша серия {milestone} дней в 2 днях!',
+          },
+          {
+            title: 'Победа На Горизонте! 🎉',
+            body: 'Продолжайте для вашего достижения {milestone} дней!',
+          },
+          {
+            title: '2 Дня До Вашей Цели {milestone} Дней! 🚀',
+            body: 'Оставайтесь на пути к этой вехе серии!',
+          },
+        ],
+      },
+      oneDay: {
+        templates: [
+          {
+            title: 'Завтра Вы Достигнете {milestone} Дней! 🎯',
+            body: 'Не прерывайте цепочку сейчас - вы так близко!',
+          },
+          {
+            title: '1 День до Вашей Серии {milestone} Дней! 🔥',
+            body: 'Завтра великий день! Продолжайте!',
+          },
+          {
+            title: 'Финальный Рывок: {milestone} Дней Завтра! 💪',
+            body: 'Еще один день до этой вехи!',
+          },
+          {
+            title: 'Достижение {milestone} Дней Завтра! ✨',
+            body: 'Вы всего в одном дне от величия!',
+          },
+          {
+            title: 'Почти Там: {milestone} Дней! 🏆',
+            body: 'Завтра вы достигнете этой невероятной вехи!',
+          },
+          {
+            title: 'Последний День Перед {milestone}! ⏰',
+            body: 'Не сдавайтесь сейчас - победа завтра!',
+          },
+          {
+            title: '24 Часа до {milestone} Дней! 🚀',
+            body: 'Ваша веха серии всего в одном дне!',
+          },
+          {
+            title: 'Завтра Тот День: {milestone}! 🌟',
+            body: 'Последний день для достижения цели!',
+          },
+          {
+            title: 'Канун Вехи: {milestone} Дней! 🎉',
+            body: 'Завтра вы достигнете чего-то невероятного!',
+          },
+          {
+            title: 'Один День Остался: Серия {milestone}! ⚡',
+            body: 'Пересеките финишную черту завтра!',
+          },
+        ],
+      },
     },
     dailyUpdate: {
       morning: {

@@ -11,16 +11,14 @@ import {
   createSuccessResponse,
   createSupabaseClient,
   groupHabitsAndCompletions,
-  isNextHourTarget,
+  isNextHourTargetAlt,
   setupDayjs,
 } from '../_shared/utils.ts';
 import { calculateUserStreaks, prepareNotifications } from './utils.ts';
 
-// Configure dayjs with UTC and timezone plugins
 setupDayjs();
 
-// const TARGET_HOUR = 14; // 2 PM as specified in plan.md
-const TARGET_HOUR = 5; // 2 PM as specified in plan.md
+const TARGET_HOUR = 7;
 
 Deno.serve(async (req) => {
   try {
@@ -32,7 +30,7 @@ Deno.serve(async (req) => {
     // 2. Filter users by target hour
 
     const usersInTargetHour = users.filter((user) =>
-      isNextHourTarget(user.timezone, TARGET_HOUR)
+      isNextHourTargetAlt(user.timezone, TARGET_HOUR)
     );
 
     // 3. Get Habits for users
@@ -40,7 +38,6 @@ Deno.serve(async (req) => {
       supabaseClient,
       usersInTargetHour.map((u) => u.id)
     );
-
     // 4. Get completions for habits
     const completions = await getHabitCompletionsAll(
       supabaseClient,
@@ -55,13 +52,6 @@ Deno.serve(async (req) => {
     );
     // 6. Calculate streaks
     const streakResults = calculateUserStreaks(usersWithHabits);
-    console.log(
-      usersInTargetHour,
-      habits,
-      completions,
-      usersWithHabits,
-      streakResults
-    );
 
     if (usersInTargetHour.length === 0) {
       return createSuccessResponse({
@@ -82,6 +72,7 @@ Deno.serve(async (req) => {
           id: user.id,
           push_token: user.push_token,
           timezone: user.timezone,
+          preferred_language: user.preferred_language,
           streak_achievements: user.streak_achievements,
           current_streak: result.currentStreak,
         };
@@ -120,264 +111,3 @@ Deno.serve(async (req) => {
     return createErrorResponse(error);
   }
 });
-
-// [
-//   {
-//     id: "2a91da72-776e-415f-8e81-65e17d9ae154",
-//     push_token: "ExponentPushToken[-LDSbqNpwulf_r8aXYQDsU]",
-//     timezone: "Asia/Tbilisi",
-//     preferred_language: "ru",
-//     streak_achievements: {
-//       "1": true,
-//       "3": false,
-//       "5": false,
-//       "7": false,
-//       "10": false,
-//       "14": false,
-//       "21": false,
-//       "28": false,
-//       "30": false,
-//       "45": false,
-//       "60": false,
-//       "90": false,
-//       "100": false,
-//       "180": false,
-//       "200": false
-//     }
-//   }
-// ] [
-//   {
-//     id: "ced6794c-d3cd-4ad4-a57f-8ffba34be485",
-//     user_id: "2a91da72-776e-415f-8e81-65e17d9ae154",
-//     created_at: "2025-05-29T16:26:48.481+00:00",
-//     updated_at: "2025-05-29T16:26:48.481+00:00",
-//     name: "Random Act of Kindness",
-//     description: "Perform a random act of kindness.",
-//     icon: "hands.sparkles.fill",
-//     color: "#FF8A65",
-//     frequency_type: "daily",
-//     completions_per_day: 1,
-//     days_of_week: null,
-//     start_date: "2025-05-29",
-//     end_date: null,
-//     goal_value: 1,
-//     goal_unit: "count",
-//     streak_goal: null,
-//     reminder_time: null,
-//     category_name: "cat3",
-//     gamification_attributes: null,
-//     is_active: true,
-//     type: "GOOD",
-//     sort_id: 1
-//   },
-//   {
-//     id: "1fe3a6c8-59da-48de-89fd-76c9b3e63c51",
-//     user_id: "2a91da72-776e-415f-8e81-65e17d9ae154",
-//     created_at: "2025-05-29T23:58:27.748+00:00",
-//     updated_at: "2025-05-29T23:58:27.748+00:00",
-//     name: "Language Practice",
-//     description: "Practice a foreign language for 15 minutes.",
-//     icon: "globe.europe.africa.fill",
-//     color: "#5C6BC0",
-//     frequency_type: "daily",
-//     completions_per_day: 15,
-//     days_of_week: null,
-//     start_date: "2025-05-30",
-//     end_date: null,
-//     goal_value: 15,
-//     goal_unit: "minutes",
-//     streak_goal: null,
-//     reminder_time: "04:00:00",
-//     category_name: "cat2",
-//     gamification_attributes: null,
-//     is_active: true,
-//     type: "GOOD",
-//     sort_id: 2
-//   },
-//   {
-//     id: "5c515085-73b6-4933-8b4f-68e3bc842997",
-//     user_id: "2a91da72-776e-415f-8e81-65e17d9ae154",
-//     created_at: "2025-05-30T00:35:44.121+00:00",
-//     updated_at: "2025-05-30T00:35:44.121+00:00",
-//     name: "Drink Water",
-//     description: "Drink at least 8 glasses of water.",
-//     icon: "drop.fill",
-//     color: "#59B0F6",
-//     frequency_type: "daily",
-//     completions_per_day: 8,
-//     days_of_week: null,
-//     start_date: "2025-05-30",
-//     end_date: null,
-//     goal_value: 8,
-//     goal_unit: "glasses",
-//     streak_goal: null,
-//     reminder_time: "04:40:00",
-//     category_name: "cat1",
-//     gamification_attributes: null,
-//     is_active: true,
-//     type: "GOOD",
-//     sort_id: 3
-//   },
-//   {
-//     id: "23a63dba-a194-46b9-81e7-fd1d69f66b02",
-//     user_id: "2a91da72-776e-415f-8e81-65e17d9ae154",
-//     created_at: "2025-05-30T00:36:17.299+00:00",
-//     updated_at: "2025-05-30T00:36:17.299+00:00",
-//     name: "Reading",
-//     description: "Read for 30 minutes.",
-//     icon: "book.closed.fill",
-//     color: "#7E57C2",
-//     frequency_type: "daily",
-//     completions_per_day: 30,
-//     days_of_week: null,
-//     start_date: "2025-05-30",
-//     end_date: null,
-//     goal_value: 30,
-//     goal_unit: "minutes",
-//     streak_goal: null,
-//     reminder_time: "05:36:00",
-//     category_name: "cat2",
-//     gamification_attributes: null,
-//     is_active: true,
-//     type: "GOOD",
-//     sort_id: 4
-//   }
-// ] [
-//   {
-//     id: "9188b31c-3713-40f1-9400-da25cf1947df",
-//     habit_id: "ced6794c-d3cd-4ad4-a57f-8ffba34be485",
-//     user_id: "2a91da72-776e-415f-8e81-65e17d9ae154",
-//     completion_date: "2025-05-29",
-//     status: "completed",
-//     value: 1,
-//     created_at: "2025-05-29T16:26:53.461+00:00"
-//   }
-// ] [
-//   {
-//     id: "2a91da72-776e-415f-8e81-65e17d9ae154",
-//     push_token: "ExponentPushToken[-LDSbqNpwulf_r8aXYQDsU]",
-//     timezone: "Asia/Tbilisi",
-//     preferred_language: "ru",
-//     streak_achievements: {
-//       "1": true,
-//       "3": false,
-//       "5": false,
-//       "7": false,
-//       "10": false,
-//       "14": false,
-//       "21": false,
-//       "28": false,
-//       "30": false,
-//       "45": false,
-//       "60": false,
-//       "90": false,
-//       "100": false,
-//       "180": false,
-//       "200": false
-//     },
-//     habits: [
-//       {
-//         id: "ced6794c-d3cd-4ad4-a57f-8ffba34be485",
-//         user_id: "2a91da72-776e-415f-8e81-65e17d9ae154",
-//         created_at: "2025-05-29T16:26:48.481+00:00",
-//         updated_at: "2025-05-29T16:26:48.481+00:00",
-//         name: "Random Act of Kindness",
-//         description: "Perform a random act of kindness.",
-//         icon: "hands.sparkles.fill",
-//         color: "#FF8A65",
-//         frequency_type: "daily",
-//         completions_per_day: 1,
-//         days_of_week: null,
-//         start_date: "2025-05-29",
-//         end_date: null,
-//         goal_value: 1,
-//         goal_unit: "count",
-//         streak_goal: null,
-//         reminder_time: null,
-//         category_name: "cat3",
-//         gamification_attributes: null,
-//         is_active: true,
-//         type: "GOOD",
-//         sort_id: 1,
-//         completions: [ [Object] ]
-//       },
-//       {
-//         id: "1fe3a6c8-59da-48de-89fd-76c9b3e63c51",
-//         user_id: "2a91da72-776e-415f-8e81-65e17d9ae154",
-//         created_at: "2025-05-29T23:58:27.748+00:00",
-//         updated_at: "2025-05-29T23:58:27.748+00:00",
-//         name: "Language Practice",
-//         description: "Practice a foreign language for 15 minutes.",
-//         icon: "globe.europe.africa.fill",
-//         color: "#5C6BC0",
-//         frequency_type: "daily",
-//         completions_per_day: 15,
-//         days_of_week: null,
-//         start_date: "2025-05-30",
-//         end_date: null,
-//         goal_value: 15,
-//         goal_unit: "minutes",
-//         streak_goal: null,
-//         reminder_time: "04:00:00",
-//         category_name: "cat2",
-//         gamification_attributes: null,
-//         is_active: true,
-//         type: "GOOD",
-//         sort_id: 2,
-//         completions: []
-//       },
-//       {
-//         id: "5c515085-73b6-4933-8b4f-68e3bc842997",
-//         user_id: "2a91da72-776e-415f-8e81-65e17d9ae154",
-//         created_at: "2025-05-30T00:35:44.121+00:00",
-//         updated_at: "2025-05-30T00:35:44.121+00:00",
-//         name: "Drink Water",
-//         description: "Drink at least 8 glasses of water.",
-//         icon: "drop.fill",
-//         color: "#59B0F6",
-//         frequency_type: "daily",
-//         completions_per_day: 8,
-//         days_of_week: null,
-//         start_date: "2025-05-30",
-//         end_date: null,
-//         goal_value: 8,
-//         goal_unit: "glasses",
-//         streak_goal: null,
-//         reminder_time: "04:40:00",
-//         category_name: "cat1",
-//         gamification_attributes: null,
-//         is_active: true,
-//         type: "GOOD",
-//         sort_id: 3,
-//         completions: []
-//       },
-//       {
-//         id: "23a63dba-a194-46b9-81e7-fd1d69f66b02",
-//         user_id: "2a91da72-776e-415f-8e81-65e17d9ae154",
-//         created_at: "2025-05-30T00:36:17.299+00:00",
-//         updated_at: "2025-05-30T00:36:17.299+00:00",
-//         name: "Reading",
-//         description: "Read for 30 minutes.",
-//         icon: "book.closed.fill",
-//         color: "#7E57C2",
-//         frequency_type: "daily",
-//         completions_per_day: 30,
-//         days_of_week: null,
-//         start_date: "2025-05-30",
-//         end_date: null,
-//         goal_value: 30,
-//         goal_unit: "minutes",
-//         streak_goal: null,
-//         reminder_time: "05:36:00",
-//         category_name: "cat2",
-//         gamification_attributes: null,
-//         is_active: true,
-//         type: "GOOD",
-//         sort_id: 4,
-//         completions: []
-//       }
-//     ]
-//   }
-// ] [
-//   { userId: "2a91da72-776e-415f-8e81-65e17d9ae154", currentStreak: 0 }
-// ]

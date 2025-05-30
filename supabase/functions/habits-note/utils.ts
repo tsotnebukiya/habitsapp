@@ -18,29 +18,17 @@ export function prepareNotifications(
 
   for (const user of usersWithHabits) {
     // Get next hour in user's timezone
-    const userNextHour = dayjs().tz(user.timezone).add(1, 'hour').hour();
-
-    console.log('Processing user timezone:', {
-      userId: user.id,
-      timezone: user.timezone,
-      nextHour: userNextHour,
-      totalHabits: user.habits.length,
-    });
+    const userNextHour = dayjs()
+      .tz(user.timezone || 'UTC')
+      .add(1, 'hour')
+      .hour();
 
     for (const habit of user.habits) {
       if (!habit.reminder_time) continue;
 
       // Parse reminder time
       const reminderHour = parseInt(habit.reminder_time.split(':')[0]);
-
-      console.log('Checking habit reminder:', {
-        habitId: habit.id,
-        habitName: habit.name,
-        reminderTime: habit.reminder_time,
-        reminderHour,
-        userNextHour,
-        isMatch: reminderHour === userNextHour,
-      });
+      const reminderMinute = parseInt(habit.reminder_time.split(':')[1]);
 
       if (reminderHour !== userNextHour) continue;
 
@@ -56,13 +44,11 @@ export function prepareNotifications(
         });
         continue;
       }
-
       // Create scheduled time for next hour
       const scheduledTime = dayjs()
-        .tz(user.timezone)
+        .tz(user.timezone || 'UTC')
         .add(1, 'hour')
-        .hour(reminderHour)
-        .minute(0)
+        .minute(reminderMinute)
         .second(0)
         .millisecond(0);
 

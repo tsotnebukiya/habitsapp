@@ -61,16 +61,6 @@ export function groupHabitsAndCompletions<T extends BaseUser>(
   }));
 }
 
-// Check if next hour is target hour (from streak-note version)
-export function isNextHourTarget(
-  userTimezone: string,
-  targetHour: number
-): boolean {
-  const userNow = dayjs().tz(userTimezone);
-  const userNextHour = userNow.add(1, 'hour').hour();
-  return userNextHour === targetHour;
-}
-
 // Alternative version from daily-update-note/habits-note
 export function isNextHourTargetAlt(
   userTimezone: string,
@@ -141,8 +131,16 @@ export function getTemplates(
   const lang: LanguageTranslations =
     translations[language] || translations['en'];
 
+  if (section === 'streak' && subsection) {
+    if (subsection === 'twoDay') return lang.streak.twoDay.templates;
+    if (subsection === 'oneDay') return lang.streak.oneDay.templates;
+    // Fallback to twoDay if subsection not recognized
+    return lang.streak.twoDay.templates;
+  }
+
   if (section === 'streak') {
-    return lang.streak.templates;
+    // Default to twoDay for backward compatibility
+    return lang.streak.twoDay.templates;
   }
 
   if (section === 'habits') {

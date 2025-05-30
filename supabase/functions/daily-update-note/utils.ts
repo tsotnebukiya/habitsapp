@@ -40,7 +40,6 @@ export function prepareNotifications(
     const scheduledTime = dayjs()
       .tz(user.timezone || 'UTC')
       .add(1, 'hour')
-      .hour(isMorningNext ? morningHour : eveningHour)
       .minute(0)
       .second(0)
       .millisecond(0);

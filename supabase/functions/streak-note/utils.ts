@@ -14,9 +14,6 @@ function calculateCurrentStreak(
   habits: Habit[],
   completions: HabitCompletion[]
 ): number {
-  // Create maps for faster lookups
-  const habitsMap = new Map(habits.map((h) => [h.id, h]));
-
   // Normalize dates for completions
   const completionsByDate = new Map<string, Set<string>>();
 
@@ -48,12 +45,24 @@ function calculateCurrentStreak(
 
     // Get active habits for this date
     const activeHabits = habits.filter((habit) => {
-      const startDate = dayjs.utc(habit.created_at).format('YYYY-MM-DD');
+      const startDate = dayjs.utc(habit.start_date).format('YYYY-MM-DD');
       const endDate = habit.end_date
         ? dayjs.utc(habit.end_date).format('YYYY-MM-DD')
         : null;
 
-      return date >= startDate && (!endDate || date <= endDate);
+      // Check date range
+      const inDateRange = date >= startDate && (!endDate || date <= endDate);
+      if (!inDateRange) return false;
+
+      // Check frequency
+      if (habit.frequency_type === 'daily') {
+        return true;
+      } else if (habit.frequency_type === 'weekly') {
+        const dayOfWeek = dayjs.utc(date).day();
+        return habit.days_of_week?.includes(dayOfWeek) ?? false;
+      }
+
+      return false;
     });
 
     // Skip days with no active habits
@@ -126,20 +135,26 @@ export const prepareNotifications = (
     }
 
     const daysToMilestone = nextMilestone - user.current_streak;
-    if (daysToMilestone !== 2) {
+    if (daysToMilestone !== 2 && daysToMilestone !== 1) {
       continue;
     }
 
     const userLocalTime = now.tz(user.timezone);
-    const scheduledFor = userLocalTime
-      .hour(targetHour)
+    const scheduledFor = dayjs()
+      .tz(user.timezone)
+      .add(1, 'hour')
       .minute(0)
       .second(0)
-      .add(1, 'hour')
+      .millisecond(0)
       .toISOString();
 
-    // Get templates in user's preferred language
-    const templates = getTemplates(user.preferred_language, 'streak');
+    // Get templates in user's preferred language based on days to milestone
+    const subsection = daysToMilestone === 2 ? 'twoDay' : 'oneDay';
+    const templates = getTemplates(
+      user.preferred_language,
+      'streak',
+      subsection
+    );
     const template = selectRandomTemplate(templates);
 
     // Replace the milestone placeholder with the actual number
