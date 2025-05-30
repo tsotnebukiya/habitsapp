@@ -48,6 +48,10 @@ struct InteractiveWidgetEntryView: View {
         }
     }
 
+    // Use displayHabits from ConfigurableEntry and limit by widget size (same as Calendar Widget)
+    private var displayHabits: [Habit] {
+        Array(entry.displayHabits.prefix(maxHabits))
+    }
   
     var body: some View {
         // Main container with no padding (following CalendarWidget pattern)
@@ -56,12 +60,12 @@ struct InteractiveWidgetEntryView: View {
             case .systemSmall:
                 // Small widget: 1 column, 2 rows with padding
                 VStack(spacing: 10) {
-                    ForEach(entry.habits.prefix(maxHabits), id: \.id) { habit in
+                    ForEach(displayHabits, id: \.id) { habit in
                         HabitCard(habit: habit)
                     }
                     
                     // Fill remaining space if fewer habits
-                    if entry.habits.count < maxHabits {
+                    if displayHabits.count < maxHabits {
                         Spacer()
                     }
                 }
@@ -73,7 +77,7 @@ struct InteractiveWidgetEntryView: View {
                 // Medium/Large widget: 2 columns grid with edge-to-edge layout
                 let columns: [GridItem] = Array(repeating: .init(.flexible()), count: 2)
                 LazyVGrid(columns: columns, spacing: 10) {
-                    ForEach(entry.habits.prefix(maxHabits), id: \.id) { habit in
+                    ForEach(displayHabits, id: \.id) { habit in
                         HabitCard(habit: habit)
                     }
                 }
@@ -81,7 +85,7 @@ struct InteractiveWidgetEntryView: View {
             @unknown default:
                 // Fallback to small layout
                 VStack(spacing: 10) {
-                    ForEach(entry.habits.prefix(maxHabits), id: \.id) { habit in
+                    ForEach(displayHabits, id: \.id) { habit in
                         HabitCard(habit: habit)
                     }
                 }
