@@ -2,7 +2,34 @@
 
 ## Current Development Status
 
-HabitsApp is a fully functional habit tracking application with core features implemented and operational. Recent major updates include achievement system overhaul, UI simplification, and store review integration.
+HabitsApp is a fully functional habit tracking application with core features implemented and operational. Recent major updates include a comprehensive iOS widget system overhaul with configurable widgets, achievement system improvements, UI simplification, and store review integration.
+
+## Recently Completed Major Work ✅
+
+### 1. iOS Widget System Overhaul (Latest)
+
+- **Configurable Widget Architecture**: Complete redesign with user-selectable habit display
+- **Shared Configuration System**: Unified `HabitConfigurationIntent` and `SharedHabitConfigurationProvider` for both widgets
+- **Enhanced UI Design**: Modern card-based layout with progress visualization and rounded corners
+- **Interactive Improvements**: Better action buttons, completion states, and visual feedback
+- **Widget Customization**: Users can now select which habits appear in their widgets
+- **Technical Architecture**: Moved from `StaticConfiguration` to `AppIntentConfiguration` for advanced features
+
+### 2. Widget UI & UX Enhancements
+
+- **Visual Design Overhaul**: Complete redesign of `InteractiveViews.swift` with modern card layouts
+- **Progress Visualization**: Color-based progress overlays showing habit completion status
+- **Icon System**: Improved handling of both emoji and SF Symbol icons with proper tinting
+- **Multi-Size Support**: Optimized layouts for small (2 habits), medium (4 habits), and large (10 habits) widgets
+- **Action States**: Dynamic action buttons (plus for incomplete, checkmark for completed)
+- **App Integration**: Added `OpenAppIntent` for seamless navigation back to main app
+
+### 3. Widget Data & Configuration
+
+- **Enhanced Mock Data**: Comprehensive test data with realistic completion patterns across 10 habits
+- **Entity System**: New `HabitEntity` and `HabitEntityQuery` for widget configuration
+- **Configurable Entry**: Replaced `SimpleEntry` with `ConfigurableEntry` supporting habit selection
+- **Provider Consolidation**: Removed separate `InteractiveProvider` in favor of shared configuration approach
 
 ## Current Focus Areas
 
@@ -123,14 +150,14 @@ HabitsApp is a fully functional habit tracking application with core features im
 1. **Internationalization Implementation**: Complete i18n setup with language selection and translation files
 2. **User Account Features**: Integrate delete-user and feedback systems into app UI
 3. **Form Improvements**: Implement new picker and keyboard-aware components in habit creation/editing
-4. **Test Implementation**: Write comprehensive tests for core functionality including new i18n features
+4. **Widget Testing**: Comprehensive testing of new configurable widget system and user flows
 5. **UI Polish**: Complete modal animations, loading states, error handling
 
 ### Medium Priority
 
-1. **Advanced Testing**: Integration tests and E2E testing setup
-2. **Performance**: Bundle optimization, memory management
-3. **Documentation**: Test documentation and contribution guidelines
+1. **Advanced Widget Features**: Explore additional widget capabilities and configurations
+2. **Performance**: Bundle optimization, memory management, widget performance monitoring
+3. **Documentation**: Widget architecture documentation and user guides
 
 ## Current Architecture Status
 
@@ -140,7 +167,7 @@ HabitsApp is a fully functional habit tracking application with core features im
 - **State Management**: Zustand with MMKV persistence
 - **Backend**: Supabase with real-time subscriptions
 - **Testing**: Jest + MSW + Testing Library + Jest Extended
-- **Widgets**: Native iOS with @bacons/apple-targets
+- **Widgets**: Native iOS with @bacons/apple-targets (recently overhauled with configurable architecture)
 - **Analytics**: PostHog + Sentry
 
 ## Current Work Context
@@ -350,295 +377,6 @@ HabitsApp is a fully functional habit tracking application with core features im
 
 ## Recent Changes
 
-1. Project initialization with Expo
-2. Basic directory structure setup
-3. Core dependencies installation
-4. Initial documentation creation
-5. Implemented habits interface with offline sync
-6. Added sync initialization in app layout
-7. Setup periodic sync in home tab
-8. Added App.md to Memory Bank
-9. Implemented `WeekView` and `HabitList` components.
-10. Added `AddHabit` modal form.
-11. Refactored `HabitList` to use `useHabitsForDate` hook.
-12. Renamed `habits.ts` store to `habits_store.ts`.
-13. Created `lib/hooks/useHabits.ts` with data selection hooks.
-14. Stabilized `useHabitsForDate` dependency using ISO date string.
-15. Optimized habit status toggle performance:
-
-- Removed blocking async operations
-- Implemented non-blocking state updates
-- Added performance timing measurements
-- Improved UI responsiveness
-
-16. Enhanced bottom sheet interactions:
-
-- Faster sheet closing animation
-- Immediate feedback for status changes
-
-17. Improved HabitItem UI:
-
-- Added visual feedback for skipped state
-- Enhanced status indication
-
-18. Optimized habit components:
-
-- Added React.memo for performance optimization
-- Removed console.log statements and dead code
-- Fixed weekly habit filtering by days of week
-
-19. Fixed habit filtering for weekly habits:
-
-- Implemented proper day-of-week filtering
-- Ensured weekly habits only appear on scheduled days
-
-20. Enhanced habit creation form:
-
-- Simplified UI with only essential fields visible
-- Added advanced settings section for optional fields
-- Corrected form header to always show "Add New Habit"
-
-### Calendar Day Visualization
-
-- Simplified calendar day visualization
-- Focused completion status on number only
-- Maintained clean visual hierarchy:
-  1. White container background
-  2. Light blue selected day
-  3. Blue circle indicators for completion
-  4. Blue text for today
-
-### Current Focus
-
-- Ensuring clear visual feedback for:
-  - Day selection
-  - Completion status
-  - Current day
-- Maintaining consistent spacing and alignment
-- Optimizing touch targets
-
-## Active Decisions
-
-### Authentication Implementation
-
-- Decision to use multiple auth providers (Apple, Google)
-- Token-based authentication approach
-- Secure storage strategy with MMKV
-
-### State Management
-
-- Zustand chosen for global state
-- MMKV for performance-critical data
-- AsyncStorage for larger datasets
-- Offline-first architecture with optimistic updates
-- Sync strategy with pending operations
-- **Pattern:** Use custom hooks (e.g., `useHabitsForDate`) to select and memoize derived data from stores
-- **Performance:** Non-blocking state updates for UI operations
-
-### Navigation
-
-- Expo Router v3 implementation
-- File-based routing structure
-- Deep linking support planning
-
-### Performance Optimizations
-
-1. **State Updates**
-
-   - Identified and removed blocking async operations
-   - Implemented background processing for server sync
-   - Added performance measurement points
-   - Achieved ~2-3ms response time for status updates
-
-2. **UI Responsiveness**
-   - Optimized bottom sheet animations
-   - Immediate visual feedback
-   - Background processing for non-critical operations
-
-## Next Steps
-
-### Immediate Focus: Achievement System UI
-
-1. **Achievement Display**
-
-   - Design and implement achievement list view
-   - Create achievement detail modal
-   - Add achievement progress tracking
-   - Implement achievement filters
-
-2. **Achievement Notifications**
-
-   - Design toast notification layout
-   - Add animation and interaction
-   - Implement notification queueing
-   - Add notification preferences
-
-3. **Achievement Categories**
-   - Design category system
-   - Implement category filters
-   - Add category progress tracking
-   - Create category-based views
-
-### Technical Debt & Optimization
-
-1. **Code Organization**
-
-   - Implement ESLint configuration
-   - Set up automatic import cleanup
-   - Organize component structure
-   - Document code patterns
-
-2. **Testing**
-
-   - Set up testing infrastructure
-   - Add unit tests for critical paths
-   - Implement integration tests
-   - Add performance benchmarks
-
-3. **Documentation**
-   - Update component documentation
-   - Document state management patterns
-   - Create contribution guidelines
-   - Add setup instructions
-
-### Recent Calendar Optimizations
-
-1. Optimized Calendar Performance:
-   - Removed performance logging for cleaner code
-   - Pre-calculated cell values during grid generation
-   - Simplified component structure with DayCellData interface
-   - Improved memoization strategy for cell rendering
-   - Reduced date operations during render phase
-   - Achieved significant performance improvements
-
-### Next Feature: Notification System
-
-Detailed implementation plan for the notification system:
-
-#### Phase 1: Infrastructure Setup (Week 1)
-
-1. Install and configure Expo Notifications
-2. Set up notification permissions handling
-3. Implement notification token management
-4. Create notification store for state management
-5. Design notification interfaces and types
-
-#### Phase 2: Core Notification Features (Week 1-2)
-
-1. Implement local notification scheduling
-2. Create notification triggers for:
-   - Daily habit reminders
-   - Weekly habit reminders
-   - Achievement unlocks
-   - Streak milestones
-3. Add notification grouping and categorization
-4. Implement notification queue management
-
-#### Phase 3: User Interface (Week 2)
-
-1. Design and implement notification preferences screen
-2. Create notification history view
-3. Add notification badges to relevant UI elements
-4. Implement in-app notification center
-5. Add quick actions for notifications
-
-#### Phase 4: Integration & Testing (Week 3)
-
-1. Integrate with existing habit system
-2. Connect with achievement system
-3. Implement background task handling
-4. Add error handling and retry mechanisms
-5. Create comprehensive testing suite
-
-#### Phase 5: Polish & Optimization (Week 3-4)
-
-1. Optimize notification delivery timing
-2. Implement smart notification batching
-3. Add user engagement analytics
-4. Fine-tune notification frequency
-5. Implement do-not-disturb handling
-
-### Technical Considerations
-
-- Expo Notifications setup
-- Background task handling
-- Notification permissions
-- Token management
-- Cross-platform compatibility
-
-### Success Criteria
-
-1. Users receive timely reminders for habits
-2. Achievement notifications are engaging
-3. Notification preferences are easily manageable
-4. System handles background state efficiently
-5. Notifications are properly grouped and categorized
-
-### Supabase Integration Updates (25c50d03)
-
-- Upgraded Supabase client to v2.49.4
-- Moved Supabase client to dedicated directory
-- Added notifications table and functionality
-- Implemented push notification system with Edge Functions
-- Removed temporary notification files in favor of Supabase-based solution
-- Added push_token field to users table
-
-### Current Focus: Notification System Implementation
-
-### Recently Completed
-
-1. Implemented notification system core components:
-
-   - Database schema with notification types and tables
-   - Notification processor function (runs every minute)
-   - Habit notification scheduler
-   - Streak notification scheduler
-
-2. Optimized habit notifications:
-   - Moved timezone filtering to prepareNotifications
-   - Improved time comparison logic
-   - Added detailed logging for debugging
-   - Scheduled notifications in user's timezone
-
-### Current Status
-
-1. Notification System Components:
-
-   - ✅ Database Schema
-   - ✅ Notification Processor
-   - ✅ Habit Scheduler
-   - ✅ Streak Scheduler
-   - ⏳ Performance Optimization
-
-2. Performance Considerations:
-   - Edge function timeout limit of 5000ms
-   - Need to handle large user bases (5000+ users)
-   - Current implementation may need batching for scale
-
-### Next Steps
-
-1. Implement batching solution for large user bases
-2. Add monitoring and error tracking
-3. Test with various timezone scenarios
-4. Optimize database queries and processing
-5. Add rate limiting and failure handling
-
-### Active Decisions
-
-1. Timezone handling moved to notification preparation
-2. Using simple hour comparison instead of complex time ranges
-3. Detailed logging for production debugging
-4. Need to implement batching for scale
-
-### Technical Constraints
-
-1. Edge function timeout: 5000ms maximum
-2. Batch size for Expo: 599 notifications
-3. Need to handle multiple timezones efficiently
-4. Must maintain notification order and timing accuracy
-
-## Recent Changes
-
 ### Testing Infrastructure Setup
 
 1. **Jest Configuration**
@@ -746,11 +484,23 @@ Detailed implementation plan for the notification system:
 
 ## Active Context Summary
 
-The project has significantly improved its development infrastructure with comprehensive testing setup. The focus has shifted to implementing robust tests while continuing UI polish and bug fixes. The recent scroll indicator fix demonstrates ongoing attention to user experience details.
+The project has recently completed a major iOS widget system overhaul, implementing configurable widgets with modern UI design and user customization capabilities. Current focus areas include widget testing, internationalization implementation, user account features, and form improvements. The development infrastructure has been significantly enhanced with comprehensive testing setup and improved development workflows.
 
-Key areas of active development:
+## Current Challenges
 
-- Writing comprehensive test suites
-- Continuing UI improvements and bug fixes
-- Preparing for authentication implementation
-- Maintaining high code quality standards
+1. **Widget Testing & Validation**
+
+   - Testing new configurable widget system
+   - Validating multi-size widget layouts
+   - Ensuring proper habit selection and display
+
+2. **Internationalization Integration**
+
+   - Implementing language selection UI
+   - Creating translation files for supported languages
+   - Testing i18n functionality across the app
+
+3. **User Experience Enhancements**
+   - Integrating new UI components (picker, keyboard-aware scroll)
+   - Implementing user account management features
+   - Improving form interactions and feedback

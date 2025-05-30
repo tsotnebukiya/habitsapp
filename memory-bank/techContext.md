@@ -46,10 +46,13 @@
    - Swift (for widget views, logic, and intents)
    - SwiftUI (for widget UI)
    - WidgetKit (Apple framework for building widgets)
-   - App Intents (Apple framework for interactive widgets)
+   - App Intents (Apple framework for interactive widgets and configuration)
    - `@bacons/expo-apple-targets` (Expo package for integrating native Swift targets)
    - App Groups (iOS mechanism for sharing data between app and extensions)
    - `UserDefaults` (used with App Groups for data storage)
+   - **Widget Configuration**: `AppIntentConfiguration` for user-customizable widgets
+   - **Entity System**: `AppEntity` and `EntityQuery` for widget configuration options
+   - **Shared Providers**: Unified timeline providers for multiple widget types
 
 ## Dependencies
 

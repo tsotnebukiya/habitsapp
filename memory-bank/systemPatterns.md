@@ -1070,3 +1070,178 @@ Benefits:
      );
    };
    ```
+
+## iOS Widget Architecture
+
+### Widget Configuration System
+
+1. **Shared Configuration Architecture**
+
+   ```swift
+   // Unified configuration intent for both widgets
+   struct HabitConfigurationIntent: WidgetConfigurationIntent {
+       @Parameter(title: "Habits to Display")
+       var selectedHabits: [HabitEntity]?
+
+       static var parameterSummary: some ParameterSummary {
+           When(\.$selectedHabits, .hasAnyValue) {
+               Summary("Display selected habits") {
+                   \.$selectedHabits
+               }
+           } otherwise: {
+               Summary("Display all habits")
+           }
+       }
+   }
+
+   // Shared provider for both calendar and interactive widgets
+   struct SharedHabitConfigurationProvider: AppIntentTimelineProvider {
+       typealias Entry = ConfigurableEntry
+       typealias Intent = HabitConfigurationIntent
+
+       func timeline(for configuration: HabitConfigurationIntent, in context: Context) async -> Timeline<ConfigurableEntry> {
+           // Unified timeline generation logic
+       }
+   }
+   ```
+
+2. **Configurable Entry Pattern**
+
+   ```swift
+   struct ConfigurableEntry: TimelineEntry {
+       let date: Date
+       let habits: [Habit]
+       let selectedHabitIds: [String]
+
+       // Computed property for display logic
+       var displayHabits: [Habit] {
+           if selectedHabitIds.isEmpty {
+               return Array(habits.prefix(10)) // Default behavior
+           } else {
+               return habits.filter { selectedHabitIds.contains($0.id) }
+           }
+       }
+   }
+   ```
+
+3. **Widget Entity System**
+
+   ```swift
+   struct HabitEntity: AppEntity {
+       static var typeDisplayRepresentation: TypeDisplayRepresentation = "Habit"
+       static var defaultQuery = HabitEntityQuery()
+
+       var displayRepresentation: DisplayRepresentation {
+           DisplayRepresentation(
+               title: "\(name)",
+               subtitle: "Tap to toggle selection"
+           )
+       }
+   }
+
+   struct HabitEntityQuery: EntityQuery {
+       func suggestedEntities() async throws -> [HabitEntity] {
+           // Load and convert habits to entities
+       }
+   }
+   ```
+
+### Widget UI Design Patterns
+
+1. **Card-Based Layout System**
+
+   ```swift
+   struct HabitCard: View {
+       let habit: Habit
+
+       var body: some View {
+           ZStack {
+               // Base background with habit color
+               RoundedRectangle(cornerRadius: 16)
+                   .fill(habitColor.opacity(0.38))
+
+               // Progress overlay
+               GeometryReader { geometry in
+                   HStack {
+                       RoundedRectangle(cornerRadius: 16)
+                           .fill(habitColor)
+                           .frame(width: geometry.size.width * progress)
+                       Spacer(minLength: 0)
+                   }
+               }
+
+               // Content layer with icon, text, and action button
+               HStack {
+                   // Icon, habit info, action button
+               }
+           }
+       }
+   }
+   ```
+
+2. **Multi-Size Widget Support**
+
+   ```swift
+   private var maxHabits: Int {
+       switch family {
+       case .systemSmall: return 2   // 1 column, 2 rows
+       case .systemMedium: return 4  // 2 columns, 2 rows
+       case .systemLarge: return 10  // 2 columns, 4 rows
+       @unknown default: return 2
+       }
+   }
+   ```
+
+3. **Icon Tinting System**
+
+   ```swift
+   func getIconTint(hex: String, opacity: Double = 1.0) -> Color {
+       // Calculate brightness and return appropriate tint
+       let yiq = (adjustedR * 299 + adjustedG * 587 + adjustedB * 114) / 1000
+       return yiq > 150 ? .primary : .white
+   }
+   ```
+
+### Widget Integration Patterns
+
+1. **App Intent Integration**
+
+   ```swift
+   // Toggle habit completion
+   struct ToggleHabitIntent: AppIntent {
+       @Parameter(title: "Habit ID")
+       var habitID: String
+
+       func perform() async throws -> some IntentResult {
+           // Update habit completion status
+           return .result()
+       }
+   }
+
+   // Open main app
+   struct OpenAppIntent: AppIntent {
+       static var openAppWhenRun: Bool = true
+
+       func perform() async throws -> some IntentResult {
+           return .result()
+       }
+   }
+   ```
+
+2. **Conditional Widget Actions**
+
+   ```swift
+   Group {
+       if isCompletedToday {
+           // Use Link for completed habits
+           Link(destination: URL(string: "habitapp://")!) {
+               habitCardContent
+           }
+       } else {
+           // Use Button for incomplete habits
+           Button(intent: ToggleHabitIntent(habitID: habit.id)) {
+               habitCardContent
+           }
+       }
+   }
+   ```
