@@ -240,6 +240,14 @@
     "termsOfService": "Conditions d'Utilisation",
     "sendFeedback": "Envoyer des Commentaires",
     "share": "Partager",
+    "signOut": {
+      "button": "Se Déconnecter",
+      "title": "Se Déconnecter",
+      "message": "Êtes-vous sûr de vouloir vous déconnecter ? Vous devrez vous reconnecter pour accéder à votre compte.",
+      "confirm": "Se Déconnecter",
+      "success": "Déconnexion réussie",
+      "error": "Échec de la déconnexion"
+    },
     "deleteAccount": {
       "button": "Supprimer mon compte",
       "title": "Supprimer le Compte",

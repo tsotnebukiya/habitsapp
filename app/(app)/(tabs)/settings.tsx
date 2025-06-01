@@ -63,6 +63,49 @@ const SettingsScreen = () => {
     }
   };
 
+  const handleSignOut = async () => {
+    Alert.alert(t('settings.signOut.title'), t('settings.signOut.message'), [
+      {
+        text: t('common.cancel'),
+        style: 'cancel',
+      },
+      {
+        text: t('settings.signOut.confirm'),
+        style: 'destructive',
+        onPress: confirmSignOut,
+      },
+    ]);
+  };
+
+  const confirmSignOut = async () => {
+    try {
+      // Clear all local data stores
+      clearProfile();
+      clearHabitsData();
+      clearAppData();
+
+      // Sign out from Supabase
+      await supabase.auth.signOut();
+
+      // Show success message
+      Toast.show({
+        type: 'success',
+        text1: t('settings.signOut.success'),
+      });
+
+      // Navigate to onboarding
+      router.replace('/onboarding/OnboardingIntro');
+    } catch (error: any) {
+      console.error('Error signing out:', error);
+
+      Toast.show({
+        type: 'error',
+        text1: t('settings.signOut.error'),
+        text2: error.message || t('errors.generic'),
+      });
+    }
+  };
+
   const handleDeleteAccount = () => {
     Alert.alert(
       t('settings.deleteAccount.title'),
@@ -261,6 +304,25 @@ const SettingsScreen = () => {
               color={colors.habitColors.amethystPurple}
             />
             <Text style={styles.itemText}>{t('settings.language')}</Text>
+            <View style={styles.containerRight}>
+              <Icon
+                source={require('@/assets/icons/chevron-right.png')}
+                size={18}
+                color={colors.text}
+              />
+            </View>
+          </TouchableOpacity>
+          <TouchableOpacity
+            activeOpacity={ACTIVE_OPACITY}
+            style={styles.item}
+            onPress={handleSignOut}
+          >
+            <Icon
+              source={require('@/assets/icons/x-close.png')}
+              size={24}
+              color={'#FF6B6B'}
+            />
+            <Text style={styles.itemText}>{t('settings.signOut.button')}</Text>
             <View style={styles.containerRight}>
               <Icon
                 source={require('@/assets/icons/chevron-right.png')}

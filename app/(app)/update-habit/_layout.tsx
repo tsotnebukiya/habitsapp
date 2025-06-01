@@ -1,6 +1,7 @@
 import { ACTIVE_OPACITY } from '@/components/shared/config';
 import { colors, fontWeights } from '@/lib/constants/ui';
 import { useHabit } from '@/lib/hooks/useHabits';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 import { useUpdateHabitStore } from '@/lib/stores/update_habit_store';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { router, Stack, useLocalSearchParams, usePathname } from 'expo-router';
@@ -9,6 +10,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Icon } from 'react-native-paper';
 
 export default function UpdateHabitLayout() {
+  const { t } = useTranslation();
   const resetForm = useUpdateHabitStore((state) => state.resetForm);
   const { habitId } = useLocalSearchParams<{ habitId: string }>();
   const habit = useHabit(habitId);
@@ -47,7 +49,9 @@ export default function UpdateHabitLayout() {
             <View style={styles.headerSpacing} />
           )}
 
-          <Text style={styles.heading}>Edit {habit?.name}</Text>
+          <Text style={styles.heading}>
+            {t('common.edit')} {habit?.name}
+          </Text>
           <TouchableOpacity
             onPress={handleClose}
             activeOpacity={0.1}

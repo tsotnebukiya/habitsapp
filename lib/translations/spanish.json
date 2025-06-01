@@ -241,6 +241,14 @@
     "termsOfService": "Términos de Servicio",
     "sendFeedback": "Enviar Comentarios",
     "share": "Compartir",
+    "signOut": {
+      "button": "Cerrar Sesión",
+      "title": "Cerrar Sesión",
+      "message": "¿Estás seguro de que quieres cerrar sesión? Necesitarás iniciar sesión nuevamente para acceder a tu cuenta.",
+      "confirm": "Cerrar Sesión",
+      "success": "Sesión cerrada exitosamente",
+      "error": "Error al cerrar sesión"
+    },
     "deleteAccount": {
       "button": "Eliminar mi cuenta",
       "title": "Eliminar Cuenta",

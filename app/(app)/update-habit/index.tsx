@@ -2,7 +2,6 @@ import { DetailChoosingType } from '@/app/(app)/update-habit/detail-choosing';
 import Button from '@/components/shared/Button';
 import { ACTIVE_OPACITY } from '@/components/shared/config';
 import ItemIcon from '@/components/shared/Icon';
-import { CATEGORIES_MAP } from '@/lib/constants/HabitTemplates';
 import { colors, fontWeights } from '@/lib/constants/ui';
 import useHabitsStore from '@/lib/habit-store/store';
 import { useHabit } from '@/lib/hooks/useHabits';
@@ -121,7 +120,9 @@ export default function UpdateHabit() {
               <ItemIcon icon={formData.icon} color={'white'} />
               <View style={styles.headerContent}>
                 {formData.name && (
-                  <Text style={styles.habitFieldText}>Habit name</Text>
+                  <Text style={styles.habitFieldText}>
+                    {t('habits.habitName')}
+                  </Text>
                 )}
 
                 <Text style={styles.headerTitle}>
@@ -230,7 +231,7 @@ export default function UpdateHabit() {
                 <Text style={styles.itemText}>{t('habits.category')}</Text>
                 <View style={styles.containerRight}>
                   <Text style={styles.descriptionText}>
-                    {CATEGORIES_MAP[formData.category].name}
+                    {t(`categories.${formData.category}`)}
                   </Text>
                   <Icon
                     source={require('@/assets/icons/chevron-right.png')}
@@ -303,7 +304,11 @@ export default function UpdateHabit() {
           </View>
         </ScrollView>
         <View style={[styles.footer, { paddingBottom: insets.bottom }]}>
-          <Button onPress={handleSubmit} label="Save" type="primary" />
+          <Button
+            onPress={handleSubmit}
+            label={t('common.save')}
+            type="primary"
+          />
         </View>
       </View>
     </>

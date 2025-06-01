@@ -240,6 +240,14 @@
     "termsOfService": "Nutzungsbedingungen",
     "sendFeedback": "Feedback Senden",
     "share": "Teilen",
+    "signOut": {
+      "button": "Abmelden",
+      "title": "Abmelden",
+      "message": "Sind Sie sicher, dass Sie sich abmelden möchten? Sie müssen sich erneut anmelden, um auf Ihr Konto zuzugreifen.",
+      "confirm": "Abmelden",
+      "success": "Erfolgreich abgemeldet",
+      "error": "Fehler beim Abmelden"
+    },
     "deleteAccount": {
       "button": "Mein Konto löschen",
       "title": "Konto Löschen",

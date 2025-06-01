@@ -203,7 +203,7 @@ export default function HabitDetailsSheet({
                 <DropdownMenu.Label />
                 <DropdownMenu.Item key="edit" onSelect={handleEdit}>
                   <DropdownMenu.ItemTitle>
-                    {t('habits.edit')}
+                    {t('common.edit')}
                   </DropdownMenu.ItemTitle>
                   <DropdownMenu.ItemIcon ios={{ name: 'pencil.line' }} />
                 </DropdownMenu.Item>
@@ -211,7 +211,7 @@ export default function HabitDetailsSheet({
                 {!isSkipped && (
                   <DropdownMenu.Item key="skip" onSelect={handleSkip}>
                     <DropdownMenu.ItemTitle>
-                      {t('habits.skip')}
+                      {t('common.skip')}
                     </DropdownMenu.ItemTitle>
                     <DropdownMenu.ItemIcon
                       ios={{ name: 'arrow.forward.to.line' }}

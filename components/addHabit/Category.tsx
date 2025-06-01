@@ -62,9 +62,11 @@ export default function CategoryChoosing({
                 <Icon source={category.icon} size={24} color={category.color} />
               </View>
               <View style={styles.categoryTextContainer}>
-                <Text style={styles.categoryName}>{category.name}</Text>
+                <Text style={styles.categoryName}>
+                  {t(`categories.${category.id}`)}
+                </Text>
                 <Text style={styles.categoryDescription}>
-                  {category.description}
+                  {t(`categoryDescriptions.${category.id}`)}
                 </Text>
               </View>
               <RadioButton

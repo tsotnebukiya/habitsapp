@@ -247,12 +247,12 @@ function HabitItem({
           {renderHabitContent()}
         </ContextMenu.Preview>
         <ContextMenu.Item key="edit" onSelect={handleEdit}>
-          <ContextMenu.ItemTitle>{t('habits.edit')}</ContextMenu.ItemTitle>
+          <ContextMenu.ItemTitle>{t('common.edit')}</ContextMenu.ItemTitle>
           <ContextMenu.ItemIcon ios={{ name: 'pencil.line' }} />
         </ContextMenu.Item>
         {!isSkipped && (
           <ContextMenu.Item key="skip" onSelect={handleSkip}>
-            <ContextMenu.ItemTitle>{t('habits.skip')}</ContextMenu.ItemTitle>
+            <ContextMenu.ItemTitle>{t('common.skip')}</ContextMenu.ItemTitle>
             <ContextMenu.ItemIcon ios={{ name: 'arrow.forward.to.line' }} />
           </ContextMenu.Item>
         )}

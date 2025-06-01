@@ -237,6 +237,14 @@
     "termsOfService": "Termos de Serviço",
     "sendFeedback": "Enviar Feedback",
     "share": "Compartilhar",
+    "signOut": {
+      "button": "Sair",
+      "title": "Sair",
+      "message": "Tem certeza de que deseja sair? Você precisará fazer login novamente para acessar sua conta.",
+      "confirm": "Sair",
+      "success": "Saída realizada com sucesso",
+      "error": "Falha ao sair"
+    },
     "deleteAccount": {
       "button": "Excluir minha conta",
       "title": "Excluir Conta",

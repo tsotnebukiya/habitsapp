@@ -24,7 +24,7 @@ export const CATEGORIES = [
   {
     id: 'cat1',
     name: 'Vitality',
-    icon: require('@/assets/icons/vitality.png'),
+    icon: 'bolt.fill',
     description: 'Physical health and energy',
     color: '#FF6B6B',
     display: {
@@ -36,7 +36,7 @@ export const CATEGORIES = [
   {
     id: 'cat2',
     name: 'Wisdom',
-    icon: require('@/assets/icons/wisdom.png'),
+    icon: 'lightbulb.max.fill',
     description: 'Mental growth and learning',
     color: '#4A90E2',
     display: {
@@ -48,7 +48,7 @@ export const CATEGORIES = [
   {
     id: 'cat3',
     name: 'Harmony',
-    icon: require('@/assets/icons/harmony.png'),
+    icon: 'heart.circle.fill',
     description: 'Balance and relationships',
     color: '#7ED6A7',
     display: {
@@ -60,7 +60,7 @@ export const CATEGORIES = [
   {
     id: 'cat4',
     name: 'Spirit',
-    icon: require('@/assets/icons/spirit.png'),
+    icon: 'star.fill',
     description: 'Inner peace and mindfulness',
     color: '#A974F8',
     display: {
@@ -72,7 +72,7 @@ export const CATEGORIES = [
   {
     id: 'cat5',
     name: 'Ambition',
-    icon: require('@/assets/icons/ambition.png'),
+    icon: 'chart.line.uptrend.xyaxis',
     description: 'Career and personal goals',
     color: '#FFA726',
     display: {
@@ -86,7 +86,7 @@ export const CATEGORIES = [
 export const TOTAL_CATEGORY = {
   id: 'total',
   name: 'Total',
-  icon: require('@/assets/icons/ambition.png'),
+  icon: 'circle.grid.cross.fill',
   description: 'Overall life balance',
   color: '#FFA726',
   display: {

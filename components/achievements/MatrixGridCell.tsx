@@ -1,10 +1,9 @@
 import { colors, fontWeights } from '@/lib/constants/ui';
 import { MatrixCategory } from '@/lib/hooks/useMatrix';
 import { useTranslation } from '@/lib/hooks/useTranslation';
-import { SymbolView } from 'expo-symbols';
+import { SFSymbol, SymbolView } from 'expo-symbols';
 import React, { memo } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import { Icon } from 'react-native-paper';
 
 interface MatrixGridCellProps {
   category: MatrixCategory;
@@ -54,10 +53,10 @@ export const MatrixGridCell = memo(function MatrixGridCell({
             tintColor={category.display.title}
           />
         ) : (
-          <Icon
-            source={category.icon}
+          <SymbolView
+            name={category.icon as SFSymbol}
             size={24}
-            color={category.display.title}
+            tintColor={category.display.title}
           />
         )}
         <Text style={[styles.title, { color: category.display.title }]}>
