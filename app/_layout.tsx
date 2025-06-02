@@ -97,7 +97,9 @@ function RootLayoutNav() {
                 <Stack.Screen name="(app)" options={{ headerShown: false }} />
                 <Stack.Screen
                   name="onboarding"
-                  options={{ headerShown: false }}
+                  options={{
+                    headerShown: false,
+                  }}
                 />
               </Stack>
               <ModalContainer />

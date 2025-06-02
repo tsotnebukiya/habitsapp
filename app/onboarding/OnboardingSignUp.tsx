@@ -10,23 +10,17 @@ import {
   statusCodes,
 } from '@react-native-google-signin/google-signin';
 import * as AppleAuthentication from 'expo-apple-authentication';
-import * as Haptics from 'expo-haptics';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { usePostHog } from 'posthog-react-native';
 import React, { useEffect } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import Toast from 'react-native-toast-message';
-import { newOnboardingStyles, onboardingGradient } from './newOnboardingStyles';
-import { ONBOARDING_STEPS } from './OnboardingSteps';
 
 const OnboardingSignUp = () => {
   const router = useRouter();
   const posthog = usePostHog();
   const { profile, setProfile, updateProfile, completeOnboarding } =
     useUserProfileStore();
-
-  const currentIndex = ONBOARDING_STEPS.indexOf('/onboarding/OnboardingSignUp');
 
   GoogleSignin.configure({
     scopes: ['https://www.googleapis.com/auth/userinfo.email'],
@@ -39,36 +33,9 @@ const OnboardingSignUp = () => {
     }
   }, [profile?.id]);
 
-  const nextStep = () => {
-    if (profile?.id) {
-      posthog?.identify(profile.id, {
-        email: profile.email,
-      });
-      posthog?.capture('signup_successful', {
-        id: profile.id,
-        email: profile.email,
-      });
-    }
+  const nextStep = () => {};
 
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-
-    // Find the next step in the onboarding flow
-    const nextStepIndex = currentIndex + 1;
-    if (nextStepIndex < ONBOARDING_STEPS.length) {
-      router.push(ONBOARDING_STEPS[nextStepIndex]);
-    } else {
-      // Fallback to tabs if we're somehow at the end
-      router.replace('/(tabs)');
-    }
-  };
-
-  const backStep = () => {
-    if (currentIndex > 0) {
-      router.push(ONBOARDING_STEPS[currentIndex - 1]);
-    } else if (router.canGoBack()) {
-      router.back();
-    }
-  };
+  const backStep = () => {};
 
   const handleAppleSignIn = async () => {
     try {
@@ -271,42 +238,20 @@ const OnboardingSignUp = () => {
   };
 
   return (
-    <LinearGradient
-      colors={onboardingGradient}
-      style={newOnboardingStyles.container}
-    >
-      <View style={newOnboardingStyles.contentContainer}>
-        <Text style={newOnboardingStyles.title}>Sign Up</Text>
-        <Text style={newOnboardingStyles.subtitle}>You're almost done!</Text>
+    <View>
+      <View>
+        <Text>Sign Up</Text>
+        <Text>You're almost done!</Text>
 
         <TouchableOpacity
-          style={{ ...newOnboardingStyles.button, justifyContent: 'center' }}
           onPress={() => router.push('/onboarding/OnboardingEmailSignupModal')}
         >
-          <FontAwesome6
-            name="envelope"
-            size={18}
-            color="black"
-            style={newOnboardingStyles.buttonIcon}
-          />
-          <Text style={newOnboardingStyles.buttonText}>
-            Continue with Email
-          </Text>
+          <Text>Continue with Email</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={{ ...newOnboardingStyles.button, justifyContent: 'center' }}
-          onPress={handleGoogleSignIn}
-        >
-          <FontAwesome6
-            name="google"
-            size={18}
-            color="black"
-            style={newOnboardingStyles.buttonIcon}
-          />
-          <Text style={newOnboardingStyles.buttonText}>
-            Continue with Google
-          </Text>
+        <TouchableOpacity onPress={handleGoogleSignIn}>
+          <FontAwesome6 name="google" size={18} color="black" />
+          <Text>Continue with Google</Text>
         </TouchableOpacity>
 
         <AppleAuthentication.AppleAuthenticationButton
@@ -317,29 +262,21 @@ const OnboardingSignUp = () => {
             AppleAuthentication.AppleAuthenticationButtonStyle.WHITE_OUTLINE
           }
           cornerRadius={25}
-          style={{ ...newOnboardingStyles.button, height: 55 }}
           onPress={handleAppleSignIn}
         />
 
-        <Text style={newOnboardingStyles.termsText}>
-          By continuing, you agree to our{' '}
-          <Text style={newOnboardingStyles.termsLink}>
-            Terms and Conditions
-          </Text>{' '}
-          and confirm you have read our{' '}
-          <Text style={newOnboardingStyles.termsLink}>Privacy Policy</Text>.
+        <Text>
+          By continuing, you agree to our <Text>Terms and Conditions</Text> and
+          confirm you have read our <Text>Privacy Policy</Text>.
         </Text>
       </View>
 
-      <View style={newOnboardingStyles.buttonContainer}>
-        <TouchableOpacity
-          onPress={backStep}
-          style={newOnboardingStyles.backButton}
-        >
+      <View>
+        <TouchableOpacity onPress={backStep}>
           <FontAwesome6 name="chevron-left" size={20} color="#4F46E5" />
         </TouchableOpacity>
       </View>
-    </LinearGradient>
+    </View>
   );
 };
 

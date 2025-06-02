@@ -1,12 +1,12 @@
 import { colors } from '@/lib/constants/ui';
 import { useTranslation } from '@/lib/hooks/useTranslation';
+import useUserProfileStore from '@/lib/stores/user_profile';
 import { FontAwesome6 } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useRef, useState } from 'react';
 import {
   Dimensions,
   FlatList,
-  StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -32,6 +32,8 @@ type OnboardingItem = {
 
 const OnboardingCarousel = () => {
   const insets = useSafeAreaInsets();
+  const profile = useUserProfileStore((state) => state.profile);
+  console.log(profile?.preferred_language);
   const [currentIndex, setCurrentIndex] = useState(0);
   const router = useRouter();
   const flatListRef = useRef<FlatList>(null);
@@ -82,13 +84,12 @@ const OnboardingCarousel = () => {
   }) => {
     return (
       <View style={styles.slide}>
-        <Animated.View style={[styles.iconContainer]}>
-          <FontAwesome6
-            name={item.icon as any}
-            size={80}
-            color={colors.bgDark}
-          />
-        </Animated.View>
+        {/* <FontAwesome6
+          name={item.icon as any}
+          size={80}
+          color={colors.bgDark}
+          style={styles.image}
+        /> */}
         <Text style={styles.title}>{t(item.titleKey as any)}</Text>
         <Text style={styles.description}>{t(item.descriptionKey as any)}</Text>
       </View>
@@ -142,7 +143,7 @@ const OnboardingCarousel = () => {
 
   return (
     <View style={[styles.container, { paddingTop: insets.top + 17 }]}>
-      <StatusBar barStyle="dark-content" />
+      {/* <StatusBar barStyle="dark-content" /> */}
 
       <FlatList
         ref={flatListRef}
@@ -165,18 +166,13 @@ const OnboardingCarousel = () => {
       </View>
 
       <View style={styles.bottomContainer}>
-        <TouchableOpacity style={styles.nextButton} onPress={handleNext}>
-          <Text style={styles.nextButtonText}>
+        <TouchableOpacity onPress={handleNext}>
+          <Text>
             {currentIndex === slides.length - 1
               ? t('onboarding.getStarted')
               : t('onboarding.next')}
           </Text>
-          <FontAwesome6
-            name="arrow-right"
-            size={16}
-            color="white"
-            style={styles.nextButtonIcon}
-          />
+          <FontAwesome6 name="arrow-right" size={16} color="white" />
         </TouchableOpacity>
       </View>
     </View>
@@ -186,49 +182,22 @@ const OnboardingCarousel = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
-  },
-  skipContainer: {
-    position: 'absolute',
-    top: 50,
-    right: 20,
-    zIndex: 1,
-  },
-  skipText: {
-    fontSize: 16,
-    color: colors.bgDark,
-    fontWeight: '500',
+    backgroundColor: colors.bgLight,
   },
   slide: {
     width,
     height: height * 0.7,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: 32,
   },
-  iconContainer: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-    backgroundColor: colors.bgDark,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 40,
+  image: {
+    marginBottom: 66,
   },
   title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    color: colors.bgDark,
-    marginBottom: 10,
-    textAlign: 'center',
+    marginBottom: 9,
   },
-  description: {
-    fontSize: 16,
-    color: colors.bgDark,
-    textAlign: 'center',
-    paddingHorizontal: 20,
-    lineHeight: 24,
-  },
+  description: {},
   pagination: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -243,22 +212,6 @@ const styles = StyleSheet.create({
   bottomContainer: {
     paddingHorizontal: 20,
     paddingBottom: 30,
-  },
-  nextButton: {
-    backgroundColor: colors.bgDark,
-    paddingVertical: 16,
-    borderRadius: 30,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  nextButtonText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  nextButtonIcon: {
-    marginLeft: 8,
   },
 });
 

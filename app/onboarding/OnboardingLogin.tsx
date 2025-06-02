@@ -6,7 +6,6 @@ import {
 } from '@react-native-google-signin/google-signin';
 import * as AppleAuthentication from 'expo-apple-authentication';
 import * as Haptics from 'expo-haptics';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
@@ -15,19 +14,10 @@ import Toast from 'react-native-toast-message';
 import { colors } from '@/lib/constants/ui';
 import { UserProfile, useUserProfileStore } from '@/lib/stores/user_profile';
 import { supabase } from '@/supabase/client';
-import { newOnboardingStyles, onboardingGradient } from './newOnboardingStyles';
-
-const ONBOARDING_STEPS = [
-  '/onboarding/OnboardingIntro',
-  '/onboarding/OnboardingSignUp',
-  // Add other steps as needed
-];
 
 function OnboardingLogin() {
   const router = useRouter();
   const { setProfile, completeOnboarding } = useUserProfileStore();
-
-  const currentIndex = ONBOARDING_STEPS.indexOf('/onboarding/OnboardingSignUp');
 
   GoogleSignin.configure({
     scopes: ['https://www.googleapis.com/auth/userinfo.email'],
@@ -119,44 +109,23 @@ function OnboardingLogin() {
   };
 
   return (
-    <LinearGradient
-      colors={onboardingGradient}
-      style={newOnboardingStyles.container}
-    >
-      <View style={newOnboardingStyles.contentContainer}>
-        <Text style={newOnboardingStyles.title}>Login</Text>
+    <View>
+      <View>
+        <Text>Login</Text>
 
         <TouchableOpacity
-          style={[newOnboardingStyles.button, { justifyContent: 'center' }]}
           onPress={() => {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
             router.push('/onboarding/OnboardingEmailLoginModal');
           }}
         >
-          <FontAwesome6
-            name="envelope"
-            size={18}
-            color={colors.bgDark}
-            style={newOnboardingStyles.buttonIcon}
-          />
-          <Text style={newOnboardingStyles.buttonText}>
-            Continue with Email
-          </Text>
+          <FontAwesome6 name="envelope" size={18} color={colors.bgDark} />
+          <Text>Continue with Email</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          style={[newOnboardingStyles.button, { justifyContent: 'center' }]}
-          onPress={handleGoogleSignIn}
-        >
-          <FontAwesome6
-            name="google"
-            size={18}
-            color={colors.bgDark}
-            style={newOnboardingStyles.buttonIcon}
-          />
-          <Text style={newOnboardingStyles.buttonText}>
-            Continue with Google
-          </Text>
+        <TouchableOpacity onPress={handleGoogleSignIn}>
+          <FontAwesome6 name="google" size={18} color={colors.bgDark} />
+          <Text>Continue with Google</Text>
         </TouchableOpacity>
 
         <AppleAuthentication.AppleAuthenticationButton
@@ -167,20 +136,23 @@ function OnboardingLogin() {
             AppleAuthentication.AppleAuthenticationButtonStyle.WHITE_OUTLINE
           }
           cornerRadius={25}
-          style={[newOnboardingStyles.button, { height: 55 }]}
           onPress={handleAppleSignIn}
+          style={{
+            backgroundColor: colors.bgDark,
+            paddingVertical: 16,
+            borderRadius: 30,
+            flexDirection: 'row',
+            justifyContent: 'center',
+          }}
         />
       </View>
 
-      <View style={newOnboardingStyles.buttonContainer}>
-        <TouchableOpacity
-          onPress={() => router.back()}
-          style={newOnboardingStyles.backButton}
-        >
+      <View>
+        <TouchableOpacity onPress={() => router.back()}>
           <FontAwesome6 name="chevron-left" size={20} color={colors.bgDark} />
         </TouchableOpacity>
       </View>
-    </LinearGradient>
+    </View>
   );
 }
 
