@@ -5,25 +5,17 @@ import { Database } from '@/supabase/types';
 import { MMKV } from 'react-native-mmkv';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
-import { configureCalendarLocale } from '../utils/calendarLocalization';
-import i18n, { SupportedLanguage } from '../utils/i18n';
+import { SupportedLanguage } from '../utils/i18n';
+import { useAppStore } from './app_state';
 
 export type UserProfile = Database['public']['Tables']['users']['Row'];
 interface UserProfileState {
   profile: UserProfile | null;
 
-  // Language state
-  currentLanguage: SupportedLanguage;
-  isLanguageInitialized: boolean;
-
   // Profile Actions
   setProfile: (profile: UserProfile) => void;
   updateProfile: (updates: Partial<UserProfile>) => void;
   clearProfile: () => void;
-
-  // Language Actions
-  setLanguage: (language: SupportedLanguage) => Promise<void>;
-  initializeLanguage: () => Promise<void>;
 
   // Notification Actions
   setStreakNotificationsEnabled: (enabled: boolean) => void;
@@ -69,17 +61,17 @@ export const useUserProfileStore = create<UserProfileState>()(
     (set, get) => ({
       profile: null,
 
-      // Language state
-      currentLanguage: 'en',
-      isLanguageInitialized: false,
-
       setProfile: (profile) => {
         set({ profile });
 
-        // Initialize language from profile if available and not already initialized
-        const { isLanguageInitialized } = get();
-        if (!isLanguageInitialized && profile?.preferred_language) {
-          get().initializeLanguage();
+        // Sync profile language to app state if different
+        if (profile?.preferred_language) {
+          const appState = useAppStore.getState();
+          if (appState.currentLanguage !== profile.preferred_language) {
+            appState.setLanguage(
+              profile.preferred_language as SupportedLanguage
+            );
+          }
         }
       },
 
@@ -102,6 +94,16 @@ export const useUserProfileStore = create<UserProfileState>()(
             : null,
         }));
 
+        // If language is being updated, sync to app state only if different
+        if (updates.preferred_language) {
+          const appState = useAppStore.getState();
+          if (appState.currentLanguage !== updates.preferred_language) {
+            appState.setLanguage(
+              updates.preferred_language as SupportedLanguage
+            );
+          }
+        }
+
         // Sync with Supabase in the background
         syncWithSupabase(state.profile.id, updatedProfile);
       },
@@ -109,54 +111,7 @@ export const useUserProfileStore = create<UserProfileState>()(
       clearProfile: () =>
         set({
           profile: null,
-          currentLanguage: 'en',
-          isLanguageInitialized: false,
         }),
-
-      setLanguage: async (language: SupportedLanguage) => {
-        try {
-          await i18n.changeLanguage(language);
-          configureCalendarLocale(language);
-          set({ currentLanguage: language });
-
-          // Update profile in backend if user is logged in
-          const state = get();
-          if (state.profile?.id) {
-            get().updateProfile({ preferred_language: language });
-          }
-        } catch (error) {
-          console.error('Failed to change language:', error);
-        }
-      },
-
-      initializeLanguage: async () => {
-        try {
-          const { currentLanguage, isLanguageInitialized, profile } = get();
-
-          // Only initialize once
-          if (isLanguageInitialized) return;
-
-          // Use profile language if available, otherwise use stored language
-          const languageToUse =
-            (profile?.preferred_language as SupportedLanguage) ||
-            currentLanguage;
-          await i18n.changeLanguage(languageToUse);
-          configureCalendarLocale(languageToUse);
-          set({
-            currentLanguage: languageToUse,
-            isLanguageInitialized: true,
-          });
-        } catch (error) {
-          console.error('Failed to initialize language:', error);
-          // Fallback to English
-          await i18n.changeLanguage('en');
-          configureCalendarLocale('en');
-          set({
-            currentLanguage: 'en',
-            isLanguageInitialized: true,
-          });
-        }
-      },
 
       setStreakNotificationsEnabled: (enabled) => {
         get().updateProfile({
@@ -192,13 +147,9 @@ export const useUserProfileStore = create<UserProfileState>()(
       storage: createJSONStorage(() => profileStorageAdapter),
       partialize: (state) => ({
         profile: state.profile,
-        currentLanguage: state.currentLanguage,
       }),
     }
   )
 );
-
-// Auto-initialize language when store is created
-useUserProfileStore.getState().initializeLanguage();
 
 export default useUserProfileStore;

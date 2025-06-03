@@ -1,16 +1,14 @@
 // app/onboarding/_layout.tsx
-import { SplashScreen, Stack } from 'expo-router';
+import { Stack } from 'expo-router';
 import React from 'react';
 
-SplashScreen.preventAutoHideAsync();
-
-function RootLayout() {
+function OnboardingLayout() {
   return (
-    <Stack initialRouteName="OnboardingSignUp">
+    <Stack initialRouteName="OnboardingIntro">
       <Stack.Screen name="OnboardingIntro" options={{ headerShown: false }} />
-      <Stack.Screen name="OnboardingSignUp" options={{ headerShown: false }} />
+      <Stack.Screen name="OnboardingLogin" options={{ headerShown: false }} />
     </Stack>
   );
 }
 
-export default RootLayout;
+export default OnboardingLayout;

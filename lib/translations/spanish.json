@@ -329,6 +329,10 @@
       "title": "Comencemos",
       "description": "Únete a nuestra comunidad de triunfadores y comienza tu viaje hoy."
     },
+    "login": {
+      "title": "¿Listo para\nconstruir hábitos?",
+      "subtitle": "Inicia sesión para comenzar a rastrear tu progreso y construir hábitos duraderos."
+    },
     "getStarted": "Comenzar",
     "next": "Siguiente"
   },

@@ -79,22 +79,16 @@ const SettingsScreen = () => {
 
   const confirmSignOut = async () => {
     try {
-      // Clear all local data stores
       clearProfile();
       clearHabitsData();
       clearAppData();
 
-      // Sign out from Supabase
       await supabase.auth.signOut();
 
-      // Show success message
       Toast.show({
         type: 'success',
         text1: t('settings.signOut.success'),
       });
-
-      // Navigate to onboarding
-      router.replace('/onboarding/OnboardingIntro');
     } catch (error: any) {
       console.error('Error signing out:', error);
 

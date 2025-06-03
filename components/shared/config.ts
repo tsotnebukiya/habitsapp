@@ -2,6 +2,8 @@ import { Dimensions } from 'react-native';
 
 export const ACTIVE_OPACITY = 0.7;
 
+export const ACTIVE_OPACITY_WHITE = 0.4;
+
 export const SCREEN_WIDTH = Dimensions.get('window').width;
 export const DATE_ITEM_WIDTH = 54;
 const ITEMS_PER_WEEK_VIEW = 7;

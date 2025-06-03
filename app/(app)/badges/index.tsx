@@ -1,4 +1,5 @@
 import Badges from '@/components/achievements/Badges';
+import { ACTIVE_OPACITY_WHITE } from '@/components/shared/config';
 import { colors, fontWeights } from '@/lib/constants/ui';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 import { router } from 'expo-router';
@@ -26,7 +27,7 @@ export default function BadgesScreen() {
         <Text style={styles.heading}>{t('achievements.milestones')}</Text>
         <TouchableOpacity
           onPress={handleClose}
-          activeOpacity={0.1}
+          activeOpacity={ACTIVE_OPACITY_WHITE}
           style={styles.closeButton}
         >
           <Icon

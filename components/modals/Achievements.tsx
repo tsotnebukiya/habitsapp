@@ -19,6 +19,7 @@ import {
 } from 'react-native';
 import ConfettiCannon from 'react-native-confetti-cannon';
 import { Icon } from 'react-native-paper';
+import { ACTIVE_OPACITY_WHITE } from '../shared/config';
 
 const { width, height } = Dimensions.get('window');
 const MODAL_WIDTH = width * 0.9;
@@ -123,7 +124,7 @@ const AchievementsModal = ({ onDismiss }: Props) => {
           <Pressable style={[styles.modalContainer, { width: MODAL_WIDTH }]}>
             <TouchableOpacity
               onPress={onDismiss}
-              activeOpacity={0.1}
+              activeOpacity={ACTIVE_OPACITY_WHITE}
               style={styles.closeButton}
             >
               <Icon

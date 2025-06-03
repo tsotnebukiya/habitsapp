@@ -325,6 +325,10 @@
       "title": "Vamos Começar",
       "description": "Junte-se à nossa comunidade de realizadores e comece sua jornada hoje."
     },
+    "login": {
+      "title": "Pronto para\nconstruir hábitos?",
+      "subtitle": "Faça login para começar a acompanhar seu progresso e construir hábitos duradouros."
+    },
     "getStarted": "Começar",
     "next": "Próximo"
   },

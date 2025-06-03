@@ -39,11 +39,6 @@ Sentry.init({
   enableNativeFramesTracking: !isRunningInExpoGo(),
 });
 
-export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: '(app)',
-};
-
 SplashScreen.preventAutoHideAsync();
 
 function RootLayout() {
@@ -99,6 +94,15 @@ function RootLayoutNav() {
                   name="onboarding"
                   options={{
                     headerShown: false,
+                    animation: 'none',
+                  }}
+                />
+                <Stack.Screen
+                  name="language"
+                  options={{
+                    presentation: 'modal',
+                    headerShown: false,
+                    animation: 'slide_from_bottom',
                   }}
                 />
               </Stack>

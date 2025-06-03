@@ -1,5 +1,6 @@
 // app/onboarding/OnboardingSignUp.tsx
 import useHabitsStore from '@/lib/habit-store/store';
+import { useAppStore } from '@/lib/stores/app_state';
 import useUserProfileStore from '@/lib/stores/user_profile';
 import { dateUtils } from '@/lib/utils/dayjs';
 import { GOOGLE_SIGN_IN_IOS_CLIENT_ID } from '@/safe_constants';
@@ -21,6 +22,7 @@ const OnboardingSignUp = () => {
   const posthog = usePostHog();
   const { profile, setProfile, updateProfile, completeOnboarding } =
     useUserProfileStore();
+  const currentLanguage = useAppStore((state) => state.currentLanguage);
 
   GoogleSignin.configure({
     scopes: ['https://www.googleapis.com/auth/userinfo.email'],
@@ -67,6 +69,7 @@ const OnboardingSignUp = () => {
             cat3: 50,
             cat4: 50,
             cat5: 50,
+            preferred_language: currentLanguage,
           };
 
           const { error: InsertError } = await supabase
@@ -100,6 +103,7 @@ const OnboardingSignUp = () => {
               date_of_birth: null,
               push_token: null,
               timezone: currentTimezone,
+              preferred_language: currentLanguage,
             });
 
             // Initialize achievements
@@ -165,6 +169,7 @@ const OnboardingSignUp = () => {
             cat3: 50,
             cat4: 50,
             cat5: 50,
+            preferred_language: currentLanguage,
           };
 
           const { error: InsertError } = await supabase
@@ -194,6 +199,7 @@ const OnboardingSignUp = () => {
             date_of_birth: null,
             push_token: null,
             timezone: currentTimezone,
+            preferred_language: currentLanguage,
           });
 
           // Initialize achievements

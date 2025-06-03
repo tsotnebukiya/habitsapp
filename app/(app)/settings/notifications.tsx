@@ -1,3 +1,4 @@
+import { ACTIVE_OPACITY_WHITE } from '@/components/shared/config';
 import { colors, fontWeights } from '@/lib/constants/ui';
 import { useNotifications } from '@/lib/hooks/useNotifications';
 import { useTranslation } from '@/lib/hooks/useTranslation';
@@ -40,7 +41,7 @@ export default function NotificationsScreen() {
         <Text style={styles.heading}>{t('settings.notificationSettings')}</Text>
         <TouchableOpacity
           onPress={handleClose}
-          activeOpacity={0.1}
+          activeOpacity={ACTIVE_OPACITY_WHITE}
           style={styles.closeButton}
         >
           <Icon

@@ -909,7 +909,7 @@ Benefits:
 ## Supabase Integration
 
 - **Client**: The Supabase client is initialized in `supabase/client.ts` and used across the application for database interactions and authentication.
-- **Authentication**: Handled via Supabase Auth, supporting email/password, Google, and Apple sign-ins. Onboarding flows (`OnboardingSignUp.tsx`, `OnboardingLogin.tsx`) correctly create/update user records in the `users` table and initialize local state via `useUserProfileStore`.
+- **Authentication**: Handled via Supabase Auth, supporting email/password, Google, and Apple sign-ins. Onboarding flows (`OnboardingLogin.tsx`) correctly create/update user records in the `users` table and initialize local state via `useUserProfileStore`.
 - **Database**: User profiles, habits, completions, achievements, and scheduled notifications are stored in Supabase tables.
   - The `users` table includes `allow_streak_notifications` and `allow_daily_update_notifications` columns to store user preferences.
 - **Types**: TypeScript types for Supabase tables and enums are generated and located in `supabase/types.ts`. These are used throughout the app, including for the `UserProfile` type in the store.

@@ -1,4 +1,7 @@
-import { ACTIVE_OPACITY } from '@/components/shared/config';
+import {
+  ACTIVE_OPACITY,
+  ACTIVE_OPACITY_WHITE,
+} from '@/components/shared/config';
 import { colors, fontWeights } from '@/lib/constants/ui';
 import { useHabit } from '@/lib/hooks/useHabits';
 import { useTranslation } from '@/lib/hooks/useTranslation';
@@ -54,7 +57,7 @@ export default function UpdateHabitLayout() {
           </Text>
           <TouchableOpacity
             onPress={handleClose}
-            activeOpacity={0.1}
+            activeOpacity={ACTIVE_OPACITY_WHITE}
             style={styles.closeButton}
           >
             <Icon

@@ -1,5 +1,4 @@
 // app/onboarding/OnboardingLogin.tsx
-import { FontAwesome6 } from '@expo/vector-icons';
 import {
   GoogleSignin,
   statusCodes,
@@ -8,20 +7,43 @@ import * as AppleAuthentication from 'expo-apple-authentication';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { Text, TouchableOpacity, View } from 'react-native';
+import {
+  Image,
+  ImageBackground,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import Toast from 'react-native-toast-message';
 
-import { colors } from '@/lib/constants/ui';
+import { ACTIVE_OPACITY_WHITE } from '@/components/shared/config';
+import { languages } from '@/lib/constants/languages';
+import { colors, fontWeights } from '@/lib/constants/ui';
+import { useTranslation } from '@/lib/hooks/useTranslation';
 import { UserProfile, useUserProfileStore } from '@/lib/stores/user_profile';
+import { GOOGLE_SIGN_IN_IOS_CLIENT_ID } from '@/safe_constants';
 import { supabase } from '@/supabase/client';
+import { Icon } from 'react-native-paper';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 function OnboardingLogin() {
+  const inset = useSafeAreaInsets();
+  const { t, currentLanguage } = useTranslation();
   const router = useRouter();
   const { setProfile, completeOnboarding } = useUserProfileStore();
 
+  const handleLanguage = () => {
+    router.push('/language');
+  };
+
+  const handleBack = () => {
+    router.back();
+  };
+
   GoogleSignin.configure({
     scopes: ['https://www.googleapis.com/auth/userinfo.email'],
-    iosClientId: '<IOS_CLIENT_ID>.apps.googleusercontent.com',
+    iosClientId: GOOGLE_SIGN_IN_IOS_CLIENT_ID,
   });
 
   const handleLoginSuccess = (userData: UserProfile) => {
@@ -94,6 +116,7 @@ function OnboardingLogin() {
         handleLoginSuccess(userData);
       }
     } catch (error: any) {
+      console.log(error);
       if (error.code !== statusCodes.SIGN_IN_CANCELLED) {
         const errorMessage =
           error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE
@@ -109,51 +132,177 @@ function OnboardingLogin() {
   };
 
   return (
-    <View>
-      <View>
-        <Text>Login</Text>
+    <ImageBackground
+      source={require('@/assets/onboarding/gradient.png')}
+      style={styles.backgroundImage}
+      resizeMode="cover"
+    >
+      <View
+        style={[
+          styles.container,
+          { paddingTop: inset.top + 20, paddingBottom: inset.bottom + 20 },
+        ]}
+      >
+        <View style={styles.header}>
+          <TouchableOpacity
+            onPress={handleBack}
+            style={styles.backButton}
+            activeOpacity={ACTIVE_OPACITY_WHITE}
+          >
+            <Icon
+              source={require('@/assets/icons/chevron-left.png')}
+              size={18}
+              color="black"
+            />
+          </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={() => {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-            router.push('/onboarding/OnboardingEmailLoginModal');
-          }}
-        >
-          <FontAwesome6 name="envelope" size={18} color={colors.bgDark} />
-          <Text>Continue with Email</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={handleGoogleSignIn}>
-          <FontAwesome6 name="google" size={18} color={colors.bgDark} />
-          <Text>Continue with Google</Text>
-        </TouchableOpacity>
-
-        <AppleAuthentication.AppleAuthenticationButton
-          buttonType={
-            AppleAuthentication.AppleAuthenticationButtonType.CONTINUE
-          }
-          buttonStyle={
-            AppleAuthentication.AppleAuthenticationButtonStyle.WHITE_OUTLINE
-          }
-          cornerRadius={25}
-          onPress={handleAppleSignIn}
-          style={{
-            backgroundColor: colors.bgDark,
-            paddingVertical: 16,
-            borderRadius: 30,
-            flexDirection: 'row',
-            justifyContent: 'center',
-          }}
+          <TouchableOpacity
+            onPress={handleLanguage}
+            style={styles.languageButton}
+            activeOpacity={ACTIVE_OPACITY_WHITE}
+          >
+            <Image
+              source={languages[currentLanguage].icon}
+              style={styles.languageIcon}
+            />
+            <Text style={styles.languageLabel}>
+              {languages[currentLanguage].label}
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <Image
+          width={130}
+          height={130}
+          source={require('@/assets/onboarding/logo.png')}
         />
-      </View>
+        <View style={styles.titleContainer}>
+          <Text style={styles.appName1}>Habits</Text>
+          <Text style={styles.appName2}>Lab</Text>
+        </View>
 
-      <View>
-        <TouchableOpacity onPress={() => router.back()}>
-          <FontAwesome6 name="chevron-left" size={20} color={colors.bgDark} />
-        </TouchableOpacity>
+        <View style={styles.bottomContainer}>
+          <Text style={styles.title}>{t('onboarding.login.title')}</Text>
+          <Text style={styles.subTitle}>{t('onboarding.login.subtitle')}</Text>
+          <TouchableOpacity
+            style={styles.button}
+            activeOpacity={ACTIVE_OPACITY_WHITE}
+            onPress={handleGoogleSignIn}
+          >
+            <Image source={require('@/assets/onboarding/google.png')} />
+            <Text style={styles.buttonText}>Google</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            activeOpacity={ACTIVE_OPACITY_WHITE}
+            onPress={handleAppleSignIn}
+          >
+            <Image source={require('@/assets/onboarding/apple.png')} />
+            <Text style={styles.buttonText}>Apple ID</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            activeOpacity={ACTIVE_OPACITY_WHITE}
+          >
+            <Image source={require('@/assets/onboarding/facebook.png')} />
+            <Text style={[styles.buttonText, styles.facebookText]}>
+              Facebook
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </ImageBackground>
   );
 }
+
+const styles = StyleSheet.create({
+  backgroundImage: {
+    flex: 1,
+  },
+  container: {
+    flex: 1,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 20,
+    width: '100%',
+  },
+  backButton: {
+    backgroundColor: 'white',
+    borderRadius: 100,
+    width: 34,
+    height: 34,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  languageButton: {
+    backgroundColor: 'white',
+    borderRadius: 70,
+    padding: 8,
+    gap: 8,
+    flexDirection: 'row',
+  },
+  languageIcon: {
+    width: 18,
+    height: 18,
+  },
+  languageLabel: {
+    fontFamily: fontWeights.medium,
+    fontSize: 13,
+    color: colors.text,
+  },
+  titleContainer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginTop: 16,
+  },
+  appName1: {
+    fontSize: 26,
+    fontFamily: fontWeights.bold,
+    color: colors.primary,
+  },
+  appName2: {
+    fontSize: 26,
+    fontFamily: fontWeights.bold,
+    color: colors.secondary,
+  },
+  bottomContainer: {
+    marginTop: 'auto',
+    width: '100%',
+  },
+  title: {
+    fontSize: 30,
+    fontFamily: fontWeights.bold,
+    color: colors.text,
+    marginBottom: 14,
+  },
+  subTitle: {
+    fontSize: 14,
+    fontFamily: fontWeights.regular,
+    color: colors.text,
+    marginBottom: 42,
+  },
+  button: {
+    flexDirection: 'row',
+    gap: 6,
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 15,
+    width: '100%',
+    backgroundColor: 'white',
+    marginBottom: 10,
+  },
+  buttonText: {
+    fontSize: 16,
+    fontFamily: fontWeights.medium,
+    color: colors.text,
+  },
+  facebookText: {
+    color: '#3D8EFF',
+  },
+});
 
 export default OnboardingLogin;

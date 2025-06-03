@@ -328,6 +328,10 @@
       "title": "Commençons",
       "description": "Rejoignez notre communauté de réalisateurs et commencez votre voyage aujourd'hui."
     },
+    "login": {
+      "title": "Prêt à construire des\nhabitudes?",
+      "subtitle": "Connectez-vous pour commencer à suivre vos progrès et construire des habitudes durables."
+    },
     "getStarted": "Commencer",
     "next": "Suivant"
   },
