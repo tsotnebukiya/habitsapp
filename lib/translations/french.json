@@ -317,20 +317,37 @@
   },
   "onboarding": {
     "welcome": {
-      "title": "Bienvenue dans HabitsApp",
+      "title": "Bienvenue sur HabitsApp",
       "description": "Votre solution tout-en-un pour gérer vos habitudes quotidiennes et atteindre vos objectifs."
     },
     "track": {
-      "title": "Suivez vos Progrès",
+      "title": "Suivez Vos Progrès",
       "description": "Fixez des objectifs, suivez vos progrès et célébrez vos réussites en cours de route."
     },
     "start": {
       "title": "Commençons",
-      "description": "Rejoignez notre communauté de réalisateurs et commencez votre voyage aujourd'hui."
+      "description": "Rejoignez notre communauté de gagnants et commencez votre voyage aujourd'hui."
     },
     "login": {
-      "title": "Prêt à construire des\nhabitudes?",
-      "subtitle": "Connectez-vous pour commencer à suivre vos progrès et construire des habitudes durables."
+      "title": "Prêt à\nconstruire des habitudes ?",
+      "subtitle": "Connectez-vous pour commencer à suivre vos progrès et construire des habitudes durables.",
+      "loading": "Configuration de votre compte...",
+      "buttons": {
+        "google": "Google",
+        "apple": "Apple ID",
+        "facebook": "Facebook"
+      },
+      "errors": {
+        "generic": "Erreur lors de la connexion avec {{provider}}.",
+        "apple": "Erreur lors de la connexion avec Apple.",
+        "google": "Erreur lors de la connexion avec Google.",
+        "facebook": "Erreur lors de la connexion avec Facebook.",
+        "googleInterrupted": "Connexion interrompue.",
+        "googlePlayServices": "Google Play Services non disponible.",
+        "tryAgain": "Veuillez réessayer.",
+        "noUserData": "Aucune donnée utilisateur reçue de l'authentification",
+        "missingTokens": "Tokens manquants dans la réponse OAuth"
+      }
     },
     "getStarted": "Commencer",
     "next": "Suivant"

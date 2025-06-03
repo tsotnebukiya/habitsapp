@@ -281,21 +281,6 @@ export const getHabitStatus = (
 };
 
 /**
- * Calculates the progress percentage for a habit on a specific date
- */
-export function getCurrentProgress(habit: Habit, currentValue: number): number {
-  if (!habit) return 0;
-
-  if (habit.goal_value) {
-    return Math.min(currentValue / habit.goal_value, 1);
-  } else if (habit.completions_per_day > 1) {
-    return Math.min(currentValue / habit.completions_per_day, 1);
-  }
-
-  return currentValue > 0 ? 1 : 0;
-}
-
-/**
  * Formats the progress text for a habit based on its current value and settings
  */
 export function getProgressText(habit: Habit, currentValue: number): string {

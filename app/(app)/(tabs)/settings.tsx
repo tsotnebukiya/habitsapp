@@ -162,9 +162,6 @@ const SettingsScreen = () => {
         type: 'success',
         text1: t('settings.deleteAccount.success'),
       });
-
-      // Navigate to onboarding
-      router.replace('/onboarding/OnboardingIntro');
     } catch (error: any) {
       setIsDeleting(false);
       console.error('Error deleting account:', error);

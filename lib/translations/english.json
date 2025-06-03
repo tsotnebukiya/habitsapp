@@ -735,7 +735,24 @@
     },
     "login": {
       "title": "Ready to\nbuild habits?",
-      "subtitle": "Sign in to start tracking your progress and building lasting habits."
+      "subtitle": "Sign in to start tracking your progress and building lasting habits.",
+      "loading": "Setting up your account...",
+      "buttons": {
+        "google": "Google",
+        "apple": "Apple ID",
+        "facebook": "Facebook"
+      },
+      "errors": {
+        "generic": "Error occurred signing in with {{provider}}.",
+        "apple": "Error occurred signing in with Apple.",
+        "google": "Error occurred signing in with Google.",
+        "facebook": "Error occurred signing in with Facebook.",
+        "googleInterrupted": "Sign In interrupted.",
+        "googlePlayServices": "Google Play Services not available.",
+        "tryAgain": "Please try again.",
+        "noUserData": "No user data received from authentication",
+        "missingTokens": "Missing tokens in OAuth response"
+      }
     },
     "getStarted": "Get Started",
     "next": "Next"

@@ -1,3 +1,4 @@
+import { Habit } from '../habit-store/types';
 import dayjs, { dateUtils } from './dayjs';
 
 export const isToday = (date: Date) => {
@@ -40,3 +41,15 @@ export const getRelativeDateText = (
 
   return `${day} ${translatedMonth}`;
 };
+
+export function getCurrentProgress(habit: Habit, currentValue: number): number {
+  if (!habit) return 0;
+
+  if (habit.goal_value) {
+    return Math.min(currentValue / habit.goal_value, 1);
+  } else if (habit.completions_per_day > 1) {
+    return Math.min(currentValue / habit.completions_per_day, 1);
+  }
+
+  return currentValue > 0 ? 1 : 0;
+}

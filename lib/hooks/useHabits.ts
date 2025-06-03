@@ -2,12 +2,8 @@ import useHabitsStore from '@/lib/habit-store/store';
 import { Habit, HabitCompletion } from '@/lib/habit-store/types';
 import dayjs, { dateUtils } from '@/lib/utils/dayjs';
 import { useMemo } from 'react';
-import {
-  getCurrentProgress,
-  getHabitStatus,
-  getMonthKey,
-  getProgressText,
-} from '../utils/habits';
+import { getHabitStatus, getMonthKey, getProgressText } from '../utils/habits';
+import { getCurrentProgress } from '../utils/misc';
 import { formatProgressText } from '../utils/translationHelpers';
 import { useTranslation } from './useTranslation';
 

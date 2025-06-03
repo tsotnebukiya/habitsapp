@@ -22,7 +22,6 @@ interface UserProfileState {
   setDailyUpdateNotificationsEnabled: (enabled: boolean) => void;
 
   // Onboarding Actions
-  completeOnboarding: () => void;
   resetOnboarding: () => void;
   isOnboardingComplete: () => boolean;
 }
@@ -122,12 +121,6 @@ export const useUserProfileStore = create<UserProfileState>()(
       setDailyUpdateNotificationsEnabled: (enabled) => {
         get().updateProfile({
           allow_daily_update_notifications: enabled,
-        });
-      },
-
-      completeOnboarding: () => {
-        get().updateProfile({
-          onboarding_complete: true,
         });
       },
 

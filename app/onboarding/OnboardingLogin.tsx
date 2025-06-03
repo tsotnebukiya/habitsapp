@@ -6,23 +6,28 @@ import {
 import * as AppleAuthentication from 'expo-apple-authentication';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
-import React from 'react';
+import * as WebBrowser from 'expo-web-browser';
+import React, { useState } from 'react';
 import {
+  ActivityIndicator,
   Image,
   ImageBackground,
+  Modal,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
 } from 'react-native';
-import { AccessToken, LoginManager } from 'react-native-fbsdk-next';
 import Toast from 'react-native-toast-message';
 
 import { ACTIVE_OPACITY_WHITE } from '@/components/shared/config';
 import { languages } from '@/lib/constants/languages';
 import { colors, fontWeights } from '@/lib/constants/ui';
+import useHabitsStore from '@/lib/habit-store/store';
 import { useTranslation } from '@/lib/hooks/useTranslation';
-import { UserProfile, useUserProfileStore } from '@/lib/stores/user_profile';
+import { useAppStore } from '@/lib/stores/app_state';
+import { useUserProfileStore } from '@/lib/stores/user_profile';
+import { dateUtils } from '@/lib/utils/dayjs';
 import { GOOGLE_SIGN_IN_IOS_CLIENT_ID } from '@/safe_constants';
 import { supabase } from '@/supabase/client';
 import { Icon } from 'react-native-paper';
@@ -32,7 +37,9 @@ function OnboardingLogin() {
   const inset = useSafeAreaInsets();
   const { t, currentLanguage } = useTranslation();
   const router = useRouter();
-  const { setProfile, completeOnboarding } = useUserProfileStore();
+  const { setProfile } = useUserProfileStore();
+  const currentAppLanguage = useAppStore((state) => state.currentLanguage);
+  const [loading, setLoading] = useState(false);
 
   const handleLanguage = () => {
     router.push('/language');
@@ -47,16 +54,92 @@ function OnboardingLogin() {
     iosClientId: GOOGLE_SIGN_IN_IOS_CLIENT_ID,
   });
 
-  const handleLoginSuccess = (userData: UserProfile) => {
-    // Set the profile first
-    setProfile(userData);
-    // Then complete onboarding (this will handle the Supabase sync)
-    completeOnboarding();
-    router.replace('/(tabs)');
+  // Unified auth logic that handles both sign-in and sign-up
+  const handleUnifiedAuth = async (authData: any, provider: string) => {
+    try {
+      if (!authData.user) {
+        throw new Error(t('onboarding.login.errors.noUserData'));
+      }
+
+      const currentTimezone = dateUtils.getCurrentTimezone();
+      const userData = {
+        id: authData.user.id,
+        email: authData.user.email!,
+        display_name: authData.user.email?.split('@')[0] || '',
+        created_at: dateUtils.toServerDateTime(dateUtils.nowUTC()),
+        updated_at: dateUtils.toServerDateTime(dateUtils.nowUTC()),
+        cat1: 50,
+        cat2: 50,
+        cat3: 50,
+        cat4: 50,
+        cat5: 50,
+        preferred_language: currentAppLanguage,
+        timezone: currentTimezone,
+        onboarding_complete: true,
+        allow_streak_notifications: false,
+        allow_daily_update_notifications: false,
+        date_of_birth: null,
+        push_token: null,
+      };
+
+      // Check if user already exists first (foolproof approach)
+      const { data: existingUser, error: fetchError } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', authData.user.id)
+        .single();
+
+      // Handle real fetch errors (not "not found" which is expected for new users)
+      if (fetchError && fetchError.code !== 'PGRST116') {
+        throw fetchError;
+      }
+
+      if (existingUser) {
+        setProfile(existingUser);
+        router.replace('/(tabs)');
+      } else {
+        const { error: insertError } = await supabase
+          .from('users')
+          .insert(userData);
+        if (insertError) throw insertError;
+
+        setProfile(userData);
+
+        // Initialize achievements for new user only
+        const initialAchievements = {
+          id: userData.id,
+          user_id: userData.id,
+          cat1: userData.cat1,
+          cat2: userData.cat2,
+          cat3: userData.cat3,
+          cat4: userData.cat4,
+          cat5: userData.cat5,
+          current_streak: 0,
+          max_streak: 0,
+          streak_achievements: {},
+          created_at: userData.created_at,
+          updated_at: userData.updated_at,
+        };
+
+        useHabitsStore.getState().setAchievements(initialAchievements);
+        router.push('/onboarding/Notifications');
+      }
+    } catch (error: any) {
+      console.error(`${provider} auth error:`, error);
+      Toast.show({
+        type: 'error',
+        text1: t('onboarding.login.errors.generic', { provider }),
+        text2: error.message || t('onboarding.login.errors.tryAgain'),
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleAppleSignIn = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    setLoading(true);
+
     try {
       const credential = await AppleAuthentication.signInAsync({
         requestedScopes: [
@@ -72,106 +155,127 @@ function OnboardingLogin() {
         });
 
         if (error) throw error;
-
-        const { data: userData, error: userError } = await supabase
-          .from('users')
-          .select('*')
-          .eq('id', data.user.id)
-          .single();
-
-        if (userError) throw userError;
-        handleLoginSuccess(userData);
+        await handleUnifiedAuth(data, 'Apple');
       }
     } catch (e: any) {
-      if (e.code !== 'ERR_REQUEST_CANCELED') {
-        Toast.show({
-          type: 'error',
-          text1: 'Error occurred signing in with Apple.',
-          text2: 'Please try again.',
-        });
+      setLoading(false);
+
+      if (e.code === 'ERR_REQUEST_CANCELED') {
+        return; // User canceled sign-in flow
       }
+      console.error('Apple Sign In error:', e);
+      Toast.show({
+        type: 'error',
+        text1: t('onboarding.login.errors.apple'),
+        text2: e.message || t('onboarding.login.errors.tryAgain'),
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleGoogleSignIn = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    setLoading(true);
+
     try {
       await GoogleSignin.hasPlayServices();
-      const userInfo = await GoogleSignin.signIn();
 
-      if (userInfo.idToken) {
+      const userInfo = await GoogleSignin.signIn();
+      if (userInfo.data?.idToken) {
         const { data, error } = await supabase.auth.signInWithIdToken({
           provider: 'google',
-          token: userInfo.idToken,
+          token: userInfo.data.idToken,
         });
 
         if (error) throw error;
-
-        const { data: userData, error: userError } = await supabase
-          .from('users')
-          .select('*')
-          .eq('id', data.user.id)
-          .single();
-
-        if (userError) throw userError;
-        handleLoginSuccess(userData);
+        await handleUnifiedAuth(data, 'Google');
       }
     } catch (error: any) {
-      console.log(error);
-      if (error.code !== statusCodes.SIGN_IN_CANCELLED) {
-        const errorMessage =
-          error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE
-            ? 'Google Play Services not available. Try another login method.'
-            : 'Error occurred signing in with Google. Please try again.';
+      setLoading(false);
 
-        Toast.show({
-          type: 'error',
-          text1: errorMessage,
-        });
+      if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        return; // User cancelled login flow
       }
+
+      let errorMessage = t('onboarding.login.errors.google');
+      if (error.code === statusCodes.IN_PROGRESS) {
+        errorMessage = t('onboarding.login.errors.googleInterrupted');
+      } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+        errorMessage = t('onboarding.login.errors.googlePlayServices');
+      }
+
+      console.error('Google Sign In error:', error);
+      Toast.show({
+        type: 'error',
+        text1: errorMessage,
+        text2: t('onboarding.login.errors.tryAgain'),
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleFacebookSignIn = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    setLoading(true);
+
     try {
-      const result = await LoginManager.logInWithPermissions([
-        'public_profile',
-        'email',
-      ]);
+      const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'facebook',
+        options: {
+          skipBrowserRedirect: true,
+          scopes: 'public_profile email',
+        },
+      });
 
-      if (result.isCancelled) {
-        return;
-      }
+      if (error) throw error;
 
-      const data = await AccessToken.getCurrentAccessToken();
-
-      if (data) {
-        const { error, data: authData } = await supabase.auth.signInWithIdToken(
+      if (data?.url) {
+        const result = await WebBrowser.openAuthSessionAsync(
+          data.url,
+          'habitsapp://', // Your app scheme from app.config.ts
           {
-            provider: 'facebook',
-            token: data.accessToken,
+            showInRecents: false,
+            dismissButtonStyle: 'close',
           }
         );
 
-        if (error) throw error;
+        if (result.type === 'success' && result.url) {
+          const url = new URL(result.url);
+          const fragment = url.hash.substring(1);
+          const params = new URLSearchParams(fragment);
+          const access_token = params.get('access_token');
+          const refresh_token = params.get('refresh_token');
 
-        const { data: userData, error: userError } = await supabase
-          .from('users')
-          .select('*')
-          .eq('id', authData.user.id)
-          .single();
+          if (access_token && refresh_token) {
+            // Set the session with the tokens
+            const { data: sessionData, error: sessionError } =
+              await supabase.auth.setSession({
+                access_token,
+                refresh_token,
+              });
 
-        if (userError) throw userError;
-        handleLoginSuccess(userData);
+            if (sessionError) throw sessionError;
+            await handleUnifiedAuth(sessionData, 'Facebook');
+          } else {
+            throw new Error(t('onboarding.login.errors.missingTokens'));
+          }
+        } else if (result.type === 'cancel') {
+          return; // User cancelled login flow
+        }
       }
     } catch (error: any) {
-      console.log('Facebook sign-in error:', error);
+      setLoading(false);
+
+      console.error('Facebook Sign In error:', error);
       Toast.show({
         type: 'error',
-        text1: 'Error occurred signing in with Facebook.',
-        text2: 'Please try again.',
+        text1: t('onboarding.login.errors.facebook'),
+        text2: error.message || t('onboarding.login.errors.tryAgain'),
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -255,6 +359,23 @@ function OnboardingLogin() {
           </TouchableOpacity>
         </View>
       </View>
+
+      {/* Loading Modal */}
+      <Modal
+        visible={loading}
+        transparent={true}
+        animationType="fade"
+        statusBarTranslucent={true}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <ActivityIndicator size="large" color={colors.primary} />
+            <Text style={styles.loadingText}>
+              {t('onboarding.login.loading')}
+            </Text>
+          </View>
+        </View>
+      </Modal>
     </ImageBackground>
   );
 }
@@ -347,6 +468,24 @@ const styles = StyleSheet.create({
   },
   facebookText: {
     color: '#3D8EFF',
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  loadingText: {
+    fontSize: 16,
+    fontFamily: fontWeights.medium,
+    color: colors.text,
+    marginTop: 10,
   },
 });
 

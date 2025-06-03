@@ -927,7 +927,7 @@ Benefits:
 
 - Utilizes Expo Router for file-based routing.
 - Main navigation is tab-based: `(tabs)` layout.
-- Onboarding flow: `(onboarding)` group with modals for email login/signup.
+- Onboarding flow: `(onboarding)` group with unified authentication in OnboardingLogin.tsx that handles both sign-in and sign-up for Google, Apple, and Facebook.
 - Settings and other user-specific screens are within the main app stack.
 
 ## UI Components

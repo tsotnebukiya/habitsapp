@@ -17,6 +17,10 @@ export const GOOGLE_SIGN_IN_URL_SCHEME =
 export const GOOGLE_SIGN_IN_IOS_CLIENT_ID =
   '837545270747-ceogif38qd67fhua53ttp5g0hq45vg8i.apps.googleusercontent.com';
 
+// Facebook constants
+export const FACEBOOK_APP_ID = '1938696366898999';
+export const FACEBOOK_CLIENT_TOKEN = '870e81c61564d34b9b71b13155b56e93';
+
 // Change to Superwall
 export const REVENUECAT_IOS_KEY = '';
 export const REVENUECAT_ANDROID_KEY = '';

@@ -318,7 +318,7 @@
   "onboarding": {
     "welcome": {
       "title": "Willkommen bei HabitsApp",
-      "description": "Ihre All-in-One-Lösung für die Verwaltung Ihrer täglichen Gewohnheiten und das Erreichen Ihrer Ziele."
+      "description": "Ihre All-in-One-Lösung zur Verwaltung Ihrer täglichen Gewohnheiten und zum Erreichen Ihrer Ziele."
     },
     "track": {
       "title": "Verfolgen Sie Ihren Fortschritt",
@@ -326,11 +326,28 @@
     },
     "start": {
       "title": "Lassen Sie uns beginnen",
-      "description": "Treten Sie unserer Gemeinschaft von Erfolgreichen bei und beginnen Sie heute Ihre Reise."
+      "description": "Treten Sie unserer Gemeinschaft von Erfolgsmenschen bei und beginnen Sie heute Ihre Reise."
     },
     "login": {
       "title": "Bereit, Gewohnheiten aufzubauen?",
-      "subtitle": "Melden Sie sich an, um Ihren Fortschritt zu verfolgen und dauerhafte Gewohnheiten aufzubauen."
+      "subtitle": "Melden Sie sich an, um Ihren Fortschritt zu verfolgen und dauerhafte Gewohnheiten aufzubauen.",
+      "loading": "Ihr Konto wird eingerichtet...",
+      "buttons": {
+        "google": "Google",
+        "apple": "Apple ID",
+        "facebook": "Facebook"
+      },
+      "errors": {
+        "generic": "Fehler bei der Anmeldung mit {{provider}}.",
+        "apple": "Fehler bei der Anmeldung mit Apple.",
+        "google": "Fehler bei der Anmeldung mit Google.",
+        "facebook": "Fehler bei der Anmeldung mit Facebook.",
+        "googleInterrupted": "Anmeldung unterbrochen.",
+        "googlePlayServices": "Google Play Services nicht verfügbar.",
+        "tryAgain": "Bitte versuchen Sie es erneut.",
+        "noUserData": "Keine Benutzerdaten von der Authentifizierung erhalten",
+        "missingTokens": "Fehlende Tokens in der OAuth-Antwort"
+      }
     },
     "getStarted": "Loslegen",
     "next": "Weiter"

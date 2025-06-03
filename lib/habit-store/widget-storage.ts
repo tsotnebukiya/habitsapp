@@ -1,7 +1,7 @@
 import { dateUtils } from '@/lib/utils/dayjs';
-import { getCurrentProgress } from '@/lib/utils/habits';
 import dayjs from 'dayjs';
 import * as WidgetStorage from 'modules/widget-storage';
+import { getCurrentProgress } from '../utils/misc';
 import { Habit, HabitCompletion } from './types';
 
 const WIDGET_DATA_KEY = 'habits';

@@ -7,6 +7,7 @@ function OnboardingLayout() {
     <Stack initialRouteName="OnboardingIntro">
       <Stack.Screen name="OnboardingIntro" options={{ headerShown: false }} />
       <Stack.Screen name="OnboardingLogin" options={{ headerShown: false }} />
+      <Stack.Screen name="Notifications" options={{ headerShown: false }} />
     </Stack>
   );
 }

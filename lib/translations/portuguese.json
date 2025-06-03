@@ -318,16 +318,33 @@
       "description": "Sua solução completa para gerenciar seus hábitos diários e alcançar seus objetivos."
     },
     "track": {
-      "title": "Acompanhe seu Progresso",
+      "title": "Acompanhe Seu Progresso",
       "description": "Defina metas, acompanhe seu progresso e celebre suas conquistas ao longo do caminho."
     },
     "start": {
       "title": "Vamos Começar",
-      "description": "Junte-se à nossa comunidade de realizadores e comece sua jornada hoje."
+      "description": "Junte-se à nossa comunidade de vencedores e comece sua jornada hoje."
     },
     "login": {
       "title": "Pronto para\nconstruir hábitos?",
-      "subtitle": "Faça login para começar a acompanhar seu progresso e construir hábitos duradouros."
+      "subtitle": "Faça login para começar a acompanhar seu progresso e construir hábitos duradouros.",
+      "loading": "Configurando sua conta...",
+      "buttons": {
+        "google": "Google",
+        "apple": "Apple ID",
+        "facebook": "Facebook"
+      },
+      "errors": {
+        "generic": "Erro ao fazer login com {{provider}}.",
+        "apple": "Erro ao fazer login com Apple.",
+        "google": "Erro ao fazer login com Google.",
+        "facebook": "Erro ao fazer login com Facebook.",
+        "googleInterrupted": "Login interrompido.",
+        "googlePlayServices": "Google Play Services não disponível.",
+        "tryAgain": "Por favor, tente novamente.",
+        "noUserData": "Nenhum dado de usuário recebido da autenticação",
+        "missingTokens": "Tokens ausentes na resposta OAuth"
+      }
     },
     "getStarted": "Começar",
     "next": "Próximo"

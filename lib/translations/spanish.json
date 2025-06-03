@@ -319,21 +319,38 @@
   "onboarding": {
     "welcome": {
       "title": "Bienvenido a HabitsApp",
-      "description": "Tu solución integral para gestionar tus hábitos diarios y alcanzar tus objetivos."
+      "description": "Tu solución todo en uno para gestionar tus hábitos diarios y lograr tus objetivos."
     },
     "track": {
-      "title": "Rastrea tu Progreso",
-      "description": "Establece objetivos, rastrea tu progreso y celebra tus logros en el camino."
+      "title": "Sigue Tu Progreso",
+      "description": "Establece metas, sigue tu progreso y celebra tus logros en el camino."
     },
     "start": {
-      "title": "Comencemos",
+      "title": "Empecemos",
       "description": "Únete a nuestra comunidad de triunfadores y comienza tu viaje hoy."
     },
     "login": {
       "title": "¿Listo para\nconstruir hábitos?",
-      "subtitle": "Inicia sesión para comenzar a rastrear tu progreso y construir hábitos duraderos."
+      "subtitle": "Inicia sesión para comenzar a rastrear tu progreso y construir hábitos duraderos.",
+      "loading": "Configurando tu cuenta...",
+      "buttons": {
+        "google": "Google",
+        "apple": "Apple ID",
+        "facebook": "Facebook"
+      },
+      "errors": {
+        "generic": "Error al iniciar sesión con {{provider}}.",
+        "apple": "Error al iniciar sesión con Apple.",
+        "google": "Error al iniciar sesión con Google.",
+        "facebook": "Error al iniciar sesión con Facebook.",
+        "googleInterrupted": "Inicio de sesión interrumpido.",
+        "googlePlayServices": "Google Play Services no disponible.",
+        "tryAgain": "Por favor, inténtalo de nuevo.",
+        "noUserData": "No se recibieron datos de usuario de la autenticación",
+        "missingTokens": "Faltan tokens en la respuesta OAuth"
+      }
     },
-    "getStarted": "Comenzar",
+    "getStarted": "Empezar",
     "next": "Siguiente"
   },
   "weekdays": {
