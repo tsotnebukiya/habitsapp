@@ -15,6 +15,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { AccessToken, LoginManager } from 'react-native-fbsdk-next';
 import Toast from 'react-native-toast-message';
 
 import { ACTIVE_OPACITY_WHITE } from '@/components/shared/config';
@@ -131,6 +132,49 @@ function OnboardingLogin() {
     }
   };
 
+  const handleFacebookSignIn = async () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    try {
+      const result = await LoginManager.logInWithPermissions([
+        'public_profile',
+        'email',
+      ]);
+
+      if (result.isCancelled) {
+        return;
+      }
+
+      const data = await AccessToken.getCurrentAccessToken();
+
+      if (data) {
+        const { error, data: authData } = await supabase.auth.signInWithIdToken(
+          {
+            provider: 'facebook',
+            token: data.accessToken,
+          }
+        );
+
+        if (error) throw error;
+
+        const { data: userData, error: userError } = await supabase
+          .from('users')
+          .select('*')
+          .eq('id', authData.user.id)
+          .single();
+
+        if (userError) throw userError;
+        handleLoginSuccess(userData);
+      }
+    } catch (error: any) {
+      console.log('Facebook sign-in error:', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Error occurred signing in with Facebook.',
+        text2: 'Please try again.',
+      });
+    }
+  };
+
   return (
     <ImageBackground
       source={require('@/assets/onboarding/gradient.png')}
@@ -202,6 +246,7 @@ function OnboardingLogin() {
           <TouchableOpacity
             style={styles.button}
             activeOpacity={ACTIVE_OPACITY_WHITE}
+            onPress={handleFacebookSignIn}
           >
             <Image source={require('@/assets/onboarding/facebook.png')} />
             <Text style={[styles.buttonText, styles.facebookText]}>

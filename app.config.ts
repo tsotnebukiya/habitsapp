@@ -25,6 +25,9 @@ export default ({
             'com.googleusercontent.apps.837545270747-ceogif38qd67fhua53ttp5g0hq45vg8i',
           ],
         },
+        {
+          CFBundleURLSchemes: ['fb1938696366898999'],
+        },
       ],
     },
     entitlements: {
@@ -42,6 +45,18 @@ export default ({
     'expo-localization',
     'expo-apple-authentication',
     '@bacons/apple-targets',
+    [
+      'react-native-fbsdk-next',
+      {
+        appID: '1938696366898999',
+        clientToken: '870e81c61564d34b9b71b13155b56e93',
+        displayName: 'HabitsLab',
+        scheme: 'fb1938696366898999',
+        advertiserIDCollectionEnabled: false,
+        autoLogAppEventsEnabled: false,
+        isAutoInitEnabled: true,
+      },
+    ],
     [
       'expo-splash-screen',
       {

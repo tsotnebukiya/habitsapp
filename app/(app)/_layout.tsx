@@ -20,7 +20,6 @@ function StackLayout() {
         if (profile?.id) {
           await Promise.all([useHabitsStore.getState().syncWithServer()]);
         }
-        await new Promise((resolve) => setTimeout(resolve, 100));
       } catch (error) {
         console.error('Initialization error:', error);
       } finally {

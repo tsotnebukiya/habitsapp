@@ -4,6 +4,7 @@ import { colors, fontWeights } from '@/lib/constants/ui';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 import { useAddHabitStore } from '@/lib/stores/add_habit_store';
 import { router } from 'expo-router';
+import { SymbolView } from 'expo-symbols';
 import React from 'react';
 import {
   ScrollView,
@@ -49,7 +50,11 @@ export default function CategorySelection() {
                     { backgroundColor: category.color },
                   ]}
                 />
-                <Icon source={category.icon} size={24} color={category.color} />
+                <SymbolView
+                  name={category.icon}
+                  size={24}
+                  tintColor={category.color}
+                />
               </View>
               <View style={styles.categoryTextContainer}>
                 <Text style={styles.categoryName}>
