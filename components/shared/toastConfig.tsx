@@ -1,9 +1,9 @@
 import { colors, fontWeights } from '@/lib/constants/ui';
-import { ErrorToast } from 'react-native-toast-message';
+import { ErrorToast, ToastConfig } from 'react-native-toast-message';
 
 import { BaseToast } from 'react-native-toast-message';
 
-const toastConfig = {
+const toastConfig: ToastConfig = {
   info: (props: any) => (
     <BaseToast
       {...props}

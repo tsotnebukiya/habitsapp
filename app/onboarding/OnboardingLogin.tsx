@@ -13,6 +13,7 @@ import {
   Image,
   ImageBackground,
   Modal,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -285,8 +286,8 @@ function OnboardingLogin() {
       style={styles.backgroundImage}
       resizeMode="cover"
     >
-      <View
-        style={[
+      <ScrollView
+        contentContainerStyle={[
           styles.container,
           { paddingTop: inset.top + 20, paddingBottom: inset.bottom + 20 },
         ]}
@@ -358,7 +359,7 @@ function OnboardingLogin() {
             </Text>
           </TouchableOpacity>
         </View>
-      </View>
+      </ScrollView>
 
       {/* Loading Modal */}
       <Modal

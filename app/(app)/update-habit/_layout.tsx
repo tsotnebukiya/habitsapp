@@ -2,6 +2,7 @@ import {
   ACTIVE_OPACITY,
   ACTIVE_OPACITY_WHITE,
 } from '@/components/shared/config';
+import toastConfig from '@/components/shared/toastConfig';
 import { colors, fontWeights } from '@/lib/constants/ui';
 import { useHabit } from '@/lib/hooks/useHabits';
 import { useTranslation } from '@/lib/hooks/useTranslation';
@@ -11,6 +12,7 @@ import { router, Stack, useLocalSearchParams, usePathname } from 'expo-router';
 import { useEffect } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Icon } from 'react-native-paper';
+import Toast from 'react-native-toast-message';
 
 export default function UpdateHabitLayout() {
   const { t } = useTranslation();
@@ -81,6 +83,7 @@ export default function UpdateHabitLayout() {
             }}
           />
         </Stack>
+        <Toast config={toastConfig} />
       </View>
     </BottomSheetModalProvider>
   );
