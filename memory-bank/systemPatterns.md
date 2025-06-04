@@ -136,10 +136,52 @@ HabitsApp/
 
 ### Authentication
 
-- Multiple provider support (Apple, Google)
+- Multiple provider support (Apple, Google, Facebook)
 - Token-based authentication
 - Secure storage strategy with MMKV
 - Refresh token rotation
+- OAuth 2.0 flows for all providers
+- Enhanced authentication session management with expo-auth-session
+- Cryptographic functions support with expo-crypto
+
+#### Facebook Authentication Pattern
+
+```typescript
+// Facebook SDK integration pattern
+import { LoginManager, AccessToken } from 'react-native-fbsdk-next';
+
+const handleFacebookLogin = async () => {
+  try {
+    const result = await LoginManager.logInWithPermissions([
+      'public_profile',
+      'email',
+    ]);
+
+    if (result.isCancelled) {
+      // Handle cancellation
+      return;
+    }
+
+    const data = await AccessToken.getCurrentAccessToken();
+    if (data) {
+      // Use access token for Supabase authentication
+      const { user, error } = await supabase.auth.signInWithOAuth({
+        provider: 'facebook',
+        options: {
+          accessToken: data.accessToken,
+        },
+      });
+    }
+  } catch (error) {
+    // Handle error
+  }
+};
+```
+
+- Facebook SDK configuration with FACEBOOK_APP_ID and FACEBOOK_CLIENT_TOKEN
+- Integration with existing Supabase authentication flow
+- Consistent user experience across all authentication providers
+- Secure token handling and storage
 
 ### Data Management
 
