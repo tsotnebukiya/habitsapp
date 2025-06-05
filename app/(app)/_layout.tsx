@@ -35,7 +35,7 @@ function StackLayout() {
   }
 
   if (!profile || !profile.onboarding_complete) {
-    return <Redirect href="/onboarding/OnboardingIntro" />;
+    return <Redirect href="/onboarding/intro" />;
   }
 
   return (

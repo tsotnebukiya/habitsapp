@@ -123,7 +123,7 @@ function OnboardingLogin() {
         };
 
         useHabitsStore.getState().setAchievements(initialAchievements);
-        router.push('/onboarding/Notifications');
+        router.push('/onboarding/notifications');
       }
     } catch (error: any) {
       console.error(`${provider} auth error:`, error);

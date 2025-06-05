@@ -1,4 +1,4 @@
-// app/onboarding/Notifications.tsx
+// app/onboarding/notifications.tsx
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {

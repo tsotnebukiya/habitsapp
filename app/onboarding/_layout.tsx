@@ -4,10 +4,11 @@ import React from 'react';
 
 function OnboardingLayout() {
   return (
-    <Stack initialRouteName="OnboardingIntro">
-      <Stack.Screen name="OnboardingIntro" options={{ headerShown: false }} />
-      <Stack.Screen name="OnboardingLogin" options={{ headerShown: false }} />
-      <Stack.Screen name="Notifications" options={{ headerShown: false }} />
+    <Stack initialRouteName="intro">
+      <Stack.Screen name="intro" options={{ headerShown: false }} />
+      <Stack.Screen name="login" options={{ headerShown: false }} />
+      <Stack.Screen name="notifications" options={{ headerShown: false }} />
+      <Stack.Screen name="wizard" options={{ headerShown: false }} />
     </Stack>
   );
 }
