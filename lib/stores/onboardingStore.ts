@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 
 // Types
 export interface Question {
@@ -67,55 +66,40 @@ const initialState: OnboardingState = {
   completedAt: undefined,
 };
 
-export const useOnboardingStore = create<OnboardingStore>()(
-  persist(
-    (set, get) => ({
-      ...initialState,
+export const useOnboardingStore = create<OnboardingStore>()((set, get) => ({
+  ...initialState,
 
-      setVariant: (variant) => set({ variant }),
+  setVariant: (variant) => set({ variant }),
 
-      setCurrentIndex: (currentIndex) => set({ currentIndex }),
+  setCurrentIndex: (currentIndex) => set({ currentIndex }),
 
-      setAnswer: (questionId, answer) =>
-        set((state) => ({
-          answers: { ...state.answers, [questionId]: answer },
-        })),
+  setAnswer: (questionId, answer) =>
+    set((state) => ({
+      answers: { ...state.answers, [questionId]: answer },
+    })),
 
-      setTotalItems: (totalItems) => set({ totalItems }),
+  setTotalItems: (totalItems) => set({ totalItems }),
 
-      markStarted: () => set({ startedAt: Date.now() }),
+  markStarted: () => set({ startedAt: Date.now() }),
 
-      markCompleted: () => set({ completedAt: Date.now() }),
+  markCompleted: () => set({ completedAt: Date.now() }),
 
-      resetStore: () => set(initialState),
+  resetStore: () => set(initialState),
 
-      // Getters
-      getProgress: () => {
-        const state = get();
-        if (state.totalItems === 0) return 0;
-        return ((state.currentIndex + 1) / state.totalItems) * 100;
-      },
+  // Getters
+  getProgress: () => {
+    const state = get();
+    if (state.totalItems === 0) return 0;
+    return ((state.currentIndex + 1) / state.totalItems) * 100;
+  },
 
-      hasAnswer: (questionId) => {
-        const state = get();
-        return questionId in state.answers;
-      },
+  hasAnswer: (questionId) => {
+    const state = get();
+    return questionId in state.answers;
+  },
 
-      getAnswer: (questionId) => {
-        const state = get();
-        return state.answers[questionId];
-      },
-    }),
-    {
-      name: 'onboarding-store',
-      // Only persist essential data
-      partialize: (state) => ({
-        variant: state.variant,
-        currentIndex: state.currentIndex,
-        answers: state.answers,
-        totalItems: state.totalItems,
-        startedAt: state.startedAt,
-      }),
-    }
-  )
-);
+  getAnswer: (questionId) => {
+    const state = get();
+    return state.answers[questionId];
+  },
+}));

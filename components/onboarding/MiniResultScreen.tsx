@@ -1,20 +1,9 @@
 import React from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
 
-import {
-  useOnboardingStore,
-  type OnboardingItem,
-} from '@/lib/stores/onboardingStore';
+import { useOnboardingStore } from '@/lib/stores/onboardingStore';
 
 const { width: screenWidth } = Dimensions.get('window');
-
-interface MiniResultScreenProps {
-  item: OnboardingItem;
-  onNext: () => void;
-  onPrevious: () => void;
-  isFirstScreen: boolean;
-  isLastScreen: boolean;
-}
 
 // Helper function to calculate scores from mini assessment answers
 function calculateMiniAssessmentScores(answers: Record<string, any>) {
@@ -57,13 +46,7 @@ function calculateMiniAssessmentScores(answers: Record<string, any>) {
   };
 }
 
-export default function MiniResultScreen({
-  item,
-  onNext,
-  onPrevious,
-  isFirstScreen,
-  isLastScreen,
-}: MiniResultScreenProps) {
+export default function MiniResultScreen() {
   const { answers } = useOnboardingStore();
   const scores = calculateMiniAssessmentScores(answers);
 

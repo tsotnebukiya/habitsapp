@@ -4,27 +4,34 @@ import React, { useEffect, useMemo, useRef } from 'react';
 import {
   Dimensions,
   FlatList,
-  SafeAreaView,
+  ScrollView,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
 } from 'react-native';
 
+import LoadingScreen from '@/components/onboarding/LoadingScreen';
 import MiniResultScreen from '@/components/onboarding/MiniResultScreen';
 import PickOneHabitScreen from '@/components/onboarding/PickOneHabitScreen';
 import ProgressBar from '@/components/onboarding/ProgressBar';
 import QuestionScreen from '@/components/onboarding/QuestionScreen';
-import SpinnerTailorScreen from '@/components/onboarding/SpinnerTailorScreen';
+import Button from '@/components/shared/Button';
+import { ACTIVE_OPACITY_WHITE } from '@/components/shared/config';
 import { getOnboardingItems } from '@/lib/constants/onboardingQuestions';
+import { colors } from '@/lib/constants/ui';
 import {
   useOnboardingStore,
   type OnboardingItem,
 } from '@/lib/stores/onboardingStore';
+import { useTranslation } from 'react-i18next';
+import { Icon } from 'react-native-paper';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 const { width: screenWidth } = Dimensions.get('window');
 
 export default function wizard() {
+  const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
   const flatListRef = useRef<FlatList>(null);
   const variant = useFeatureFlag('onboard_variant');
 
@@ -88,50 +95,39 @@ export default function wizard() {
   };
 
   // Render individual screen based on item type
-  const renderItem = ({
-    item,
-    index,
-  }: {
-    item: OnboardingItem;
-    index: number;
-  }) => {
-    const isActive = index === currentIndex;
+  const renderItem = ({ item }: { item: OnboardingItem }) => {
+    const renderContent = () => {
+      switch (item.type) {
+        case 'priority':
+        case 'mini':
+          return <QuestionScreen item={item} />;
 
-    if (!isActive) {
-      // Render empty view for non-active items to maintain FlatList structure
-      return <View style={styles.screenContainer} />;
-    }
+        case 'mini-result':
+          return <MiniResultScreen />;
 
-    const commonProps = {
-      item,
-      onNext: handleNext,
-      onPrevious: handlePrevious,
-      isFirstScreen: currentIndex === 0,
-      isLastScreen: currentIndex === items.length - 1,
+        case 'habit':
+          return <PickOneHabitScreen item={item} />;
+
+        case 'spinner':
+          return <LoadingScreen item={item} />;
+
+        default:
+          return null;
+      }
     };
 
-    switch (item.type) {
-      case 'priority':
-      case 'mini':
-        return <QuestionScreen {...commonProps} />;
-
-      case 'mini-result':
-        return <MiniResultScreen {...commonProps} />;
-
-      case 'habit':
-        return <PickOneHabitScreen {...commonProps} />;
-
-      case 'spinner':
-        return <SpinnerTailorScreen {...commonProps} />;
-
-      default:
-        return <View style={styles.screenContainer} />;
-    }
+    return (
+      <ScrollView
+        contentContainerStyle={{ flex: 1, paddingTop: 26 }}
+        style={styles.screenContainer}
+        showsVerticalScrollIndicator={false}
+      >
+        {renderContent()}
+      </ScrollView>
+    );
   };
 
   const progress = getProgress();
-  const isFirstScreen = currentIndex === 0;
-  const isLastScreen = currentIndex === items.length - 1;
 
   // Check if current screen can proceed
   const canProceed = () => {
@@ -165,24 +161,27 @@ export default function wizard() {
     }
   };
 
-  if (!variant || items.length === 0) {
-    return (
-      <SafeAreaView style={styles.container}>
-        <View style={styles.loadingContainer}>
-          {/* Add loading indicator if needed */}
-        </View>
-      </SafeAreaView>
-    );
-  }
-
   return (
-    <View style={styles.container}>
-      {/* Progress Bar */}
+    <View
+      style={[
+        styles.container,
+        { paddingTop: insets.top + 20, paddingBottom: insets.bottom + 11 },
+      ]}
+    >
       <View style={styles.progressContainer}>
+        <TouchableOpacity
+          activeOpacity={ACTIVE_OPACITY_WHITE}
+          onPress={handlePrevious}
+        >
+          <Icon
+            source={require('@/assets/icons/arrow-narrow-left.png')}
+            size={24}
+          />
+        </TouchableOpacity>
         <ProgressBar progress={progress} />
+        <View style={{ width: 24 }} />
       </View>
 
-      {/* FlatList with horizontal scrolling */}
       <FlatList
         ref={flatListRef}
         data={items}
@@ -200,39 +199,14 @@ export default function wizard() {
         initialScrollIndex={currentIndex}
         style={styles.flatList}
       />
-
-      {/* Navigation Buttons */}
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={[styles.button, styles.backButton]}
-          onPress={handlePrevious}
-          disabled={isFirstScreen}
-        >
-          <Text
-            style={[styles.buttonText, isFirstScreen && styles.disabledText]}
-          >
-            Back
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[
-            styles.button,
-            styles.nextButton,
-            !canProceed() && styles.disabledButton,
-          ]}
+      <View style={{ height: 54, paddingHorizontal: 20 }}>
+        <Button
+          type="primary"
           onPress={handleNext}
+          label={t('common.next')}
+          fullWidth
           disabled={!canProceed()}
-        >
-          <Text
-            style={[
-              styles.buttonText,
-              !canProceed() && styles.disabledButtonText,
-            ]}
-          >
-            {isLastScreen ? 'Complete' : 'Next'}
-          </Text>
-        </TouchableOpacity>
+        />
       </View>
     </View>
   );
@@ -241,12 +215,13 @@ export default function wizard() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.bgLight,
   },
   progressContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     paddingHorizontal: 20,
-    paddingTop: 10,
-    paddingBottom: 20,
   },
   flatList: {
     flex: 1,
@@ -254,46 +229,5 @@ const styles = StyleSheet.create({
   screenContainer: {
     width: screenWidth,
     flex: 1,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 20,
-    backgroundColor: '#FFFFFF',
-    borderTopWidth: 1,
-    borderTopColor: '#E5E7EB',
-  },
-  button: {
-    paddingHorizontal: 24,
-    paddingVertical: 12,
-    borderRadius: 8,
-    minWidth: 80,
-    alignItems: 'center',
-  },
-  backButton: {
-    backgroundColor: '#F3F4F6',
-  },
-  nextButton: {
-    backgroundColor: '#3B82F6',
-  },
-  disabledButton: {
-    backgroundColor: '#D1D5DB',
-  },
-  buttonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#FFFFFF',
-  },
-  disabledText: {
-    color: '#9CA3AF',
-  },
-  disabledButtonText: {
-    color: '#9CA3AF',
   },
 });

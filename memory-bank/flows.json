@@ -1,0 +1,1023 @@
+[
+  {
+    "name": "Grit",
+    "steps": [
+      {
+        "step": 1,
+        "id": "energy_profile",
+        "ui_type": "single-select_question",
+        "progress_bar_percent": 8,
+        "title": "Which statement best describes you?",
+        "options": [
+          {
+            "value": "early_bird",
+            "label": "Early bird",
+            "description": "I am energized and productive in the morning"
+          },
+          {
+            "value": "night_owl",
+            "label": "Night owl",
+            "description": "I come alive at night"
+          },
+          {
+            "value": "flexible_energy",
+            "label": "Flexible energy",
+            "description": "I am ready to adapt and thrive any time of the day"
+          },
+          {
+            "value": "low_energy",
+            "label": "Low energy",
+            "description": "I feel tired most of the time"
+          }
+        ],
+        "info_banner": "Your energy is the key to lasting habits. We will help you focus during the right moments of the day.",
+        "primary_cta": "Continue"
+      },
+      {
+        "step": 2,
+        "id": "progress_tracking_preference",
+        "ui_type": "single-select_question",
+        "progress_bar_percent": 17,
+        "title": "How do you prefer to track your progress?",
+        "options": [
+          {
+            "value": "graphs_stats",
+            "label": "Graphs and detailed stats"
+          },
+          {
+            "value": "daily_checkins",
+            "label": "Daily check-ins"
+          },
+          {
+            "value": "celebrating_streaks",
+            "label": "Celebrating streaks"
+          },
+          {
+            "value": "unsure",
+            "label": "I’m not sure yet"
+          }
+        ],
+        "info_banner": "Some love detailed stats, others prefer to go on streaks. However you track progress, we’ve got you.",
+        "primary_cta": "Continue"
+      },
+      {
+        "step": 3,
+        "id": "help_focus",
+        "ui_type": "single-select_question",
+        "progress_bar_percent": 25,
+        "title": "How can we help you?",
+        "options": [
+          {
+            "value": "build_good_habits",
+            "label": "Building good habits"
+          },
+          {
+            "value": "quit_bad_habits",
+            "label": "Getting rid of bad habits"
+          },
+          {
+            "value": "both",
+            "label": "Both"
+          },
+          {
+            "value": "unsure",
+            "label": "I’m not sure yet"
+          }
+        ],
+        "info_banner": "Thanks to our extensive tracking options, we can assist you to reach your goals.",
+        "primary_cta": "Continue"
+      },
+      {
+        "step": 4,
+        "id": "goal_obstacles",
+        "ui_type": "single-select_question",
+        "progress_bar_percent": 33,
+        "title": "What tends to get in the way of your goals?",
+        "options": [
+          { "value": "losing_motivation", "label": "Losing motivation" },
+          { "value": "lack_of_time", "label": "Lack of time" },
+          {
+            "value": "dont_know_how_to_start",
+            "label": "Not knowing how to start"
+          },
+          { "value": "feeling_overwhelmed", "label": "Feeling overwhelmed" },
+          { "value": "other", "label": "Other" }
+        ],
+        "info_banner": "We personalise tools to your needs. Overcome obstacles and thrive thanks to your habits.",
+        "primary_cta": "Continue"
+      },
+      {
+        "step": 5,
+        "id": "main_goal",
+        "ui_type": "single-select_question",
+        "progress_bar_percent": 42,
+        "title": "What’s your main goal?",
+        "options": [
+          {
+            "value": "increase_productivity",
+            "label": "Increase my productivity"
+          },
+          {
+            "value": "boost_energy",
+            "label": "Boost my energy",
+            "selected_default": true
+          },
+          { "value": "self_improvement", "label": "Work on self-improvement" },
+          {
+            "value": "healthier_lifestyle",
+            "label": "Adopt a healthier lifestyle"
+          },
+          { "value": "other", "label": "Other" }
+        ],
+        "primary_cta": "Continue"
+      },
+      {
+        "step": 6,
+        "id": "calculating_spinner",
+        "ui_type": "loading",
+        "progress_bar_percent": 50,
+        "heading": "Calculating.",
+        "visual": "circular_progress_indicator",
+        "review_card": {
+          "title": "Loved it",
+          "stars": 5,
+          "body": "Incredible app. Downloaded the app because I like the idea and stayed because it delivered. It’s very affordable and accessible to everybody. It’s making me accountable and achieve my goals."
+        },
+        "rating_badge": {
+          "apple_feature": "APPS WE LOVE",
+          "rating": "4.8/5"
+        }
+      },
+      {
+        "step": 7,
+        "id": "tailoring_confirmation",
+        "ui_type": "info",
+        "progress_bar_percent": 58,
+        "heading": "Tailoring the app to your needs",
+        "visual": "tick_circle_illustration",
+        "review_card": {
+          "title": "Perfect",
+          "stars": 5,
+          "body": "I only write reviews on apps when they TRULY stand out. This is one of those times… This app is SO simple, SO easy to use, and SO organized. Incredibly user friendly, the design is very appealing and the app processes perfectly. 10/10."
+        },
+        "rating_badge": {
+          "apple_feature": "APPS WE LOVE",
+          "rating": "4.8/5"
+        },
+        "primary_cta": "Continue"
+      },
+      {
+        "step": 8,
+        "id": "in_app_review_prompt",
+        "ui_type": "modal_overlay",
+        "progress_bar_percent": 58,
+        "modal": {
+          "title": "Enjoying Grit?",
+          "subtitle": "Tap a star to rate it on the App Store.",
+          "stars_row": "5_empty_stars",
+          "secondary_cta": "Not Now"
+        },
+        "underlying_screen": "tailoring_confirmation"
+      },
+      {
+        "step": 9,
+        "id": "good_bad_news_intro",
+        "ui_type": "info",
+        "progress_bar_percent": 67,
+        "title": "Some not-so-good news, and some great news",
+        "primary_cta": "Continue"
+      },
+      {
+        "step": 10,
+        "id": "bad_news_detail",
+        "ui_type": "info",
+        "progress_bar_percent": 75,
+        "caption": "The bad news is that",
+        "body_html": "Without consistent habits, <span style=\"color:#FF6600;font-weight:600;\">you could be losing over 1 300 hours a year</span> to unproductive tasks",
+        "primary_cta": "Continue"
+      },
+      {
+        "step": 11,
+        "id": "good_news_detail",
+        "ui_type": "info",
+        "progress_bar_percent": 83,
+        "caption": "The good one is that",
+        "body_html": "Grit can help you reclaim up to <span style=\"color:#3ABF4F;font-weight:600;\">650 of those hours</span> by creating habits that enhance your focus and efficiency",
+        "primary_cta": "Continue"
+      },
+      {
+        "step": 12,
+        "id": "notifications_opt_in",
+        "ui_type": "multi_toggle",
+        "progress_bar_percent": 92,
+        "heading": "Hard time getting started?\nOur smart notification system can help you",
+        "toggles": [
+          {
+            "id": "flexible_energy",
+            "label": "Flexible energy",
+            "description": "Get reminders for your habits when you have the most energy",
+            "default_state": "on"
+          },
+          {
+            "id": "start_small",
+            "label": "Start small",
+            "description": "Targeted notifications for your easiest habits, one at a time",
+            "default_state": "on"
+          },
+          {
+            "id": "up_to_date",
+            "label": "Up to date",
+            "description": "Get personalised recommendations and special offers",
+            "default_state": "on"
+          }
+        ],
+        "primary_cta": "Continue"
+      },
+      {
+        "step": 13,
+        "id": "achievement_unlocked",
+        "ui_type": "achievement_card",
+        "progress_bar_percent": 100,
+        "icon": "hexagon_person_raising_hand",
+        "title": "Great job! You’re all set",
+        "subtitle": "You unlocked the Best Start achievement for starting your journey",
+        "primary_cta": "Continue"
+      },
+      {
+        "step": 14,
+        "id": "feature_overview_primary",
+        "ui_type": "feature_list",
+        "title": "Here’s what Grit can do for you:",
+        "bullets": [
+          "Achieve all your goals! Choose from our list or create your own",
+          "Dive deeper into your habits with our statistics",
+          "Sync with Apple Health and access data directly from your body"
+        ]
+      },
+      {
+        "step": 15,
+        "id": "feature_overview_extended",
+        "ui_type": "feature_list",
+        "title": "Here’s what Grit can do for you:",
+        "bullets": [
+          "Achieve all your goals! Choose from our list or create your own",
+          "Dive deeper into your habits with our statistics",
+          "Sync with Apple Health and access data directly from your body",
+          "Stay on track with widgets, Apple Watch and iPad, no matter where you are"
+        ],
+        "social_proof_card": {
+          "statistic": "92%",
+          "copy": "of Grit users who share your goal begin with a simple habit like “Make your Bed”",
+          "illustration": "bed_icon"
+        },
+        "primary_cta": "Continue"
+      }
+    ]
+  },
+  {
+    "name": "Productive",
+    "steps": [
+      {
+        "step": 1,
+        "id": "welcome_intro",
+        "ui_type": "hero",
+        "progress_bar_percent": 0,
+        "title": "The best time to start is now!",
+        "subtitle": "You’re about to take the first step in changing your life! Let us guide you through it.",
+        "illustration": "back-view character with backpack in night-forest scenery",
+        "primary_cta": "Let’s do it"
+      },
+      {
+        "step": 2,
+        "id": "tracking_consent",
+        "ui_type": "permission_request",
+        "progress_bar_percent": 10,
+        "title": "Get a <b>personalized</b> experience",
+        "body": "By allowing tracking, you enable us to use device-level data similar to cookies, so we can:",
+        "benefits": [
+          {
+            "icon": "wrench",
+            "text": "Improve your experience with the help of bug reports and analytics"
+          },
+          {
+            "icon": "users",
+            "text": "Create a better community by bringing more users like you to Productive"
+          }
+        ],
+        "privacy_badge": "Your privacy is <b>always</b> paramount",
+        "primary_cta": "Continue",
+        "secondary_link": {
+          "text": "See our Privacy Policy",
+          "target": "privacy_policy_url"
+        }
+      },
+      {
+        "step": 3,
+        "id": "wake_up_time",
+        "ui_type": "time_picker",
+        "progress_bar_percent": 20,
+        "title": "What time do you usually wake up?",
+        "control": "scroll_wheel_hours_00-23",
+        "primary_cta": "Continue"
+      },
+      {
+        "step": 4,
+        "id": "lifestyle_satisfaction",
+        "ui_type": "single_select_question",
+        "progress_bar_percent": 30,
+        "title": "How satisfied are you with your current lifestyle?",
+        "options": [
+          {
+            "value": "high",
+            "label": "Completely — I feel very active and energized"
+          },
+          {
+            "value": "medium",
+            "label": "Somewhat — I’d like to see some improvement"
+          },
+          {
+            "value": "low",
+            "label": "Not at all — I’m sedentary and would like to see a major change"
+          }
+        ]
+      },
+      {
+        "step": 5,
+        "id": "procrastination_habit",
+        "ui_type": "single_select_question",
+        "progress_bar_percent": 40,
+        "title": "Do you often procrastinate?",
+        "options": [
+          {
+            "value": "no",
+            "label": "No, I easily keep up with my schedule"
+          },
+          {
+            "value": "sometimes",
+            "label": "I procrastinate from time to time"
+          },
+          {
+            "value": "yes",
+            "label": "Yes, and I want to change it"
+          }
+        ]
+      },
+      {
+        "step": 6,
+        "id": "focus_difficulty",
+        "ui_type": "single_select_question",
+        "progress_bar_percent": 50,
+        "title": "Do you find it hard to focus?",
+        "options": [
+          {
+            "value": "no",
+            "label": "No, I stay focused when needed"
+          },
+          {
+            "value": "sometimes",
+            "label": "Sometimes I lose my focus"
+          },
+          {
+            "value": "yes",
+            "label": "Yes, I get distracted easily"
+          }
+        ]
+      },
+      {
+        "step": 7,
+        "id": "expected_outcome",
+        "ui_type": "single_select_question",
+        "progress_bar_percent": 60,
+        "title": "What do you expect to achieve with Productive?",
+        "options": [
+          {
+            "value": "build_good_habits",
+            "label": "I want to build good habits"
+          },
+          {
+            "value": "be_more_productive",
+            "label": "I want to be more organized and productive"
+          },
+          {
+            "value": "overall_improvement",
+            "label": "I want an overall improvement in mind and body"
+          }
+        ]
+      },
+      {
+        "step": 8,
+        "id": "personalization_loader",
+        "ui_type": "loading",
+        "progress_bar_percent": 70,
+        "heading": "Building up your personalized program…",
+        "animation": "multicolor_sticks_spinning"
+      },
+      {
+        "step": 9,
+        "id": "choose_first_habit",
+        "ui_type": "list_select",
+        "progress_bar_percent": 80,
+        "title": "Choose your first habit",
+        "subtitle": "Let’s start with one of these. You can add more habits later.",
+        "options": [
+          {
+            "value": "exercise",
+            "label": "Exercise",
+            "icon": "dumbbell_or_barbell"
+          },
+          {
+            "value": "drink_water",
+            "label": "Drink water",
+            "icon": "water_drop"
+          },
+          {
+            "value": "study_online",
+            "label": "Study online",
+            "icon": "laptop_screen"
+          },
+          {
+            "value": "pomodoro",
+            "label": "Focus with Pomodoro",
+            "icon": "tomato_timer"
+          },
+          { "value": "read", "label": "Read", "icon": "open_book" },
+          {
+            "value": "eat_healthy",
+            "label": "Eat a healthy meal",
+            "icon": "fork_knife_plate"
+          }
+        ],
+        "primary_cta": "Next"
+      },
+      {
+        "step": 10,
+        "id": "first_run_dashboard",
+        "ui_type": "dashboard_with_coachmark",
+        "progress_bar_percent": 100,
+        "coachmark": {
+          "text": "This is your first habit. Swipe right 👉 to complete it",
+          "target_element": "habit_card_drink_water",
+          "pointer": "hand_icon"
+        },
+        "initial_habit_card": {
+          "title": "Drink water",
+          "counter": "0/5 glasses",
+          "status": "New"
+        },
+        "navigation_hint": "Bottom-tab bar visible with Home, Onboarding, plus-button, Stats, Explore"
+      }
+    ]
+  },
+  {
+    "name": "RiseApp",
+    "steps": [
+      {
+        "step": 1,
+        "id": "push_permission",
+        "ui_type": "system_modal",
+        "title": "\"Rise\" Would Like to Send You Notifications",
+        "body": "Notifications may include alerts, sounds and icon badges. These can be configured in Settings.",
+        "cta_primary": "Allow",
+        "cta_secondary": "Don't Allow",
+        "notes": "Modal floats over a hero splash that reads “66 DAYS”."
+      },
+      {
+        "step": 2,
+        "id": "hero_ready",
+        "ui_type": "hero",
+        "heading": "Ready to start your life reset journey?",
+        "cta_primary": "Continue",
+        "progress_hint": 0
+      },
+      {
+        "step": 3,
+        "id": "intro_poster",
+        "ui_type": "hero",
+        "heading": "Your next 66 days will be the most transformative period of your life ever.",
+        "notes": "Center mock-up of a phone with a mountain photo calendar-overlay.",
+        "cta_primary": "Continue",
+        "progress_hint": 0
+      },
+      {
+        "step": 4,
+        "id": "understanding_prompt",
+        "ui_type": "hero",
+        "heading": "Understanding more about your situation",
+        "body": "Answer all questions honestly – we’ll use the answers to design a tailor-made program for you.",
+        "cta_primary": "Let's start »",
+        "progress_hint": 0
+      },
+
+      {
+        "step": 5,
+        "id": "question_age",
+        "ui_type": "single_select",
+        "title": "How old are you?",
+        "options": [
+          "18 – 19",
+          "20 – 24",
+          "25 – 29",
+          "30 – 34",
+          "40 – 44",
+          "45 – 54",
+          "55+"
+        ],
+        "progress_hint": 5
+      },
+      {
+        "step": 6,
+        "id": "question_gender",
+        "ui_type": "single_select",
+        "title": "What is your gender?",
+        "options": ["Male", "Female", "Other"],
+        "progress_hint": 8
+      },
+      {
+        "step": 7,
+        "id": "question_job",
+        "ui_type": "single_select",
+        "title": "How would you describe your current job?",
+        "options": [
+          "Student",
+          "Office / desk job",
+          "Manual / active job",
+          "Self-employed",
+          "Unemployed / gap",
+          "Retired"
+        ],
+        "progress_hint": 11
+      },
+      {
+        "step": 8,
+        "id": "question_reason",
+        "ui_type": "single_select",
+        "title": "What is the biggest reason you want to reset your life?",
+        "options": [
+          "Fix my bad habits and vices",
+          "Improve my study and career",
+          "Improve physical health and look",
+          "Fix my broken relationships",
+          "Overcome major life setbacks",
+          "Win back my faded fire"
+        ],
+        "progress_hint": 14
+      },
+      {
+        "step": 9,
+        "id": "cta_after_66_graph",
+        "ui_type": "info_graph",
+        "heading": "After 66 days you’ll overcome the setbacks",
+        "notes": "Line-chart with testimonial card; orange button “Got it »”.",
+        "progress_hint": 16
+      },
+      {
+        "step": 10,
+        "id": "question_proud_last_time",
+        "ui_type": "single_select",
+        "title": "What’s the last time you were proud of yourself?",
+        "options": [
+          "Just today",
+          "Few days ago",
+          "Few weeks ago",
+          "Few months ago",
+          "Too long / can’t remember"
+        ],
+        "progress_hint": 18
+      },
+      {
+        "step": 11,
+        "id": "question_motivation_morning",
+        "ui_type": "single_select",
+        "title": "What gets you out of bed every morning?",
+        "options": [
+          "Make money to support my needs",
+          "To not get fired or expelled",
+          "To provide for my family",
+          "Adventure, goals and dreams",
+          "I don’t really know",
+          "None of the above"
+        ],
+        "progress_hint": 20
+      },
+      {
+        "step": 12,
+        "id": "question_addictions",
+        "ui_type": "multi_select",
+        "title": "Would you say you are addicted to any one of the below?",
+        "options": [
+          "Smoking",
+          "Vaping",
+          "Alcohol",
+          "Porn",
+          "Gambling",
+          "More than one of the above",
+          "None of the above"
+        ],
+        "progress_hint": 23
+      },
+      {
+        "step": 13,
+        "id": "question_mental_state",
+        "ui_type": "single_select",
+        "title": "Would you say you ever feel depressed or anxious in a day?",
+        "options": ["No", "Rarely", "Sometimes", "Often", "Almost always"],
+        "progress_hint": 26
+      },
+      {
+        "step": 14,
+        "id": "question_wasted_hours",
+        "ui_type": "slider",
+        "title": "How many hours a week do you waste on distractions?",
+        "unit": "h",
+        "preset_value": 10,
+        "progress_hint": 28
+      },
+      {
+        "step": 15,
+        "id": "question_hour_value",
+        "ui_type": "picker_dollar",
+        "title": "How much 1 hour of your time is worth to you?",
+        "options": ["$40", "$50", "$60"],
+        "progress_hint": 30
+      },
+      {
+        "step": 16,
+        "id": "question_long_term_goal",
+        "ui_type": "single_select",
+        "title": "What’s your long-term goal in life?",
+        "options": [
+          "Learn new skills regularly",
+          "Strengthen my relationships",
+          "Build a successful career",
+          "Stay fit and healthy",
+          "Build a family and a fruitful life"
+        ],
+        "progress_hint": 33
+      },
+      {
+        "step": 17,
+        "id": "science_flame",
+        "ui_type": "info_illustration",
+        "heading": "Impact of life resetting on brain changes",
+        "notes": "Large orange flame; CTA “Next »”.",
+        "progress_hint": 35
+      },
+      {
+        "step": 18,
+        "id": "why_66_days_research",
+        "ui_type": "info_stats",
+        "heading": "Experimental research shows that it takes 66 days to build lasting habits and transform your life.",
+        "stats": [
+          "Diet adherence → +38 %",
+          "Exercise adherence → +15 %",
+          "Stress resilience → +23 %",
+          "Life satisfaction → +20 %"
+        ],
+        "progress_hint": 36,
+        "cta_primary": "Next »"
+      },
+      {
+        "step": 19,
+        "id": "science_sources",
+        "ui_type": "info_list",
+        "heading": "Rise is a Science-Backed Plan",
+        "body": "Displays four peer-reviewed citations in cards.",
+        "cta_primary": "Next »",
+        "progress_hint": 38
+      },
+      {
+        "step": 20,
+        "id": "referral_code",
+        "ui_type": "text_input",
+        "title": "Do you have a refer code?",
+        "placeholder": "Enter your refer code (if any)",
+        "cta_primary": "Next »",
+        "progress_hint": 40
+      },
+      {
+        "step": 21,
+        "id": "notif_opt_in",
+        "ui_type": "toggle_list",
+        "heading": "Get daily notifications to keep motivated",
+        "toggles": [
+          { "id": "sleepcheck", "label": "Sleepcheck", "default": false },
+          { "id": "daily_goal", "label": "Daily Goal", "default": true },
+          { "id": "weekly_focus", "label": "Weekly Focus", "default": true }
+        ],
+        "cta_primary": "Next",
+        "progress_hint": 42
+      },
+
+      {
+        "step": 22,
+        "id": "help_build_vision",
+        "ui_type": "rating",
+        "title": "Help us build our vision",
+        "body": "5-star rating selector for vision statement clarity.",
+        "cta_primary": "Start my program",
+        "progress_hint": 44
+      },
+      {
+        "step": 23,
+        "id": "wake_up_time_weekdays",
+        "ui_type": "slider_time",
+        "title": "What time do you usually wake up on weekdays?",
+        "min": "04:00",
+        "max": "10:30 AM",
+        "progress_hint": 46,
+        "cta_primary": "Confirm"
+      },
+      {
+        "step": 24,
+        "id": "water_intake",
+        "ui_type": "slider_amount",
+        "title": "How much water do you drink a day (in L)?",
+        "preset": "Around 2 L",
+        "progress_hint": 48,
+        "cta_primary": "Confirm"
+      },
+      {
+        "step": 25,
+        "id": "running_distance",
+        "ui_type": "slider_amount",
+        "title": "How much do you usually run in a week?",
+        "preset": "Less than 2 km (≈ 1.2 miles)",
+        "progress_hint": 50,
+        "cta_primary": "Confirm"
+      },
+      {
+        "step": 26,
+        "id": "workout_hours",
+        "ui_type": "slider_amount",
+        "title": "How many hours do you usually work out in a week?",
+        "preset": "Less than 2 hours",
+        "progress_hint": 52,
+        "cta_primary": "Confirm"
+      },
+      {
+        "step": 27,
+        "id": "meditation_minutes",
+        "ui_type": "slider_amount",
+        "title": "How much time do you spend on meditating in a week?",
+        "preset": "Around 10–20 minutes",
+        "progress_hint": 54,
+        "cta_primary": "Confirm"
+      },
+      {
+        "step": 28,
+        "id": "reading_pages",
+        "ui_type": "slider_amount",
+        "title": "How much time do you spend on reading books in a week?",
+        "preset": "10–50 pages",
+        "progress_hint": 56,
+        "cta_primary": "Confirm"
+      },
+      {
+        "step": 29,
+        "id": "cold_shower_frequency",
+        "ui_type": "slider_amount",
+        "title": "How often do you take a cold shower in a week?",
+        "preset": "I don’t take cold showers",
+        "progress_hint": 58,
+        "cta_primary": "Confirm"
+      },
+      {
+        "step": 30,
+        "id": "junk_food_frequency",
+        "ui_type": "slider_amount",
+        "title": "How often do you eat junk food in a week?",
+        "preset": "3+ times",
+        "progress_hint": 60,
+        "cta_primary": "Confirm"
+      },
+      {
+        "step": 31,
+        "id": "survey_finish",
+        "ui_type": "confirmation",
+        "heading": "Confirm your survey entry",
+        "cta_primary": "Submit »",
+        "progress_hint": 62
+      },
+
+      {
+        "step": 32,
+        "id": "insight_step1",
+        "ui_type": "progress_processing",
+        "heading": "We’re gaining a deeper insight into your habits (1 / 3)…",
+        "progress_hint": 65
+      },
+      {
+        "step": 33,
+        "id": "insight_step2",
+        "ui_type": "progress_processing",
+        "heading": "We’re gaining a deeper insight into your habits (2 / 3)…",
+        "progress_hint": 67
+      },
+      {
+        "step": 34,
+        "id": "analysis_chart",
+        "ui_type": "progress_graph",
+        "heading": "Analysing your current habits…",
+        "notes": "Animated bar chart.",
+        "progress_hint": 70
+      },
+      {
+        "step": 35,
+        "id": "average_comparison",
+        "ui_type": "info_bar",
+        "heading": "Average comparison",
+        "notes": "Vertical bar chart comparing user vs population.",
+        "cta_primary": "See my Rise rating",
+        "progress_hint": 72
+      },
+      {
+        "step": 36,
+        "id": "rise_rating",
+        "ui_type": "score_card",
+        "heading": "Your Rise Rating",
+        "scores": {
+          "Overall": 4.4,
+          "Energy": 4.0,
+          "Mind": 4.1,
+          "Body": 4.3,
+          "Habits": 4.6
+        },
+        "cta_primary": "See potential rating",
+        "progress_hint": 75
+      },
+      {
+        "step": 37,
+        "id": "potential_rating",
+        "ui_type": "score_card",
+        "heading": "Potential Rating",
+        "scores": {
+          "Overall": 8.0,
+          "Energy": 8.2,
+          "Mind": 8.4,
+          "Body": 8.5,
+          "Habits": 8.6
+        },
+        "cta_primary": "Continue",
+        "progress_hint": 78
+      },
+
+      {
+        "step": 38,
+        "id": "core_habits_gallery",
+        "ui_type": "carousel",
+        "heading": "The 8 core habits",
+        "body": "Swipe cards – ‘Wake up early’, ‘Drink water’, ‘Read’, ‘Exercise’, …",
+        "cta_primary": "Continue",
+        "progress_hint": 80
+      },
+      {
+        "step": 39,
+        "id": "week1_intro",
+        "ui_type": "week_card",
+        "heading": "Week 1",
+        "subtitle": "Your adjustment & consistency baseline",
+        "chart": "Pentagon radar (Focus / Energy / Discipline / Strength / Confidence)",
+        "cta_primary": "Continue",
+        "progress_hint": 82
+      },
+      {
+        "step": 40,
+        "id": "week5_intro",
+        "ui_type": "week_card",
+        "heading": "Week 5",
+        "subtitle": "Momentum expansion",
+        "chart": "Pentagon radar",
+        "cta_primary": "Continue",
+        "progress_hint": 84
+      },
+      {
+        "step": 41,
+        "id": "week10_intro",
+        "ui_type": "week_card",
+        "heading": "Week 10",
+        "subtitle": "New mental set-point – self-improvement locked in",
+        "chart": "Pentagon radar fully filled",
+        "cta_primary": "How the 8 habits help you",
+        "progress_hint": 86
+      },
+      {
+        "step": 42,
+        "id": "habit_schedule_matrix",
+        "ui_type": "matrix_view",
+        "heading": "Rise uses A I to create a personalised 8×8 schedule for you, to transform your success rate.",
+        "notes": "White lines grid over black, habits per weekday.",
+        "cta_primary": "Continue",
+        "progress_hint": 87
+      },
+      {
+        "step": 43,
+        "id": "weekly_progress_graph",
+        "ui_type": "mini_graph",
+        "heading": "Each week, your tasks get progressively more difficult to reinforce your dopamine system.",
+        "notes": "Line chart with highlight of current position.",
+        "cta_primary": "Continue",
+        "progress_hint": 88
+      },
+      {
+        "step": 44,
+        "id": "calendar_66_days",
+        "ui_type": "calendar",
+        "heading": "Your next 66 days",
+        "body": "Program is personalised on your current lifestyle. Tap a circle for details/instructions.",
+        "cta_primary": "Continue",
+        "progress_hint": 89
+      },
+      {
+        "step": 45,
+        "id": "year_progress_2025",
+        "ui_type": "info_stat",
+        "heading": "2,025 is 40 % gone",
+        "subtitle": "Rise will help you make 2025 your best year ever.",
+        "progress_hint": 90,
+        "cta_primary": "Continue"
+      },
+      {
+        "step": 46,
+        "id": "timeline_future_you",
+        "ui_type": "timeline",
+        "heading": "2025 → 2035 vision roadmap",
+        "body": "Milestones presented in a vertical timeline (career, relationships, wealth).",
+        "cta_primary": "Continue",
+        "progress_hint": 91
+      },
+      {
+        "step": 47,
+        "id": "vision_10_years",
+        "ui_type": "hero",
+        "heading": "10 years to make sure you’re a success in life",
+        "subtitle": "Rise is scientifically designed to be your long-term self-improvement companion.",
+        "cta_primary": "Continue",
+        "progress_hint": 92
+      },
+      {
+        "step": 48,
+        "id": "commit_plan_picker",
+        "ui_type": "option_picker",
+        "title": "Commit to growing with Rise",
+        "options": [
+          "7-day access",
+          "14-day stress free",
+          "30-day promise",
+          "90-day promise"
+        ],
+        "helper": "Every decision you are taking now is the first step to a stronger version of yourself",
+        "cta_primary": "Continue",
+        "progress_hint": 93
+      },
+      {
+        "step": 49,
+        "id": "letter_from_future",
+        "ui_type": "text_editor",
+        "heading": "A Letter From Future",
+        "body": "User writes a letter to ‘future me’, fingerprint-style signing pad at the bottom.",
+        "cta_primary": "Continue",
+        "progress_hint": 94
+      },
+      {
+        "step": 50,
+        "id": "read_the_view",
+        "ui_type": "info_scroll",
+        "heading": "Read the View",
+        "body": "Long-form inspirational manifesto; scrollable.",
+        "cta_primary": "Done",
+        "progress_hint": 95
+      },
+
+      {
+        "step": 51,
+        "id": "paywall_overview",
+        "ui_type": "paywall_hero",
+        "heading": "We will help you become the best version of yourself in 60 days.",
+        "cta_primary": "Start My Program",
+        "progress_hint": 96
+      },
+      {
+        "step": 52,
+        "id": "paywall_graph",
+        "ui_type": "paywall_graph",
+        "heading": "Value vs time",
+        "notes": "Purple graph illustrating growth curve plus ROI ‘+$1000 after 12 weeks’.",
+        "cta_primary": "Start My Program",
+        "progress_hint": 97
+      },
+      {
+        "step": 53,
+        "id": "paywall_plan_choice",
+        "ui_type": "plan_cards",
+        "heading": "Invest in yourself and realise an epic life-reboot in 66 days.",
+        "plans": [
+          { "id": "monthly", "price": "$29.99 / mo" },
+          { "id": "annual", "price": "$149.99 / yr", "tag": "Best value" }
+        ],
+        "cta_primary": "Kick-start My Journey",
+        "cta_secondary": "Restore Purchase",
+        "progress_hint": 100
+      }
+    ]
+  }
+]

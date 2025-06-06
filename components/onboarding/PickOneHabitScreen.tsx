@@ -16,14 +16,6 @@ import {
 
 const { width: screenWidth } = Dimensions.get('window');
 
-interface PickOneHabitScreenProps {
-  item: OnboardingItem;
-  onNext: () => void;
-  onPrevious: () => void;
-  isFirstScreen: boolean;
-  isLastScreen: boolean;
-}
-
 const HABITS = [
   {
     id: 'exercise',
@@ -82,13 +74,7 @@ const FREQUENCIES = [
   { id: 'weekend', name: 'Weekends', description: 'Saturday and Sunday' },
 ];
 
-export default function PickOneHabitScreen({
-  item,
-  onNext,
-  onPrevious,
-  isFirstScreen,
-  isLastScreen,
-}: PickOneHabitScreenProps) {
+export default function PickOneHabitScreen({ item }: { item: OnboardingItem }) {
   const { setAnswer, getAnswer } = useOnboardingStore();
   const existingAnswer = getAnswer(item.id) as HabitData | undefined;
 

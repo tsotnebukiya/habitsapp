@@ -7,26 +7,15 @@ import {
   View,
 } from 'react-native';
 
+import { colors, fontWeights } from '@/lib/constants/ui';
 import type { OnboardingItem } from '@/lib/stores/onboardingStore';
 import { useOnboardingStore } from '@/lib/stores/onboardingStore';
+import { SymbolView } from 'expo-symbols';
+import { ACTIVE_OPACITY_WHITE } from '../shared/config';
 
 const { width: screenWidth } = Dimensions.get('window');
 
-interface QuestionScreenProps {
-  item: OnboardingItem;
-  onNext: () => void;
-  onPrevious: () => void;
-  isFirstScreen: boolean;
-  isLastScreen: boolean;
-}
-
-export default function QuestionScreen({
-  item,
-  onNext,
-  onPrevious,
-  isFirstScreen,
-  isLastScreen,
-}: QuestionScreenProps) {
+export default function QuestionScreen({ item }: { item: OnboardingItem }) {
   const { setAnswer, getAnswer } = useOnboardingStore();
   const existingAnswer = getAnswer(item.id) as string | undefined;
   const [selectedOption, setSelectedOption] = useState<string>(
@@ -40,34 +29,28 @@ export default function QuestionScreen({
 
   return (
     <View style={styles.container}>
-      <View style={styles.content}>
-        {/* Question */}
-        <View style={styles.questionContainer}>
-          <Text style={styles.question}>{item.question}</Text>
-        </View>
-
-        {/* Options */}
-        <View style={styles.optionsContainer}>
-          {item.options?.map((option, index) => (
-            <TouchableOpacity
-              key={index}
-              style={[
-                styles.option,
-                selectedOption === option && styles.selectedOption,
-              ]}
-              onPress={() => handleOptionSelect(option)}
-            >
-              <Text
-                style={[
-                  styles.optionText,
-                  selectedOption === option && styles.selectedOptionText,
-                ]}
-              >
-                {option}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
+      <View style={styles.questionContainer}>
+        <Text style={styles.question}>{item.question}</Text>
+      </View>
+      <View style={styles.optionsContainer}>
+        {item.options?.map((option, index) => (
+          <TouchableOpacity
+            key={index}
+            activeOpacity={ACTIVE_OPACITY_WHITE}
+            style={[
+              styles.option,
+              selectedOption === option && styles.selectedOption,
+            ]}
+            onPress={() => handleOptionSelect(option)}
+          >
+            <SymbolView
+              name="rectangle.stack.fill"
+              size={20}
+              tintColor={colors.secondary}
+            />
+            <Text style={[styles.optionText]}>{option}</Text>
+          </TouchableOpacity>
+        ))}
       </View>
     </View>
   );
@@ -77,46 +60,38 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: screenWidth,
-    backgroundColor: '#FFFFFF',
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 24,
-    paddingTop: 40,
+    paddingHorizontal: 20,
   },
   questionContainer: {
-    marginBottom: 40,
+    marginBottom: 20,
   },
   question: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: '#1F2937',
-    lineHeight: 32,
+    fontSize: 20,
+    fontFamily: fontWeights.bold,
+    color: colors.text,
     textAlign: 'center',
   },
   optionsContainer: {
-    gap: 16,
+    gap: 8,
   },
   option: {
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    borderRadius: 12,
-    borderWidth: 2,
-    borderColor: '#E5E7EB',
-    backgroundColor: '#FFFFFF',
+    ...colors.dropShadow,
+    padding: 24,
+    borderRadius: 16,
+    backgroundColor: 'white',
+    borderWidth: 1,
+    borderColor: 'white',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   selectedOption: {
-    borderColor: '#3B82F6',
-    backgroundColor: '#EFF6FF',
+    borderColor: colors.primary,
+    borderWidth: 1,
   },
   optionText: {
-    fontSize: 16,
-    color: '#374151',
-    textAlign: 'center',
-    fontWeight: '500',
-  },
-  selectedOptionText: {
-    color: '#3B82F6',
-    fontWeight: '600',
+    fontSize: 15,
+    color: colors.text,
+    fontFamily: fontWeights.regular,
   },
 });
