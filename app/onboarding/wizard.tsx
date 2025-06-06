@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
 import { useFeatureFlag } from 'posthog-react-native';
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import {
   Dimensions,
   FlatList,
@@ -11,8 +11,7 @@ import {
 } from 'react-native';
 
 import LoadingScreen from '@/components/onboarding/LoadingScreen';
-import MiniResultScreen from '@/components/onboarding/MiniResultScreen';
-import PickOneHabitScreen from '@/components/onboarding/PickOneHabitScreen';
+import MatrixGrid from '@/components/onboarding/MatrixGrid';
 import ProgressBar from '@/components/onboarding/ProgressBar';
 import QuestionScreen from '@/components/onboarding/QuestionScreen';
 import Button from '@/components/shared/Button';
@@ -34,7 +33,6 @@ export default function wizard() {
   const insets = useSafeAreaInsets();
   const flatListRef = useRef<FlatList>(null);
   const variant = useFeatureFlag('onboard_variant');
-
   const {
     currentIndex,
     setVariant,
@@ -43,16 +41,13 @@ export default function wizard() {
     markStarted,
     getProgress,
     hasAnswer,
-    getAnswer,
+    calculateAndSetMatrixScores,
   } = useOnboardingStore();
-
-  // Get items based on variant
   const items = useMemo(() => {
-    if (!variant || typeof variant !== 'string') return [];
-    return getOnboardingItems(variant);
+    const actualVariant = (variant as string) || 'minimal';
+    return getOnboardingItems(actualVariant);
   }, [variant]);
 
-  // Initialize store when component mounts
   useEffect(() => {
     if (variant && typeof variant === 'string') {
       setVariant(variant);
@@ -61,12 +56,18 @@ export default function wizard() {
     }
   }, [variant, items.length, setVariant, setTotalItems, markStarted]);
 
-  // Navigate to next screen
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
+    const currentItem = items[currentIndex];
     const nextIndex = currentIndex + 1;
 
+    if (currentItem?.type === 'mini' && nextIndex < items.length) {
+      const nextItem = items[nextIndex];
+      if (nextItem?.type !== 'mini') {
+        calculateAndSetMatrixScores();
+      }
+    }
+
     if (nextIndex >= items.length) {
-      // Completed onboarding
       router.push('/onboarding/login');
       return;
     }
@@ -76,10 +77,10 @@ export default function wizard() {
       index: nextIndex,
       animated: true,
     });
-  };
+  }, [currentIndex, items, setCurrentIndex, calculateAndSetMatrixScores]);
 
   // Navigate to previous screen
-  const handlePrevious = () => {
+  const handlePrevious = useCallback(() => {
     const prevIndex = currentIndex - 1;
 
     if (prevIndex < 0) {
@@ -92,24 +93,35 @@ export default function wizard() {
       index: prevIndex,
       animated: true,
     });
-  };
+  }, [currentIndex, setCurrentIndex]);
 
   // Render individual screen based on item type
-  const renderItem = ({ item }: { item: OnboardingItem }) => {
+  const renderItem = ({
+    item,
+    index,
+  }: {
+    item: OnboardingItem;
+    index: number;
+  }) => {
     const renderContent = () => {
       switch (item.type) {
         case 'priority':
         case 'mini':
           return <QuestionScreen item={item} />;
 
-        case 'mini-result':
-          return <MiniResultScreen />;
+        case 'loading':
+          return (
+            <LoadingScreen
+              currentIndex={currentIndex}
+              key="loading-screen"
+              item={item}
+              onComplete={handleNext}
+              isActive={index === currentIndex}
+            />
+          );
 
-        case 'habit':
-          return <PickOneHabitScreen item={item} />;
-
-        case 'spinner':
-          return <LoadingScreen item={item} />;
+        case 'matrix':
+          return <MatrixGrid />;
 
         default:
           return null;
@@ -118,7 +130,7 @@ export default function wizard() {
 
     return (
       <ScrollView
-        contentContainerStyle={{ flex: 1, paddingTop: 26 }}
+        contentContainerStyle={{ paddingTop: 26 }}
         style={styles.screenContainer}
         showsVerticalScrollIndicator={false}
       >
@@ -140,21 +152,12 @@ export default function wizard() {
       case 'priority':
       case 'mini':
         // Question screens require an answer if required
-        return currentItem.required ? hasAnswer(currentItem.id) : true;
+        return hasAnswer(currentItem.id);
 
-      case 'mini-result':
-        // Result screen can always proceed
+      case 'loading':
+      case 'matrix':
+        // Loading and matrix screens can always proceed
         return true;
-
-      case 'habit':
-        // Habit screen requires both habit and frequency selection
-        const habitAnswer = getAnswer(currentItem.id) as any;
-        return habitAnswer?.selectedHabit && habitAnswer?.frequency;
-
-      case 'spinner':
-        // Spinner screen requires at least 2 preferences
-        const spinnerAnswer = getAnswer(currentItem.id) as any;
-        return spinnerAnswer?.selectedPreferences?.length >= 2;
 
       default:
         return false;
@@ -170,12 +173,14 @@ export default function wizard() {
     >
       <View style={styles.progressContainer}>
         <TouchableOpacity
-          activeOpacity={ACTIVE_OPACITY_WHITE}
           onPress={handlePrevious}
+          style={styles.backButton}
+          activeOpacity={ACTIVE_OPACITY_WHITE}
         >
           <Icon
-            source={require('@/assets/icons/arrow-narrow-left.png')}
-            size={24}
+            source={require('@/assets/icons/chevron-left.png')}
+            size={18}
+            color="black"
           />
         </TouchableOpacity>
         <ProgressBar progress={progress} />
@@ -200,13 +205,19 @@ export default function wizard() {
         style={styles.flatList}
       />
       <View style={{ height: 54, paddingHorizontal: 20 }}>
-        <Button
-          type="primary"
-          onPress={handleNext}
-          label={t('common.next')}
-          fullWidth
-          disabled={!canProceed()}
-        />
+        {items[currentIndex]?.type !== 'loading' && (
+          <Button
+            type="primary"
+            onPress={handleNext}
+            label={
+              items[currentIndex]?.type === 'matrix'
+                ? 'Get Started'
+                : t('common.next')
+            }
+            fullWidth
+            disabled={!canProceed()}
+          />
+        )}
       </View>
     </View>
   );
@@ -222,6 +233,14 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
+  },
+  backButton: {
+    backgroundColor: 'white',
+    borderRadius: 100,
+    width: 34,
+    height: 34,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   flatList: {
     flex: 1,

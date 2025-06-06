@@ -1,203 +1,281 @@
+// Simplified onboarding questions for new flow variants
+// TODO: Replace with new priority quiz and mini assessment questions
+
 import type { OnboardingItem } from '@/lib/stores/onboardingStore';
 
-// Priority Questions (used in all variants)
+// Priority Quiz Questions (4 questions with SF Symbols)
 export const priorityQuestions: OnboardingItem[] = [
   {
     id: 'priority-1',
     type: 'priority',
-    block: 'PriorityQuiz',
-    question: 'What is your main focus for building better habits?',
+    question: "What's your main goal?",
     options: [
-      'Improving my health and fitness',
-      'Being more productive at work',
-      'Better relationships with family/friends',
-      'Personal growth and learning',
+      'Build healthy habits',
+      'Break bad habits',
+      'Boost productivity',
+      'Find life balance',
     ],
-    required: true,
+    optionIcons: ['heart.fill', 'xmark.circle.fill', 'bolt.fill', 'scale.3d'],
   },
   {
     id: 'priority-2',
     type: 'priority',
-    block: 'PriorityQuiz',
-    question: 'When do you find it easiest to stick to new habits?',
+    question: 'What usually stops you?',
     options: [
-      'First thing in the morning',
-      'During lunch breaks',
-      'Right after work',
-      'Before going to bed',
+      'Lack of motivation',
+      'Too busy/no time',
+      "Don't know how to start",
+      "Can't stay consistent",
     ],
-    required: true,
+    optionIcons: [
+      'battery.25',
+      'clock.fill',
+      'questionmark.circle.fill',
+      'arrow.3.trianglepath',
+    ],
   },
   {
     id: 'priority-3',
     type: 'priority',
-    block: 'PriorityQuiz',
-    question: 'What usually prevents you from maintaining habits?',
+    question: 'When do you feel most focused?',
     options: [
-      'Forgetting to do them',
-      'Lack of motivation',
-      'Too busy/no time',
-      'Results take too long to see',
+      'Early morning (5-9 AM)',
+      'Mid-day (9 AM-2 PM)',
+      'Evening (2-8 PM)',
+      'Night (8 PM+)',
     ],
-    required: true,
+    optionIcons: [
+      'sunrise.fill',
+      'sun.max.fill',
+      'sunset.fill',
+      'moon.stars.fill',
+    ],
   },
   {
     id: 'priority-4',
     type: 'priority',
-    block: 'PriorityQuiz',
-    question: 'How do you prefer to track your progress?',
+    question: 'How do you prefer to track progress?',
     options: [
-      'Simple checkmarks/streaks',
-      'Detailed metrics and charts',
-      'Visual progress indicators',
-      'Social sharing and accountability',
+      'Simple streaks',
+      'Detailed statistics',
+      'Visual achievements',
+      'Quick check-ins',
     ],
-    required: true,
+    optionIcons: [
+      'flame.fill',
+      'chart.bar.fill',
+      'star.circle.fill',
+      'checkmark.circle.fill',
+    ],
   },
 ];
 
-// Mini Assessment Questions (2 per category)
+// Mini Assessment Questions (10 Likert questions - 2 per category)
 export const miniAssessmentQuestions: OnboardingItem[] = [
-  // Motivation questions
+  // Vitality (cat1)
   {
-    id: 'mini-motivation-1',
+    id: 'mini-vitality-1',
     type: 'mini',
-    block: 'MiniAssessment',
-    question: 'I feel energized about making positive changes in my life',
+    question: 'How would you rate your energy levels?',
     options: [
-      'Strongly Disagree',
-      'Disagree',
-      'Neutral',
-      'Agree',
-      'Strongly Agree',
+      'Always tired',
+      'Often low energy',
+      'Usually energized',
+      'Full of energy',
     ],
-    required: true,
+    optionIcons: ['battery.0', 'battery.25', 'battery.75', 'battery.100'],
   },
   {
-    id: 'mini-motivation-2',
+    id: 'mini-vitality-2',
     type: 'mini',
-    block: 'MiniAssessment',
-    question: 'I have clear reasons for wanting to build new habits',
+    question: 'How consistent is your sleep schedule?',
     options: [
-      'Strongly Disagree',
-      'Disagree',
-      'Neutral',
-      'Agree',
-      'Strongly Agree',
+      'Very irregular',
+      'Somewhat irregular',
+      'Mostly consistent',
+      'Very consistent',
     ],
-    required: true,
-  },
-
-  // Consistency questions
-  {
-    id: 'mini-consistency-1',
-    type: 'mini',
-    block: 'MiniAssessment',
-    question: 'I typically follow through on commitments I make to myself',
-    options: [
-      'Strongly Disagree',
-      'Disagree',
-      'Neutral',
-      'Agree',
-      'Strongly Agree',
+    optionIcons: [
+      'moon.zzz.fill',
+      'moon.circle.fill',
+      'bed.double.circle.fill',
+      'alarm.fill',
     ],
-    required: true,
-  },
-  {
-    id: 'mini-consistency-2',
-    type: 'mini',
-    block: 'MiniAssessment',
-    question: "I can maintain routines even when I don't feel like it",
-    options: [
-      'Strongly Disagree',
-      'Disagree',
-      'Neutral',
-      'Agree',
-      'Strongly Agree',
-    ],
-    required: true,
   },
 
-  // Goals questions
+  // Wisdom (cat2)
   {
-    id: 'mini-goals-1',
+    id: 'mini-wisdom-1',
     type: 'mini',
-    block: 'MiniAssessment',
-    question: 'I have specific, measurable goals for my habits',
-    options: [
-      'Strongly Disagree',
-      'Disagree',
-      'Neutral',
-      'Agree',
-      'Strongly Agree',
+    question: 'How often do you learn something new?',
+    options: ['Rarely', 'Sometimes', 'Often', 'Daily'],
+    optionIcons: [
+      'book.closed.fill',
+      'book.circle.fill',
+      'graduationcap.fill',
+      'brain.head.profile',
     ],
-    required: true,
   },
   {
-    id: 'mini-goals-2',
+    id: 'mini-wisdom-2',
     type: 'mini',
-    block: 'MiniAssessment',
-    question: 'I regularly review and adjust my goals based on progress',
+    question: 'How well can you focus on tasks?',
     options: [
-      'Strongly Disagree',
-      'Disagree',
-      'Neutral',
-      'Agree',
-      'Strongly Agree',
+      'Very easily distracted',
+      'Sometimes distracted',
+      'Usually focused',
+      'Laser focused',
     ],
-    required: true,
+    optionIcons: [
+      'iphone.circle.fill',
+      'eye.slash.fill',
+      'eye.circle.fill',
+      'target',
+    ],
+  },
+
+  // Harmony (cat3)
+  {
+    id: 'mini-harmony-1',
+    type: 'mini',
+    question: 'How strong are your relationships?',
+    options: [
+      'Need improvement',
+      'Could be better',
+      'Pretty good',
+      'Very strong',
+    ],
+    optionIcons: [
+      'person.slash.fill',
+      'person.circle.fill',
+      'person.2.circle.fill',
+      'heart.circle.fill',
+    ],
+  },
+  {
+    id: 'mini-harmony-2',
+    type: 'mini',
+    question: 'How much time do you spend with loved ones?',
+    options: ['Not enough', 'Could be more', 'Good amount', 'Plenty of time'],
+    optionIcons: [
+      'clock.badge.exclamationmark.fill',
+      'clock.circle.fill',
+      'person.3.fill',
+      'house.fill',
+    ],
+  },
+
+  // Spirit (cat4)
+  {
+    id: 'mini-spirit-1',
+    type: 'mini',
+    question: 'How well do you handle stress?',
+    options: [
+      'Struggle a lot',
+      'Sometimes struggle',
+      'Handle it well',
+      'Very resilient',
+    ],
+    optionIcons: [
+      'exclamationmark.triangle.fill',
+      'face.dashed.fill',
+      'leaf.circle.fill',
+      'figure.mind.and.body',
+    ],
+  },
+  {
+    id: 'mini-spirit-2',
+    type: 'mini',
+    question: 'How often do you practice mindfulness?',
+    options: ['Never', 'Occasionally', 'Regularly', 'Daily practice'],
+    optionIcons: [
+      'xmark.circle.fill',
+      'moon.circle.fill',
+      'leaf.arrow.circlepath',
+      'figure.mind.and.body',
+    ],
+  },
+
+  // Ambition (cat5)
+  {
+    id: 'mini-ambition-1',
+    type: 'mini',
+    question: 'How organized do you feel?',
+    options: [
+      'Very disorganized',
+      'Somewhat messy',
+      'Pretty organized',
+      'Highly organized',
+    ],
+    optionIcons: [
+      'tornado',
+      'questionmark.folder.fill',
+      'folder.fill',
+      'archivebox.fill',
+    ],
+  },
+  {
+    id: 'mini-ambition-2',
+    type: 'mini',
+    question: 'How often do you achieve your goals?',
+    options: [
+      'Rarely finish',
+      'Sometimes finish',
+      'Usually finish',
+      'Always finish',
+    ],
+    optionIcons: [
+      'flag.slash.fill',
+      'flag.circle.fill',
+      'checkmark.circle.fill',
+      'trophy.fill',
+    ],
   },
 ];
 
-// Custom screens (not questions)
+// Loading and Matrix screens
 export const customScreens: OnboardingItem[] = [
   {
-    id: 'mini-result',
-    type: 'mini-result',
-    block: 'MiniAssessment',
-    isCustomScreen: true,
+    id: 'loading',
+    type: 'loading',
+    required: false,
   },
   {
-    id: 'pick-habit',
-    type: 'habit',
-    block: 'PickOneHabit',
-    isCustomScreen: true,
-  },
-  {
-    id: 'spinner-tailor',
-    type: 'spinner',
-    block: 'SpinnerTailor',
-    isCustomScreen: true,
+    id: 'matrix-grid',
+    type: 'matrix',
+    required: false,
   },
 ];
 
-// Variant configurations
-export const variantConfigs = {
-  'fast-lane': {
-    blocks: ['PriorityQuiz'],
-    items: [...priorityQuestions],
+// Flow Variant Configurations
+export const flowVariants = {
+  minimal: {
+    name: 'minimal',
+    items: [
+      ...priorityQuestions,
+      customScreens.find((s) => s.id === 'loading')!,
+    ],
   },
-  'insight-path': {
-    blocks: ['PriorityQuiz', 'MiniAssessment', 'SpinnerTailor'],
+  medium: {
+    name: 'medium',
     items: [
       ...priorityQuestions,
       ...miniAssessmentQuestions,
-      customScreens.find((s) => s.id === 'mini-result')!,
-      customScreens.find((s) => s.id === 'spinner-tailor')!,
+      customScreens.find((s) => s.id === 'loading')!,
     ],
   },
-  'commitment-path': {
-    blocks: ['MiniAssessment', 'PickOneHabit', 'SpinnerTailor'],
+  maximum: {
+    name: 'maximum',
     items: [
+      ...priorityQuestions,
       ...miniAssessmentQuestions,
-      customScreens.find((s) => s.id === 'mini-result')!,
-      customScreens.find((s) => s.id === 'pick-habit')!,
-      customScreens.find((s) => s.id === 'spinner-tailor')!,
+      customScreens.find((s) => s.id === 'loading')!,
+      customScreens.find((s) => s.id === 'matrix-grid')!,
     ],
   },
 } as const;
 
 export function getOnboardingItems(variant: string): OnboardingItem[] {
-  const config = variantConfigs[variant as keyof typeof variantConfigs];
-  return config ? [...config.items] : [];
+  const config = flowVariants[variant as keyof typeof flowVariants];
+  return [...(config?.items || flowVariants.minimal.items)]; // Default to minimal
 }

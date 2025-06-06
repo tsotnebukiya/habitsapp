@@ -44,9 +44,12 @@ export default function QuestionScreen({ item }: { item: OnboardingItem }) {
             onPress={() => handleOptionSelect(option)}
           >
             <SymbolView
-              name="rectangle.stack.fill"
+              name={(item.optionIcons?.[index] || 'circle.fill') as any}
               size={20}
-              tintColor={colors.secondary}
+              style={{ opacity: selectedOption === option ? 1 : 0.7 }}
+              tintColor={
+                selectedOption === option ? colors.primary : colors.text
+              }
             />
             <Text style={[styles.optionText]}>{option}</Text>
           </TouchableOpacity>
@@ -64,6 +67,7 @@ const styles = StyleSheet.create({
   },
   questionContainer: {
     marginBottom: 20,
+    alignItems: 'center',
   },
   question: {
     fontSize: 20,

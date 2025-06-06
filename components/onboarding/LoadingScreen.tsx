@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Dimensions, Image, StyleSheet, Text, View } from 'react-native';
 
 import { fontWeights } from '@/lib/constants/ui';
@@ -13,13 +13,27 @@ const strings = [
   'Almost ready...',
 ];
 
-// Option 3: Progress Messages with typewriter effect
-function ProgressMessages() {
+// Progress Messages with typewriter effect
+function ProgressMessages({
+  onComplete,
+  isActive,
+  currentIndexList,
+}: {
+  onComplete?: () => void;
+  isActive?: boolean;
+  currentIndexList?: number;
+}) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [displayText, setDisplayText] = useState('');
   const [isTyping, setIsTyping] = useState(true);
-
+  const [hasCompleted, setHasCompleted] = useState(false);
+  const onCompleteCalledRef = useRef(false);
+  console.log('WEAREHEREOUTSIDE', currentIndexList);
   useEffect(() => {
+    // Only run if this screen is active and hasn't completed yet
+    console.log('WEAREHEREINSIDE', currentIndexList);
+    if (!isActive || hasCompleted || onCompleteCalledRef.current) return;
+    console.log('WEAREHERE', currentIndexList);
     const currentString = strings[currentIndex];
 
     if (isTyping) {
@@ -32,18 +46,45 @@ function ProgressMessages() {
         } else {
           clearInterval(typeInterval);
           setIsTyping(false);
-          // Wait before moving to next message
-          setTimeout(() => {
-            setCurrentIndex((prev) => (prev + 1) % strings.length);
+
+          // Wait before moving to next message or completing
+          const waitTimeout = setTimeout(() => {
+            // If this was the last message, complete the sequencer
+            if (currentIndex === strings.length - 1) {
+              if (!onCompleteCalledRef.current) {
+                onCompleteCalledRef.current = true;
+                setHasCompleted(true);
+                onComplete?.();
+              }
+              return;
+            }
+
+            // Otherwise, move to next message
+            const nextIndex = currentIndex + 1;
+            setCurrentIndex(nextIndex);
             setDisplayText('');
             setIsTyping(true);
           }, 1500);
+
+          // Cleanup timeout if component unmounts
+          return () => clearTimeout(waitTimeout);
         }
       }, 50);
 
       return () => clearInterval(typeInterval);
     }
-  }, [currentIndex, isTyping]);
+  }, [currentIndex, isTyping, onComplete, hasCompleted, isActive]);
+
+  // Reset when becoming active again
+  useEffect(() => {
+    if (isActive && hasCompleted) {
+      setCurrentIndex(0);
+      setDisplayText('');
+      setIsTyping(true);
+      setHasCompleted(false);
+      onCompleteCalledRef.current = false;
+    }
+  }, [isActive, hasCompleted]);
 
   return (
     <View style={styles.textContainer}>
@@ -55,16 +96,30 @@ function ProgressMessages() {
   );
 }
 
-export default function LoadingScreen({ item }: { item: OnboardingItem }) {
-  // You can switch between these three options by changing the component below
+interface LoadingScreenProps {
+  item: OnboardingItem;
+  onComplete?: () => void;
+  isActive?: boolean;
+  currentIndex?: number;
+}
 
+export default function LoadingScreen({
+  item,
+  onComplete,
+  isActive = true,
+  currentIndex,
+}: LoadingScreenProps) {
   return (
     <View style={styles.container}>
       <Image
         source={require('@/assets/onboarding/loading.gif')}
         style={styles.gif}
       />
-      <ProgressMessages />
+      <ProgressMessages
+        onComplete={onComplete}
+        isActive={isActive}
+        currentIndexList={currentIndex}
+      />
     </View>
   );
 }
