@@ -2,7 +2,7 @@
 
 ## Current Development Status
 
-HabitsApp is a fully functional habit tracking application with core features implemented and operational. Recent major updates include a comprehensive dependency update with Facebook SDK integration, iOS widget system overhaul with configurable widgets, achievement system improvements, UI simplification, and store review integration.
+HabitsLab is a fully functional habit tracking application with core features implemented and operational. Recent major updates include a comprehensive dependency update with Facebook SDK integration, iOS widget system overhaul with configurable widgets, achievement system improvements, UI simplification, and store review integration.
 
 ## Recently Completed Major Work ✅
 

@@ -3,9 +3,11 @@ import { create } from 'zustand';
 // Simplified types for new onboarding flows
 export interface Question {
   id: string;
-  type: 'priority' | 'mini' | 'loading' | 'matrix';
+  type: 'priority' | 'mini' | 'loading' | 'matrix' | 'value';
   question?: string;
+  questionKey?: string;
   options?: string[];
+  optionKeys?: string[];
   optionIcons?: string[];
   required?: boolean;
 }
@@ -32,27 +34,37 @@ export function calculateMatrixScores(
     miniAssessmentQuestions,
   } = require('@/lib/constants/onboardingQuestions');
 
-  // Helper to get score from answer text by finding its index in options
-  const getScoreFromAnswer = (questionId: string, answer: string): number => {
+  // Helper to get score from answer (either text or index)
+  const getScoreFromAnswer = (
+    questionId: string,
+    answer: AnswerValue
+  ): number => {
     const question = miniAssessmentQuestions.find(
       (q: any) => q.id === questionId
     );
     if (!question || !question.options) return 1; // Default score
 
-    const optionIndex = question.options.indexOf(answer);
-    if (optionIndex === -1) return 1; // Default if answer not found
+    // If answer is already a number (index), use it directly
+    if (typeof answer === 'number') {
+      return Math.max(0, Math.min(3, answer)); // Ensure it's in 0-3 range
+    }
 
-    // Options go from worst (index 0) to best (index 3)
-    // Return the index as the score (0-3 scale)
-    return optionIndex;
+    // If answer is a string, find its index in options (backward compatibility)
+    if (typeof answer === 'string') {
+      const optionIndex = question.options.indexOf(answer);
+      if (optionIndex === -1) return 1; // Default if answer not found
+      return optionIndex;
+    }
+
+    return 1; // Default score for other types
   };
 
   // Calculate average score for each category (2 questions per category)
   const calculateCategoryScore = (questionIds: string[]): number => {
     const scores = questionIds
       .map((id) => {
-        const answer = answers[id] as string;
-        return answer ? getScoreFromAnswer(id, answer) : null;
+        const answer = answers[id];
+        return answer !== undefined ? getScoreFromAnswer(id, answer) : null;
       })
       .filter((score): score is number => score !== null);
 
@@ -93,7 +105,7 @@ export function calculateMatrixScores(
   };
 }
 
-export type AnswerValue = string | string[];
+export type AnswerValue = string | string[] | number;
 
 export interface OnboardingState {
   variant: string | null;

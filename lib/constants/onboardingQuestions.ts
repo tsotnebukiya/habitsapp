@@ -8,24 +8,24 @@ export const priorityQuestions: OnboardingItem[] = [
   {
     id: 'priority-1',
     type: 'priority',
-    question: "What's your main goal?",
-    options: [
-      'Build healthy habits',
-      'Break bad habits',
-      'Boost productivity',
-      'Find life balance',
+    questionKey: 'onboarding.questions.priority.question1.question',
+    optionKeys: [
+      'onboarding.questions.priority.question1.options.option1',
+      'onboarding.questions.priority.question1.options.option2',
+      'onboarding.questions.priority.question1.options.option3',
+      'onboarding.questions.priority.question1.options.option4',
     ],
     optionIcons: ['heart.fill', 'xmark.circle.fill', 'bolt.fill', 'scale.3d'],
   },
   {
     id: 'priority-2',
     type: 'priority',
-    question: 'What usually stops you?',
-    options: [
-      'Lack of motivation',
-      'Too busy/no time',
-      "Don't know how to start",
-      "Can't stay consistent",
+    questionKey: 'onboarding.questions.priority.question2.question',
+    optionKeys: [
+      'onboarding.questions.priority.question2.options.option1',
+      'onboarding.questions.priority.question2.options.option2',
+      'onboarding.questions.priority.question2.options.option3',
+      'onboarding.questions.priority.question2.options.option4',
     ],
     optionIcons: [
       'battery.25',
@@ -37,12 +37,12 @@ export const priorityQuestions: OnboardingItem[] = [
   {
     id: 'priority-3',
     type: 'priority',
-    question: 'When do you feel most focused?',
-    options: [
-      'Early morning (5-9 AM)',
-      'Mid-day (9 AM-2 PM)',
-      'Evening (2-8 PM)',
-      'Night (8 PM+)',
+    questionKey: 'onboarding.questions.priority.question3.question',
+    optionKeys: [
+      'onboarding.questions.priority.question3.options.option1',
+      'onboarding.questions.priority.question3.options.option2',
+      'onboarding.questions.priority.question3.options.option3',
+      'onboarding.questions.priority.question3.options.option4',
     ],
     optionIcons: [
       'sunrise.fill',
@@ -54,12 +54,12 @@ export const priorityQuestions: OnboardingItem[] = [
   {
     id: 'priority-4',
     type: 'priority',
-    question: 'How do you prefer to track progress?',
-    options: [
-      'Simple streaks',
-      'Detailed statistics',
-      'Visual achievements',
-      'Quick check-ins',
+    questionKey: 'onboarding.questions.priority.question4.question',
+    optionKeys: [
+      'onboarding.questions.priority.question4.options.option1',
+      'onboarding.questions.priority.question4.options.option2',
+      'onboarding.questions.priority.question4.options.option3',
+      'onboarding.questions.priority.question4.options.option4',
     ],
     optionIcons: [
       'flame.fill',
@@ -76,24 +76,24 @@ export const miniAssessmentQuestions: OnboardingItem[] = [
   {
     id: 'mini-vitality-1',
     type: 'mini',
-    question: 'How would you rate your energy levels?',
-    options: [
-      'Always tired',
-      'Often low energy',
-      'Usually energized',
-      'Full of energy',
+    questionKey: 'onboarding.questions.mini.vitality1.question',
+    optionKeys: [
+      'onboarding.questions.mini.vitality1.options.option1',
+      'onboarding.questions.mini.vitality1.options.option2',
+      'onboarding.questions.mini.vitality1.options.option3',
+      'onboarding.questions.mini.vitality1.options.option4',
     ],
     optionIcons: ['battery.0', 'battery.25', 'battery.75', 'battery.100'],
   },
   {
     id: 'mini-vitality-2',
     type: 'mini',
-    question: 'How consistent is your sleep schedule?',
-    options: [
-      'Very irregular',
-      'Somewhat irregular',
-      'Mostly consistent',
-      'Very consistent',
+    questionKey: 'onboarding.questions.mini.vitality2.question',
+    optionKeys: [
+      'onboarding.questions.mini.vitality2.options.option1',
+      'onboarding.questions.mini.vitality2.options.option2',
+      'onboarding.questions.mini.vitality2.options.option3',
+      'onboarding.questions.mini.vitality2.options.option4',
     ],
     optionIcons: [
       'moon.zzz.fill',
@@ -107,8 +107,13 @@ export const miniAssessmentQuestions: OnboardingItem[] = [
   {
     id: 'mini-wisdom-1',
     type: 'mini',
-    question: 'How often do you learn something new?',
-    options: ['Rarely', 'Sometimes', 'Often', 'Daily'],
+    questionKey: 'onboarding.questions.mini.wisdom1.question',
+    optionKeys: [
+      'onboarding.questions.mini.wisdom1.options.option1',
+      'onboarding.questions.mini.wisdom1.options.option2',
+      'onboarding.questions.mini.wisdom1.options.option3',
+      'onboarding.questions.mini.wisdom1.options.option4',
+    ],
     optionIcons: [
       'book.closed.fill',
       'book.circle.fill',
@@ -119,12 +124,12 @@ export const miniAssessmentQuestions: OnboardingItem[] = [
   {
     id: 'mini-wisdom-2',
     type: 'mini',
-    question: 'How well can you focus on tasks?',
-    options: [
-      'Very easily distracted',
-      'Sometimes distracted',
-      'Usually focused',
-      'Laser focused',
+    questionKey: 'onboarding.questions.mini.wisdom2.question',
+    optionKeys: [
+      'onboarding.questions.mini.wisdom2.options.option1',
+      'onboarding.questions.mini.wisdom2.options.option2',
+      'onboarding.questions.mini.wisdom2.options.option3',
+      'onboarding.questions.mini.wisdom2.options.option4',
     ],
     optionIcons: [
       'iphone.circle.fill',
@@ -138,12 +143,12 @@ export const miniAssessmentQuestions: OnboardingItem[] = [
   {
     id: 'mini-harmony-1',
     type: 'mini',
-    question: 'How strong are your relationships?',
-    options: [
-      'Need improvement',
-      'Could be better',
-      'Pretty good',
-      'Very strong',
+    questionKey: 'onboarding.questions.mini.harmony1.question',
+    optionKeys: [
+      'onboarding.questions.mini.harmony1.options.option1',
+      'onboarding.questions.mini.harmony1.options.option2',
+      'onboarding.questions.mini.harmony1.options.option3',
+      'onboarding.questions.mini.harmony1.options.option4',
     ],
     optionIcons: [
       'person.slash.fill',
@@ -155,8 +160,13 @@ export const miniAssessmentQuestions: OnboardingItem[] = [
   {
     id: 'mini-harmony-2',
     type: 'mini',
-    question: 'How much time do you spend with loved ones?',
-    options: ['Not enough', 'Could be more', 'Good amount', 'Plenty of time'],
+    questionKey: 'onboarding.questions.mini.harmony2.question',
+    optionKeys: [
+      'onboarding.questions.mini.harmony2.options.option1',
+      'onboarding.questions.mini.harmony2.options.option2',
+      'onboarding.questions.mini.harmony2.options.option3',
+      'onboarding.questions.mini.harmony2.options.option4',
+    ],
     optionIcons: [
       'clock.badge.exclamationmark.fill',
       'clock.circle.fill',
@@ -169,12 +179,12 @@ export const miniAssessmentQuestions: OnboardingItem[] = [
   {
     id: 'mini-spirit-1',
     type: 'mini',
-    question: 'How well do you handle stress?',
-    options: [
-      'Struggle a lot',
-      'Sometimes struggle',
-      'Handle it well',
-      'Very resilient',
+    questionKey: 'onboarding.questions.mini.spirit1.question',
+    optionKeys: [
+      'onboarding.questions.mini.spirit1.options.option1',
+      'onboarding.questions.mini.spirit1.options.option2',
+      'onboarding.questions.mini.spirit1.options.option3',
+      'onboarding.questions.mini.spirit1.options.option4',
     ],
     optionIcons: [
       'exclamationmark.triangle.fill',
@@ -186,8 +196,13 @@ export const miniAssessmentQuestions: OnboardingItem[] = [
   {
     id: 'mini-spirit-2',
     type: 'mini',
-    question: 'How often do you practice mindfulness?',
-    options: ['Never', 'Occasionally', 'Regularly', 'Daily practice'],
+    questionKey: 'onboarding.questions.mini.spirit2.question',
+    optionKeys: [
+      'onboarding.questions.mini.spirit2.options.option1',
+      'onboarding.questions.mini.spirit2.options.option2',
+      'onboarding.questions.mini.spirit2.options.option3',
+      'onboarding.questions.mini.spirit2.options.option4',
+    ],
     optionIcons: [
       'xmark.circle.fill',
       'moon.circle.fill',
@@ -200,12 +215,12 @@ export const miniAssessmentQuestions: OnboardingItem[] = [
   {
     id: 'mini-ambition-1',
     type: 'mini',
-    question: 'How organized do you feel?',
-    options: [
-      'Very disorganized',
-      'Somewhat messy',
-      'Pretty organized',
-      'Highly organized',
+    questionKey: 'onboarding.questions.mini.ambition1.question',
+    optionKeys: [
+      'onboarding.questions.mini.ambition1.options.option1',
+      'onboarding.questions.mini.ambition1.options.option2',
+      'onboarding.questions.mini.ambition1.options.option3',
+      'onboarding.questions.mini.ambition1.options.option4',
     ],
     optionIcons: [
       'tornado',
@@ -217,12 +232,12 @@ export const miniAssessmentQuestions: OnboardingItem[] = [
   {
     id: 'mini-ambition-2',
     type: 'mini',
-    question: 'How often do you achieve your goals?',
-    options: [
-      'Rarely finish',
-      'Sometimes finish',
-      'Usually finish',
-      'Always finish',
+    questionKey: 'onboarding.questions.mini.ambition2.question',
+    optionKeys: [
+      'onboarding.questions.mini.ambition2.options.option1',
+      'onboarding.questions.mini.ambition2.options.option2',
+      'onboarding.questions.mini.ambition2.options.option3',
+      'onboarding.questions.mini.ambition2.options.option4',
     ],
     optionIcons: [
       'flag.slash.fill',
@@ -245,37 +260,61 @@ export const customScreens: OnboardingItem[] = [
     type: 'matrix',
     required: false,
   },
+  {
+    id: 'what-youll-get',
+    type: 'value',
+    required: false,
+  },
 ];
 
 // Flow Variant Configurations
 export const flowVariants = {
-  minimal: {
-    name: 'minimal',
+  quick: {
+    name: 'quick',
+    description: 'Priority questions only',
     items: [
       ...priorityQuestions,
       customScreens.find((s) => s.id === 'loading')!,
     ],
   },
-  medium: {
-    name: 'medium',
+  standard: {
+    name: 'standard',
+    description: 'Priority + mini assessment',
     items: [
       ...priorityQuestions,
       ...miniAssessmentQuestions,
       customScreens.find((s) => s.id === 'loading')!,
     ],
   },
-  maximum: {
-    name: 'maximum',
+  preview: {
+    name: 'preview',
+    description: 'Priority + value preview',
+    items: [
+      ...priorityQuestions,
+      customScreens.find((s) => s.id === 'loading')!,
+      customScreens.find((s) => s.id === 'what-youll-get')!,
+    ],
+  },
+  complete: {
+    name: 'complete',
+    description: 'Full assessment + matrix + value',
     items: [
       ...priorityQuestions,
       ...miniAssessmentQuestions,
       customScreens.find((s) => s.id === 'loading')!,
       customScreens.find((s) => s.id === 'matrix-grid')!,
+      customScreens.find((s) => s.id === 'what-youll-get')!,
     ],
   },
 } as const;
 
+// Suggested A/B Testing Distribution:
+// quick: 30% - Test speed vs engagement
+// standard: 25% - Current baseline
+// preview: 25% - Test value prop impact
+// complete: 20% - Full experience for engaged users
+
 export function getOnboardingItems(variant: string): OnboardingItem[] {
   const config = flowVariants[variant as keyof typeof flowVariants];
-  return [...(config?.items || flowVariants.minimal.items)]; // Default to minimal
+  return [...(config?.items || flowVariants.quick.items)]; // Default to quick
 }

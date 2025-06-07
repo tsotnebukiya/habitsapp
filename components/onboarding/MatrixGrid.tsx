@@ -3,11 +3,65 @@ import { colors, fontWeights } from '@/lib/constants/ui';
 import { useOnboardingStore } from '@/lib/stores/onboardingStore';
 import { SymbolView } from 'expo-symbols';
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import Svg, { Circle } from 'react-native-svg';
 
 const { width: screenWidth } = Dimensions.get('window');
 
+// Progress Ring Component
+function ProgressRing({
+  score,
+  size = 60,
+  strokeWidth = 6,
+  color = colors.primary,
+}: {
+  score: number;
+  size?: number;
+  strokeWidth?: number;
+  color?: string;
+}) {
+  const radius = (size - strokeWidth) / 2;
+  const circumference = radius * 2 * Math.PI;
+  const progress = Math.max(0, Math.min(100, score)) / 100;
+  const strokeDasharray = circumference;
+  const strokeDashoffset = circumference - progress * circumference;
+
+  return (
+    <View style={{ width: size, height: size }}>
+      <Svg width={size} height={size} style={{ position: 'absolute' }}>
+        {/* Background circle */}
+        <Circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          stroke={colors.border}
+          strokeWidth={strokeWidth}
+          fill="transparent"
+        />
+        {/* Progress circle */}
+        <Circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          stroke={color}
+          strokeWidth={strokeWidth}
+          fill="transparent"
+          strokeDasharray={strokeDasharray}
+          strokeDashoffset={strokeDashoffset}
+          strokeLinecap="round"
+          transform={`rotate(-90 ${size / 2} ${size / 2})`}
+        />
+      </Svg>
+      <View style={styles.scoreInRing}>
+        <Text style={[styles.ringScore, { color }]}>{score}</Text>
+      </View>
+    </View>
+  );
+}
+
 export default function MatrixGrid() {
+  const { t } = useTranslation();
   const { getMatrixScores } = useOnboardingStore();
 
   const matrixScores = getMatrixScores();
@@ -36,17 +90,27 @@ export default function MatrixGrid() {
   const strongestCategory = CATEGORIES.find((c) => c.id === strongest.category);
   const weakestCategory = CATEGORIES.find((c) => c.id === weakest.category);
 
-  // Calculate improvement potential (realistic 15-20 point boost)
-  const improvementPotential = Math.min(20, 70 - weakest.score);
+  // Calculate percentile (mock data for demo)
+  const getPercentile = (score: number) => {
+    if (score >= 70) return 85;
+    if (score >= 60) return 75;
+    if (score >= 50) return 65;
+    if (score >= 40) return 55;
+    return 45;
+  };
 
-  // Get improvement suggestions based on weakest area
+  // Get improvement potential
+  const improvementPotential = Math.min(15, 85 - weakest.score);
+  const targetScore = weakest.score + improvementPotential;
+
+  // Get improvement suggestions
   const getImprovementSuggestion = (categoryId: string) => {
     const suggestions = {
-      cat1: 'Just 20 minutes of daily movement could boost this by 15 points',
-      cat2: '15 minutes of daily learning could increase this by 18 points',
-      cat3: 'Weekly friend check-ins could improve this by 12 points',
-      cat4: '5 minutes of daily meditation could raise this by 16 points',
-      cat5: 'Daily goal-setting could boost this by 14 points',
+      cat1: 'Adding 2 movement habits',
+      cat2: 'Daily 15-min learning',
+      cat3: 'Weekly friend check-ins',
+      cat4: 'Daily 5-min meditation',
+      cat5: 'Morning goal-setting',
     };
     return suggestions[categoryId as keyof typeof suggestions];
   };
@@ -54,8 +118,8 @@ export default function MatrixGrid() {
   return (
     <View style={styles.container}>
       {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Your Life Balance Snapshot</Text>
+      <View style={styles.questionContainer}>
+        <Text style={styles.question}>{t('onboarding.matrix.title')}</Text>
       </View>
 
       {/* Score Grid */}
@@ -91,19 +155,28 @@ export default function MatrixGrid() {
                 </Text>
               </View>
 
-              <Text style={[styles.score, { color: category.display.number }]}>
-                {score}
-              </Text>
+              <View style={styles.progressContainer}>
+                <ProgressRing
+                  score={score}
+                  size={50}
+                  strokeWidth={4}
+                  color={category.display.number}
+                />
+              </View>
 
               {isStrongest && (
                 <View style={styles.badge}>
-                  <Text style={styles.badgeText}>💪 Superpower</Text>
+                  <Text style={styles.badgeText}>
+                    {t('onboarding.matrix.badges.strong')}
+                  </Text>
                 </View>
               )}
 
               {isWeakest && (
                 <View style={[styles.badge, styles.opportunityBadge]}>
-                  <Text style={styles.badgeText}>🎯 Quick Win</Text>
+                  <Text style={styles.badgeText}>
+                    {t('onboarding.matrix.badges.focus')}
+                  </Text>
                 </View>
               )}
             </View>
@@ -111,24 +184,24 @@ export default function MatrixGrid() {
         })}
       </View>
 
-      {/* Insights Summary */}
-      <View style={styles.summarySection}>
+      {/* Habit-Focused Summary */}
+      <View style={styles.summaryContainer}>
         <View style={styles.summaryCard}>
-          <Text style={styles.summaryTitle}>
-            💪 Your Superpower: {strongestCategory?.name} ({strongest.score}/70)
+          <Text style={styles.insightTitle}>
+            {t('onboarding.matrix.insights.startWith')}{' '}
+            <Text style={styles.highlightWeak}>
+              {weakestCategory?.name} {t('onboarding.matrix.insights.habits')}
+            </Text>
           </Text>
-          <Text style={styles.summarySubtitle}>
-            You're already excelling at{' '}
-            {strongestCategory?.description.toLowerCase()}!
-          </Text>
-        </View>
-
-        <View style={styles.summaryCard}>
-          <Text style={styles.summaryTitle}>
-            🎯 Growth Opportunity: {weakestCategory?.name} ({weakest.score}/70)
-          </Text>
-          <Text style={styles.summarySubtitle}>
-            {getImprovementSuggestion(weakest.category)}
+          <Text style={styles.insightSubtitle}>
+            {t('onboarding.matrix.insights.alreadyStrong')}{' '}
+            <Text style={styles.highlightStrong}>
+              {strongestCategory?.name}
+            </Text>
+            ,{' '}
+            {t('onboarding.matrix.insights.focusingSuffix', {
+              category: weakestCategory?.name.toLowerCase(),
+            })}
           </Text>
         </View>
       </View>
@@ -141,15 +214,11 @@ const styles = StyleSheet.create({
     width: screenWidth,
     paddingHorizontal: 20,
   },
-  header: {
+  questionContainer: {
+    marginBottom: 20,
     alignItems: 'center',
-    marginBottom: 24,
   },
-  headerEmoji: {
-    fontSize: 32,
-    marginBottom: 8,
-  },
-  title: {
+  question: {
     fontSize: 20,
     fontFamily: fontWeights.bold,
     color: colors.text,
@@ -158,79 +227,105 @@ const styles = StyleSheet.create({
   scoreGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 12,
-    marginBottom: 24,
+    gap: 8,
+    marginBottom: 20,
     justifyContent: 'space-between',
   },
   scoreCard: {
-    width: (screenWidth - 64) / 2, // 2 cards per row with gaps
+    width: (screenWidth - 56) / 2,
     padding: 16,
     borderRadius: 16,
     minHeight: 100,
     justifyContent: 'space-between',
     position: 'relative',
+    alignItems: 'center',
   },
   strongestCard: {
     borderWidth: 2,
-    borderColor: '#4CAF50',
+    borderColor: colors.primary,
   },
   weakestCard: {
     borderWidth: 2,
-    borderColor: '#FF9800',
+    borderColor: colors.accent,
   },
   scoreCardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
     marginBottom: 8,
+    alignSelf: 'flex-start',
   },
   categoryName: {
-    fontSize: 15,
+    fontSize: 16,
     fontFamily: fontWeights.semibold,
   },
-  score: {
-    fontSize: 28,
+  progressContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  scoreInRing: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  ringScore: {
+    fontSize: 16,
     fontFamily: fontWeights.bold,
-    textAlign: 'center',
   },
   badge: {
     position: 'absolute',
     top: -8,
     right: -8,
-    backgroundColor: '#4CAF50',
+    backgroundColor: colors.primary,
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 12,
     transform: [{ rotate: '15deg' }],
   },
   opportunityBadge: {
-    backgroundColor: '#FF9800',
+    backgroundColor: colors.accent,
   },
   badgeText: {
     fontSize: 10,
     color: 'white',
     fontFamily: fontWeights.bold,
   },
-  summarySection: {
-    gap: 16,
-    marginBottom: 24,
+  summaryContainer: {
+    marginBottom: 20,
   },
   summaryCard: {
-    backgroundColor: 'white',
-    padding: 16,
-    borderRadius: 12,
     ...colors.dropShadow,
+    padding: 24,
+    borderRadius: 16,
+    backgroundColor: 'white',
+    borderWidth: 1,
+    borderColor: 'white',
+    gap: 8,
   },
-  summaryTitle: {
-    fontSize: 15,
+  insightTitle: {
+    fontSize: 17,
     fontFamily: fontWeights.bold,
     color: colors.text,
-    marginBottom: 4,
+    textAlign: 'center',
+    lineHeight: 24,
   },
-  summarySubtitle: {
-    fontSize: 14,
+  insightSubtitle: {
+    fontSize: 15,
     fontFamily: fontWeights.regular,
-    color: colors.text,
-    opacity: 0.7,
+    color: colors.textLight,
+    textAlign: 'center',
+    lineHeight: 22,
+  },
+  highlightStrong: {
+    color: colors.primary,
+    fontFamily: fontWeights.bold,
+  },
+  highlightWeak: {
+    color: colors.accent,
+    fontFamily: fontWeights.semibold,
   },
 });

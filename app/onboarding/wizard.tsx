@@ -14,6 +14,7 @@ import LoadingScreen from '@/components/onboarding/LoadingScreen';
 import MatrixGrid from '@/components/onboarding/MatrixGrid';
 import ProgressBar from '@/components/onboarding/ProgressBar';
 import QuestionScreen from '@/components/onboarding/QuestionScreen';
+import ValueScreen from '@/components/onboarding/ValueScreen';
 import Button from '@/components/shared/Button';
 import { ACTIVE_OPACITY_WHITE } from '@/components/shared/config';
 import { getOnboardingItems } from '@/lib/constants/onboardingQuestions';
@@ -123,6 +124,9 @@ export default function wizard() {
         case 'matrix':
           return <MatrixGrid />;
 
+        case 'value':
+          return <ValueScreen item={item} />;
+
         default:
           return null;
       }
@@ -156,6 +160,7 @@ export default function wizard() {
 
       case 'loading':
       case 'matrix':
+      case 'value':
         // Loading and matrix screens can always proceed
         return true;
 
@@ -210,8 +215,8 @@ export default function wizard() {
             type="primary"
             onPress={handleNext}
             label={
-              items[currentIndex]?.type === 'matrix'
-                ? 'Get Started'
+              items[currentIndex]?.type === 'value'
+                ? t('onboarding.wizard.startBuildingHabits')
                 : t('common.next')
             }
             fullWidth

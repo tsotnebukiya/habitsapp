@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Dimensions,
   StyleSheet,
@@ -11,49 +11,56 @@ import { colors, fontWeights } from '@/lib/constants/ui';
 import type { OnboardingItem } from '@/lib/stores/onboardingStore';
 import { useOnboardingStore } from '@/lib/stores/onboardingStore';
 import { SymbolView } from 'expo-symbols';
+import { useTranslation } from 'react-i18next';
 import { ACTIVE_OPACITY_WHITE } from '../shared/config';
 
 const { width: screenWidth } = Dimensions.get('window');
 
 export default function QuestionScreen({ item }: { item: OnboardingItem }) {
+  const { t } = useTranslation();
   const { setAnswer, getAnswer } = useOnboardingStore();
-  const existingAnswer = getAnswer(item.id) as string | undefined;
-  const [selectedOption, setSelectedOption] = useState<string>(
-    existingAnswer || ''
-  );
+  const existingAnswer = getAnswer(item.id) as number | undefined;
 
-  const handleOptionSelect = (option: string) => {
-    setSelectedOption(option);
-    setAnswer(item.id, option);
+  // Get translated question text
+  const questionText = item.questionKey
+    ? t(item.questionKey as any)
+    : item.question || '';
+
+  // Get translated options
+  const translatedOptions = item.optionKeys
+    ? item.optionKeys.map((key) => t(key as any))
+    : item.options || [];
+
+  const handleOptionSelect = (option: string, index: number) => {
+    // Store the option index instead of the translated text
+    setAnswer(item.id, index);
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.questionContainer}>
-        <Text style={styles.question}>{item.question}</Text>
+        <Text style={styles.question}>{questionText}</Text>
       </View>
       <View style={styles.optionsContainer}>
-        {item.options?.map((option, index) => (
-          <TouchableOpacity
-            key={index}
-            activeOpacity={ACTIVE_OPACITY_WHITE}
-            style={[
-              styles.option,
-              selectedOption === option && styles.selectedOption,
-            ]}
-            onPress={() => handleOptionSelect(option)}
-          >
-            <SymbolView
-              name={(item.optionIcons?.[index] || 'circle.fill') as any}
-              size={20}
-              style={{ opacity: selectedOption === option ? 1 : 0.7 }}
-              tintColor={
-                selectedOption === option ? colors.primary : colors.text
-              }
-            />
-            <Text style={[styles.optionText]}>{option}</Text>
-          </TouchableOpacity>
-        ))}
+        {translatedOptions.map((option, index) => {
+          const isSelected = existingAnswer === index;
+          return (
+            <TouchableOpacity
+              key={index}
+              activeOpacity={ACTIVE_OPACITY_WHITE}
+              style={[styles.option, isSelected && styles.selectedOption]}
+              onPress={() => handleOptionSelect(option, index)}
+            >
+              <SymbolView
+                name={(item.optionIcons?.[index] || 'circle.fill') as any}
+                size={20}
+                style={{ opacity: isSelected ? 1 : 0.7 }}
+                tintColor={isSelected ? colors.primary : colors.text}
+              />
+              <Text style={[styles.optionText]}>{option}</Text>
+            </TouchableOpacity>
+          );
+        })}
       </View>
     </View>
   );

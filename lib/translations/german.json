@@ -317,7 +317,7 @@
   },
   "onboarding": {
     "welcome": {
-      "title": "Willkommen bei HabitsApp",
+      "title": "Willkommen bei HabitsLab",
       "description": "Ihre All-in-One-Lösung zur Verwaltung Ihrer täglichen Gewohnheiten und zum Erreichen Ihrer Ziele."
     },
     "track": {
@@ -351,7 +351,201 @@
       }
     },
     "getStarted": "Loslegen",
-    "next": "Weiter"
+    "next": "Weiter",
+    "wizard": {
+      "startBuildingHabits": "Gewohnheiten Aufbauen Beginnen"
+    },
+    "loading": {
+      "quick": {
+        "settingUp": "Ihr Konto wird eingerichtet...",
+        "preparingDashboard": "Ihr Dashboard wird vorbereitet...",
+        "almostReady": "Fast fertig..."
+      },
+      "standard": {
+        "analyzing": "Ihre Antworten werden analysiert...",
+        "buildingProfile": "Ihr Profil wird erstellt...",
+        "preparingDashboard": "Ihr Dashboard wird vorbereitet...",
+        "almostReady": "Fast fertig..."
+      },
+      "preview": {
+        "processing": "Ihre Präferenzen werden verarbeitet...",
+        "preparingPreview": "Ihre Vorschau wird vorbereitet...",
+        "almostReady": "Fast fertig..."
+      },
+      "complete": {
+        "analyzing": "Ihre Antworten werden analysiert...",
+        "calculating": "Ihre Punktzahl wird berechnet...",
+        "buildingProfile": "Ihr Profil wird erstellt...",
+        "almostReady": "Fast fertig..."
+      }
+    },
+    "questions": {
+      "priority": {
+        "question1": {
+          "question": "Was ist Ihr Hauptziel?",
+          "options": {
+            "option1": "Gesunde Gewohnheiten aufbauen",
+            "option2": "Schlechte Gewohnheiten durchbrechen",
+            "option3": "Produktivität steigern",
+            "option4": "Lebensbalance finden"
+          }
+        },
+        "question2": {
+          "question": "Was hält Sie normalerweise auf?",
+          "options": {
+            "option1": "Mangelnde Motivation",
+            "option2": "Zu beschäftigt/keine Zeit",
+            "option3": "Weiß nicht, wie ich anfangen soll",
+            "option4": "Kann nicht konsistent bleiben"
+          }
+        },
+        "question3": {
+          "question": "Wann fühlen Sie sich am konzentriertesten?",
+          "options": {
+            "option1": "Früh morgens (5-9 Uhr)",
+            "option2": "Mittags (9-14 Uhr)",
+            "option3": "Abends (14-20 Uhr)",
+            "option4": "Nachts (20 Uhr+)"
+          }
+        },
+        "question4": {
+          "question": "Wie verfolgen Sie am liebsten Fortschritte?",
+          "options": {
+            "option1": "Einfache Serien",
+            "option2": "Detaillierte Statistiken",
+            "option3": "Visuelle Erfolge",
+            "option4": "Schnelle Check-ins"
+          }
+        }
+      },
+      "mini": {
+        "vitality1": {
+          "question": "Wie würden Sie Ihr Energieniveau bewerten?",
+          "options": {
+            "option1": "Immer müde",
+            "option2": "Oft wenig Energie",
+            "option3": "Meist energisch",
+            "option4": "Voller Energie"
+          }
+        },
+        "vitality2": {
+          "question": "Wie konstant ist Ihr Schlafplan?",
+          "options": {
+            "option1": "Sehr unregelmäßig",
+            "option2": "Etwas unregelmäßig",
+            "option3": "Meist konstant",
+            "option4": "Sehr konstant"
+          }
+        },
+        "wisdom1": {
+          "question": "Wie oft lernen Sie etwas Neues?",
+          "options": {
+            "option1": "Selten",
+            "option2": "Manchmal",
+            "option3": "Oft",
+            "option4": "Täglich"
+          }
+        },
+        "wisdom2": {
+          "question": "Wie gut können Sie sich auf Aufgaben konzentrieren?",
+          "options": {
+            "option1": "Sehr leicht abgelenkt",
+            "option2": "Manchmal abgelenkt",
+            "option3": "Meist konzentriert",
+            "option4": "Laser-fokussiert"
+          }
+        },
+        "harmony1": {
+          "question": "Wie stark sind Ihre Beziehungen?",
+          "options": {
+            "option1": "Verbesserungsbedürftig",
+            "option2": "Könnten besser sein",
+            "option3": "Ziemlich gut",
+            "option4": "Sehr stark"
+          }
+        },
+        "harmony2": {
+          "question": "Wie viel Zeit verbringen Sie mit Ihren Lieben?",
+          "options": {
+            "option1": "Nicht genug",
+            "option2": "Könnte mehr sein",
+            "option3": "Gute Menge",
+            "option4": "Viel Zeit"
+          }
+        },
+        "spirit1": {
+          "question": "Wie gut gehen Sie mit Stress um?",
+          "options": {
+            "option1": "Kämpfe sehr",
+            "option2": "Kämpfe manchmal",
+            "option3": "Handhabe es gut",
+            "option4": "Sehr widerstandsfähig"
+          }
+        },
+        "spirit2": {
+          "question": "Wie oft praktizieren Sie Achtsamkeit?",
+          "options": {
+            "option1": "Nie",
+            "option2": "Gelegentlich",
+            "option3": "Regelmäßig",
+            "option4": "Tägliche Praxis"
+          }
+        },
+        "ambition1": {
+          "question": "Wie organisiert fühlen Sie sich?",
+          "options": {
+            "option1": "Sehr unorganisiert",
+            "option2": "Etwas unordentlich",
+            "option3": "Ziemlich organisiert",
+            "option4": "Hochorganisiert"
+          }
+        },
+        "ambition2": {
+          "question": "Wie oft erreichen Sie Ihre Ziele?",
+          "options": {
+            "option1": "Selten beendet",
+            "option2": "Manchmal beendet",
+            "option3": "Meist beendet",
+            "option4": "Immer beendet"
+          }
+        }
+      }
+    },
+    "matrix": {
+      "title": "Ihre Gewohnheits-Fokus-Bereiche",
+      "badges": {
+        "strong": "💪 Stark",
+        "focus": "🎯 Fokus"
+      },
+      "insights": {
+        "startWith": "Beginnen Sie mit",
+        "habits": "Gewohnheiten",
+        "alreadyStrong": "Sie sind bereits stark in",
+        "focusingSuffix": "daher wird sich auf {{category}} zu konzentrieren die besten Ergebnisse bringen."
+      }
+    },
+    "value": {
+      "title": "Was Sie Bekommen Werden",
+      "subtitle": "Ihr personalisierter Gewohnheitsplan ist bereit",
+      "items": {
+        "statistics": {
+          "title": "Detaillierte Statistiken",
+          "description": "Heatmaps, Fortschrittsdiagramme und Vervollständigungsanalysen"
+        },
+        "achievements": {
+          "title": "Erfolgs-Badges",
+          "description": "Schalten Sie Badges für Serien und Meilensteine frei"
+        },
+        "widgets": {
+          "title": "iOS-Widgets",
+          "description": "Verfolgen Sie Gewohnheiten direkt von Ihrem Startbildschirm"
+        },
+        "streaks": {
+          "title": "Serien-Verfolgung",
+          "description": "Bauen Sie Schwung mit visuellen Serien-Zählern auf"
+        }
+      }
+    }
   },
   "weekdays": {
     "short": {

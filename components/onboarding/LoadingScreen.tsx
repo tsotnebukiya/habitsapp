@@ -1,17 +1,14 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Dimensions, Image, StyleSheet, Text, View } from 'react-native';
 
 import { fontWeights } from '@/lib/constants/ui';
-import { type OnboardingItem } from '@/lib/stores/onboardingStore';
+import {
+  type OnboardingItem,
+  useOnboardingStore,
+} from '@/lib/stores/onboardingStore';
+import { useTranslation } from 'react-i18next';
 
 const { width: screenWidth } = Dimensions.get('window');
-
-const strings = [
-  'Setting up your account...',
-  'Preparing your workspace...',
-  'Syncing your data...',
-  'Almost ready...',
-];
 
 // Progress Messages with typewriter effect
 function ProgressMessages({
@@ -23,17 +20,55 @@ function ProgressMessages({
   isActive?: boolean;
   currentIndexList?: number;
 }) {
+  const { variant } = useOnboardingStore();
+  const { t } = useTranslation();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [displayText, setDisplayText] = useState('');
   const [isTyping, setIsTyping] = useState(true);
   const [hasCompleted, setHasCompleted] = useState(false);
   const onCompleteCalledRef = useRef(false);
-  console.log('WEAREHEREOUTSIDE', currentIndexList);
+
+  // Memoize strings based on current variant using translation keys
+  const strings = useMemo(() => {
+    const currentVariant = variant || 'quick';
+    switch (currentVariant) {
+      case 'quick':
+        return [
+          t('onboarding.loading.quick.settingUp'),
+          t('onboarding.loading.quick.preparingDashboard'),
+          t('onboarding.loading.quick.almostReady'),
+        ];
+      case 'standard':
+        return [
+          t('onboarding.loading.standard.analyzing'),
+          t('onboarding.loading.standard.buildingProfile'),
+          t('onboarding.loading.standard.preparingDashboard'),
+          t('onboarding.loading.standard.almostReady'),
+        ];
+      case 'preview':
+        return [
+          t('onboarding.loading.preview.processing'),
+          t('onboarding.loading.preview.preparingPreview'),
+          t('onboarding.loading.preview.almostReady'),
+        ];
+      case 'complete':
+        return [
+          t('onboarding.loading.complete.analyzing'),
+          t('onboarding.loading.complete.calculating'),
+          t('onboarding.loading.complete.buildingProfile'),
+          t('onboarding.loading.complete.almostReady'),
+        ];
+      default:
+        return [
+          t('onboarding.loading.quick.settingUp'),
+          t('onboarding.loading.quick.preparingDashboard'),
+          t('onboarding.loading.quick.almostReady'),
+        ];
+    }
+  }, [variant, t]);
+
   useEffect(() => {
-    // Only run if this screen is active and hasn't completed yet
-    console.log('WEAREHEREINSIDE', currentIndexList);
     if (!isActive || hasCompleted || onCompleteCalledRef.current) return;
-    console.log('WEAREHERE', currentIndexList);
     const currentString = strings[currentIndex];
 
     if (isTyping) {
@@ -73,7 +108,7 @@ function ProgressMessages({
 
       return () => clearInterval(typeInterval);
     }
-  }, [currentIndex, isTyping, onComplete, hasCompleted, isActive]);
+  }, [currentIndex, isTyping, onComplete, hasCompleted, isActive, strings]);
 
   // Reset when becoming active again
   useEffect(() => {

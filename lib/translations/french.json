@@ -317,7 +317,7 @@
   },
   "onboarding": {
     "welcome": {
-      "title": "Bienvenue sur HabitsApp",
+      "title": "Bienvenue sur HabitsLab",
       "description": "Votre solution tout-en-un pour gérer vos habitudes quotidiennes et atteindre vos objectifs."
     },
     "track": {
@@ -351,7 +351,201 @@
       }
     },
     "getStarted": "Commencer",
-    "next": "Suivant"
+    "next": "Suivant",
+    "wizard": {
+      "startBuildingHabits": "Commencer à Construire des Habitudes"
+    },
+    "loading": {
+      "quick": {
+        "settingUp": "Configuration de votre compte...",
+        "preparingDashboard": "Préparation de votre tableau de bord...",
+        "almostReady": "Presque prêt..."
+      },
+      "standard": {
+        "analyzing": "Analyse de vos réponses...",
+        "buildingProfile": "Construction de votre profil...",
+        "preparingDashboard": "Préparation de votre tableau de bord...",
+        "almostReady": "Presque prêt..."
+      },
+      "preview": {
+        "processing": "Traitement de vos préférences...",
+        "preparingPreview": "Préparation de votre aperçu...",
+        "almostReady": "Presque prêt..."
+      },
+      "complete": {
+        "analyzing": "Analyse de vos réponses...",
+        "calculating": "Calcul de vos scores...",
+        "buildingProfile": "Construction de votre profil...",
+        "almostReady": "Presque prêt..."
+      }
+    },
+    "questions": {
+      "priority": {
+        "question1": {
+          "question": "Quel est votre objectif principal ?",
+          "options": {
+            "option1": "Construire des habitudes saines",
+            "option2": "Éliminer les mauvaises habitudes",
+            "option3": "Améliorer la productivité",
+            "option4": "Trouver l'équilibre de vie"
+          }
+        },
+        "question2": {
+          "question": "Qu'est-ce qui vous arrête habituellement ?",
+          "options": {
+            "option1": "Manque de motivation",
+            "option2": "Trop occupé/pas de temps",
+            "option3": "Ne sais pas comment commencer",
+            "option4": "Ne peux pas rester constant"
+          }
+        },
+        "question3": {
+          "question": "Quand vous sentez-vous le plus concentré ?",
+          "options": {
+            "option1": "Tôt le matin (5h-9h)",
+            "option2": "Milieu de journée (9h-14h)",
+            "option3": "Soirée (14h-20h)",
+            "option4": "Nuit (20h+)"
+          }
+        },
+        "question4": {
+          "question": "Comment préférez-vous suivre vos progrès ?",
+          "options": {
+            "option1": "Séries simples",
+            "option2": "Statistiques détaillées",
+            "option3": "Récompenses visuelles",
+            "option4": "Vérifications rapides"
+          }
+        }
+      },
+      "mini": {
+        "vitality1": {
+          "question": "Comment évaluez-vous vos niveaux d'énergie ?",
+          "options": {
+            "option1": "Toujours fatigué",
+            "option2": "Souvent peu d'énergie",
+            "option3": "Généralement énergique",
+            "option4": "Plein d'énergie"
+          }
+        },
+        "vitality2": {
+          "question": "À quel point votre horaire de sommeil est-il régulier ?",
+          "options": {
+            "option1": "Très irrégulier",
+            "option2": "Plutôt irrégulier",
+            "option3": "Assez régulier",
+            "option4": "Très régulier"
+          }
+        },
+        "wisdom1": {
+          "question": "À quelle fréquence apprenez-vous quelque chose de nouveau ?",
+          "options": {
+            "option1": "Rarement",
+            "option2": "Parfois",
+            "option3": "Souvent",
+            "option4": "Quotidiennement"
+          }
+        },
+        "wisdom2": {
+          "question": "Dans quelle mesure pouvez-vous vous concentrer sur les tâches ?",
+          "options": {
+            "option1": "Très facilement distrait",
+            "option2": "Parfois distrait",
+            "option3": "Généralement concentré",
+            "option4": "Concentration laser"
+          }
+        },
+        "harmony1": {
+          "question": "À quel point vos relations sont-elles solides ?",
+          "options": {
+            "option1": "Besoin d'amélioration",
+            "option2": "Pourraient être meilleures",
+            "option3": "Plutôt bonnes",
+            "option4": "Très solides"
+          }
+        },
+        "harmony2": {
+          "question": "Combien de temps passez-vous avec vos proches ?",
+          "options": {
+            "option1": "Pas assez",
+            "option2": "Pourrait être plus",
+            "option3": "Bonne quantité",
+            "option4": "Beaucoup de temps"
+          }
+        },
+        "spirit1": {
+          "question": "Dans quelle mesure gérez-vous bien le stress ?",
+          "options": {
+            "option1": "Je lutte beaucoup",
+            "option2": "Parfois je lutte",
+            "option3": "Je gère bien",
+            "option4": "Très résilient"
+          }
+        },
+        "spirit2": {
+          "question": "À quelle fréquence pratiquez-vous la pleine conscience ?",
+          "options": {
+            "option1": "Jamais",
+            "option2": "Occasionnellement",
+            "option3": "Régulièrement",
+            "option4": "Pratique quotidienne"
+          }
+        },
+        "ambition1": {
+          "question": "À quel point vous sentez-vous organisé ?",
+          "options": {
+            "option1": "Très désorganisé",
+            "option2": "Plutôt désordonné",
+            "option3": "Assez organisé",
+            "option4": "Très organisé"
+          }
+        },
+        "ambition2": {
+          "question": "À quelle fréquence atteignez-vous vos objectifs ?",
+          "options": {
+            "option1": "Termine rarement",
+            "option2": "Termine parfois",
+            "option3": "Termine généralement",
+            "option4": "Termine toujours"
+          }
+        }
+      }
+    },
+    "matrix": {
+      "title": "Vos Domaines d'Focus d'Habitudes",
+      "badges": {
+        "strong": "💪 Fort",
+        "focus": "🎯 Focus"
+      },
+      "insights": {
+        "startWith": "Commencez avec",
+        "habits": "habitudes",
+        "alreadyStrong": "Vous êtes déjà fort en",
+        "focusingSuffix": "donc vous concentrer sur {{category}} vous donnera les meilleurs résultats."
+      }
+    },
+    "value": {
+      "title": "Ce Que Vous Obtiendrez",
+      "subtitle": "Votre plan d'habitudes personnalisé est prêt",
+      "items": {
+        "statistics": {
+          "title": "Statistiques Détaillées",
+          "description": "Cartes de chaleur, graphiques de progrès et analyses de finalisation"
+        },
+        "achievements": {
+          "title": "Badges de Réussite",
+          "description": "Débloquez des badges pour les séries et les jalons"
+        },
+        "widgets": {
+          "title": "Widgets iOS",
+          "description": "Suivez les habitudes directement depuis votre écran d'accueil"
+        },
+        "streaks": {
+          "title": "Suivi des Séries",
+          "description": "Créez de l'élan avec des compteurs visuels de séries"
+        }
+      }
+    }
   },
   "weekdays": {
     "short": {

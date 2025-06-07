@@ -5,7 +5,7 @@
 ### Directory Structure
 
 ```
-HabitsApp/
+HabitsLab/
 ├── app/                   # Expo Router pages
 │   ├── (app)/            # Main app routes
 │   │   ├── (tabs)/       # Tab navigation (home, stats, achievements, settings)
@@ -613,7 +613,7 @@ graph TD
 
 ### Architecture Overview
 
-HabitsApp implements iOS widgets using `@bacons/apple-targets` with two distinct widgets:
+HabitsLab implements iOS widgets using `@bacons/apple-targets` with two distinct widgets:
 
 - **Calendar Widget**: Weekly overview for medium/large sizes (StaticConfiguration)
 - **Interactive Widget**: Daily completion toggling for all sizes (AppIntentConfiguration)
