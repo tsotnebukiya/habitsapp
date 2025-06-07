@@ -3,6 +3,7 @@ import { colors, fontWeights } from '@/lib/constants/ui';
 import useHabitsStore from '@/lib/habit-store/store';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 import { useAppStore } from '@/lib/stores/app_state';
+import { useOnboardingStore } from '@/lib/stores/onboardingStore';
 import { useUserProfileStore } from '@/lib/stores/user_profile';
 import { supabase } from '@/supabase/client';
 import { router } from 'expo-router';
@@ -26,6 +27,7 @@ const SettingsScreen = () => {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const { profile, clearProfile } = useUserProfileStore();
+  const resetStore = useOnboardingStore((state) => state.resetStore);
   const clearHabitsData = useHabitsStore((state) => state.clearAllData);
   const clearAppData = useAppStore((state) => state.clearAllData);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -81,8 +83,7 @@ const SettingsScreen = () => {
     try {
       clearProfile();
       clearHabitsData();
-      clearAppData();
-
+      resetStore();
       await supabase.auth.signOut();
 
       Toast.show({
@@ -153,7 +154,7 @@ const SettingsScreen = () => {
       clearProfile();
       clearHabitsData();
       clearAppData();
-
+      resetStore();
       // Clear local session (user is already deleted from auth)
       await supabase.auth.signOut({ scope: 'local' });
       setIsDeleting(false);

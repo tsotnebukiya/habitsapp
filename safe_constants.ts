@@ -22,5 +22,7 @@ export const FACEBOOK_APP_ID = '1938696366898999';
 export const FACEBOOK_CLIENT_TOKEN = '870e81c61564d34b9b71b13155b56e93';
 
 // Change to Superwall
-export const REVENUECAT_IOS_KEY = '';
-export const REVENUECAT_ANDROID_KEY = '';
+export const SUPERWALL_IOS_KEY =
+  'pk_d2c6fffef9269bf986d44f399fdde452d5ae8fcb2d7a776b';
+export const SUPERWALL_ANDROID_KEY =
+  'pk_f4e5875ecf0124e849be07bbb51d16ea5df8800f95aa183d';

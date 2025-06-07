@@ -1,6 +1,7 @@
 import useHabitsStore from '@/lib/habit-store/store';
 import { useNotifications } from '@/lib/hooks/useNotifications';
 import { useReconcileWidgetState } from '@/lib/hooks/useReconcileWidgetState';
+import { useOnboardingStore } from '@/lib/stores/onboardingStore';
 import useUserProfileStore from '@/lib/stores/user_profile';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { Redirect, Stack } from 'expo-router';
@@ -9,6 +10,7 @@ import { View } from 'react-native';
 
 function StackLayout() {
   const { profile } = useUserProfileStore();
+  const { completedAt } = useOnboardingStore();
   const [isInitializing, setIsInitializing] = useState(true);
   useNotifications();
   useReconcileWidgetState();
@@ -34,8 +36,12 @@ function StackLayout() {
     return <View style={{ flex: 1 }} />;
   }
 
-  if (!profile || !profile.onboarding_complete) {
-    return <Redirect href="/onboarding/intro" />;
+  if (!profile) {
+    if (completedAt) {
+      return <Redirect href="/onboarding/login" />;
+    } else {
+      return <Redirect href="/onboarding/intro" />;
+    }
   }
 
   return (

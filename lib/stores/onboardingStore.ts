@@ -1,4 +1,18 @@
+import { MMKV } from 'react-native-mmkv';
 import { create } from 'zustand';
+import { createJSONStorage, persist } from 'zustand/middleware';
+
+// Create MMKV storage for onboarding
+const onboardingStorage = new MMKV({
+  id: 'onboarding-store',
+  encryptionKey: 'onboarding-encryption-key',
+});
+
+const onboardingStorageAdapter = {
+  setItem: (name: string, value: string) => onboardingStorage.set(name, value),
+  getItem: (name: string) => onboardingStorage.getString(name) ?? null,
+  removeItem: (name: string) => onboardingStorage.delete(name),
+};
 
 // Simplified types for new onboarding flows
 export interface Question {
@@ -42,7 +56,7 @@ export function calculateMatrixScores(
     const question = miniAssessmentQuestions.find(
       (q: any) => q.id === questionId
     );
-    if (!question || !question.options) return 1; // Default score
+    if (!question) return 1; // Default score if question not found
 
     // If answer is already a number (index), use it directly
     if (typeof answer === 'number') {
@@ -51,9 +65,13 @@ export function calculateMatrixScores(
 
     // If answer is a string, find its index in options (backward compatibility)
     if (typeof answer === 'string') {
-      const optionIndex = question.options.indexOf(answer);
-      if (optionIndex === -1) return 1; // Default if answer not found
-      return optionIndex;
+      // Check both options and optionKeys for backward compatibility
+      const optionsArray = question.options || question.optionKeys;
+      if (optionsArray) {
+        const optionIndex = optionsArray.indexOf(answer);
+        if (optionIndex !== -1) return optionIndex;
+      }
+      return 1; // Default if answer not found
     }
 
     return 1; // Default score for other types
@@ -151,51 +169,68 @@ const initialState: OnboardingState = {
   },
 };
 
-export const useOnboardingStore = create<OnboardingStore>()((set, get) => ({
-  ...initialState,
+export const useOnboardingStore = create<OnboardingStore>()(
+  persist(
+    (set, get) => ({
+      ...initialState,
 
-  setVariant: (variant) => set({ variant }),
+      setVariant: (variant) => set({ variant }),
 
-  setCurrentIndex: (currentIndex) => set({ currentIndex }),
+      setCurrentIndex: (currentIndex) => set({ currentIndex }),
 
-  setAnswer: (questionId, answer) =>
-    set((state) => ({
-      answers: { ...state.answers, [questionId]: answer },
-    })),
+      setAnswer: (questionId, answer) =>
+        set((state) => ({
+          answers: { ...state.answers, [questionId]: answer },
+        })),
 
-  setTotalItems: (totalItems) => set({ totalItems }),
+      setTotalItems: (totalItems) => set({ totalItems }),
 
-  markStarted: () => set({ startedAt: Date.now() }),
+      markStarted: () => set({ startedAt: Date.now() }),
 
-  markCompleted: () => set({ completedAt: Date.now() }),
+      markCompleted: () => set({ completedAt: Date.now() }),
 
-  calculateAndSetMatrixScores: () => {
-    const state = get();
-    const matrixScores = calculateMatrixScores(state.answers);
-    set({ matrixScores });
-  },
+      calculateAndSetMatrixScores: () => {
+        const state = get();
+        const matrixScores = calculateMatrixScores(state.answers);
+        set({ matrixScores });
+      },
 
-  resetStore: () => set(initialState),
+      resetStore: () => set(initialState),
 
-  // Getters
-  getProgress: () => {
-    const state = get();
-    if (state.totalItems === 0) return 0;
-    return ((state.currentIndex + 1) / state.totalItems) * 100;
-  },
+      // Getters
+      getProgress: () => {
+        const state = get();
+        if (state.totalItems === 0) return 0;
+        return ((state.currentIndex + 1) / state.totalItems) * 100;
+      },
 
-  hasAnswer: (questionId) => {
-    const state = get();
-    return questionId in state.answers;
-  },
+      hasAnswer: (questionId) => {
+        const state = get();
+        return questionId in state.answers;
+      },
 
-  getAnswer: (questionId) => {
-    const state = get();
-    return state.answers[questionId];
-  },
+      getAnswer: (questionId) => {
+        const state = get();
+        return state.answers[questionId];
+      },
 
-  getMatrixScores: () => {
-    const state = get();
-    return state.matrixScores;
-  },
-}));
+      getMatrixScores: () => {
+        const state = get();
+        return state.matrixScores;
+      },
+    }),
+    {
+      name: 'onboarding-storage',
+      storage: createJSONStorage(() => onboardingStorageAdapter),
+      partialize: (state) => ({
+        variant: state.variant,
+        answers: state.answers,
+        matrixScores: state.matrixScores,
+        completedAt: state.completedAt,
+        startedAt: state.startedAt,
+        currentIndex: state.currentIndex,
+        totalItems: state.totalItems,
+      }),
+    }
+  )
+);

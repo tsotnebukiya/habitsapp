@@ -40,6 +40,7 @@ export default function wizard() {
     setCurrentIndex,
     setTotalItems,
     markStarted,
+    markCompleted,
     getProgress,
     hasAnswer,
     calculateAndSetMatrixScores,
@@ -48,6 +49,10 @@ export default function wizard() {
     const actualVariant = (variant as string) || 'minimal';
     return getOnboardingItems(actualVariant);
   }, [variant]);
+  // Reset currentIndex to 0 when wizard starts/renders
+  useEffect(() => {
+    setCurrentIndex(0);
+  }, [setCurrentIndex]);
 
   useEffect(() => {
     if (variant && typeof variant === 'string') {
@@ -56,7 +61,6 @@ export default function wizard() {
       markStarted();
     }
   }, [variant, items.length, setVariant, setTotalItems, markStarted]);
-
   const handleNext = useCallback(() => {
     const currentItem = items[currentIndex];
     const nextIndex = currentIndex + 1;
@@ -69,6 +73,7 @@ export default function wizard() {
     }
 
     if (nextIndex >= items.length) {
+      markCompleted();
       router.push('/onboarding/login');
       return;
     }
@@ -78,7 +83,13 @@ export default function wizard() {
       index: nextIndex,
       animated: true,
     });
-  }, [currentIndex, items, setCurrentIndex, calculateAndSetMatrixScores]);
+  }, [
+    currentIndex,
+    items,
+    setCurrentIndex,
+    calculateAndSetMatrixScores,
+    markCompleted,
+  ]);
 
   // Navigate to previous screen
   const handlePrevious = useCallback(() => {
