@@ -124,7 +124,6 @@ export default function wizard() {
         case 'loading':
           return (
             <LoadingScreen
-              currentIndex={currentIndex}
               key="loading-screen"
               item={item}
               onComplete={handleNext}

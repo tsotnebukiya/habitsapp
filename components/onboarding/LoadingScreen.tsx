@@ -10,34 +10,40 @@ import { useTranslation } from 'react-i18next';
 
 const { width: screenWidth } = Dimensions.get('window');
 
-// Progress Messages with typewriter effect
+/* -------------------------------------------------------------------------- */
+/*                                Progress Text                               */
+/* -------------------------------------------------------------------------- */
+
 function ProgressMessages({
   onComplete,
-  isActive,
-  currentIndexList,
+  isActive = true,
 }: {
   onComplete?: () => void;
   isActive?: boolean;
-  currentIndexList?: number;
 }) {
   const { variant } = useOnboardingStore();
   const { t } = useTranslation();
+
+  /* ------------------------------ local state ----------------------------- */
   const [currentIndex, setCurrentIndex] = useState(0);
   const [displayText, setDisplayText] = useState('');
   const [isTyping, setIsTyping] = useState(true);
   const [hasCompleted, setHasCompleted] = useState(false);
-  const onCompleteCalledRef = useRef(false);
 
-  // Memoize strings based on current variant using translation keys
+  /* ------------------------------- timers --------------------------------- */
+  const intervalId = useRef<NodeJS.Timeout | null>(null);
+  const timeoutId = useRef<NodeJS.Timeout | null>(null);
+  const clearTimers = () => {
+    if (intervalId.current) clearInterval(intervalId.current);
+    if (timeoutId.current) clearTimeout(timeoutId.current);
+    intervalId.current = null;
+    timeoutId.current = null;
+  };
+
+  /* ----------------------------- label set -------------------------------- */
   const strings = useMemo(() => {
-    const currentVariant = variant || 'quick';
-    switch (currentVariant) {
-      case 'quick':
-        return [
-          t('onboarding.loading.quick.settingUp'),
-          t('onboarding.loading.quick.preparingDashboard'),
-          t('onboarding.loading.quick.almostReady'),
-        ];
+    const v = variant || 'quick';
+    switch (v) {
       case 'standard':
         return [
           t('onboarding.loading.standard.analyzing'),
@@ -58,6 +64,7 @@ function ProgressMessages({
           t('onboarding.loading.complete.buildingProfile'),
           t('onboarding.loading.complete.almostReady'),
         ];
+      case 'quick':
       default:
         return [
           t('onboarding.loading.quick.settingUp'),
@@ -67,59 +74,52 @@ function ProgressMessages({
     }
   }, [variant, t]);
 
+  /* -------------------- pause / resume when slide hidden ------------------ */
   useEffect(() => {
-    if (!isActive || hasCompleted || onCompleteCalledRef.current) return;
-    const currentString = strings[currentIndex];
-
-    if (isTyping) {
-      // Typewriter effect
-      let charIndex = 0;
-      const typeInterval = setInterval(() => {
-        if (charIndex <= currentString.length) {
-          setDisplayText(currentString.slice(0, charIndex));
-          charIndex++;
-        } else {
-          clearInterval(typeInterval);
-          setIsTyping(false);
-
-          // Wait before moving to next message or completing
-          const waitTimeout = setTimeout(() => {
-            // If this was the last message, complete the sequencer
-            if (currentIndex === strings.length - 1) {
-              if (!onCompleteCalledRef.current) {
-                onCompleteCalledRef.current = true;
-                setHasCompleted(true);
-                onComplete?.();
-              }
-              return;
-            }
-
-            // Otherwise, move to next message
-            const nextIndex = currentIndex + 1;
-            setCurrentIndex(nextIndex);
-            setDisplayText('');
-            setIsTyping(true);
-          }, 1500);
-
-          // Cleanup timeout if component unmounts
-          return () => clearTimeout(waitTimeout);
-        }
-      }, 50);
-
-      return () => clearInterval(typeInterval);
-    }
-  }, [currentIndex, isTyping, onComplete, hasCompleted, isActive, strings]);
-
-  // Reset when becoming active again
-  useEffect(() => {
-    if (isActive && hasCompleted) {
-      setCurrentIndex(0);
+    if (!isActive) {
+      clearTimers();
       setDisplayText('');
       setIsTyping(true);
-      setHasCompleted(false);
-      onCompleteCalledRef.current = false;
+      return;
     }
-  }, [isActive, hasCompleted]);
+    // resume automatically handled by next effect
+  }, [isActive]);
+
+  /* --------------------------- typing sequence ---------------------------- */
+  useEffect(() => {
+    if (!isActive || hasCompleted) return;
+
+    const currentString = strings[currentIndex];
+    let charIndex = 0;
+
+    intervalId.current = setInterval(() => {
+      if (charIndex <= currentString.length) {
+        setDisplayText(currentString.slice(0, charIndex));
+        charIndex += 1;
+      } else {
+        clearTimers();
+        setIsTyping(false);
+
+        /* ------------------ wait then advance / finish ------------------ */
+        timeoutId.current = setTimeout(() => {
+          const isLast = currentIndex === strings.length - 1;
+          if (isLast) {
+            setHasCompleted(true);
+            onComplete?.();
+          } else {
+            setCurrentIndex((i) => i + 1);
+            setDisplayText('');
+            setIsTyping(true);
+          }
+        }, 1500);
+      }
+    }, 50);
+
+    return clearTimers; // run on unmount or dependency change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentIndex, isActive, hasCompleted]);
+
+  /* ----------------------------------------------------------------------- */
 
   return (
     <View style={styles.textContainer}>
@@ -131,18 +131,20 @@ function ProgressMessages({
   );
 }
 
+/* -------------------------------------------------------------------------- */
+/*                               Loader Wrapper                               */
+/* -------------------------------------------------------------------------- */
+
 interface LoadingScreenProps {
   item: OnboardingItem;
   onComplete?: () => void;
   isActive?: boolean;
-  currentIndex?: number;
 }
 
 export default function LoadingScreen({
   item,
   onComplete,
   isActive = true,
-  currentIndex,
 }: LoadingScreenProps) {
   return (
     <View style={styles.container}>
@@ -150,14 +152,14 @@ export default function LoadingScreen({
         source={require('@/assets/onboarding/loading.gif')}
         style={styles.gif}
       />
-      <ProgressMessages
-        onComplete={onComplete}
-        isActive={isActive}
-        currentIndexList={currentIndex}
-      />
+      <ProgressMessages onComplete={onComplete} isActive={isActive} />
     </View>
   );
 }
+
+/* -------------------------------------------------------------------------- */
+/*                                    CSS                                     */
+/* -------------------------------------------------------------------------- */
 
 const styles = StyleSheet.create({
   container: {
@@ -170,7 +172,7 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
   },
   textContainer: {
-    height: 50, // Fixed height to prevent layout shifts
+    height: 50,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 30,
@@ -183,22 +185,5 @@ const styles = StyleSheet.create({
   },
   cursor: {
     opacity: 0.7,
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 40,
-    gap: 20,
-  },
-  button: {
-    padding: 10,
-    backgroundColor: '#f0f0f0',
-    borderRadius: 8,
-    fontSize: 14,
-    fontFamily: fontWeights.medium,
-  },
-  activeButton: {
-    backgroundColor: '#007AFF',
-    color: 'white',
   },
 });

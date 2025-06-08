@@ -152,10 +152,11 @@ const SettingsScreen = () => {
       }
 
       // Clear all local data stores
+      resetStore();
       clearProfile();
       clearHabitsData();
       clearAppData();
-      resetStore();
+
       Superwall.shared.reset();
       // Clear local session (user is already deleted from auth)
       await supabase.auth.signOut({ scope: 'local' });
