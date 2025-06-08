@@ -6,6 +6,7 @@ import { useAppStore } from '@/lib/stores/app_state';
 import { useOnboardingStore } from '@/lib/stores/onboardingStore';
 import { useUserProfileStore } from '@/lib/stores/user_profile';
 import { supabase } from '@/supabase/client';
+import Superwall from '@superwall/react-native-superwall';
 import { router } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import React, { useState } from 'react';
@@ -83,7 +84,7 @@ const SettingsScreen = () => {
     try {
       clearProfile();
       clearHabitsData();
-      resetStore();
+      Superwall.shared.reset();
       await supabase.auth.signOut();
 
       Toast.show({
@@ -155,6 +156,7 @@ const SettingsScreen = () => {
       clearHabitsData();
       clearAppData();
       resetStore();
+      Superwall.shared.reset();
       // Clear local session (user is already deleted from auth)
       await supabase.auth.signOut({ scope: 'local' });
       setIsDeleting(false);

@@ -30,8 +30,10 @@ import { useAppStore } from '@/lib/stores/app_state';
 import { useOnboardingStore } from '@/lib/stores/onboardingStore';
 import { useUserProfileStore } from '@/lib/stores/user_profile';
 import { dateUtils } from '@/lib/utils/dayjs';
+import { showOnboardingLoginSuperwall } from '@/lib/utils/superwall';
 import { GOOGLE_SIGN_IN_IOS_CLIENT_ID } from '@/safe_constants';
 import { supabase } from '@/supabase/client';
+import Superwall from '@superwall/react-native-superwall';
 import { Icon } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -82,7 +84,8 @@ function OnboardingLogin() {
 
       if (existingUser) {
         setProfile(existingUser);
-        router.replace('/(tabs)');
+        Superwall.shared.identify({ userId: authData.user.id });
+        showOnboardingLoginSuperwall();
       } else {
         const currentTimezone = dateUtils.getCurrentTimezone();
         const userData = {
@@ -128,6 +131,7 @@ function OnboardingLogin() {
         };
 
         useHabitsStore.getState().setAchievements(initialAchievements);
+        Superwall.shared.identify({ userId: authData.user.id });
         router.push('/onboarding/notifications');
       }
     } catch (error: any) {

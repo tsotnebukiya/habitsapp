@@ -1,11 +1,3 @@
-// app/_layout.tsx
-
-// Declare appStartTime on globalThis for wider compatibility
-declare global {
-  var appStartTime: number | undefined;
-}
-
-globalThis.appStartTime = performance.now();
 import ModalContainer from '@/components/modals/ModalContainer';
 import toastConfig from '@/components/shared/toastConfig';
 import {
@@ -17,17 +9,24 @@ import {
 } from '@expo-google-fonts/poppins';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import * as Sentry from '@sentry/react-native';
+import Superwall, { SuperwallOptions } from '@superwall/react-native-superwall';
 import { isRunningInExpoGo } from 'expo';
 import { SplashScreen, Stack, useNavigationContainerRef } from 'expo-router';
 import { PostHogProvider } from 'posthog-react-native';
 import React, { useEffect } from 'react';
+import { Platform } from 'react-native';
 import 'react-native-gesture-handler';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import 'react-native-get-random-values';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import 'react-native-reanimated';
 import Toast from 'react-native-toast-message';
-import { POSTHOG_API_KEY, SENTRY_DSN } from '../safe_constants';
+import {
+  POSTHOG_API_KEY,
+  SENTRY_DSN,
+  SUPERWALL_ANDROID_KEY,
+  SUPERWALL_IOS_KEY,
+} from '../safe_constants';
 
 const navigationIntegration = Sentry.reactNavigationIntegration({
   enableTimeToInitialDisplay: !isRunningInExpoGo(),
@@ -39,6 +38,9 @@ Sentry.init({
   enableNativeFramesTracking: !isRunningInExpoGo(),
 });
 
+const apiKey =
+  Platform.OS === 'ios' ? SUPERWALL_IOS_KEY : SUPERWALL_ANDROID_KEY;
+
 SplashScreen.preventAutoHideAsync();
 
 function RootLayout() {
@@ -49,6 +51,7 @@ function RootLayout() {
     Poppins_700Bold,
   });
   const ref = useNavigationContainerRef();
+
   React.useEffect(() => {
     if (ref?.current) {
       navigationIntegration.registerNavigationContainer(ref);
@@ -62,6 +65,12 @@ function RootLayout() {
   useEffect(() => {
     if (loadedPoppins) {
       SplashScreen.hideAsync();
+      const options = new SuperwallOptions();
+      options.paywalls.shouldPreload = true;
+      Superwall.configure({
+        apiKey: apiKey,
+        options: options,
+      });
     }
   }, [loadedPoppins]);
 

@@ -1,7 +1,9 @@
 import { ACTIVE_OPACITY } from '@/components/shared/config';
 import { colors, fontWeights } from '@/lib/constants/ui';
+import { useAllHabits } from '@/lib/hooks/useHabits';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 import { dateUtils } from '@/lib/utils/dayjs';
+import { showHabitSuperwall } from '@/lib/utils/superwall';
 import dayjs from 'dayjs';
 import { router } from 'expo-router';
 import React from 'react';
@@ -10,6 +12,7 @@ import { Icon } from 'react-native-paper';
 
 function EmptyHabits({ selectedDate }: { selectedDate: Date }) {
   const { t } = useTranslation();
+  const habits = useAllHabits();
   const today = dateUtils.today();
   const selected = dayjs(selectedDate);
   let title = t('habits.noHabitsToday');
@@ -39,6 +42,13 @@ function EmptyHabits({ selectedDate }: { selectedDate: Date }) {
     subtitle = t('habits.planAhead');
   }
 
+  const handleAddHabit = () => {
+    if (habits.length === 1) {
+      showHabitSuperwall();
+    } else {
+      router.push('/add-habit');
+    }
+  };
   return (
     <View style={styles.emptyContainer}>
       <Image
@@ -56,7 +66,7 @@ function EmptyHabits({ selectedDate }: { selectedDate: Date }) {
         <TouchableOpacity
           activeOpacity={ACTIVE_OPACITY}
           style={styles.addHabitButton}
-          onPress={() => router.push('/add-habit')}
+          onPress={handleAddHabit}
         >
           <Icon
             source={require('@/assets/icons/plus.png')}
