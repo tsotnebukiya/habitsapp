@@ -86,7 +86,7 @@ export const useAppStore = create<AppState>()(
 
       setLanguage: async (language: SupportedLanguage) => {
         try {
-          i18n.changeLanguage(language);
+          await i18n.changeLanguage(language);
           configureCalendarLocale(language);
           set({ currentLanguage: language });
         } catch (error) {

@@ -44,7 +44,7 @@ export function showOnboardingLoginSuperwall() {
   Superwall.shared.register({
     placement: SUPERWALL_PLACEMENTS.ONBOARDING_LOGIN,
     feature: () => {
-      router.push('/onboarding/login');
+      router.push('/(tabs)');
     },
   });
 }
@@ -53,7 +53,7 @@ export function showOnboardingNotificationsSuperwall() {
   Superwall.shared.register({
     placement: SUPERWALL_PLACEMENTS.ONBOARDING_NOTIFICATIONS,
     feature: () => {
-      router.push('/onboarding/login');
+      router.push('/onboarding/notifications');
     },
   });
 }
