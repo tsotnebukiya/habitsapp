@@ -33,7 +33,7 @@ const AchievementsScreen = () => {
       {subscriptionStatus.status !== 'ACTIVE' && (
         <GatedBlurView
           handlePurchase={showAchievementsSuperwall}
-          buttonText="Unlock Achievements"
+          buttonText={t('achievements.unlock')}
           icon="trophy.fill"
         />
       )}

@@ -628,7 +628,8 @@
     "streak_90": "Quarterly Champion",
     "streak_100": "Century Crusher",
     "streak_180": "Half-Year Hero",
-    "streak_200": "Bicentennial Boss"
+    "streak_200": "Bicentennial Boss",
+    "unlock": "Unlock Achievements"
   },
   "settings": {
     "title": "Settings",
@@ -685,7 +686,8 @@
     "completionRate": "Completion Rate",
     "totalHabits": "Total Habits",
     "activeStreaks": "Active Streaks",
-    "longestStreak": "Longest Streak"
+    "longestStreak": "Longest Streak",
+    "unlock": "Unlock Stats"
   },
   "forms": {
     "required": "This field is required",

@@ -223,7 +223,8 @@
     "streak_90": "Quartals-Champion",
     "streak_100": "Jahrhundert-Zermalmer",
     "streak_180": "Halbjahres-Held",
-    "streak_200": "Zweihundert-Boss"
+    "streak_200": "Zweihundert-Boss",
+    "unlock": "Erfolge freischalten"
   },
   "settings": {
     "title": "Einstellungen",
@@ -280,7 +281,8 @@
     "completionRate": "Abschlussrate",
     "totalHabits": "Gesamte Gewohnheiten",
     "activeStreaks": "Aktive Serien",
-    "longestStreak": "Längste Serie"
+    "longestStreak": "Längste Serie",
+    "unlock": "Statistiken freischalten"
   },
   "forms": {
     "required": "Dieses Feld ist erforderlich",

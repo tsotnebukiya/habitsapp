@@ -36,7 +36,7 @@ const StatsScreen = () => {
       {subscriptionStatus.status !== 'ACTIVE' && (
         <GatedBlurView
           handlePurchase={showStatsSuperwall}
-          buttonText="Unlock Stats"
+          buttonText={t('stats.unlock')}
           icon="chart.bar.fill"
         />
       )}

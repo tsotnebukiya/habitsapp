@@ -220,7 +220,8 @@
     "streak_90": "Campeão Trimestral",
     "streak_100": "Esmagador do Século",
     "streak_180": "Herói de Meio Ano",
-    "streak_200": "Chefe Bicentenário"
+    "streak_200": "Chefe Bicentenário",
+    "unlock": "Desbloquear Conquistas"
   },
   "settings": {
     "title": "Configurações",
@@ -277,7 +278,8 @@
     "completionRate": "Taxa de Conclusão",
     "totalHabits": "Total de Hábitos",
     "activeStreaks": "Sequências Ativas",
-    "longestStreak": "Sequência Mais Longa"
+    "longestStreak": "Sequência Mais Longa",
+    "unlock": "Desbloquear Stats"
   },
   "forms": {
     "required": "Este campo é obrigatório",

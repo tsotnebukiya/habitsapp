@@ -223,7 +223,8 @@
     "streak_90": "Champion Trimestriel",
     "streak_100": "Écraseur du Siècle",
     "streak_180": "Héros de Demi-Année",
-    "streak_200": "Boss Bicentenaire"
+    "streak_200": "Boss Bicentenaire",
+    "unlock": "Débloquer les Réalisations"
   },
   "settings": {
     "title": "Paramètres",
@@ -280,7 +281,8 @@
     "completionRate": "Taux d'Achèvement",
     "totalHabits": "Total des Habitudes",
     "activeStreaks": "Séries Actives",
-    "longestStreak": "Plus Longue Série"
+    "longestStreak": "Plus Longue Série",
+    "unlock": "Débloquer les Stats"
   },
   "forms": {
     "required": "Ce champ est obligatoire",

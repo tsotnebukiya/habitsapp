@@ -224,7 +224,8 @@
     "streak_90": "Campeón Trimestral",
     "streak_100": "Triturador del Siglo",
     "streak_180": "Héroe de Medio Año",
-    "streak_200": "Jefe Bicentenario"
+    "streak_200": "Jefe Bicentenario",
+    "unlock": "Desbloquear Logros"
   },
   "settings": {
     "title": "Configuración",
@@ -281,7 +282,8 @@
     "completionRate": "Tasa de Finalización",
     "totalHabits": "Total de Hábitos",
     "activeStreaks": "Rachas Activas",
-    "longestStreak": "Racha Más Larga"
+    "longestStreak": "Racha Más Larga",
+    "unlock": "Desbloquear Stats"
   },
   "forms": {
     "required": "Este campo es obligatorio",
