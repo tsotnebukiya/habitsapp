@@ -103,7 +103,7 @@ const OnboardingCarousel = () => {
 
   const handleNext = () => {
     if (currentIndex === slides.length - 1) {
-      router.push('/onboarding/OnboardingLogin');
+      router.push('/onboarding/wizard');
     } else {
       flatListRef.current?.scrollToIndex({
         index: currentIndex + 1,

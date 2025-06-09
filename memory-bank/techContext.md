@@ -56,28 +56,53 @@
 
 ## Dependencies
 
-### Production Dependencies
+### Production Dependencies (Recently Updated)
 
 ```json
 {
   "@expo/vector-icons": "^14.1.0",
   "@gorhom/bottom-sheet": "^5.1.4",
   "@marceloterreiro/flash-calendar": "^1.3.0",
-  "@react-native-picker/picker": "^2.11.0",
-  "@supabase/supabase-js": "^2.44.4",
-  "expo-router": "^3.5.18",
+  "@react-native-picker/picker": "2.9.0",
+  "@supabase/supabase-js": "^2.49.4",
+  "@superwall/react-native-superwall": "^2.1.4",
+  "expo": "~52.0.46",
+  "expo-apple-authentication": "~7.1.3",
+  "expo-application": "~6.0.2",
+  "expo-auth-session": "~6.0.3",
+  "expo-blur": "~14.0.3",
+  "expo-build-properties": "~0.13.3",
+  "expo-crypto": "~14.0.2",
+  "expo-device": "~7.0.3",
+  "expo-file-system": "~18.0.12",
+  "expo-haptics": "~14.0.1",
+  "expo-linear-gradient": "~14.0.2",
+  "expo-linking": "~7.0.5",
+  "expo-localization": "~16.0.1",
+  "expo-notifications": "~0.29.14",
+  "expo-router": "~4.0.17",
   "expo-store-review": "~8.0.1",
+  "expo-symbols": "~0.2.2",
+  "expo-system-ui": "~4.0.9",
+  "expo-task-manager": "~12.0.6",
+  "expo-web-browser": "~14.0.2",
   "i18next": "^25.2.1",
   "posthog-react-native": "^3.3.9",
   "react-i18next": "^15.5.2",
+  "react-native": "0.76.9",
+  "react-native-fbsdk-next": "^13.4.1",
   "react-native-keyboard-aware-scroll-view": "^0.9.5",
-  "@sentry/react-native": "^6.1.0",
+  "react-native-screens": "~4.4.0",
+  "react-native-svg": "15.8.0",
+  "react-native-webview": "13.12.5",
+  "@sentry/react-native": "~6.10.0",
   "react-native-mmkv": "2.12.2",
   "zustand": "^5.0.1",
   "react-native-calendars": "^1.1312.0",
   "react-native-confetti-cannon": "^1.5.2",
   "react-native-context-menu-view": "^1.16.0",
-  "@bacons/expo-apple-targets": "^0.1.1-beta.1"
+  "@bacons/expo-apple-targets": "^0.1.1-beta.1",
+  "tslib": "2.8.1"
 }
 ```
 
@@ -89,6 +114,7 @@
   "@testing-library/react-native": "^12.9.0",
   "@testing-library/user-event": "^14.6.1",
   "@types/jest": "^29.5.12",
+  "eslint-config-expo": "~8.0.1",
   "faker": "^6.6.6",
   "jest": "^29.2.1",
   "jest-expo": "52.0.6",
@@ -97,6 +123,58 @@
   "typescript": "^5.8.3"
 }
 ```
+
+## Authentication Systems
+
+### Multi-Provider Authentication
+
+1. **Apple Sign-In**
+
+   - expo-apple-authentication v7.1.3
+   - Native iOS integration
+   - Secure token handling
+
+2. **Google Sign-In**
+
+   - @react-native-google-signin/google-signin
+   - Cross-platform support
+   - OAuth 2.0 implementation
+
+3. **Facebook Authentication (New)**
+
+   - react-native-fbsdk-next v13.4.1
+   - Facebook SDK integration
+   - OAuth flow support
+   - Configuration: FACEBOOK_APP_ID and FACEBOOK_CLIENT_TOKEN
+
+4. **Enhanced Auth Session**
+   - expo-auth-session v6.0.3
+   - expo-crypto v14.0.2
+   - Improved authentication flows
+   - Secure cryptographic functions
+
+## Subscription & Paywall Management
+
+### Superwall Integration (New)
+
+1. **Superwall SDK**
+
+   - @superwall/react-native-superwall v2.1.4
+   - Native paywall management and subscription handling
+   - Cross-platform iOS and Android support
+
+2. **Configuration**
+
+   - SUPERWALL_IOS_KEY: pk_d2c6fffef9269bf986d44f399fdde452d5ae8fcb2d7a776b
+   - SUPERWALL_ANDROID_KEY: pk_f4e5875ecf0124e849be07bbb51d16ea5df8800f95aa183d
+   - Replaces previous RevenueCat implementation
+
+3. **Features**
+   - Advanced paywall presentation and customization
+   - A/B testing capabilities
+   - Real-time paywall optimization
+   - Comprehensive analytics and user journey tracking
+   - Native subscription management integration
 
 ## Testing Infrastructure
 

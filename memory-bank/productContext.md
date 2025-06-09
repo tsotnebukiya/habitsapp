@@ -108,7 +108,7 @@ Traditional habit tracking apps often fail because they're either too simple (la
 
 ## Solution
 
-HabitsApp addresses these challenges through:
+HabitsLab addresses these challenges through:
 
 ### For Habit Builders
 

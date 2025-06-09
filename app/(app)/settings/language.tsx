@@ -17,7 +17,7 @@ export default function LanguageScreen() {
 
   const handleLanguageSelect = async (languageCode: SupportedLanguage) => {
     if (languageCode !== currentLanguage) {
-      await changeLanguage(languageCode);
+      changeLanguage(languageCode);
     }
   };
   return (

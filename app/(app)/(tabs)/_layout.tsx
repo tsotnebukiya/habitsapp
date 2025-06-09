@@ -1,6 +1,12 @@
 import { ACTIVE_OPACITY } from '@/components/shared/config';
 import { colors, fontWeights } from '@/lib/constants/ui';
+import { useAllHabits } from '@/lib/hooks/useHabits';
 import { useTranslation } from '@/lib/hooks/useTranslation';
+import {
+  showAchievementsSuperwall,
+  showHabitSuperwall,
+  showStatsSuperwall,
+} from '@/lib/utils/superwall';
 
 import { router, Tabs } from 'expo-router';
 import React from 'react';
@@ -36,7 +42,14 @@ function TabBarLabel(props: { children: React.ReactNode; focused: boolean }) {
 export default function TabLayout() {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-
+  const habits = useAllHabits();
+  const handleAddHabit = () => {
+    if (habits.length >= 1) {
+      showHabitSuperwall();
+    } else {
+      router.push('/add-habit');
+    }
+  };
   return (
     <>
       <Tabs
@@ -54,6 +67,7 @@ export default function TabLayout() {
             tabBarItemStyle: {
               marginLeft: 20,
             },
+
             tabBarIcon: ({ focused }) => (
               <TabBarIcon
                 source={require('@/assets/icons/home-smile.png')}
@@ -69,6 +83,12 @@ export default function TabLayout() {
         />
         <Tabs.Screen
           name="stats"
+          listeners={{
+            tabPress: (e) => {
+              e.preventDefault();
+              showStatsSuperwall(true);
+            },
+          }}
           options={{
             title: t('navigation.stats'),
             headerShown: false,
@@ -90,6 +110,12 @@ export default function TabLayout() {
         />
         <Tabs.Screen
           name="achievements"
+          listeners={{
+            tabPress: (e) => {
+              e.preventDefault();
+              showAchievementsSuperwall(true);
+            },
+          }}
           options={{
             title: t('navigation.achievements'),
             headerShown: false,
@@ -133,7 +159,7 @@ export default function TabLayout() {
       </Tabs>
       <TouchableOpacity
         style={[styles.addButton, { bottom: insets.bottom + 3 }]}
-        onPress={() => router.push('/add-habit')}
+        onPress={handleAddHabit}
         activeOpacity={ACTIVE_OPACITY}
       >
         <Icon size={24} source={require('@/assets/icons/plus.png')} />

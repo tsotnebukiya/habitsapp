@@ -3,8 +3,8 @@ import { ConfigContext, ExpoConfig } from 'expo/config';
 export default ({
   config,
 }: ConfigContext): ExpoConfig & { ios: { appleTeamId: string } } => ({
-  name: 'HabitsApp',
-  slug: 'HabitsApp',
+  name: 'HabitsLab',
+  slug: 'HabitsLab',
   version: '1.0.0',
   orientation: 'portrait',
   icon: './assets/icon.png',

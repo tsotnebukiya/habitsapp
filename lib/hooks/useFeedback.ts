@@ -38,7 +38,6 @@ export function useFeedback() {
           userId: userId,
         },
       });
-      console.log(error);
       if (error) throw error;
 
       setIsSuccess(true);

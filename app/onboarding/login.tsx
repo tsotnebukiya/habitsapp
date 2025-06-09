@@ -27,27 +27,35 @@ import { colors, fontWeights } from '@/lib/constants/ui';
 import useHabitsStore from '@/lib/habit-store/store';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 import { useAppStore } from '@/lib/stores/app_state';
+import { useOnboardingStore } from '@/lib/stores/onboardingStore';
 import { useUserProfileStore } from '@/lib/stores/user_profile';
 import { dateUtils } from '@/lib/utils/dayjs';
+import { showOnboardingLoginSuperwall } from '@/lib/utils/superwall';
 import { GOOGLE_SIGN_IN_IOS_CLIENT_ID } from '@/safe_constants';
 import { supabase } from '@/supabase/client';
+import Superwall from '@superwall/react-native-superwall';
 import { Icon } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 function OnboardingLogin() {
   const inset = useSafeAreaInsets();
   const { t, currentLanguage } = useTranslation();
+  const matrixScores = useOnboardingStore.getState().getMatrixScores();
   const router = useRouter();
   const { setProfile } = useUserProfileStore();
   const currentAppLanguage = useAppStore((state) => state.currentLanguage);
   const [loading, setLoading] = useState(false);
-
   const handleLanguage = () => {
     router.push('/language');
   };
 
   const handleBack = () => {
-    router.back();
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      // No previous screen (came from smart routing), go to intro
+      router.replace('/onboarding/intro');
+    }
   };
 
   GoogleSignin.configure({
@@ -61,27 +69,6 @@ function OnboardingLogin() {
       if (!authData.user) {
         throw new Error(t('onboarding.login.errors.noUserData'));
       }
-
-      const currentTimezone = dateUtils.getCurrentTimezone();
-      const userData = {
-        id: authData.user.id,
-        email: authData.user.email!,
-        display_name: authData.user.email?.split('@')[0] || '',
-        created_at: dateUtils.toServerDateTime(dateUtils.nowUTC()),
-        updated_at: dateUtils.toServerDateTime(dateUtils.nowUTC()),
-        cat1: 50,
-        cat2: 50,
-        cat3: 50,
-        cat4: 50,
-        cat5: 50,
-        preferred_language: currentAppLanguage,
-        timezone: currentTimezone,
-        onboarding_complete: true,
-        allow_streak_notifications: false,
-        allow_daily_update_notifications: false,
-        date_of_birth: null,
-        push_token: null,
-      };
 
       // Check if user already exists first (foolproof approach)
       const { data: existingUser, error: fetchError } = await supabase
@@ -97,8 +84,29 @@ function OnboardingLogin() {
 
       if (existingUser) {
         setProfile(existingUser);
-        router.replace('/(tabs)');
+        Superwall.shared.identify({ userId: authData.user.id });
+        showOnboardingLoginSuperwall();
       } else {
+        const currentTimezone = dateUtils.getCurrentTimezone();
+        const userData = {
+          id: authData.user.id,
+          email: authData.user.email!,
+          display_name: authData.user.email?.split('@')[0] || '',
+          created_at: dateUtils.toServerDateTime(dateUtils.nowUTC()),
+          updated_at: dateUtils.toServerDateTime(dateUtils.nowUTC()),
+          cat1: matrixScores.cat1,
+          cat2: matrixScores.cat2,
+          cat3: matrixScores.cat3,
+          cat4: matrixScores.cat4,
+          cat5: matrixScores.cat5,
+          preferred_language: currentAppLanguage,
+          timezone: currentTimezone,
+          onboarding_complete: true,
+          allow_streak_notifications: false,
+          allow_daily_update_notifications: false,
+          date_of_birth: null,
+          push_token: null,
+        };
         const { error: insertError } = await supabase
           .from('users')
           .insert(userData);
@@ -123,7 +131,8 @@ function OnboardingLogin() {
         };
 
         useHabitsStore.getState().setAchievements(initialAchievements);
-        router.push('/onboarding/Notifications');
+        Superwall.shared.identify({ userId: authData.user.id });
+        router.push('/onboarding/notifications');
       }
     } catch (error: any) {
       console.error(`${provider} auth error:`, error);

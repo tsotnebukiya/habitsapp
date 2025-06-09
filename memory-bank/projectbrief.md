@@ -1,8 +1,8 @@
-# Project Brief: HabitsApp
+# Project Brief: HabitsLab
 
 ## Project Overview
 
-HabitsApp is a comprehensive habit tracking mobile application designed to help users build and maintain positive habits through an intuitive interface, gamification, and intelligent insights. The app combines daily habit tracking with achievement systems, statistics, and iOS widgets for seamless habit management.
+HabitsLab is a comprehensive habit tracking mobile application designed to help users build and maintain positive habits through an intuitive interface, gamification, and intelligent insights. The app combines daily habit tracking with achievement systems, statistics, and iOS widgets for seamless habit management.
 
 ## Core Requirements
 
@@ -65,4 +65,4 @@ HabitsApp is a comprehensive habit tracking mobile application designed to help 
 
 ## Timeline
 
-HabitsApp is in active development with regular feature updates and improvements. The core functionality is complete, with ongoing work on advanced features, UI polish, and user experience enhancements.
+HabitsLab is in active development with regular feature updates and improvements. The core functionality is complete, with ongoing work on advanced features, UI polish, and user experience enhancements.

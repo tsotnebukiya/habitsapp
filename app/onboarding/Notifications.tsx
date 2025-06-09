@@ -1,4 +1,4 @@
-// app/onboarding/Notifications.tsx
+// app/onboarding/notifications.tsx
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import {
@@ -23,6 +23,7 @@ import {
   registerForPushNotificationsAsync,
   savePushToken,
 } from '@/lib/utils/notifications';
+import { showOnboardingNotificationsSuperwall } from '@/lib/utils/superwall';
 import * as ExpoNotifications from 'expo-notifications';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -76,7 +77,7 @@ function Notifications() {
 
     try {
       if (!pushNotificationsEnabled) {
-        router.replace('/(tabs)');
+        showOnboardingNotificationsSuperwall();
         return;
       }
 
@@ -117,11 +118,11 @@ function Notifications() {
       }
 
       // Navigate to main app
-      router.replace('/(tabs)');
+      showOnboardingNotificationsSuperwall();
     } catch (error) {
       console.error('Error in handleContinue:', error);
       // Even if there's an error, navigate to main app
-      router.replace('/(tabs)');
+      showOnboardingNotificationsSuperwall();
     } finally {
       setIsLoading(false);
     }

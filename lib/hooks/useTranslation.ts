@@ -10,7 +10,7 @@ export const useTranslation = () => {
 
   const changeLanguage = async (language: SupportedLanguage) => {
     // Update app state (i18n + local storage)
-    await setLanguage(language);
+    setLanguage(language);
 
     // Update user profile if user is logged in
     // This ensures the language preference is saved to Supabase

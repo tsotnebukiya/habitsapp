@@ -628,7 +628,8 @@
     "streak_90": "Quarterly Champion",
     "streak_100": "Century Crusher",
     "streak_180": "Half-Year Hero",
-    "streak_200": "Bicentennial Boss"
+    "streak_200": "Bicentennial Boss",
+    "unlock": "Unlock Achievements"
   },
   "settings": {
     "title": "Settings",
@@ -685,7 +686,8 @@
     "completionRate": "Completion Rate",
     "totalHabits": "Total Habits",
     "activeStreaks": "Active Streaks",
-    "longestStreak": "Longest Streak"
+    "longestStreak": "Longest Streak",
+    "unlock": "Unlock Stats"
   },
   "forms": {
     "required": "This field is required",
@@ -722,7 +724,7 @@
   },
   "onboarding": {
     "welcome": {
-      "title": "Welcome to HabitsApp",
+      "title": "Welcome to HabitsLab",
       "description": "Your all-in-one solution for managing your daily habits and achieving your goals."
     },
     "track": {
@@ -756,7 +758,201 @@
       }
     },
     "getStarted": "Get Started",
-    "next": "Next"
+    "next": "Next",
+    "wizard": {
+      "startBuildingHabits": "Start Building Habits"
+    },
+    "loading": {
+      "quick": {
+        "settingUp": "Setting up your account...",
+        "preparingDashboard": "Preparing your dashboard...",
+        "almostReady": "Almost ready..."
+      },
+      "standard": {
+        "analyzing": "Analyzing your responses...",
+        "buildingProfile": "Building your profile...",
+        "preparingDashboard": "Preparing your dashboard...",
+        "almostReady": "Almost ready..."
+      },
+      "preview": {
+        "processing": "Processing your preferences...",
+        "preparingPreview": "Preparing your preview...",
+        "almostReady": "Almost ready..."
+      },
+      "complete": {
+        "analyzing": "Analyzing your responses...",
+        "calculating": "Calculating your scores...",
+        "buildingProfile": "Building your profile...",
+        "almostReady": "Almost ready..."
+      }
+    },
+    "questions": {
+      "priority": {
+        "question1": {
+          "question": "What's your main goal?",
+          "options": {
+            "option1": "Build healthy habits",
+            "option2": "Break bad habits",
+            "option3": "Boost productivity",
+            "option4": "Find life balance"
+          }
+        },
+        "question2": {
+          "question": "What usually stops you?",
+          "options": {
+            "option1": "Lack of motivation",
+            "option2": "Too busy/no time",
+            "option3": "Don't know how to start",
+            "option4": "Can't stay consistent"
+          }
+        },
+        "question3": {
+          "question": "When do you feel most focused?",
+          "options": {
+            "option1": "Early morning (5-9 AM)",
+            "option2": "Mid-day (9 AM-2 PM)",
+            "option3": "Evening (2-8 PM)",
+            "option4": "Night (8 PM+)"
+          }
+        },
+        "question4": {
+          "question": "How do you prefer to track progress?",
+          "options": {
+            "option1": "Simple streaks",
+            "option2": "Detailed statistics",
+            "option3": "Visual achievements",
+            "option4": "Quick check-ins"
+          }
+        }
+      },
+      "mini": {
+        "vitality1": {
+          "question": "How would you rate your energy levels?",
+          "options": {
+            "option1": "Always tired",
+            "option2": "Often low energy",
+            "option3": "Usually energized",
+            "option4": "Full of energy"
+          }
+        },
+        "vitality2": {
+          "question": "How consistent is your sleep schedule?",
+          "options": {
+            "option1": "Very irregular",
+            "option2": "Somewhat irregular",
+            "option3": "Mostly consistent",
+            "option4": "Very consistent"
+          }
+        },
+        "wisdom1": {
+          "question": "How often do you learn something new?",
+          "options": {
+            "option1": "Rarely",
+            "option2": "Sometimes",
+            "option3": "Often",
+            "option4": "Daily"
+          }
+        },
+        "wisdom2": {
+          "question": "How well can you focus on tasks?",
+          "options": {
+            "option1": "Very easily distracted",
+            "option2": "Sometimes distracted",
+            "option3": "Usually focused",
+            "option4": "Laser focused"
+          }
+        },
+        "harmony1": {
+          "question": "How strong are your relationships?",
+          "options": {
+            "option1": "Need improvement",
+            "option2": "Could be better",
+            "option3": "Pretty good",
+            "option4": "Very strong"
+          }
+        },
+        "harmony2": {
+          "question": "How much time do you spend with loved ones?",
+          "options": {
+            "option1": "Not enough",
+            "option2": "Could be more",
+            "option3": "Good amount",
+            "option4": "Plenty of time"
+          }
+        },
+        "spirit1": {
+          "question": "How well do you handle stress?",
+          "options": {
+            "option1": "Struggle a lot",
+            "option2": "Sometimes struggle",
+            "option3": "Handle it well",
+            "option4": "Very resilient"
+          }
+        },
+        "spirit2": {
+          "question": "How often do you practice mindfulness?",
+          "options": {
+            "option1": "Never",
+            "option2": "Occasionally",
+            "option3": "Regularly",
+            "option4": "Daily practice"
+          }
+        },
+        "ambition1": {
+          "question": "How organized do you feel?",
+          "options": {
+            "option1": "Very disorganized",
+            "option2": "Somewhat messy",
+            "option3": "Pretty organized",
+            "option4": "Highly organized"
+          }
+        },
+        "ambition2": {
+          "question": "How often do you achieve your goals?",
+          "options": {
+            "option1": "Rarely finish",
+            "option2": "Sometimes finish",
+            "option3": "Usually finish",
+            "option4": "Always finish"
+          }
+        }
+      }
+    },
+    "matrix": {
+      "title": "Your Habit Focus Areas",
+      "badges": {
+        "strong": "💪 Strong",
+        "focus": "🎯 Focus"
+      },
+      "insights": {
+        "startWith": "Start with",
+        "habits": "habits",
+        "alreadyStrong": "You're already strong in",
+        "focusingSuffix": "so focusing on {{category}} will give you the best results."
+      }
+    },
+    "value": {
+      "title": "What You'll Get",
+      "subtitle": "Your personalized habit plan is ready",
+      "items": {
+        "statistics": {
+          "title": "Detailed Statistics",
+          "description": "Heat maps, progress charts, and completion analytics"
+        },
+        "achievements": {
+          "title": "Achievement Badges",
+          "description": "Unlock badges for streaks and milestones"
+        },
+        "widgets": {
+          "title": "iOS Widgets",
+          "description": "Track habits directly from your home screen"
+        },
+        "streaks": {
+          "title": "Streak Tracking",
+          "description": "Build momentum with visual streak counters"
+        }
+      }
+    }
   },
   "weekdays": {
     "short": {

@@ -1,8 +1,8 @@
-# HabitsApp - Complete Feature Documentation
+# HabitsLab - Complete Feature Documentation
 
 ## Overview
 
-HabitsApp is a comprehensive habit tracking mobile application built with React Native and Expo SDK 52. The app combines daily habit tracking with gamification, iOS widgets, analytics, and intelligent insights to help users build and maintain positive habits.
+HabitsLab is a comprehensive habit tracking mobile application built with React Native and Expo SDK 52. The app combines daily habit tracking with gamification, iOS widgets, analytics, and intelligent insights to help users build and maintain positive habits.
 
 ## Core Features
 
@@ -275,4 +275,4 @@ The app includes an extensive library of pre-built habit templates organized int
 - **Testing**: Jest, MSW, React Native Testing Library
 - **Internationalization**: i18next with comprehensive translation utilities
 
-This comprehensive feature set makes HabitsApp a complete solution for habit formation, tracking, and maintenance with a focus on user experience, reliability, and motivation through gamification.
+This comprehensive feature set makes HabitsLab a complete solution for habit formation, tracking, and maintenance with a focus on user experience, reliability, and motivation through gamification.

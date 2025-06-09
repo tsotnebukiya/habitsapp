@@ -220,7 +220,8 @@
     "streak_90": "Campeão Trimestral",
     "streak_100": "Esmagador do Século",
     "streak_180": "Herói de Meio Ano",
-    "streak_200": "Chefe Bicentenário"
+    "streak_200": "Chefe Bicentenário",
+    "unlock": "Desbloquear Conquistas"
   },
   "settings": {
     "title": "Configurações",
@@ -277,7 +278,8 @@
     "completionRate": "Taxa de Conclusão",
     "totalHabits": "Total de Hábitos",
     "activeStreaks": "Sequências Ativas",
-    "longestStreak": "Sequência Mais Longa"
+    "longestStreak": "Sequência Mais Longa",
+    "unlock": "Desbloquear Stats"
   },
   "forms": {
     "required": "Este campo é obrigatório",
@@ -314,7 +316,7 @@
   },
   "onboarding": {
     "welcome": {
-      "title": "Bem-vindo ao HabitsApp",
+      "title": "Bem-vindo ao HabitsLab",
       "description": "Sua solução completa para gerenciar seus hábitos diários e alcançar seus objetivos."
     },
     "track": {
@@ -348,7 +350,201 @@
       }
     },
     "getStarted": "Começar",
-    "next": "Próximo"
+    "next": "Próximo",
+    "wizard": {
+      "startBuildingHabits": "Começar a Construir Hábitos"
+    },
+    "loading": {
+      "quick": {
+        "settingUp": "Configurando sua conta...",
+        "preparingDashboard": "Preparando seu painel...",
+        "almostReady": "Quase pronto..."
+      },
+      "standard": {
+        "analyzing": "Analisando suas respostas...",
+        "buildingProfile": "Construindo seu perfil...",
+        "preparingDashboard": "Preparando seu painel...",
+        "almostReady": "Quase pronto..."
+      },
+      "preview": {
+        "processing": "Processando suas preferências...",
+        "preparingPreview": "Preparando sua prévia...",
+        "almostReady": "Quase pronto..."
+      },
+      "complete": {
+        "analyzing": "Analisando suas respostas...",
+        "calculating": "Calculando suas pontuações...",
+        "buildingProfile": "Construindo seu perfil...",
+        "almostReady": "Quase pronto..."
+      }
+    },
+    "questions": {
+      "priority": {
+        "question1": {
+          "question": "Qual é seu objetivo principal?",
+          "options": {
+            "option1": "Construir hábitos saudáveis",
+            "option2": "Quebrar maus hábitos",
+            "option3": "Aumentar produtividade",
+            "option4": "Encontrar equilíbrio na vida"
+          }
+        },
+        "question2": {
+          "question": "O que geralmente te impede?",
+          "options": {
+            "option1": "Falta de motivação",
+            "option2": "Muito ocupado/sem tempo",
+            "option3": "Não sei como começar",
+            "option4": "Não consigo ser consistente"
+          }
+        },
+        "question3": {
+          "question": "Quando você se sente mais concentrado?",
+          "options": {
+            "option1": "Cedo de manhã (5-9h)",
+            "option2": "Meio-dia (9h-14h)",
+            "option3": "À noite (14h-20h)",
+            "option4": "Noite (20h+)"
+          }
+        },
+        "question4": {
+          "question": "Como você prefere acompanhar o progresso?",
+          "options": {
+            "option1": "Sequências simples",
+            "option2": "Estatísticas detalhadas",
+            "option3": "Conquistas visuais",
+            "option4": "Check-ins rápidos"
+          }
+        }
+      },
+      "mini": {
+        "vitality1": {
+          "question": "Como você avaliaria seus níveis de energia?",
+          "options": {
+            "option1": "Sempre cansado",
+            "option2": "Frequentemente com pouca energia",
+            "option3": "Geralmente energizado",
+            "option4": "Cheio de energia"
+          }
+        },
+        "vitality2": {
+          "question": "Quão consistente é seu horário de sono?",
+          "options": {
+            "option1": "Muito irregular",
+            "option2": "Meio irregular",
+            "option3": "Principalmente consistente",
+            "option4": "Muito consistente"
+          }
+        },
+        "wisdom1": {
+          "question": "Com que frequência você aprende algo novo?",
+          "options": {
+            "option1": "Raramente",
+            "option2": "Às vezes",
+            "option3": "Frequentemente",
+            "option4": "Diariamente"
+          }
+        },
+        "wisdom2": {
+          "question": "Quão bem você consegue se concentrar em tarefas?",
+          "options": {
+            "option1": "Muito facilmente distraído",
+            "option2": "Às vezes distraído",
+            "option3": "Geralmente concentrado",
+            "option4": "Concentração laser"
+          }
+        },
+        "harmony1": {
+          "question": "Quão fortes são seus relacionamentos?",
+          "options": {
+            "option1": "Precisam melhorar",
+            "option2": "Poderiam ser melhores",
+            "option3": "Bem bons",
+            "option4": "Muito fortes"
+          }
+        },
+        "harmony2": {
+          "question": "Quanto tempo você passa com seus entes queridos?",
+          "options": {
+            "option1": "Não suficiente",
+            "option2": "Poderia ser mais",
+            "option3": "Boa quantidade",
+            "option4": "Muito tempo"
+          }
+        },
+        "spirit1": {
+          "question": "Quão bem você lida com o estresse?",
+          "options": {
+            "option1": "Luto muito",
+            "option2": "Às vezes luto",
+            "option3": "Lido bem",
+            "option4": "Muito resiliente"
+          }
+        },
+        "spirit2": {
+          "question": "Com que frequência você pratica mindfulness?",
+          "options": {
+            "option1": "Nunca",
+            "option2": "Ocasionalmente",
+            "option3": "Regularmente",
+            "option4": "Prática diária"
+          }
+        },
+        "ambition1": {
+          "question": "Quão organizado você se sente?",
+          "options": {
+            "option1": "Muito desorganizado",
+            "option2": "Meio bagunçado",
+            "option3": "Bem organizado",
+            "option4": "Altamente organizado"
+          }
+        },
+        "ambition2": {
+          "question": "Com que frequência você alcança seus objetivos?",
+          "options": {
+            "option1": "Raramente termino",
+            "option2": "Às vezes termino",
+            "option3": "Geralmente termino",
+            "option4": "Sempre termino"
+          }
+        }
+      }
+    },
+    "matrix": {
+      "title": "Suas Áreas de Foco de Hábitos",
+      "badges": {
+        "strong": "💪 Forte",
+        "focus": "🎯 Foco"
+      },
+      "insights": {
+        "startWith": "Comece com",
+        "habits": "hábitos",
+        "alreadyStrong": "Você já é forte em",
+        "focusingSuffix": "então focar em {{category}} dará os melhores resultados."
+      }
+    },
+    "value": {
+      "title": "O Que Você Vai Receber",
+      "subtitle": "Seu plano personalizado de hábitos está pronto",
+      "items": {
+        "statistics": {
+          "title": "Estatísticas Detalhadas",
+          "description": "Mapas de calor, gráficos de progresso e análises de conclusão"
+        },
+        "achievements": {
+          "title": "Badges de Conquista",
+          "description": "Desbloqueie badges por sequências e marcos"
+        },
+        "widgets": {
+          "title": "Widgets do iOS",
+          "description": "Acompanhe hábitos diretamente da sua tela inicial"
+        },
+        "streaks": {
+          "title": "Acompanhamento de Sequências",
+          "description": "Construa momentum com contadores visuais de sequências"
+        }
+      }
+    }
   },
   "weekdays": {
     "short": {
