@@ -4,7 +4,6 @@ import { router } from 'expo-router';
 const SUPERWALL_PLACEMENTS = {
   ONBOARDING_LOGIN: 'onboarding_login',
   ONBOARDING_NOTIFICATIONS: 'onboarding_notifications',
-  DASHBOARD_ACCESS: 'dashboard_access',
   ACHIEVEMENTS_VIEW: 'achievements_view',
   STATS_VIEW: 'stats_view',
   ADD_HABIT_LIMIT: 'add_habit_limit',
