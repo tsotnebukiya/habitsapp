@@ -1,3 +1,4 @@
+import { miniAssessmentQuestions } from '@/lib/constants/onboardingQuestions';
 import { MMKV } from 'react-native-mmkv';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
@@ -43,11 +44,6 @@ export interface MatrixScores {
 export function calculateMatrixScores(
   answers: Record<string, AnswerValue>
 ): MatrixScores {
-  // Import the questions to access their structure dynamically
-  const {
-    miniAssessmentQuestions,
-  } = require('@/lib/constants/onboardingQuestions');
-
   // Helper to get score from answer (either text or index)
   const getScoreFromAnswer = (
     questionId: string,

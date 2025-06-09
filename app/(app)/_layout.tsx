@@ -17,10 +17,16 @@ function StackLayout() {
 
   useEffect(() => {
     async function initializeApp() {
-      if (profile?.id) {
-        await Promise.all([useHabitsStore.getState().syncWithServer()]);
+      try {
+        if (profile?.id) {
+          await Promise.all([useHabitsStore.getState().syncWithServer()]);
+        }
+      } catch (error) {
+        console.error('Failed to sync with server:', error);
+        // Continue with app initialization even if sync fails
+      } finally {
+        setIsInitializing(false);
       }
-      setIsInitializing(false);
     }
     initializeApp();
   }, [profile?.id]); // Re-run when user logs in

@@ -46,7 +46,7 @@ export default function wizard() {
     calculateAndSetMatrixScores,
   } = useOnboardingStore();
   const items = useMemo(() => {
-    const actualVariant = (variant as string) || 'minimal';
+    const actualVariant = (variant as string) || 'quick';
     return getOnboardingItems(actualVariant);
   }, [variant]);
   // Reset currentIndex to 0 when wizard starts/renders
