@@ -43,7 +43,7 @@ function EmptyHabits({ selectedDate }: { selectedDate: Date }) {
   }
 
   const handleAddHabit = () => {
-    if (habits.length === 1) {
+    if (habits.length >= 1) {
       showHabitSuperwall();
     } else {
       router.push('/add-habit');
