@@ -192,7 +192,14 @@ const handleFacebookLogin = async () => {
    - Supabase for backend storage
    - Offline sync capabilities
 
-2. **Internationalization (i18n)**
+2. **Subscription Management**
+
+   - Superwall SDK for paywall presentation and management
+   - Native subscription handling with App Store/Play Store integration
+   - A/B testing capabilities for paywall optimization
+   - Real-time analytics and user journey tracking
+
+3. **Internationalization (i18n)**
 
    - i18next for translation management
    - react-i18next for React Native integration
@@ -200,7 +207,7 @@ const handleFacebookLogin = async () => {
    - Fallback strategy with default values
    - Dynamic pluralization and value insertion support
 
-3. **State Updates**
+4. **State Updates**
 
    - Optimistic updates for instant feedback
    - Non-blocking state updates for UI responsiveness
@@ -210,7 +217,7 @@ const handleFacebookLogin = async () => {
    - Error handling with retry limits
    - Key Pattern: Avoid awaiting non-critical async operations that would block UI updates
 
-4. **Sync Pattern**
+5. **Sync Pattern**
 
    - Initial sync on app launch
    - Periodic sync (hourly)
@@ -219,7 +226,7 @@ const handleFacebookLogin = async () => {
    - Conflict resolution strategy
    - Async operations run in background to prevent UI blocking
 
-5. **State Selection/Derivation**
+6. **State Selection/Derivation**
    - Prefer custom hooks with `useMemo` for selecting/deriving state over complex selectors within `create`
    - Keep state updates synchronous where possible for immediate UI feedback
    - Use non-blocking async operations for server sync
@@ -1287,3 +1294,68 @@ Benefits:
        }
    }
    ```
+
+## Subscription & Paywall Patterns
+
+### Superwall Integration Pattern
+
+```typescript
+// Superwall SDK integration pattern
+import { Superwall } from '@superwall/react-native-superwall';
+
+// Initialize Superwall
+const initializeSuperwall = async () => {
+  try {
+    await Superwall.configure({
+      apiKey: Platform.OS === 'ios' ? SUPERWALL_IOS_KEY : SUPERWALL_ANDROID_KEY,
+      // Additional configuration options
+    });
+  } catch (error) {
+    console.error('Superwall initialization failed:', error);
+  }
+};
+
+// Present paywall
+const presentPaywall = async (identifier: string) => {
+  try {
+    const result = await Superwall.presentPaywall(identifier);
+    // Handle paywall result
+    return result;
+  } catch (error) {
+    console.error('Paywall presentation failed:', error);
+  }
+};
+
+// Track events for paywall triggers
+const trackEvent = (eventName: string, parameters?: Record<string, any>) => {
+  Superwall.track(eventName, parameters);
+};
+```
+
+- Superwall configuration with platform-specific API keys
+- Paywall presentation with identifier-based triggers
+- Event tracking for user journey analysis
+- Error handling for paywall operations
+- Integration with existing subscription logic
+
+### Configuration Management
+
+```typescript
+// Constants for Superwall configuration
+export const SUPERWALL_IOS_KEY =
+  'pk_d2c6fffef9269bf986d44f399fdde452d5ae8fcb2d7a776b';
+export const SUPERWALL_ANDROID_KEY =
+  'pk_f4e5875ecf0124e849be07bbb51d16ea5df8800f95aa183d';
+
+// Platform-specific initialization
+const getSuperwallConfig = () => ({
+  apiKey: Platform.OS === 'ios' ? SUPERWALL_IOS_KEY : SUPERWALL_ANDROID_KEY,
+  userId: user?.id,
+  // Additional configuration based on platform
+});
+```
+
+- Centralized configuration management
+- Platform-specific API key handling
+- User identification for personalized paywalls
+- Scalable configuration patterns

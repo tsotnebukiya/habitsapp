@@ -65,6 +65,7 @@
   "@marceloterreiro/flash-calendar": "^1.3.0",
   "@react-native-picker/picker": "2.9.0",
   "@supabase/supabase-js": "^2.49.4",
+  "@superwall/react-native-superwall": "^2.1.4",
   "expo": "~52.0.46",
   "expo-apple-authentication": "~7.1.3",
   "expo-application": "~6.0.2",
@@ -151,6 +152,29 @@
    - expo-crypto v14.0.2
    - Improved authentication flows
    - Secure cryptographic functions
+
+## Subscription & Paywall Management
+
+### Superwall Integration (New)
+
+1. **Superwall SDK**
+
+   - @superwall/react-native-superwall v2.1.4
+   - Native paywall management and subscription handling
+   - Cross-platform iOS and Android support
+
+2. **Configuration**
+
+   - SUPERWALL_IOS_KEY: pk_d2c6fffef9269bf986d44f399fdde452d5ae8fcb2d7a776b
+   - SUPERWALL_ANDROID_KEY: pk_f4e5875ecf0124e849be07bbb51d16ea5df8800f95aa183d
+   - Replaces previous RevenueCat implementation
+
+3. **Features**
+   - Advanced paywall presentation and customization
+   - A/B testing capabilities
+   - Real-time paywall optimization
+   - Comprehensive analytics and user journey tracking
+   - Native subscription management integration
 
 ## Testing Infrastructure
 
