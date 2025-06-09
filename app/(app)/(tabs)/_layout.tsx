@@ -44,7 +44,7 @@ export default function TabLayout() {
   const { t } = useTranslation();
   const habits = useAllHabits();
   const handleAddHabit = () => {
-    if (habits.length === 1) {
+    if (habits.length >= 1) {
       showHabitSuperwall();
     } else {
       router.push('/add-habit');
