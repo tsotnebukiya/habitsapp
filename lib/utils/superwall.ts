@@ -53,7 +53,7 @@ export function showOnboardingNotificationsSuperwall() {
   Superwall.shared.register({
     placement: SUPERWALL_PLACEMENTS.ONBOARDING_NOTIFICATIONS,
     feature: () => {
-      router.push('/onboarding/notifications');
+      router.push('/(tabs)');
     },
   });
 }
