@@ -43,10 +43,14 @@ const SettingsScreen = () => {
     router.push('/settings/language');
   };
   const handleTerms = async () => {
-    await WebBrowser.openBrowserAsync('https://www.habitslab.app/terms');
+    await WebBrowser.openBrowserAsync(
+      'https://www.habitslab.app/terms-of-service'
+    );
   };
   const handlePrivacy = async () => {
-    await WebBrowser.openBrowserAsync('https://www.habitslab.app/privacy');
+    await WebBrowser.openBrowserAsync(
+      'https://www.habitslab.app/privacy-policy'
+    );
   };
 
   const handleShare = async () => {
