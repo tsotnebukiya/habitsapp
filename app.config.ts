@@ -151,4 +151,7 @@ export default ({
   updates: {
     url: 'https://u.expo.dev/86db4c6b-889c-4d36-80d6-186e18cb031b',
   },
+  runtimeVersion: {
+    policy: 'appVersion',
+  },
 });
