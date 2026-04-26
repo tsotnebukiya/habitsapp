@@ -1,6 +1,7 @@
 import { ACTIVE_OPACITY } from '@/components/shared/config';
 import { colors, fontWeights } from '@/lib/constants/ui';
 import useHabitsStore from '@/lib/habit-store/store';
+import { useTrackedScreen } from '@/lib/hooks/useTrackedScreen';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 import { useAppStore } from '@/lib/stores/app_state';
 import { useOnboardingStore } from '@/lib/stores/onboardingStore';
@@ -9,6 +10,7 @@ import { supabase } from '@/supabase/client';
 import Superwall from '@superwall/react-native-superwall';
 import { router } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
+import { usePostHog } from 'posthog-react-native';
 import React, { useState } from 'react';
 import {
   ActivityIndicator,
@@ -29,9 +31,12 @@ const SettingsScreen = () => {
   const { t } = useTranslation();
   const { profile, clearProfile } = useUserProfileStore();
   const resetStore = useOnboardingStore((state) => state.resetStore);
+  const posthog = usePostHog();
   const clearHabitsData = useHabitsStore((state) => state.clearAllData);
   const clearAppData = useAppStore((state) => state.clearAllData);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  useTrackedScreen('settings');
 
   const handleNotifications = () => {
     router.push('/settings/notifications');
@@ -86,9 +91,13 @@ const SettingsScreen = () => {
 
   const confirmSignOut = async () => {
     try {
+      posthog.capture('sign_out_confirmed');
+      await posthog.flush();
+      resetStore();
       clearProfile();
       clearHabitsData();
       Superwall.shared.reset();
+      posthog.reset();
       await supabase.auth.signOut();
 
       Toast.show({
@@ -135,6 +144,8 @@ const SettingsScreen = () => {
     }
     setIsDeleting(true);
     try {
+      posthog.capture('account_deletion_requested');
+      await posthog.flush();
       // Get current session to pass to Edge Function
       const {
         data: { session },
@@ -162,6 +173,9 @@ const SettingsScreen = () => {
       clearAppData();
 
       Superwall.shared.reset();
+      posthog.capture('account_deleted');
+      await posthog.flush();
+      posthog.reset();
       // Clear local session (user is already deleted from auth)
       await supabase.auth.signOut({ scope: 'local' });
       setIsDeleting(false);

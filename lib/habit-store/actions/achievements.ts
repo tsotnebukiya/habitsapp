@@ -1,6 +1,7 @@
 import { useAppStore } from '@/lib/stores/app_state';
 import { useModalStore } from '@/lib/stores/modal_store';
 import { useUserProfileStore } from '@/lib/stores/user_profile';
+import { captureAnalyticsEvent } from '@/lib/analytics/client';
 import {
   calculateCurrentStreak,
   calculateDMS,
@@ -203,6 +204,14 @@ export const createAchievementSlice: StateCreator<
 
     // Automatically show modal if there are unlocked achievements
     if (unlockedAchievements.length > 0) {
+      unlockedAchievements.forEach((achievementId) => {
+        captureAnalyticsEvent('achievement_unlocked', {
+          achievement_id: achievementId,
+          achievement_days: achievementId,
+          current_streak: currentStreak,
+          max_streak: userAchievement.max_streak,
+        });
+      });
       useModalStore.getState().showAchievementModal(unlockedAchievements);
     }
 

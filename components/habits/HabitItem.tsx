@@ -85,7 +85,9 @@ function HabitItem({
       showIsCompletedToast();
       return;
     }
-    toggleHabitStatus(habit.id, selectedDate, 'toggle');
+    toggleHabitStatus(habit.id, selectedDate, 'toggle', undefined, {
+      interactionSurface: 'habit_card',
+    });
   };
 
   const handlePress = () => {
@@ -98,11 +100,15 @@ function HabitItem({
   };
 
   const handleDelete = () => {
-    deleteHabit(habit.id);
+    deleteHabit(habit.id, {
+      interactionSurface: 'habit_context_menu',
+    });
   };
 
   const handleSkip = () => {
-    toggleHabitStatus(habit.id, selectedDate, 'toggle_skip');
+    toggleHabitStatus(habit.id, selectedDate, 'toggle_skip', undefined, {
+      interactionSurface: 'habit_context_menu',
+    });
   };
 
   const handleResetHistory = () => {

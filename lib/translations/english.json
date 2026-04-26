@@ -724,7 +724,7 @@
   },
   "onboarding": {
     "welcome": {
-      "title": "Welcome to HabitsLab",
+      "title": "Welcome to HabitsLab!",
       "description": "Your all-in-one solution for managing your daily habits and achieving your goals."
     },
     "track": {
@@ -736,6 +736,22 @@
       "description": "Join our community of achievers and start your journey today."
     },
     "smartRemindersTitle": "Stay on track with smart reminders",
+    "commitment": {
+      "title": "Commitment pact",
+      "sealing": "Sealing your commitment",
+      "commit": "I commit to my goals.",
+      "committed": "Committed",
+      "tapBold": "Tap to commit.",
+      "tapSub": "Committing to goals boosts motivation.",
+      "trust": "And I trust HabitsLab to coach me through the journey.",
+      "description": {
+        "part1": "People follow through more often when they make a clear promise. Tap the fingerprint to ",
+        "bold1": "seal your commitment",
+        "part2": " and remind yourself that ",
+        "bold2": "small daily actions create lasting change",
+        "part3": "."
+      }
+    },
     "login": {
       "title": "Ready to\nbuild habits?",
       "subtitle": "Sign in to start tracking your progress and building lasting habits.",

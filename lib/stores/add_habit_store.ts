@@ -31,10 +31,18 @@ export interface HabitFormData {
 }
 
 export type AddHabitStep = 'category' | 'templates' | 'main';
+export type AddHabitEntrypoint =
+  | 'tab_fab'
+  | 'empty_state'
+  | 'paywall_unlock'
+  | null;
 
 interface AddHabitState {
   formData: HabitFormData;
   selectedTemplate: HabitTemplate | null;
+  entrypoint: AddHabitEntrypoint;
+  flowStarted: boolean;
+  flowCompleted: boolean;
 
   setFormField: <K extends keyof HabitFormData>(
     field: K,
@@ -42,6 +50,9 @@ interface AddHabitState {
   ) => void;
 
   applyTemplate: (template: HabitTemplate) => void;
+  setEntryPoint: (entrypoint: AddHabitEntrypoint) => void;
+  markFlowStarted: () => void;
+  markFlowCompleted: () => void;
 
   resetForm: () => void;
 }
@@ -71,6 +82,9 @@ const initialFormData: HabitFormData = {
 export const useAddHabitStore = create<AddHabitState>()((set, get) => ({
   formData: { ...initialFormData },
   selectedTemplate: null,
+  entrypoint: null,
+  flowStarted: false,
+  flowCompleted: false,
   setFormField: (field, value) => {
     set((state) => ({
       formData: {
@@ -108,6 +122,12 @@ export const useAddHabitStore = create<AddHabitState>()((set, get) => ({
     });
   },
 
+  setEntryPoint: (entrypoint) => set({ entrypoint }),
+
+  markFlowStarted: () => set({ flowStarted: true }),
+
+  markFlowCompleted: () => set({ flowCompleted: true }),
+
   resetForm: () => {
     set({
       formData: {
@@ -118,6 +138,9 @@ export const useAddHabitStore = create<AddHabitState>()((set, get) => ({
         reminderTime: null, // Ensure reminderTime is reset to null string
       },
       selectedTemplate: null,
+      entrypoint: null,
+      flowStarted: false,
+      flowCompleted: false,
     });
   },
 }));

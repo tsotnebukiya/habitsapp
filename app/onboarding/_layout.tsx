@@ -5,9 +5,10 @@ function OnboardingLayout() {
   return (
     <Stack initialRouteName="intro">
       <Stack.Screen name="intro" options={{ headerShown: false }} />
+      <Stack.Screen name="wizard" options={{ headerShown: false }} />
+      <Stack.Screen name="commitment" options={{ headerShown: false }} />
       <Stack.Screen name="login" options={{ headerShown: false }} />
       <Stack.Screen name="notifications" options={{ headerShown: false }} />
-      <Stack.Screen name="wizard" options={{ headerShown: false }} />
     </Stack>
   );
 }

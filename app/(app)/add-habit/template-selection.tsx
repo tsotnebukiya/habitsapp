@@ -7,6 +7,7 @@ import { useTranslation } from '@/lib/hooks/useTranslation';
 import { useAddHabitStore } from '@/lib/stores/add_habit_store';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
 import { router } from 'expo-router';
+import { usePostHog } from 'posthog-react-native';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
@@ -17,6 +18,8 @@ export default function TemplateSelection() {
   const { t } = useTranslation();
   const formData = useAddHabitStore((state) => state.formData);
   const applyTemplate = useAddHabitStore((state) => state.applyTemplate);
+  const entrypoint = useAddHabitStore((state) => state.entrypoint);
+  const posthog = usePostHog();
   const insets = useSafeAreaInsets();
   const [state, setState] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
@@ -32,10 +35,21 @@ export default function TemplateSelection() {
   });
 
   const handleCreateCustomHabit = () => {
+    posthog.capture('habit_custom_selected', {
+      category_id: formData.category,
+      habit_type: state === 0 ? 'GOOD' : 'BAD',
+      entrypoint,
+    });
     router.push('/add-habit/create-habit');
   };
 
   const handleChooseTemplate = (template: HabitTemplate) => {
+    posthog.capture('habit_template_selected', {
+      template_id: template.id,
+      category_id: template.category,
+      habit_type: template.type,
+      entrypoint,
+    });
     applyTemplate({
       ...template,
       name: t(template.nameKey as any),

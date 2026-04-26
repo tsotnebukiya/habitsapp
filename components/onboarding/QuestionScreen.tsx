@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 
 import { colors, fontWeights } from '@/lib/constants/ui';
+import { useOnboardingAnalytics } from '@/lib/hooks/useOnboardingAnalytics';
 import type { OnboardingItem } from '@/lib/stores/onboardingStore';
 import { useOnboardingStore } from '@/lib/stores/onboardingStore';
 import { SymbolView } from 'expo-symbols';
@@ -18,7 +19,8 @@ const { width: screenWidth } = Dimensions.get('window');
 
 export default function QuestionScreen({ item }: { item: OnboardingItem }) {
   const { t } = useTranslation();
-  const { setAnswer, getAnswer } = useOnboardingStore();
+  const { setAnswer, getAnswer, currentIndex, totalItems } = useOnboardingStore();
+  const { capture } = useOnboardingAnalytics();
   const existingAnswer = getAnswer(item.id) as number | undefined;
 
   // Get translated question text
@@ -31,9 +33,17 @@ export default function QuestionScreen({ item }: { item: OnboardingItem }) {
     ? item.optionKeys.map((key) => t(key as any))
     : item.options || [];
 
-  const handleOptionSelect = (option: string, index: number) => {
+  const handleOptionSelect = (index: number) => {
     // Store the option index instead of the translated text
     setAnswer(item.id, index);
+    capture('onboarding_question_answered', {
+      question_id: item.id,
+      step_id: item.id,
+      step_type: item.type,
+      step_index: currentIndex,
+      total_steps: totalItems,
+      option_index: index,
+    });
   };
 
   return (
@@ -49,7 +59,7 @@ export default function QuestionScreen({ item }: { item: OnboardingItem }) {
               key={index}
               activeOpacity={ACTIVE_OPACITY_WHITE}
               style={[styles.option, isSelected && styles.selectedOption]}
-              onPress={() => handleOptionSelect(option, index)}
+              onPress={() => handleOptionSelect(index)}
             >
               <SymbolView
                 name={(item.optionIcons?.[index] || 'circle.fill') as any}

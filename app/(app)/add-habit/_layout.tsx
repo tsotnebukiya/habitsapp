@@ -4,20 +4,62 @@ import {
 } from '@/components/shared/config';
 import toastConfig from '@/components/shared/toastConfig';
 import { colors, fontWeights } from '@/lib/constants/ui';
+import { useAllHabits } from '@/lib/hooks/useHabits';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 import { useAddHabitStore } from '@/lib/stores/add_habit_store';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { router, Stack, usePathname } from 'expo-router';
-import { useEffect } from 'react';
+import { usePostHog } from 'posthog-react-native';
+import React, { useEffect, useRef } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Icon } from 'react-native-paper';
 import Toast from 'react-native-toast-message';
 
+function getCurrentAddHabitStep(pathname: string) {
+  switch (pathname) {
+    case '/add-habit':
+      return 'category';
+    case '/add-habit/template-selection':
+      return 'templates';
+    case '/add-habit/create-habit':
+      return 'create_habit';
+    case '/add-habit/detail-choosing':
+      return 'detail_choosing';
+    default:
+      return 'unknown';
+  }
+}
+
 export default function AddHabitLayout() {
   const { t } = useTranslation();
   const resetForm = useAddHabitStore((state) => state.resetForm);
+  const entrypoint = useAddHabitStore((state) => state.entrypoint);
+  const flowStarted = useAddHabitStore((state) => state.flowStarted);
+  const flowCompleted = useAddHabitStore((state) => state.flowCompleted);
+  const selectedTemplate = useAddHabitStore((state) => state.selectedTemplate);
+  const markFlowStarted = useAddHabitStore((state) => state.markFlowStarted);
+  const habits = useAllHabits();
+  const posthog = usePostHog();
   const pathname = usePathname();
   const backButton = pathname !== '/add-habit';
+  const latestFlowStateRef = useRef({
+    pathname,
+    entrypoint,
+    flowStarted,
+    flowCompleted,
+    currentHabitCount: habits.length,
+    selectedTemplateId: selectedTemplate?.id ?? null,
+  });
+
+  latestFlowStateRef.current = {
+    pathname,
+    entrypoint,
+    flowStarted,
+    flowCompleted,
+    currentHabitCount: habits.length,
+    selectedTemplateId: selectedTemplate?.id ?? null,
+  };
+
   const handleClose = () => {
     router.replace('/');
   };
@@ -27,10 +69,34 @@ export default function AddHabitLayout() {
   };
 
   useEffect(() => {
+    if (!entrypoint || flowStarted) {
+      return;
+    }
+
+    posthog.capture('habit_creation_started', {
+      entrypoint,
+      current_habit_count: habits.length,
+    });
+    markFlowStarted();
+  }, [entrypoint, flowStarted, habits.length, markFlowStarted, posthog]);
+
+  useEffect(() => {
     return () => {
+      const latestFlowState = latestFlowStateRef.current;
+
+      if (latestFlowState.flowStarted && !latestFlowState.flowCompleted) {
+        posthog.capture('habit_creation_cancelled', {
+          entrypoint: latestFlowState.entrypoint,
+          current_habit_count: latestFlowState.currentHabitCount,
+          current_step: getCurrentAddHabitStep(latestFlowState.pathname),
+          creation_mode: latestFlowState.selectedTemplateId ? 'template' : 'custom',
+          template_id: latestFlowState.selectedTemplateId,
+        });
+      }
+
       resetForm();
     };
-  }, []);
+  }, [posthog, resetForm]);
 
   return (
     <BottomSheetModalProvider>

@@ -1,11 +1,18 @@
 import { ACTIVE_OPACITY } from '@/components/shared/config';
+import {
+  createAppPaywallHandler,
+  trackPremiumFeatureAccessAttempted,
+} from '@/lib/analytics/superwall';
 import { colors, fontWeights } from '@/lib/constants/ui';
 import { useAllHabits } from '@/lib/hooks/useHabits';
+import { useSubscriptionStatus } from '@/lib/hooks/useSubscriptionStatus';
 import { useTranslation } from '@/lib/hooks/useTranslation';
+import { useAddHabitStore } from '@/lib/stores/add_habit_store';
 import { dateUtils } from '@/lib/utils/dayjs';
 import { showHabitSuperwall } from '@/lib/utils/superwall';
 import dayjs from 'dayjs';
 import { router } from 'expo-router';
+import { usePostHog } from 'posthog-react-native';
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Icon } from 'react-native-paper';
@@ -13,6 +20,9 @@ import { Icon } from 'react-native-paper';
 function EmptyHabits({ selectedDate }: { selectedDate: Date }) {
   const { t } = useTranslation();
   const habits = useAllHabits();
+  const { subscriptionStatus } = useSubscriptionStatus();
+  const posthog = usePostHog();
+  const setEntryPoint = useAddHabitStore((state) => state.setEntryPoint);
   const today = dateUtils.today();
   const selected = dayjs(selectedDate);
   let title = t('habits.noHabitsToday');
@@ -44,8 +54,24 @@ function EmptyHabits({ selectedDate }: { selectedDate: Date }) {
 
   const handleAddHabit = () => {
     if (habits.length >= 1) {
-      showHabitSuperwall();
+      const capture = (event: string, properties?: Record<string, any>) => {
+        posthog.capture(event, properties);
+      };
+      const paywallContext = {
+        placement: 'add_habit_limit',
+        entrypoint: 'empty_state',
+        current_habit_count: habits.length,
+        subscription_status: subscriptionStatus.status,
+        feature_name: 'additional_habits',
+        interaction_surface: 'empty_state',
+      } as const;
+
+      trackPremiumFeatureAccessAttempted(capture, paywallContext);
+      showHabitSuperwall({
+        handler: createAppPaywallHandler(paywallContext, capture),
+      });
     } else {
+      setEntryPoint('empty_state');
       router.push('/add-habit');
     }
   };

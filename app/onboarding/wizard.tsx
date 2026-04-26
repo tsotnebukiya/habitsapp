@@ -1,5 +1,4 @@
 import { router } from 'expo-router';
-import { useFeatureFlag } from 'posthog-react-native';
 import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import {
   Dimensions,
@@ -18,6 +17,7 @@ import ValueScreen from '@/components/onboarding/ValueScreen';
 import Button from '@/components/shared/Button';
 import { ACTIVE_OPACITY_WHITE } from '@/components/shared/config';
 import { getOnboardingItems } from '@/lib/constants/onboardingQuestions';
+import { useOnboardingAnalytics } from '@/lib/hooks/useOnboardingAnalytics';
 import { colors } from '@/lib/constants/ui';
 import {
   useOnboardingStore,
@@ -33,11 +33,13 @@ export default function wizard() {
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const flatListRef = useRef<FlatList>(null);
-  const variant = useFeatureFlag('onboard_variant');
+  const { analyticsReady, flowVariant, capture, screen } =
+    useOnboardingAnalytics();
   const {
     currentIndex,
-    setVariant,
+    startedAt,
     setCurrentIndex,
+    setResumeRoute,
     setTotalItems,
     markStarted,
     markCompleted,
@@ -46,21 +48,63 @@ export default function wizard() {
     calculateAndSetMatrixScores,
   } = useOnboardingStore();
   const items = useMemo(() => {
-    const actualVariant = (variant as string) || 'quick';
-    return getOnboardingItems(actualVariant);
-  }, [variant]);
-  // Reset currentIndex to 0 when wizard starts/renders
-  useEffect(() => {
-    setCurrentIndex(0);
-  }, [setCurrentIndex]);
+    return analyticsReady ? getOnboardingItems(flowVariant || 'standard') : [];
+  }, [analyticsReady, flowVariant]);
 
   useEffect(() => {
-    if (variant && typeof variant === 'string') {
-      setVariant(variant);
-      setTotalItems(items.length);
-      markStarted();
+    setResumeRoute('/onboarding/wizard');
+  }, [setResumeRoute]);
+
+  const buildStepPayload = (index: number) => {
+    const item = items[index];
+
+    return {
+      step_id: item?.id,
+      step_index: index,
+      step_type: item?.type,
+      total_steps: items.length,
+    };
+  };
+
+  // Reset currentIndex to 0 when wizard starts/renders
+  useEffect(() => {
+    if (!analyticsReady) {
+      return;
     }
-  }, [variant, items.length, setVariant, setTotalItems, markStarted]);
+
+    setCurrentIndex(0);
+  }, [analyticsReady, setCurrentIndex]);
+
+  useEffect(() => {
+    if (analyticsReady) {
+      setTotalItems(items.length);
+    }
+  }, [analyticsReady, items.length, setTotalItems]);
+
+  useEffect(() => {
+    if (analyticsReady && !startedAt && items.length > 0) {
+      markStarted();
+      capture('onboarding_started', buildStepPayload(0));
+    }
+  }, [
+    analyticsReady,
+    capture,
+    items.length,
+    markStarted,
+    items,
+    startedAt,
+  ]);
+
+  useEffect(() => {
+    if (!analyticsReady) {
+      return;
+    }
+
+    screen('onboarding_wizard', {
+      total_steps: items.length,
+    });
+  }, [analyticsReady, items.length, screen]);
+
   const handleNext = useCallback(() => {
     const currentItem = items[currentIndex];
     const nextIndex = currentIndex + 1;
@@ -72,9 +116,20 @@ export default function wizard() {
       }
     }
 
+    capture('onboarding_step_completed', {
+      ...buildStepPayload(currentIndex),
+      from_step_index: currentIndex,
+      to_step_index: nextIndex,
+    });
+
     if (nextIndex >= items.length) {
+      setResumeRoute('/onboarding/commitment');
       markCompleted();
-      router.push('/onboarding/login');
+      capture('onboarding_completed', {
+        ...buildStepPayload(currentIndex),
+        exit_step_index: currentIndex,
+      });
+      router.push('/onboarding/commitment');
       return;
     }
 
@@ -85,6 +140,7 @@ export default function wizard() {
     });
   }, [
     currentIndex,
+    capture,
     items,
     setCurrentIndex,
     calculateAndSetMatrixScores,
@@ -100,12 +156,18 @@ export default function wizard() {
       return;
     }
 
+    capture('onboarding_step_previous', {
+      ...buildStepPayload(currentIndex),
+      from_step_index: currentIndex,
+      to_step_index: prevIndex,
+    });
+
     setCurrentIndex(prevIndex);
     flatListRef.current?.scrollToIndex({
       index: prevIndex,
       animated: true,
     });
-  }, [currentIndex, setCurrentIndex]);
+  }, [capture, currentIndex, setCurrentIndex, items]);
 
   // Render individual screen based on item type
   const renderItem = ({
@@ -154,6 +216,17 @@ export default function wizard() {
   };
 
   const progress = getProgress();
+
+  if (!analyticsReady) {
+    return (
+      <View
+        style={[
+          styles.container,
+          { paddingTop: insets.top + 20, paddingBottom: insets.bottom + 11 },
+        ]}
+      />
+    );
+  }
 
   // Check if current screen can proceed
   const canProceed = () => {

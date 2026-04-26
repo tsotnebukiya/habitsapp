@@ -328,6 +328,22 @@
       "description": "Junte-se à nossa comunidade de vencedores e comece sua jornada hoje."
     },
     "smartRemindersTitle": "Mantenha-se no caminho certo com lembretes inteligentes",
+    "commitment": {
+      "title": "Pacto de compromisso",
+      "sealing": "Selando seu compromisso",
+      "commit": "Eu me comprometo com meus objetivos.",
+      "committed": "Compromisso selado",
+      "tapBold": "Toque para se comprometer.",
+      "tapSub": "Comprometer-se com seus objetivos fortalece a motivação.",
+      "trust": "E confio na HabitsLab para me orientar nessa jornada.",
+      "description": {
+        "part1": "As pessoas seguem mais quando fazem uma promessa clara. Toque na digital para ",
+        "bold1": "selar seu compromisso",
+        "part2": " e lembrar a si mesmo que ",
+        "bold2": "pequenas ações diárias criam mudanças duradouras",
+        "part3": "."
+      }
+    },
     "login": {
       "title": "Pronto para\nconstruir hábitos?",
       "subtitle": "Faça login para começar a acompanhar seu progresso e construir hábitos duradouros.",

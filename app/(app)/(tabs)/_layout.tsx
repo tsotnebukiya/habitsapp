@@ -1,7 +1,13 @@
 import { ACTIVE_OPACITY } from '@/components/shared/config';
+import {
+  createAppPaywallHandler,
+  trackPremiumFeatureAccessAttempted,
+} from '@/lib/analytics/superwall';
 import { colors, fontWeights } from '@/lib/constants/ui';
 import { useAllHabits } from '@/lib/hooks/useHabits';
+import { useSubscriptionStatus } from '@/lib/hooks/useSubscriptionStatus';
 import { useTranslation } from '@/lib/hooks/useTranslation';
+import { useAddHabitStore } from '@/lib/stores/add_habit_store';
 import {
   showAchievementsSuperwall,
   showHabitSuperwall,
@@ -10,6 +16,7 @@ import {
 
 import { router, Tabs } from 'expo-router';
 import React from 'react';
+import { usePostHog } from 'posthog-react-native';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Icon } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -43,10 +50,70 @@ export default function TabLayout() {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
   const habits = useAllHabits();
+  const { subscriptionStatus } = useSubscriptionStatus();
+  const posthog = usePostHog();
+  const setEntryPoint = useAddHabitStore((state) => state.setEntryPoint);
+
+  const capture = React.useCallback(
+    (event: string, properties?: Record<string, any>) => {
+      posthog.capture(event, properties);
+    },
+    [posthog]
+  );
+
+  const currentHabitCount = habits.length;
+
+  const handleStatsTabPress = React.useCallback(() => {
+    const paywallContext = {
+      placement: 'stats_view',
+      entrypoint: 'tab_bar',
+      current_habit_count: currentHabitCount,
+      subscription_status: subscriptionStatus.status,
+      feature_name: 'stats',
+      interaction_surface: 'tab_bar',
+    } as const;
+
+    trackPremiumFeatureAccessAttempted(capture, paywallContext);
+    showStatsSuperwall({
+      route: true,
+      handler: createAppPaywallHandler(paywallContext, capture),
+    });
+  }, [capture, currentHabitCount, subscriptionStatus.status]);
+
+  const handleAchievementsTabPress = React.useCallback(() => {
+    const paywallContext = {
+      placement: 'achievements_view',
+      entrypoint: 'tab_bar',
+      current_habit_count: currentHabitCount,
+      subscription_status: subscriptionStatus.status,
+      feature_name: 'achievements',
+      interaction_surface: 'tab_bar',
+    } as const;
+
+    trackPremiumFeatureAccessAttempted(capture, paywallContext);
+    showAchievementsSuperwall({
+      route: true,
+      handler: createAppPaywallHandler(paywallContext, capture),
+    });
+  }, [capture, currentHabitCount, subscriptionStatus.status]);
+
   const handleAddHabit = () => {
     if (habits.length >= 1) {
-      showHabitSuperwall();
+      const paywallContext = {
+        placement: 'add_habit_limit',
+        entrypoint: 'tab_fab',
+        current_habit_count: currentHabitCount,
+        subscription_status: subscriptionStatus.status,
+        feature_name: 'additional_habits',
+        interaction_surface: 'floating_action_button',
+      } as const;
+
+      trackPremiumFeatureAccessAttempted(capture, paywallContext);
+      showHabitSuperwall({
+        handler: createAppPaywallHandler(paywallContext, capture),
+      });
     } else {
+      setEntryPoint('tab_fab');
       router.push('/add-habit');
     }
   };
@@ -86,7 +153,7 @@ export default function TabLayout() {
           listeners={{
             tabPress: (e) => {
               e.preventDefault();
-              showStatsSuperwall(true);
+              handleStatsTabPress();
             },
           }}
           options={{
@@ -113,7 +180,7 @@ export default function TabLayout() {
           listeners={{
             tabPress: (e) => {
               e.preventDefault();
-              showAchievementsSuperwall(true);
+              handleAchievementsTabPress();
             },
           }}
           options={{

@@ -86,7 +86,9 @@ export default function HabitDetailsSheet({
 
   const handleDelete = () => {
     if (!habit) return;
-    deleteHabit(habit.id);
+    deleteHabit(habit.id, {
+      interactionSurface: 'habit_details_sheet',
+    });
     bottomSheetModalRef.current?.dismiss();
   };
 
@@ -98,7 +100,9 @@ export default function HabitDetailsSheet({
 
   const handleSkip = () => {
     if (!habit) return;
-    toggleHabitStatus(habit.id, date, 'toggle_skip');
+    toggleHabitStatus(habit.id, date, 'toggle_skip', undefined, {
+      interactionSurface: 'habit_details_sheet',
+    });
   };
 
   const handleCompletion = () => {
@@ -108,7 +112,9 @@ export default function HabitDetailsSheet({
       return;
     }
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    toggleHabitStatus(habit.id, date, 'toggle_complete');
+    toggleHabitStatus(habit.id, date, 'toggle_complete', undefined, {
+      interactionSurface: 'habit_details_sheet',
+    });
   };
 
   const handleIncrement = () => {
@@ -119,7 +125,15 @@ export default function HabitDetailsSheet({
     }
     if (currentValue < maxValue) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      toggleHabitStatus(habit.id, date, 'set_value', currentValue + stepSize);
+      toggleHabitStatus(
+        habit.id,
+        date,
+        'set_value',
+        currentValue + stepSize,
+        {
+          interactionSurface: 'habit_details_sheet',
+        }
+      );
     }
   };
 
@@ -127,7 +141,15 @@ export default function HabitDetailsSheet({
     if (!habit || isSkipped) return;
     if (currentValue > 0) {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      toggleHabitStatus(habit.id, date, 'set_value', currentValue - stepSize);
+      toggleHabitStatus(
+        habit.id,
+        date,
+        'set_value',
+        currentValue - stepSize,
+        {
+          interactionSurface: 'habit_details_sheet',
+        }
+      );
     }
   };
 
@@ -154,7 +176,9 @@ export default function HabitDetailsSheet({
       return;
     }
 
-    toggleHabitStatus(habit.id, date, 'set_value', numValue);
+    toggleHabitStatus(habit.id, date, 'set_value', numValue, {
+      interactionSurface: 'habit_details_sheet',
+    });
     setShowInputModal(false);
     setInputValue('');
   };

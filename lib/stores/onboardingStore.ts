@@ -121,24 +121,40 @@ export function calculateMatrixScores(
 
 export type AnswerValue = string | string[] | number;
 
+export type OnboardingResumeRoute =
+  | '/onboarding/intro'
+  | '/onboarding/wizard'
+  | '/onboarding/commitment'
+  | '/onboarding/login'
+  | '/onboarding/notifications'
+  | null;
+
 export interface OnboardingState {
   variant: string | null;
+  experimentVariant: string | null;
+  sessionId: string | null;
+  resumeRoute: OnboardingResumeRoute;
   currentIndex: number;
   answers: Record<string, AnswerValue>;
   totalItems: number;
   startedAt?: number;
   completedAt?: number;
+  exposureTrackedAt?: number;
   matrixScores: MatrixScores;
 }
 
 interface OnboardingStore extends OnboardingState {
   // Actions
   setVariant: (variant: string) => void;
+  setExperimentVariant: (variant: string) => void;
+  setSessionId: (sessionId: string) => void;
+  setResumeRoute: (route: OnboardingResumeRoute) => void;
   setCurrentIndex: (index: number) => void;
   setAnswer: (questionId: string, answer: AnswerValue) => void;
   setTotalItems: (total: number) => void;
   markStarted: () => void;
   markCompleted: () => void;
+  markExposureTracked: () => void;
   calculateAndSetMatrixScores: () => void;
   resetStore: () => void;
 
@@ -151,11 +167,15 @@ interface OnboardingStore extends OnboardingState {
 
 const initialState: OnboardingState = {
   variant: null,
+  experimentVariant: null,
+  sessionId: null,
+  resumeRoute: null,
   currentIndex: 0,
   answers: {},
   totalItems: 0,
   startedAt: undefined,
   completedAt: undefined,
+  exposureTrackedAt: undefined,
   matrixScores: {
     cat1: 50,
     cat2: 50,
@@ -172,6 +192,12 @@ export const useOnboardingStore = create<OnboardingStore>()(
 
       setVariant: (variant) => set({ variant }),
 
+      setExperimentVariant: (experimentVariant) => set({ experimentVariant }),
+
+      setSessionId: (sessionId) => set({ sessionId }),
+
+      setResumeRoute: (resumeRoute) => set({ resumeRoute }),
+
       setCurrentIndex: (currentIndex) => set({ currentIndex }),
 
       setAnswer: (questionId, answer) =>
@@ -184,6 +210,8 @@ export const useOnboardingStore = create<OnboardingStore>()(
       markStarted: () => set({ startedAt: Date.now() }),
 
       markCompleted: () => set({ completedAt: Date.now() }),
+
+      markExposureTracked: () => set({ exposureTrackedAt: Date.now() }),
 
       calculateAndSetMatrixScores: () => {
         const state = get();
@@ -220,9 +248,13 @@ export const useOnboardingStore = create<OnboardingStore>()(
       storage: createJSONStorage(() => onboardingStorageAdapter),
       partialize: (state) => ({
         variant: state.variant,
+        experimentVariant: state.experimentVariant,
+        sessionId: state.sessionId,
+        resumeRoute: state.resumeRoute,
         answers: state.answers,
         matrixScores: state.matrixScores,
         completedAt: state.completedAt,
+        exposureTrackedAt: state.exposureTrackedAt,
         startedAt: state.startedAt,
         currentIndex: state.currentIndex,
         totalItems: state.totalItems,

@@ -331,6 +331,22 @@
       "description": "Rejoignez notre communauté de gagnants et commencez votre voyage aujourd'hui."
     },
     "smartRemindersTitle": "Restez sur la bonne voie avec des rappels intelligents",
+    "commitment": {
+      "title": "Pacte d'engagement",
+      "sealing": "Nous scellons votre engagement",
+      "commit": "Je m'engage envers mes objectifs.",
+      "committed": "Engagement scellé",
+      "tapBold": "Touchez pour vous engager.",
+      "tapSub": "S'engager envers ses objectifs renforce la motivation.",
+      "trust": "Et je fais confiance à HabitsLab pour me guider tout au long de ce parcours.",
+      "description": {
+        "part1": "On passe plus souvent à l'action lorsqu'on formule une promesse claire. Touchez l'empreinte pour ",
+        "bold1": "sceller votre engagement",
+        "part2": " et vous rappeler que ",
+        "bold2": "de petites actions quotidiennes créent un vrai changement",
+        "part3": "."
+      }
+    },
     "login": {
       "title": "Prêt à\nconstruire des habitudes ?",
       "subtitle": "Connectez-vous pour commencer à suivre vos progrès et construire des habitudes durables.",

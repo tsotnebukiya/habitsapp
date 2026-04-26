@@ -1,3 +1,8 @@
+import { captureAnalyticsEvent } from '@/lib/analytics/client';
+import {
+  buildHabitAnalyticsProperties,
+  hasCompletedHabitBefore,
+} from '@/lib/analytics/habits';
 import { dateUtils } from '@/lib/utils/dayjs';
 import {
   calculateHabitToggle,
@@ -8,7 +13,16 @@ import {
 import { supabase } from '@/supabase/client';
 import { v4 as uuidv4 } from 'uuid';
 import { StateCreator } from 'zustand';
-import { SharedSlice, type HabitAction, type HabitCompletion } from '../types';
+import {
+  SharedSlice,
+  type HabitAction,
+  type HabitCompletion,
+  type HabitInteractionSurface,
+} from '../types';
+
+type CompletionAnalyticsContext = {
+  interactionSurface?: HabitInteractionSurface;
+};
 
 export interface CompletionSlice {
   completions: Map<string, HabitCompletion>;
@@ -24,7 +38,8 @@ export interface CompletionSlice {
     habitId: string,
     date: Date,
     action: HabitAction,
-    value?: number
+    value?: number,
+    analyticsContext?: CompletionAnalyticsContext
   ) => void;
   resetHabitHistory: (habitId: string) => Promise<void>;
 }
@@ -123,7 +138,8 @@ export const createCompletionSlice: StateCreator<
     habitId: string,
     date: Date,
     action: HabitAction,
-    value?: number
+    value?: number,
+    analyticsContext?: CompletionAnalyticsContext
   ) => {
     const userId = getUserIdOrThrow();
     const habit = get().habits.get(habitId);
@@ -144,6 +160,13 @@ export const createCompletionSlice: StateCreator<
         completion.habit_id === habitId &&
         completion.completion_date === normalizedDate
     );
+    const previousStatus = existingCompletion?.status ?? 'not_started';
+    const previousValue = existingCompletion?.value ?? 0;
+    const completedBeforeToggle = hasCompletedHabitBefore(
+      get().completions.values(),
+      habitId
+    );
+
     if (existingCompletion) {
       get().updateCompletion(existingCompletion.id, {
         status: newStatus,
@@ -158,6 +181,37 @@ export const createCompletionSlice: StateCreator<
         value: newValue,
       });
     }
+
+    const analyticsProperties = {
+      ...buildHabitAnalyticsProperties(
+        habit,
+        analyticsContext?.interactionSurface
+      ),
+      completion_date: normalizedDate,
+      current_value: newValue,
+      previous_status: previousStatus,
+      previous_value: previousValue,
+    };
+
+    if (
+      newStatus === 'in_progress' &&
+      previousStatus !== 'in_progress' &&
+      previousStatus !== 'completed'
+    ) {
+      captureAnalyticsEvent('habit_progress_started', analyticsProperties);
+    }
+
+    if (newStatus === 'completed' && previousStatus !== 'completed') {
+      captureAnalyticsEvent('habit_completed', {
+        ...analyticsProperties,
+        is_first_completion_for_habit: !completedBeforeToggle,
+      });
+    }
+
+    if (newStatus === 'skipped' && previousStatus !== 'skipped') {
+      captureAnalyticsEvent('habit_skipped', analyticsProperties);
+    }
+
     handlePostActionOperations(get, habitId, [date]);
   },
 

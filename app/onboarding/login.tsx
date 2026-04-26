@@ -22,9 +22,12 @@ import {
 import Toast from 'react-native-toast-message';
 
 import { ACTIVE_OPACITY_WHITE } from '@/components/shared/config';
+import { ONBOARDING_FLOW_VERSION } from '@/lib/analytics/posthog';
+import { createOnboardingPaywallHandler } from '@/lib/analytics/superwall';
 import { languages } from '@/lib/constants/languages';
 import { colors, fontWeights } from '@/lib/constants/ui';
 import useHabitsStore from '@/lib/habit-store/store';
+import { useOnboardingAnalytics } from '@/lib/hooks/useOnboardingAnalytics';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 import { useAppStore } from '@/lib/stores/app_state';
 import { useOnboardingStore } from '@/lib/stores/onboardingStore';
@@ -34,6 +37,7 @@ import { showOnboardingLoginSuperwall } from '@/lib/utils/superwall';
 import { GOOGLE_SIGN_IN_IOS_CLIENT_ID } from '@/safe_constants';
 import { supabase } from '@/supabase/client';
 import Superwall from '@superwall/react-native-superwall';
+import { usePostHog } from 'posthog-react-native';
 import { Icon } from 'react-native-paper';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -42,14 +46,33 @@ function OnboardingLogin() {
   const { t, currentLanguage } = useTranslation();
   const matrixScores = useOnboardingStore.getState().getMatrixScores();
   const router = useRouter();
+  const posthog = usePostHog();
+  const { analyticsReady, flowVariant, experimentVariant, capture, screen } =
+    useOnboardingAnalytics();
+  const setResumeRoute = useOnboardingStore((state) => state.setResumeRoute);
   const { setProfile } = useUserProfileStore();
   const currentAppLanguage = useAppStore((state) => state.currentLanguage);
   const [loading, setLoading] = useState(false);
+
+  React.useEffect(() => {
+    setResumeRoute('/onboarding/login');
+
+    if (!analyticsReady) {
+      return;
+    }
+
+    screen('onboarding_login');
+    capture('login_screen_viewed');
+  }, [analyticsReady, capture, screen, setResumeRoute]);
+
   const handleLanguage = () => {
+    capture('login_language_button_pressed');
     router.push('/language');
   };
 
   const handleBack = () => {
+    capture('login_back_button_pressed');
+
     if (router.canGoBack()) {
       router.back();
     } else {
@@ -70,6 +93,8 @@ function OnboardingLogin() {
         throw new Error(t('onboarding.login.errors.noUserData'));
       }
 
+      const providerId = provider.toLowerCase();
+
       // Check if user already exists first (foolproof approach)
       const { data: existingUser, error: fetchError } = await supabase
         .from('users')
@@ -82,12 +107,32 @@ function OnboardingLogin() {
         throw fetchError;
       }
 
+      const currentTimezone = dateUtils.getCurrentTimezone();
+      const identifyProperties = {
+        preferred_language: currentAppLanguage,
+        timezone: existingUser?.timezone ?? currentTimezone,
+        onboarding_variant: flowVariant,
+        experiment_variant: experimentVariant,
+        onboarding_flow_version: ONBOARDING_FLOW_VERSION,
+        signup_provider: providerId,
+      };
+
       if (existingUser) {
         setProfile(existingUser);
         Superwall.shared.identify({ userId: authData.user.id });
-        showOnboardingLoginSuperwall();
+        posthog.identify(authData.user.id, identifyProperties);
+        capture('user_authenticated', {
+          provider_id: providerId,
+          is_existing_user: true,
+          $set_once: {
+            first_onboarding_variant: flowVariant,
+            signup_provider: providerId,
+          },
+        });
+        showOnboardingLoginSuperwall(
+          createOnboardingPaywallHandler('onboarding_login', capture)
+        );
       } else {
-        const currentTimezone = dateUtils.getCurrentTimezone();
         const userData = {
           id: authData.user.id,
           email: authData.user.email!,
@@ -132,9 +177,22 @@ function OnboardingLogin() {
 
         useHabitsStore.getState().setAchievements(initialAchievements);
         Superwall.shared.identify({ userId: authData.user.id });
+        posthog.identify(authData.user.id, identifyProperties);
+        capture('user_authenticated', {
+          provider_id: providerId,
+          is_existing_user: false,
+          $set_once: {
+            first_onboarding_variant: flowVariant,
+            signup_provider: providerId,
+          },
+        });
+        setResumeRoute('/onboarding/notifications');
         router.push('/onboarding/notifications');
       }
     } catch (error: any) {
+      capture('authentication_failed', {
+        provider_id: provider.toLowerCase(),
+      });
       console.error(`${provider} auth error:`, error);
       Toast.show({
         type: 'error',
@@ -148,6 +206,9 @@ function OnboardingLogin() {
 
   const handleAppleSignIn = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    capture('apple_sign_in_attempted', {
+      provider_id: 'apple',
+    });
     setLoading(true);
 
     try {
@@ -171,8 +232,14 @@ function OnboardingLogin() {
       setLoading(false);
 
       if (e.code === 'ERR_REQUEST_CANCELED') {
+        capture('apple_sign_in_cancelled', {
+          provider_id: 'apple',
+        });
         return; // User canceled sign-in flow
       }
+      capture('apple_sign_in_failed', {
+        provider_id: 'apple',
+      });
       console.error('Apple Sign In error:', e);
       Toast.show({
         type: 'error',
@@ -186,6 +253,9 @@ function OnboardingLogin() {
 
   const handleGoogleSignIn = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    capture('google_sign_in_attempted', {
+      provider_id: 'google',
+    });
     setLoading(true);
 
     try {
@@ -205,6 +275,9 @@ function OnboardingLogin() {
       setLoading(false);
 
       if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+        capture('google_sign_in_cancelled', {
+          provider_id: 'google',
+        });
         return; // User cancelled login flow
       }
 
@@ -215,6 +288,9 @@ function OnboardingLogin() {
         errorMessage = t('onboarding.login.errors.googlePlayServices');
       }
 
+      capture('google_sign_in_failed', {
+        provider_id: 'google',
+      });
       console.error('Google Sign In error:', error);
       Toast.show({
         type: 'error',
@@ -228,6 +304,9 @@ function OnboardingLogin() {
 
   const handleFacebookSignIn = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    capture('facebook_sign_in_attempted', {
+      provider_id: 'facebook',
+    });
     setLoading(true);
 
     try {

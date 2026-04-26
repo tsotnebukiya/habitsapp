@@ -2,8 +2,10 @@ import { DetailChoosingType } from '@/app/(app)/add-habit/detail-choosing';
 import Button from '@/components/shared/Button';
 import { ACTIVE_OPACITY } from '@/components/shared/config';
 import ItemIcon from '@/components/shared/Icon';
+import { getCurrentOnboardingAnalyticsProperties } from '@/lib/analytics/posthog';
 import { colors, fontWeights } from '@/lib/constants/ui';
 import useHabitsStore from '@/lib/habit-store/store';
+import { useTrackedScreen } from '@/lib/hooks/useTrackedScreen';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 import { useAddHabitStore } from '@/lib/stores/add_habit_store';
 import { useAppStore } from '@/lib/stores/app_state';
@@ -12,6 +14,7 @@ import dayjs, { dateUtils } from '@/lib/utils/dayjs';
 import { translateMeasurementUnit } from '@/lib/utils/translationHelpers';
 import { useRouter } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
+import { usePostHog } from 'posthog-react-native';
 import React, { useEffect, useState } from 'react';
 import {
   ScrollView,
@@ -29,6 +32,7 @@ import Toast from 'react-native-toast-message';
 export default function CreateHabbit() {
   const { t } = useTranslation();
   const router = useRouter();
+  const posthog = usePostHog();
   const insets = useSafeAreaInsets();
   const profile = useUserProfileStore((state) => state.profile);
   const notificationsEnabled = useAppStore(
@@ -38,6 +42,9 @@ export default function CreateHabbit() {
   const [showEndPicker, setShowEndPicker] = useState(false);
   const addHabit = useHabitsStore((state) => state.addHabit);
   const formData = useAddHabitStore((state) => state.formData);
+  const entrypoint = useAddHabitStore((state) => state.entrypoint);
+  const selectedTemplate = useAddHabitStore((state) => state.selectedTemplate);
+  const markFlowCompleted = useAddHabitStore((state) => state.markFlowCompleted);
   const [enableEndDate, setEnableEndDate] = useState(formData.hasEndDate);
   const setFormField = useAddHabitStore((state) => state.setFormField);
   const resetForm = useAddHabitStore((state) => state.resetForm);
@@ -48,6 +55,8 @@ export default function CreateHabbit() {
     formData.goal.unit
   );
   const goalText = formData.goal.value === 1 ? goal.oneName : goal.name;
+
+  useTrackedScreen('add_habit_create');
 
   const openReminderPicker = () => {
     setShowReminderPicker(true);
@@ -172,7 +181,29 @@ export default function CreateHabbit() {
         type: formData.type,
         sort_id: 0,
       };
-      addHabit(habit);
+      const habitId = await addHabit(habit);
+      markFlowCompleted();
+      posthog.capture('habit_created', {
+        ...(getCurrentOnboardingAnalyticsProperties() ?? {}),
+        habit_id: habitId,
+        category_name: formData.category,
+        frequency_type: formData.frequencyType,
+        habit_type: formData.type,
+        creation_mode: selectedTemplate ? 'template' : 'custom',
+        template_id: selectedTemplate?.id ?? null,
+        goal_value: formData.goal.value,
+        goal_unit: formData.goal.unit.id,
+        days_of_week_count: formData.daysOfWeek.length,
+        has_end_date: formData.hasEndDate,
+        has_description: formData.description.trim().length > 0,
+        reminder_enabled: formData.hasReminder,
+        has_reminder: formData.hasReminder,
+        start_date_offset_days: dayjs(formData.startDate)
+          .startOf('day')
+          .diff(dayjs().startOf('day'), 'day'),
+        streak_goal_present: formData.streakGoal !== null,
+        entrypoint,
+      });
 
       router.replace('/');
     } catch (error) {
@@ -184,7 +215,7 @@ export default function CreateHabbit() {
     return () => {
       resetForm();
     };
-  }, []);
+  }, [resetForm]);
 
   return (
     <>

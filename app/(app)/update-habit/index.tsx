@@ -86,6 +86,8 @@ export default function UpdateHabit() {
         formData.hasReminder && formData.reminderTime
           ? dateUtils.toHHMMString(formData.reminderTime)
           : null,
+    }, {
+      interactionSurface: 'edit_screen',
     });
     router.back();
   };

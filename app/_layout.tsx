@@ -12,7 +12,7 @@ import * as Sentry from '@sentry/react-native';
 import Superwall, { SuperwallOptions } from '@superwall/react-native-superwall';
 import { isRunningInExpoGo } from 'expo';
 import { SplashScreen, Stack, useNavigationContainerRef } from 'expo-router';
-import { PostHogProvider } from 'posthog-react-native';
+import { PostHogProvider, usePostHog } from 'posthog-react-native';
 import React, { useEffect } from 'react';
 import { Platform } from 'react-native';
 import 'react-native-gesture-handler';
@@ -21,9 +21,17 @@ import 'react-native-get-random-values';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 import 'react-native-reanimated';
 import Toast from 'react-native-toast-message';
+import { setAnalyticsClient } from '@/lib/analytics/client';
+import {
+  getAppAnalyticsProperties,
+  getAppDist,
+  getAppRelease,
+  getAppVariant,
+} from '@/lib/analytics/posthog';
+import { getSentryRuntimeConfig } from '@/lib/analytics/sentry';
+import { useTrackSubscriptionAnalytics } from '@/lib/hooks/useTrackSubscriptionAnalytics';
 import {
   POSTHOG_API_KEY,
-  SENTRY_DSN,
   SUPERWALL_ANDROID_KEY,
   SUPERWALL_IOS_KEY,
 } from '../safe_constants';
@@ -32,11 +40,32 @@ const navigationIntegration = Sentry.reactNavigationIntegration({
   enableTimeToInitialDisplay: !isRunningInExpoGo(),
 });
 
-Sentry.init({
-  dsn: SENTRY_DSN,
-  tracesSampleRate: 1.0,
-  enableNativeFramesTracking: !isRunningInExpoGo(),
-});
+const appVariant = getAppVariant();
+const sentryConfig = getSentryRuntimeConfig();
+
+function getSentryTraceSampleRate(environment: string) {
+  if (environment === 'development') {
+    return 1.0;
+  }
+
+  if (environment === 'production') {
+    return 0.2;
+  }
+
+  return 0.5;
+}
+
+if (sentryConfig.dsn) {
+  Sentry.init({
+    dsn: sentryConfig.dsn,
+    integrations: [navigationIntegration],
+    release: getAppRelease(),
+    dist: getAppDist(),
+    environment: appVariant,
+    tracesSampleRate: getSentryTraceSampleRate(appVariant),
+    enableNativeFramesTracking: !isRunningInExpoGo(),
+  });
+}
 
 const apiKey =
   Platform.OS === 'ios' ? SUPERWALL_IOS_KEY : SUPERWALL_ANDROID_KEY;
@@ -90,6 +119,7 @@ function RootLayoutNav() {
           host: 'https://us.i.posthog.com',
         }}
       >
+        <AnalyticsBootstrap />
         <KeyboardProvider>
           <GestureHandlerRootView
             style={{
@@ -123,6 +153,23 @@ function RootLayoutNav() {
       <Toast config={toastConfig} />
     </>
   );
+}
+
+function AnalyticsBootstrap() {
+  const posthog = usePostHog();
+
+  useTrackSubscriptionAnalytics();
+
+  useEffect(() => {
+    setAnalyticsClient(posthog);
+    void posthog.register(getAppAnalyticsProperties());
+
+    return () => {
+      setAnalyticsClient(null);
+    };
+  }, [posthog]);
+
+  return null;
 }
 
 export default Sentry.wrap(RootLayout);

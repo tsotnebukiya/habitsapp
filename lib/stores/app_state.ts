@@ -2,6 +2,7 @@ import * as StoreReview from 'expo-store-review';
 import { MMKV } from 'react-native-mmkv';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
+import { captureAnalyticsEvent } from '@/lib/analytics/client';
 import { configureCalendarLocale } from '../utils/calendarLocalization';
 import i18n, { SupportedLanguage } from '../utils/i18n';
 
@@ -60,6 +61,10 @@ export const useAppStore = create<AppState>()(
             return false;
           }
 
+          captureAnalyticsEvent('review_prompt_requested', {
+            milestone,
+            prompted_before: promptedReviewMilestones.length > 0,
+          });
           await StoreReview.requestReview();
 
           set({

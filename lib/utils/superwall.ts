@@ -1,5 +1,10 @@
-import Superwall from '@superwall/react-native-superwall';
+import {
+  PaywallPresentationHandler,
+  default as Superwall,
+} from '@superwall/react-native-superwall';
 import { router } from 'expo-router';
+
+import { useAddHabitStore } from '@/lib/stores/add_habit_store';
 
 const SUPERWALL_PLACEMENTS = {
   ONBOARDING_LOGIN: 'onboarding_login',
@@ -9,49 +14,64 @@ const SUPERWALL_PLACEMENTS = {
   ADD_HABIT_LIMIT: 'add_habit_limit',
 } as const;
 
-export function showHabitSuperwall() {
+type AppPaywallOptions = {
+  handler?: PaywallPresentationHandler;
+  route?: boolean;
+};
+
+export function showHabitSuperwall(options: AppPaywallOptions = {}) {
   Superwall.shared.register({
     placement: SUPERWALL_PLACEMENTS.ADD_HABIT_LIMIT,
+    handler: options.handler,
     feature: () => {
+      useAddHabitStore.getState().setEntryPoint('paywall_unlock');
       router.push('/add-habit');
     },
   });
 }
 
-export function showStatsSuperwall(route?: boolean) {
+export function showStatsSuperwall(options: AppPaywallOptions = {}) {
   Superwall.shared.register({
     placement: SUPERWALL_PLACEMENTS.STATS_VIEW,
+    handler: options.handler,
     feature: () => {
-      if (route) {
+      if (options.route) {
         router.push('/stats');
       }
     },
   });
 }
 
-export function showAchievementsSuperwall(route?: boolean) {
+export function showAchievementsSuperwall(options: AppPaywallOptions = {}) {
   Superwall.shared.register({
     placement: SUPERWALL_PLACEMENTS.ACHIEVEMENTS_VIEW,
+    handler: options.handler,
     feature: () => {
-      if (route) {
+      if (options.route) {
         router.push('/achievements');
       }
     },
   });
 }
 
-export function showOnboardingLoginSuperwall() {
+export function showOnboardingLoginSuperwall(
+  handler?: PaywallPresentationHandler
+) {
   Superwall.shared.register({
     placement: SUPERWALL_PLACEMENTS.ONBOARDING_LOGIN,
+    handler,
     feature: () => {
       router.push('/(tabs)');
     },
   });
 }
 
-export function showOnboardingNotificationsSuperwall() {
+export function showOnboardingNotificationsSuperwall(
+  handler?: PaywallPresentationHandler
+) {
   Superwall.shared.register({
     placement: SUPERWALL_PLACEMENTS.ONBOARDING_NOTIFICATIONS,
+    handler,
     feature: () => {
       router.push('/(tabs)');
     },

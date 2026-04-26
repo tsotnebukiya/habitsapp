@@ -14,6 +14,13 @@ export type Habit = Database['public']['Tables']['habits']['Row'];
 export type HabitCompletion =
   Database['public']['Tables']['habit_completions']['Row'];
 
+export type HabitInteractionSurface =
+  | 'habit_card'
+  | 'habit_details_sheet'
+  | 'habit_context_menu'
+  | 'edit_screen'
+  | 'unknown';
+
 export type StreakDays =
   | 1
   | 3

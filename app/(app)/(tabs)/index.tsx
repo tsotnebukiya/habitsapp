@@ -1,6 +1,7 @@
 import HabitList from '@/components/habits/HabitList';
 import WeekView from '@/components/habits/WeekView';
 import { colors } from '@/lib/constants/ui';
+import { useTrackedScreen } from '@/lib/hooks/useTrackedScreen';
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -8,6 +9,8 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 export default function Home() {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const insets = useSafeAreaInsets();
+
+  useTrackedScreen('home');
 
   return (
     <View style={[styles.container, { paddingTop: insets.top + 17 }]}>

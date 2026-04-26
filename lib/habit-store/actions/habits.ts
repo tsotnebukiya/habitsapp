@@ -1,3 +1,8 @@
+import { captureAnalyticsEvent } from '@/lib/analytics/client';
+import {
+  buildHabitAnalyticsProperties,
+  getHabitChangedFields,
+} from '@/lib/analytics/habits';
 import { dateUtils } from '@/lib/utils/dayjs';
 import {
   getAffectedDates,
@@ -7,7 +12,15 @@ import {
 import { supabase } from '@/supabase/client';
 import { v4 as uuidv4 } from 'uuid';
 import { StateCreator } from 'zustand';
-import { SharedSlice, type Habit } from '../types';
+import {
+  SharedSlice,
+  type Habit,
+  type HabitInteractionSurface,
+} from '../types';
+
+type HabitAnalyticsContext = {
+  interactionSurface?: HabitInteractionSurface;
+};
 
 export interface HabitSlice {
   habits: Map<string, Habit>;
@@ -15,8 +28,15 @@ export interface HabitSlice {
   addHabit: (
     habit: Omit<Habit, 'id' | 'created_at' | 'updated_at'>
   ) => Promise<string>;
-  updateHabit: (id: string, updates: Partial<Habit>) => Promise<void>;
-  deleteHabit: (id: string) => Promise<void>;
+  updateHabit: (
+    id: string,
+    updates: Partial<Habit>,
+    analyticsContext?: HabitAnalyticsContext
+  ) => Promise<void>;
+  deleteHabit: (
+    id: string,
+    analyticsContext?: HabitAnalyticsContext
+  ) => Promise<void>;
   updateHabitOrder: (habitIds: string[]) => Promise<void>;
   deleteAllHabits: () => Promise<void>;
   clearAllData: () => void;
@@ -81,11 +101,12 @@ export const createHabitSlice: StateCreator<SharedSlice, [], [], HabitSlice> = (
     return newHabit.id;
   },
 
-  updateHabit: async (id, updates) => {
+  updateHabit: async (id, updates, analyticsContext) => {
     const habit = get().habits.get(id);
     if (!habit) return;
 
     const now = dateUtils.nowUTC();
+    const changedFields = getHabitChangedFields(habit, updates);
     const updatedHabit = {
       ...habit,
       ...updates,
@@ -101,6 +122,20 @@ export const createHabitSlice: StateCreator<SharedSlice, [], [], HabitSlice> = (
 
     // Actions
     handlePostActionOperations(get, habit.id);
+
+    if (changedFields.length > 0) {
+      captureAnalyticsEvent('habit_updated', {
+        ...buildHabitAnalyticsProperties(
+          updatedHabit,
+          analyticsContext?.interactionSurface
+        ),
+        changed_fields: changedFields,
+        reminder_enabled_before: Boolean(habit.reminder_time),
+        reminder_enabled_after: Boolean(updatedHabit.reminder_time),
+        reminder_time_before: habit.reminder_time ?? null,
+        reminder_time_after: updatedHabit.reminder_time ?? null,
+      });
+    }
 
     try {
       const { error } = await supabase
@@ -127,9 +162,20 @@ export const createHabitSlice: StateCreator<SharedSlice, [], [], HabitSlice> = (
     await get().processPendingOperations();
   },
 
-  deleteHabit: async (id) => {
+  deleteHabit: async (id, analyticsContext) => {
     const habit = get().habits.get(id);
     if (!habit) return;
+
+    captureAnalyticsEvent('habit_deleted', {
+      ...buildHabitAnalyticsProperties(
+        habit,
+        analyticsContext?.interactionSurface
+      ),
+      days_of_week_count: habit.days_of_week?.length ?? 0,
+      has_end_date: Boolean(habit.end_date),
+      reminder_enabled: Boolean(habit.reminder_time),
+    });
+
     // Update locally first
     set((state) => {
       const newState = { ...state };

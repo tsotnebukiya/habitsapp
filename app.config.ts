@@ -1,11 +1,33 @@
 import { ConfigContext, ExpoConfig } from 'expo/config';
 
+function getOptionalEnv(name: string) {
+  const value = process.env[name]?.trim();
+  return value ? value : undefined;
+}
+
+function getAppVariant() {
+  if (process.env.APP_VARIANT) {
+    return process.env.APP_VARIANT;
+  }
+
+  if (process.env.EAS_BUILD_PROFILE) {
+    return process.env.EAS_BUILD_PROFILE;
+  }
+
+  return process.env.NODE_ENV === 'production' ? 'production' : 'development';
+}
+
+const sentryOrg = getOptionalEnv('SENTRY_ORG') ?? 'viral-development-llc';
+const sentryProject = getOptionalEnv('SENTRY_PROJECT') ?? 'habitsapp';
+const sentryUrl = getOptionalEnv('SENTRY_URL') ?? 'https://sentry.io/';
+const sentryDsn = getOptionalEnv('EXPO_PUBLIC_SENTRY_DSN') ?? null;
+
 export default ({
   config,
 }: ConfigContext): ExpoConfig & { ios: { appleTeamId: string } } => ({
   name: 'HabitsLab',
-  slug: 'HabitsLab',
-  version: '1.0.0',
+  slug: 'HabitsApp',
+  version: '1.0.2',
   orientation: 'portrait',
   icon: './assets/icon.png',
   scheme: 'habitsapp',
@@ -104,9 +126,9 @@ export default ({
     [
       '@sentry/react-native/expo',
       {
-        url: 'https://sentry.io/',
-        project: 'habitsapp',
-        organization: 'viral-development-llc',
+        url: sentryUrl,
+        project: sentryProject,
+        organization: sentryOrg,
       },
     ],
   ],
@@ -114,6 +136,11 @@ export default ({
     typedRoutes: true,
   },
   extra: {
+    appVariant: getAppVariant(),
+    sentryDsn,
+    sentryOrg,
+    sentryProject,
+    sentryUrl,
     router: {
       origin: false,
     },

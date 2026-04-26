@@ -34,7 +34,7 @@ export function useFeedback() {
         body: {
           message: message.trim(),
           deviceInfo,
-          appVersion: Constants.expoConfig?.version || '1.0.0',
+          appVersion: Constants.expoConfig?.version || '1.0.2',
           userId: userId,
         },
       });

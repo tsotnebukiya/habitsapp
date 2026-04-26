@@ -1,6 +1,5 @@
 // app/onboarding/notifications.tsx
-import { useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -15,9 +14,12 @@ import {
 } from 'react-native';
 
 import Button from '@/components/shared/Button';
+import { createOnboardingPaywallHandler } from '@/lib/analytics/superwall';
 import { colors, fontWeights } from '@/lib/constants/ui';
+import { useOnboardingAnalytics } from '@/lib/hooks/useOnboardingAnalytics';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 import { useAppStore } from '@/lib/stores/app_state';
+import { useOnboardingStore } from '@/lib/stores/onboardingStore';
 import useUserProfileStore from '@/lib/stores/user_profile';
 import {
   registerForPushNotificationsAsync,
@@ -25,12 +27,14 @@ import {
 } from '@/lib/utils/notifications';
 import { showOnboardingNotificationsSuperwall } from '@/lib/utils/superwall';
 import * as ExpoNotifications from 'expo-notifications';
+import { usePostHog } from 'posthog-react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 function Notifications() {
   const inset = useSafeAreaInsets();
   const { t } = useTranslation();
-  const router = useRouter();
+  const { analyticsReady, capture, screen } = useOnboardingAnalytics();
+  const setResumeRoute = useOnboardingStore((state) => state.setResumeRoute);
 
   // Local state for the three notification toggles (all default to true)
   const [pushNotificationsEnabled, setPushNotificationsEnabled] =
@@ -47,13 +51,71 @@ function Notifications() {
     profile,
   } = useUserProfileStore();
 
+  const buildTogglePayload = (
+    pushEnabled: boolean,
+    dailyEnabled: boolean,
+    streakEnabled: boolean
+  ) => ({
+    push_enabled: pushEnabled,
+    daily_enabled: dailyEnabled,
+    streak_enabled: streakEnabled,
+  });
+
+  const buildSetupPayload = (
+    pushEnabled = pushNotificationsEnabled,
+    dailyEnabled = dailyUpdatesEnabled,
+    streakEnabled = streakRemindersEnabled
+  ) => ({
+    push_notifications_enabled: pushEnabled,
+    daily_updates_enabled: dailyEnabled,
+    streak_reminders_enabled: streakEnabled,
+  });
+
+  useEffect(() => {
+    setResumeRoute('/onboarding/notifications');
+
+    if (!analyticsReady) {
+      return;
+    }
+
+    screen('onboarding_notifications');
+    capture('notifications_screen_viewed', {
+      default_push_enabled: true,
+      default_daily_enabled: true,
+      default_streak_enabled: true,
+    });
+  }, [analyticsReady, capture, screen, setResumeRoute]);
+
   const onPushNotificationsChange = (value: boolean) => {
     setPushNotificationsEnabled(value);
     setDailyUpdatesEnabled(value);
     setStreakRemindersEnabled(value);
+    capture(
+      'notification_toggle_changed',
+      buildTogglePayload(value, value, value)
+    );
+  };
+
+  const onDailyUpdatesChange = (value: boolean) => {
+    setDailyUpdatesEnabled(value);
+    capture(
+      'notification_toggle_changed',
+      buildTogglePayload(pushNotificationsEnabled, value, streakRemindersEnabled)
+    );
+  };
+
+  const onStreakRemindersChange = (value: boolean) => {
+    setStreakRemindersEnabled(value);
+    capture(
+      'notification_toggle_changed',
+      buildTogglePayload(pushNotificationsEnabled, dailyUpdatesEnabled, value)
+    );
   };
 
   const showPermissionDeniedAlert = () => {
+    capture('notification_permission_denied_alert_shown', {
+      permission_status: 'denied',
+    });
     Alert.alert(
       t('notifications.permissionRequired'),
       t('notifications.permissionDeniedMessage'),
@@ -61,10 +123,18 @@ function Notifications() {
         {
           text: t('common.cancel'),
           style: 'cancel',
+          onPress: () => {
+            capture('notification_permission_alert_cancelled', {
+              permission_status: 'denied',
+            });
+          },
         },
         {
           text: t('notifications.openSettings'),
           onPress: () => {
+            capture('notification_permission_settings_opened', {
+              permission_status: 'denied',
+            });
             Linking.openSettings();
           },
         },
@@ -73,11 +143,21 @@ function Notifications() {
   };
 
   const handleContinue = async () => {
+    capture(
+      'notifications_continue_pressed',
+      buildSetupPayload()
+    );
     setIsLoading(true);
 
     try {
       if (!pushNotificationsEnabled) {
-        showOnboardingNotificationsSuperwall();
+        capture(
+          'notifications_setup_completed',
+          buildSetupPayload()
+        );
+        showOnboardingNotificationsSuperwall(
+          createOnboardingPaywallHandler('onboarding_notifications', capture)
+        );
         return;
       }
 
@@ -85,12 +165,43 @@ function Notifications() {
         try {
           const { status: currentStatus } =
             await ExpoNotifications.getPermissionsAsync();
+          capture('notification_permission_checked', {
+            permission_status: currentStatus,
+          });
           if (currentStatus === 'denied') {
+            capture('notification_permission_result', {
+              permission_status: 'denied',
+              source: 'onboarding',
+              ...buildSetupPayload(),
+            });
+            capture('notification_permission_previously_denied', {
+              permission_status: currentStatus,
+            });
             showPermissionDeniedAlert();
             return;
           } else {
             // Try to register for push notifications
             const token = await registerForPushNotificationsAsync();
+
+            if (token) {
+              capture('notification_permission_result', {
+                permission_status: 'granted',
+                source: 'onboarding',
+                ...buildSetupPayload(),
+              });
+              capture('notification_permission_granted', {
+                permission_status: 'granted',
+              });
+            } else {
+              capture('notification_permission_result', {
+                permission_status: 'not_granted',
+                source: 'onboarding',
+                ...buildSetupPayload(),
+              });
+              capture('notification_permission_failed', {
+                permission_status: currentStatus,
+              });
+            }
 
             if (token && profile?.id) {
               // Permission granted - save token and enable global notifications
@@ -103,6 +214,14 @@ function Notifications() {
           }
         } catch (error) {
           console.error('Error requesting notification permission:', error);
+          capture('notification_permission_result', {
+            permission_status: 'error',
+            source: 'onboarding',
+            ...buildSetupPayload(),
+          });
+          capture('notification_permission_error', {
+            permission_status: 'error',
+          });
           // Even if permission fails, we still enable local notifications
           setNotificationsEnabled(false);
         }
@@ -118,11 +237,23 @@ function Notifications() {
       }
 
       // Navigate to main app
-      showOnboardingNotificationsSuperwall();
+      capture(
+        'notifications_setup_completed',
+        buildSetupPayload()
+      );
+      showOnboardingNotificationsSuperwall(
+        createOnboardingPaywallHandler('onboarding_notifications', capture)
+      );
     } catch (error) {
       console.error('Error in handleContinue:', error);
+      capture(
+        'notifications_setup_error',
+        buildSetupPayload()
+      );
       // Even if there's an error, navigate to main app
-      showOnboardingNotificationsSuperwall();
+      showOnboardingNotificationsSuperwall(
+        createOnboardingPaywallHandler('onboarding_notifications', capture)
+      );
     } finally {
       setIsLoading(false);
     }
@@ -177,7 +308,7 @@ function Notifications() {
             </View>
             <Switch
               value={dailyUpdatesEnabled}
-              onValueChange={setDailyUpdatesEnabled}
+              onValueChange={onDailyUpdatesChange}
               disabled={isLoading}
             />
           </View>
@@ -194,7 +325,7 @@ function Notifications() {
             </View>
             <Switch
               value={streakRemindersEnabled}
-              onValueChange={setStreakRemindersEnabled}
+              onValueChange={onStreakRemindersChange}
               disabled={isLoading}
             />
           </View>

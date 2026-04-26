@@ -331,6 +331,22 @@
       "description": "Treten Sie unserer Gemeinschaft von Erfolgsmenschen bei und beginnen Sie heute Ihre Reise."
     },
     "smartRemindersTitle": "Bleiben Sie mit intelligenten Erinnerungen auf Kurs",
+    "commitment": {
+      "title": "Verpflichtungspakt",
+      "sealing": "Dein Commitment wird besiegelt",
+      "commit": "Ich verpflichte mich meinen Zielen.",
+      "committed": "Besiegelt",
+      "tapBold": "Tippe, um dich zu verpflichten.",
+      "tapSub": "Das Festlegen von Zielen steigert die Motivation.",
+      "trust": "Und ich vertraue darauf, dass HabitsLab mich auf meinem Weg begleitet.",
+      "description": {
+        "part1": "Menschen bleiben eher dran, wenn sie ein klares Versprechen abgeben. Tippe auf den Fingerabdruck, um ",
+        "bold1": "dein Commitment zu besiegeln",
+        "part2": " und dir bewusst zu machen, dass ",
+        "bold2": "kleine tägliche Schritte dauerhafte Veränderung schaffen",
+        "part3": "."
+      }
+    },
     "login": {
       "title": "Bereit, Gewohnheiten aufzubauen?",
       "subtitle": "Melden Sie sich an, um Ihren Fortschritt zu verfolgen und dauerhafte Gewohnheiten aufzubauen.",

@@ -10,7 +10,7 @@ import { View } from 'react-native';
 
 function StackLayout() {
   const { profile } = useUserProfileStore();
-  const { completedAt } = useOnboardingStore();
+  const resumeRoute = useOnboardingStore((state) => state.resumeRoute);
   const [isInitializing, setIsInitializing] = useState(true);
   useNotifications();
   useReconcileWidgetState();
@@ -36,11 +36,7 @@ function StackLayout() {
   }
 
   if (!profile) {
-    if (completedAt) {
-      return <Redirect href="/onboarding/login" />;
-    } else {
-      return <Redirect href="/onboarding/intro" />;
-    }
+    return <Redirect href={resumeRoute ?? '/onboarding/intro'} />;
   }
 
   return (

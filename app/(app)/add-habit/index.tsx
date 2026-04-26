@@ -5,6 +5,7 @@ import { useTranslation } from '@/lib/hooks/useTranslation';
 import { useAddHabitStore } from '@/lib/stores/add_habit_store';
 import { router } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
+import { usePostHog } from 'posthog-react-native';
 import React from 'react';
 import {
   ScrollView,
@@ -19,9 +20,15 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 export default function CategorySelection() {
   const { t } = useTranslation();
   const setFormField = useAddHabitStore((state) => state.setFormField);
+  const entrypoint = useAddHabitStore((state) => state.entrypoint);
+  const posthog = usePostHog();
   const insets = useSafeAreaInsets();
   const handleCategorySelect = (categoryId: string) => {
     setFormField('category', categoryId as any);
+    posthog.capture('habit_category_selected', {
+      category_id: categoryId,
+      entrypoint,
+    });
     router.push('/add-habit/template-selection');
   };
 

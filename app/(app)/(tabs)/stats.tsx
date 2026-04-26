@@ -1,11 +1,18 @@
 import GatedBlurView from '@/components/shared/GatedBlurView';
+import {
+  createAppPaywallHandler,
+  trackPremiumFeatureAccessAttempted,
+} from '@/lib/analytics/superwall';
 import CalendarViewNew from '@/components/stats/CalendarViewNew';
 import Records from '@/components/stats/Records';
 import WeeklyProgress from '@/components/stats/WeeklyProgress';
 import { colors, fontWeights } from '@/lib/constants/ui';
+import { useAllHabits } from '@/lib/hooks/useHabits';
+import { useTrackedScreen } from '@/lib/hooks/useTrackedScreen';
 import { useSubscriptionStatus } from '@/lib/hooks/useSubscriptionStatus';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 import { showStatsSuperwall } from '@/lib/utils/superwall';
+import { usePostHog } from 'posthog-react-native';
 import React from 'react';
 import { ScrollView, StyleSheet, Text } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -13,7 +20,30 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 const StatsScreen = () => {
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
+  const habits = useAllHabits();
   const { subscriptionStatus } = useSubscriptionStatus();
+  const posthog = usePostHog();
+
+  useTrackedScreen('stats');
+
+  const handlePurchase = React.useCallback(() => {
+    const capture = (event: string, properties?: Record<string, any>) => {
+      posthog.capture(event, properties);
+    };
+    const paywallContext = {
+      placement: 'stats_view',
+      entrypoint: 'locked_overlay',
+      current_habit_count: habits.length,
+      subscription_status: subscriptionStatus.status,
+      feature_name: 'stats',
+      interaction_surface: 'locked_overlay',
+    } as const;
+
+    trackPremiumFeatureAccessAttempted(capture, paywallContext);
+    showStatsSuperwall({
+      handler: createAppPaywallHandler(paywallContext, capture),
+    });
+  }, [habits.length, posthog, subscriptionStatus.status]);
 
   return (
     <>
@@ -35,7 +65,7 @@ const StatsScreen = () => {
       </ScrollView>
       {subscriptionStatus.status !== 'ACTIVE' && (
         <GatedBlurView
-          handlePurchase={showStatsSuperwall}
+          handlePurchase={handlePurchase}
           buttonText={t('stats.unlock')}
           icon="chart.bar.fill"
         />

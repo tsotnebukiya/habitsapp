@@ -1,10 +1,12 @@
 import { ACTIVE_OPACITY_WHITE } from '@/components/shared/config';
 import { colors, fontWeights } from '@/lib/constants/ui';
 import { useNotifications } from '@/lib/hooks/useNotifications';
+import { useTrackedScreen } from '@/lib/hooks/useTrackedScreen';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 import { useAppStore } from '@/lib/stores/app_state';
 import useUserProfileStore from '@/lib/stores/user_profile';
 import { router } from 'expo-router';
+import { usePostHog } from 'posthog-react-native';
 import React from 'react';
 import {
   ActivityIndicator,
@@ -18,6 +20,7 @@ import { Icon } from 'react-native-paper';
 
 export default function NotificationsScreen() {
   const { t } = useTranslation();
+  const posthog = usePostHog();
 
   const handleClose = () => {
     router.back();
@@ -33,6 +36,27 @@ export default function NotificationsScreen() {
     (state) => state.notificationsEnabled
   );
   const { toggleNotifications, isLoading } = useNotifications();
+
+  useTrackedScreen('settings_notifications');
+
+  const handleDailyUpdateChange = (enabled: boolean) => {
+    posthog.capture('notification_preference_changed', {
+      source: 'settings',
+      preference_key: 'daily_updates',
+      enabled,
+    });
+    setDailyUpdateNotificationsEnabled(enabled);
+  };
+
+  const handleStreakChange = (enabled: boolean) => {
+    posthog.capture('notification_preference_changed', {
+      source: 'settings',
+      preference_key: 'streak_reminders',
+      enabled,
+    });
+    setStreakNotificationsEnabled(enabled);
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -84,7 +108,7 @@ export default function NotificationsScreen() {
             </View>
             <Switch
               value={profile?.allow_daily_update_notifications ?? false}
-              onValueChange={setDailyUpdateNotificationsEnabled}
+              onValueChange={handleDailyUpdateChange}
             />
           </View>
 
@@ -97,7 +121,7 @@ export default function NotificationsScreen() {
             </View>
             <Switch
               value={profile?.allow_streak_notifications ?? false}
-              onValueChange={setStreakNotificationsEnabled}
+              onValueChange={handleStreakChange}
             />
           </View>
         </>

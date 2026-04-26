@@ -3,11 +3,14 @@ import Button from '@/components/shared/Button';
 import { ACTIVE_OPACITY_WHITE } from '@/components/shared/config';
 import { languages } from '@/lib/constants/languages';
 import { colors, fontWeights } from '@/lib/constants/ui';
+import { useOnboardingAnalytics } from '@/lib/hooks/useOnboardingAnalytics';
 import { useTranslation } from '@/lib/hooks/useTranslation';
 import { useAppStore } from '@/lib/stores/app_state';
+import { useOnboardingStore } from '@/lib/stores/onboardingStore';
 import { useRouter } from 'expo-router';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
+  ActivityIndicator,
   Dimensions,
   FlatList,
   Image,
@@ -54,11 +57,37 @@ const slides: OnboardingItem[] = [
 const OnboardingCarousel = () => {
   const insets = useSafeAreaInsets();
   const currentLanguage = useAppStore((state) => state.currentLanguage);
+  const setResumeRoute = useOnboardingStore((state) => state.setResumeRoute);
   const [currentIndex, setCurrentIndex] = useState(0);
   const router = useRouter();
   const flatListRef = useRef<FlatList>(null);
   const scrollX = useSharedValue(0);
   const { t } = useTranslation();
+  const { analyticsReady, capture, screen } = useOnboardingAnalytics();
+
+  const buildSlidePayload = (index: number) => ({
+    slide_id: slides[index]?.id,
+    slide_index: index,
+    total_slides: slides.length,
+  });
+
+  useEffect(() => {
+    setResumeRoute('/onboarding/intro');
+  }, [setResumeRoute]);
+
+  useEffect(() => {
+    if (!analyticsReady) {
+      return;
+    }
+
+    screen('onboarding_intro', {
+      total_slides: slides.length,
+    });
+    capture('intro_viewed');
+    capture('slides_viewed', {
+      total_slides: slides.length,
+    });
+  }, [analyticsReady, capture, screen]);
 
   const onViewableItemsChanged = ({ changed }: { changed: ViewToken[] }) => {
     if (changed && changed[0].index !== null) {
@@ -95,6 +124,11 @@ const OnboardingCarousel = () => {
   };
 
   const handleBack = () => {
+    capture('intro_slide_previous', {
+      ...buildSlidePayload(currentIndex),
+      from_slide_index: currentIndex,
+      to_slide_index: currentIndex - 1,
+    });
     flatListRef.current?.scrollToIndex({
       index: currentIndex - 1,
       animated: true,
@@ -103,8 +137,18 @@ const OnboardingCarousel = () => {
 
   const handleNext = () => {
     if (currentIndex === slides.length - 1) {
+      if (!analyticsReady) {
+        return;
+      }
+
+      capture('intro_completed', buildSlidePayload(currentIndex));
       router.push('/onboarding/wizard');
     } else {
+      capture('intro_slide_next', {
+        ...buildSlidePayload(currentIndex),
+        from_slide_index: currentIndex,
+        to_slide_index: currentIndex + 1,
+      });
       flatListRef.current?.scrollToIndex({
         index: currentIndex + 1,
         animated: true,
@@ -113,8 +157,17 @@ const OnboardingCarousel = () => {
   };
 
   const handleLanguage = () => {
+    if (analyticsReady) {
+      capture(
+        'intro_language_button_pressed',
+        buildSlidePayload(currentIndex)
+      );
+    }
     router.push('/language');
   };
+
+  const isWaitingOnVariant =
+    currentIndex === slides.length - 1 && !analyticsReady;
 
   return (
     <View
@@ -176,7 +229,13 @@ const OnboardingCarousel = () => {
           onPress={handleNext}
           type="primary"
           fullWidth
-          label={t('onboarding.next')}
+          disabled={isWaitingOnVariant}
+          label={isWaitingOnVariant ? t('common.loading') : t('onboarding.next')}
+          icon={
+            isWaitingOnVariant ? (
+              <ActivityIndicator color="white" />
+            ) : undefined
+          }
         />
       </View>
     </View>
