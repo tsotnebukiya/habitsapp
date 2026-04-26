@@ -336,11 +336,11 @@
       "sealing": "Dein Commitment wird besiegelt",
       "commit": "Ich verpflichte mich meinen Zielen.",
       "committed": "Besiegelt",
-      "tapBold": "Tippe, um dich zu verpflichten.",
+      "tapBold": "Halte gedrückt, um dich zu verpflichten.",
       "tapSub": "Das Festlegen von Zielen steigert die Motivation.",
       "trust": "Und ich vertraue darauf, dass HabitsLab mich auf meinem Weg begleitet.",
       "description": {
-        "part1": "Menschen bleiben eher dran, wenn sie ein klares Versprechen abgeben. Tippe auf den Fingerabdruck, um ",
+        "part1": "Menschen bleiben eher dran, wenn sie ein klares Versprechen abgeben. Halte den Fingerabdruck gedrückt, um ",
         "bold1": "dein Commitment zu besiegeln",
         "part2": " und dir bewusst zu machen, dass ",
         "bold2": "kleine tägliche Schritte dauerhafte Veränderung schaffen",

@@ -337,11 +337,11 @@
       "sealing": "Sellando tu compromiso",
       "commit": "Me comprometo con mis objetivos.",
       "committed": "Compromiso sellado",
-      "tapBold": "Toca para comprometerte.",
+      "tapBold": "Mantén pulsado para comprometerte.",
       "tapSub": "Comprometerte con tus objetivos refuerza la motivación.",
       "trust": "Y confío en HabitsLab para guiarme en este camino.",
       "description": {
-        "part1": "Las personas cumplen más cuando hacen una promesa clara. Toca la huella para ",
+        "part1": "Las personas cumplen más cuando hacen una promesa clara. Mantén pulsada la huella para ",
         "bold1": "sellar tu compromiso",
         "part2": " y recordarte que ",
         "bold2": "las pequeñas acciones diarias crean un cambio duradero",

@@ -1,6 +1,5 @@
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
-import { usePostHog } from 'posthog-react-native';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Animated,
@@ -291,8 +290,8 @@ function Commitment() {
               >
                 <View style={styles.fingerprintContainer}>
                   <Icon
-                    source={isCommitted ? 'check' : 'passport-biometric'}
-                    size={54}
+                    source={isCommitted ? 'check' : 'fingerprint'}
+                    size={60}
                     color={isCommitted ? colors.primary : colors.text}
                   />
                 </View>

@@ -336,11 +336,11 @@
       "sealing": "Nous scellons votre engagement",
       "commit": "Je m'engage envers mes objectifs.",
       "committed": "Engagement scellé",
-      "tapBold": "Touchez pour vous engager.",
+      "tapBold": "Maintenez pour vous engager.",
       "tapSub": "S'engager envers ses objectifs renforce la motivation.",
       "trust": "Et je fais confiance à HabitsLab pour me guider tout au long de ce parcours.",
       "description": {
-        "part1": "On passe plus souvent à l'action lorsqu'on formule une promesse claire. Touchez l'empreinte pour ",
+        "part1": "On passe plus souvent à l'action lorsqu'on formule une promesse claire. Maintenez l'empreinte pour ",
         "bold1": "sceller votre engagement",
         "part2": " et vous rappeler que ",
         "bold2": "de petites actions quotidiennes créent un vrai changement",

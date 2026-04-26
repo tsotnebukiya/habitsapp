@@ -333,11 +333,11 @@
       "sealing": "Selando seu compromisso",
       "commit": "Eu me comprometo com meus objetivos.",
       "committed": "Compromisso selado",
-      "tapBold": "Toque para se comprometer.",
+      "tapBold": "Pressione e segure para se comprometer.",
       "tapSub": "Comprometer-se com seus objetivos fortalece a motivação.",
       "trust": "E confio na HabitsLab para me orientar nessa jornada.",
       "description": {
-        "part1": "As pessoas seguem mais quando fazem uma promessa clara. Toque na digital para ",
+        "part1": "As pessoas seguem mais quando fazem uma promessa clara. Pressione e segure a digital para ",
         "bold1": "selar seu compromisso",
         "part2": " e lembrar a si mesmo que ",
         "bold2": "pequenas ações diárias criam mudanças duradouras",

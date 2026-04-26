@@ -741,11 +741,11 @@
       "sealing": "Sealing your commitment",
       "commit": "I commit to my goals.",
       "committed": "Committed",
-      "tapBold": "Tap to commit.",
+      "tapBold": "Press and hold to commit.",
       "tapSub": "Committing to goals boosts motivation.",
       "trust": "And I trust HabitsLab to coach me through the journey.",
       "description": {
-        "part1": "People follow through more often when they make a clear promise. Tap the fingerprint to ",
+        "part1": "People follow through more often when they make a clear promise. Press and hold the fingerprint to ",
         "bold1": "seal your commitment",
         "part2": " and remind yourself that ",
         "bold2": "small daily actions create lasting change",

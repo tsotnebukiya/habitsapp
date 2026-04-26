@@ -8,17 +8,18 @@ import { useTranslation } from '@/lib/hooks/useTranslation';
 import { useAppStore } from '@/lib/stores/app_state';
 import { useOnboardingStore } from '@/lib/stores/onboardingStore';
 import { useRouter } from 'expo-router';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Dimensions,
   FlatList,
   Image,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  ViewToken,
 } from 'react-native';
 import { Icon } from 'react-native-paper';
 import { useSharedValue } from 'react-native-reanimated';
@@ -59,11 +60,15 @@ const OnboardingCarousel = () => {
   const currentLanguage = useAppStore((state) => state.currentLanguage);
   const setResumeRoute = useOnboardingStore((state) => state.setResumeRoute);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [isPaging, setIsPaging] = useState(false);
+  const [pendingWizardNavigation, setPendingWizardNavigation] =
+    useState(false);
   const router = useRouter();
   const flatListRef = useRef<FlatList>(null);
   const scrollX = useSharedValue(0);
   const { t } = useTranslation();
-  const { analyticsReady, capture, screen } = useOnboardingAnalytics();
+  const { analyticsReady, capture, screen, resolveVariantImmediately } =
+    useOnboardingAnalytics();
 
   const buildSlidePayload = (index: number) => ({
     slide_id: slides[index]?.id,
@@ -89,19 +94,13 @@ const OnboardingCarousel = () => {
     });
   }, [analyticsReady, capture, screen]);
 
-  const onViewableItemsChanged = ({ changed }: { changed: ViewToken[] }) => {
-    if (changed && changed[0].index !== null) {
-      setCurrentIndex(changed[0].index);
+  const syncIndexFromOffset = (offsetX: number) => {
+    const nextIndex = Math.round(offsetX / screenWidth);
+
+    if (nextIndex !== currentIndex) {
+      setCurrentIndex(nextIndex);
     }
   };
-
-  const viewabilityConfig = {
-    itemVisiblePercentThreshold: 50,
-  };
-
-  const viewabilityConfigCallbackPairs = useRef([
-    { viewabilityConfig, onViewableItemsChanged },
-  ]);
 
   const renderItem = ({
     item,
@@ -123,34 +122,66 @@ const OnboardingCarousel = () => {
     );
   };
 
+  const completeIntro = useCallback(() => {
+    capture('intro_completed', buildSlidePayload(slides.length - 1));
+    router.push('/onboarding/wizard');
+  }, [capture, router]);
+
+  useEffect(() => {
+    if (!pendingWizardNavigation || !analyticsReady) {
+      return;
+    }
+
+    setPendingWizardNavigation(false);
+    completeIntro();
+  }, [analyticsReady, completeIntro, pendingWizardNavigation]);
+
   const handleBack = () => {
+    if (isPaging || currentIndex === 0) {
+      return;
+    }
+
+    const previousIndex = currentIndex - 1;
+
     capture('intro_slide_previous', {
       ...buildSlidePayload(currentIndex),
       from_slide_index: currentIndex,
-      to_slide_index: currentIndex - 1,
+      to_slide_index: previousIndex,
     });
+    setPendingWizardNavigation(false);
+    setIsPaging(true);
+    setCurrentIndex(previousIndex);
     flatListRef.current?.scrollToIndex({
-      index: currentIndex - 1,
+      index: previousIndex,
       animated: true,
     });
   };
 
   const handleNext = () => {
+    if (isPaging || pendingWizardNavigation) {
+      return;
+    }
+
     if (currentIndex === slides.length - 1) {
       if (!analyticsReady) {
+        setPendingWizardNavigation(true);
+        resolveVariantImmediately();
         return;
       }
 
-      capture('intro_completed', buildSlidePayload(currentIndex));
-      router.push('/onboarding/wizard');
+      completeIntro();
     } else {
+      const nextIndex = currentIndex + 1;
+
       capture('intro_slide_next', {
         ...buildSlidePayload(currentIndex),
         from_slide_index: currentIndex,
-        to_slide_index: currentIndex + 1,
+        to_slide_index: nextIndex,
       });
+      setIsPaging(true);
+      setCurrentIndex(nextIndex);
       flatListRef.current?.scrollToIndex({
-        index: currentIndex + 1,
+        index: nextIndex,
         animated: true,
       });
     }
@@ -167,7 +198,18 @@ const OnboardingCarousel = () => {
   };
 
   const isWaitingOnVariant =
-    currentIndex === slides.length - 1 && !analyticsReady;
+    currentIndex === slides.length - 1 && pendingWizardNavigation;
+
+  const handleScrollBeginDrag = () => {
+    setIsPaging(true);
+  };
+
+  const handleMomentumScrollEnd = (
+    event: NativeSyntheticEvent<NativeScrollEvent>
+  ) => {
+    syncIndexFromOffset(event.nativeEvent.contentOffset.x);
+    setIsPaging(false);
+  };
 
   return (
     <View
@@ -218,7 +260,8 @@ const OnboardingCarousel = () => {
         onScroll={(event) => {
           scrollX.value = event.nativeEvent.contentOffset.x;
         }}
-        viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
+        onScrollBeginDrag={handleScrollBeginDrag}
+        onMomentumScrollEnd={handleMomentumScrollEnd}
         keyExtractor={(item) => item.id}
       />
 
@@ -229,7 +272,7 @@ const OnboardingCarousel = () => {
           onPress={handleNext}
           type="primary"
           fullWidth
-          disabled={isWaitingOnVariant}
+          disabled={isWaitingOnVariant || isPaging}
           label={isWaitingOnVariant ? t('common.loading') : t('onboarding.next')}
           icon={
             isWaitingOnVariant ? (

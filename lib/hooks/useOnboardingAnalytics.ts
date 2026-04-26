@@ -13,6 +13,8 @@ import {
 import { useAppStore } from '@/lib/stores/app_state';
 import { useOnboardingStore } from '@/lib/stores/onboardingStore';
 
+type OnboardingResolutionSource = 'flag' | 'fallback';
+
 export function useOnboardingAnalytics() {
   const posthog = usePostHog();
   const currentLanguage = useAppStore((state) => state.currentLanguage);
@@ -28,6 +30,42 @@ export function useOnboardingAnalytics() {
   } = useOnboardingStore();
   const rawFlagValue = useFeatureFlag(ONBOARDING_FLAG_KEY);
   const [hasTimedOut, setHasTimedOut] = useState(false);
+  const [resolutionSource, setResolutionSource] =
+    useState<OnboardingResolutionSource | null>(null);
+
+  const applyResolvedVariant = useCallback(
+    (
+      flowVariant: OnboardingFlowVariant,
+      nextExperimentVariant: OnboardingExperimentVariant,
+      source: OnboardingResolutionSource
+    ) => {
+      if (!sessionId) {
+        setSessionId(createOnboardingSessionId());
+      }
+
+      if (variant !== flowVariant) {
+        setVariant(flowVariant);
+      }
+
+      if (experimentVariant !== nextExperimentVariant) {
+        setExperimentVariant(nextExperimentVariant);
+      }
+
+      setResolutionSource(source);
+
+      if (source === 'fallback') {
+        setHasTimedOut(true);
+      }
+    },
+    [
+      experimentVariant,
+      sessionId,
+      setExperimentVariant,
+      setSessionId,
+      setVariant,
+      variant,
+    ]
+  );
 
   useEffect(() => {
     if (variant && experimentVariant) {
@@ -79,26 +117,17 @@ export function useOnboardingAnalytics() {
       return;
     }
 
-    if (!sessionId) {
-      setSessionId(createOnboardingSessionId());
+    if (
+      resolvedContext.source === 'flag' ||
+      resolvedContext.source === 'fallback'
+    ) {
+      applyResolvedVariant(
+        resolvedContext.flowVariant,
+        resolvedContext.experimentVariant,
+        resolvedContext.source
+      );
     }
-
-    if (variant !== resolvedContext.flowVariant) {
-      setVariant(resolvedContext.flowVariant);
-    }
-
-    if (experimentVariant !== resolvedContext.experimentVariant) {
-      setExperimentVariant(resolvedContext.experimentVariant);
-    }
-  }, [
-    experimentVariant,
-    resolvedContext,
-    sessionId,
-    setExperimentVariant,
-    setSessionId,
-    setVariant,
-    variant,
-  ]);
+  }, [applyResolvedVariant, resolvedContext]);
 
   const commonProperties = useMemo(() => {
     if (!sessionId || !variant || !experimentVariant) {
@@ -120,17 +149,44 @@ export function useOnboardingAnalytics() {
 
     posthog.capture('onboarding_variant_exposed', commonProperties);
 
-    if (resolvedContext?.source === 'fallback') {
+    if (resolutionSource === 'fallback') {
       posthog.capture('onboarding_variant_fallback_used', commonProperties);
     }
 
     markExposureTracked();
+    setResolutionSource(null);
   }, [
     commonProperties,
     exposureTrackedAt,
     markExposureTracked,
     posthog,
-    resolvedContext?.source,
+    resolutionSource,
+  ]);
+
+  const resolveVariantImmediately = useCallback(() => {
+    if (commonProperties || (variant && experimentVariant && sessionId)) {
+      return;
+    }
+
+    const resolvedFromFlag = resolveOnboardingVariant(rawFlagValue);
+
+    if (resolvedFromFlag) {
+      applyResolvedVariant(
+        resolvedFromFlag.flowVariant,
+        resolvedFromFlag.experimentVariant,
+        'flag'
+      );
+      return;
+    }
+
+    applyResolvedVariant('standard', 'control', 'fallback');
+  }, [
+    applyResolvedVariant,
+    commonProperties,
+    experimentVariant,
+    rawFlagValue,
+    sessionId,
+    variant,
   ]);
 
   const capture = useCallback(
@@ -166,5 +222,6 @@ export function useOnboardingAnalytics() {
     commonProperties,
     capture,
     screen,
+    resolveVariantImmediately,
   };
 }
