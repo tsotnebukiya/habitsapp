@@ -118,6 +118,10 @@ function RootLayoutNav() {
         options={{
           host: 'https://us.i.posthog.com',
         }}
+        autocapture={{
+          captureScreens: false,
+          captureLifecycleEvents: true,
+        }}
       >
         <AnalyticsBootstrap />
         <KeyboardProvider>

@@ -145,6 +145,7 @@ export interface OnboardingState {
 
 interface OnboardingStore extends OnboardingState {
   // Actions
+  beginNewRun: () => void;
   setVariant: (variant: string) => void;
   setExperimentVariant: (variant: string) => void;
   setSessionId: (sessionId: string) => void;
@@ -165,6 +166,14 @@ interface OnboardingStore extends OnboardingState {
   getMatrixScores: () => MatrixScores;
 }
 
+const initialMatrixScores: MatrixScores = {
+  cat1: 50,
+  cat2: 50,
+  cat3: 50,
+  cat4: 50,
+  cat5: 50,
+};
+
 const initialState: OnboardingState = {
   variant: null,
   experimentVariant: null,
@@ -176,19 +185,28 @@ const initialState: OnboardingState = {
   startedAt: undefined,
   completedAt: undefined,
   exposureTrackedAt: undefined,
-  matrixScores: {
-    cat1: 50,
-    cat2: 50,
-    cat3: 50,
-    cat4: 50,
-    cat5: 50,
-  },
+  matrixScores: initialMatrixScores,
 };
 
 export const useOnboardingStore = create<OnboardingStore>()(
   persist(
     (set, get) => ({
       ...initialState,
+
+      beginNewRun: () =>
+        set({
+          variant: null,
+          experimentVariant: null,
+          sessionId: null,
+          resumeRoute: '/onboarding/intro',
+          currentIndex: 0,
+          answers: {},
+          totalItems: 0,
+          startedAt: undefined,
+          completedAt: undefined,
+          exposureTrackedAt: undefined,
+          matrixScores: initialMatrixScores,
+        }),
 
       setVariant: (variant) => set({ variant }),
 

@@ -66,15 +66,6 @@ export default function wizard() {
     };
   };
 
-  // Reset currentIndex to 0 when wizard starts/renders
-  useEffect(() => {
-    if (!analyticsReady) {
-      return;
-    }
-
-    setCurrentIndex(0);
-  }, [analyticsReady, setCurrentIndex]);
-
   useEffect(() => {
     if (analyticsReady) {
       setTotalItems(items.length);

@@ -78,7 +78,9 @@ function ProgressMessages({
   useEffect(() => {
     if (!isActive) {
       clearTimers();
+      setCurrentIndex(0);
       setDisplayText('');
+      setHasCompleted(false);
       setIsTyping(true);
       return;
     }
@@ -146,13 +148,29 @@ export default function LoadingScreen({
   onComplete,
   isActive = true,
 }: LoadingScreenProps) {
+  const [activationId, setActivationId] = useState(0);
+  const wasActiveRef = useRef(isActive);
+
+  useEffect(() => {
+    if (isActive && !wasActiveRef.current) {
+      setActivationId((id) => id + 1);
+    }
+
+    wasActiveRef.current = isActive;
+  }, [isActive]);
+
   return (
     <View style={styles.container}>
       <Image
+        key={`loading-gif-${activationId}`}
         source={require('@/assets/onboarding/loading.gif')}
         style={styles.gif}
       />
-      <ProgressMessages onComplete={onComplete} isActive={isActive} />
+      <ProgressMessages
+        key={`loading-progress-${activationId}`}
+        onComplete={onComplete}
+        isActive={isActive}
+      />
     </View>
   );
 }

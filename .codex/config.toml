@@ -1,0 +1,4 @@
+# Project-local Codex MCP configuration.
+
+[mcp_servers.posthog]
+url = "https://mcp.posthog.com/mcp"

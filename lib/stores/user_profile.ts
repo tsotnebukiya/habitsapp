@@ -7,6 +7,7 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { SupportedLanguage } from '../utils/i18n';
 import { useAppStore } from './app_state';
+import { useOnboardingStore } from './onboardingStore';
 
 export type UserProfile = Database['public']['Tables']['users']['Row'];
 interface UserProfileState {
@@ -125,6 +126,7 @@ export const useUserProfileStore = create<UserProfileState>()(
       },
 
       resetOnboarding: () => {
+        useOnboardingStore.getState().beginNewRun();
         get().updateProfile({
           onboarding_complete: false,
         });

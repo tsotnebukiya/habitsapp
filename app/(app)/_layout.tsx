@@ -5,12 +5,13 @@ import { useOnboardingStore } from '@/lib/stores/onboardingStore';
 import useUserProfileStore from '@/lib/stores/user_profile';
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { Redirect, Stack } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { View } from 'react-native';
 
 function StackLayout() {
   const { profile } = useUserProfileStore();
   const resumeRoute = useOnboardingStore((state) => state.resumeRoute);
+  const beginNewRun = useOnboardingStore((state) => state.beginNewRun);
   const [isInitializing, setIsInitializing] = useState(true);
   useNotifications();
   useReconcileWidgetState();
@@ -31,7 +32,17 @@ function StackLayout() {
     initializeApp();
   }, [profile?.id]); // Re-run when user logs in
 
+  useLayoutEffect(() => {
+    if (!isInitializing && !profile && resumeRoute === null) {
+      beginNewRun();
+    }
+  }, [beginNewRun, isInitializing, profile, resumeRoute]);
+
   if (isInitializing) {
+    return <View style={{ flex: 1 }} />;
+  }
+
+  if (!profile && resumeRoute === null) {
     return <View style={{ flex: 1 }} />;
   }
 
